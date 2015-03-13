@@ -1,0 +1,355 @@
+25-Feb-2015 Laurent Duflot
+	* makeSignalPicklePoint: add the GG_onestepCC mchi=25 points
+
+24-Feb-2015 Laurent Duflot
+	* BuildSUSYObjects : change pT cut for electrons to 10 GeV
+	* tag ZeroLeptonRun2-00-00-20
+
+18-Feb-2015 Laurent Duflot
+	* getMCInfo.py: write also latex table for signal samples
+
+13-Feb-2015 Laurent Duflot
+	* makeSignalPicklePoint : add a couple of missing points
+	* ZeroLeptonCRWT: fix bug in el/mu pT selection (C++ coding error that
+	caused skipped particles or crashes). No effect seen on a standard
+	ttbarsample with 5k events.
+
+12-Feb-2015 Laurent Duflot
+	* INSTALL: add instructions to fix SUSYTools Makefile.RootCore
+	* BuildSUSYObjects : fix bug in selecting baseline muons.
+	* tag ZeroLeptonRun2-00-00-19
+
+11-Feb-2015 Laurent Duflot
+	* README : improved doc
+	* ZeroLeptonNTVars, PhysObjProxyUtils: add jet FracSamplingMax and
+	FracSamplingMaxIndex to mini-tuples
+	* tag ZeroLeptonRun2-00-00-18
+
+10-Feb-2015 Laurent Duflot
+	* PhyjObjproxyUtils: fix bug in calculating the "no BCH_CORR_CELL" MET
+	* BuildSUSYObjects: doHarmonization=false for overlap removal as it causes
+	non signal muons to fail OR and so muon veto.
+	* PileUpRWProcessor: now use the PileUpReweightingTool rather than
+	TPileupReweighting (no effect for identical prw files) and update prw file.
+	* config files: use default prw file in pileup reweighting
+
+09-Feb-2015 Laurent Duflot
+	* makeDatasetList.py: allow to select one of the sample lists.
+	* data: add dataset infos for mc14_13TeV
+	* tag ZeroLeptonRun2-00-00-17
+
+06-Feb-2015 Laurent Duflot
+	* Sphericity.cxx: remove spurious printout
+	* ZeroLeptonNTVars, PhysObjProxyUtils, ZeroLeptonSR: add met without
+	BCH_CORR_CELL jet correction, met LocHadTopo with/without
+	BCH_CORR_CELL jet correction
+	* tag ZeroLeptonRun2-00-00-16
+
+05-Feb-2015 Laurent Duflot
+	* FilterUpdateMerge : add support for ExtraVars block in SR trees.
+	fix bug for mc14_8TeV
+	* makeSignalPickle.py : add SM_GG_direct
+
+04-Feb-2015 Laurent Duflot
+	* convert to SUSYTools-00-00-15
+	* adopt same algorithm as SUSYTools for primary vertex selection
+	* PrintEvent.cxx : fix printout for jets and electron collections
+	from TStore
+
+30-Jan-2015 Laurent Duflot
+	* launch_jobs_on_grid.py : force signal on a dataset basis
+
+30-Jan-2015 Laurent Duflot
+	* BuildSUSYObjects.cxx : switch back to using only baseline muons for MET
+	* PhysObjProxyFiller.cxx : add jet eta cut at 2.8
+	* launch_jobs_on_grid.py : make --nGBPerJob=MAX the default and remove
+	option --filesperjob (use --prunopts to set --nGBPerJob or
+	--nFilesPerJob)
+	* makeDatasetList.py : use # of files instead of availability to work
+	around AMI - prodsys2 problems, add option to list signal samples
+	* tag ZeroLeptonRun2-00-00-15
+
+29-Jan-2015 Laurent Duflot
+	* README: improved documentation
+	* makeSignalPickle.py : add SM_SS_direct
+	* FilterUpdateMerge.cxx : special case for QCD JZxW samples
+
+28-Jan-2015 Laurent Duflot
+	* README: improved documentation
+	* makeDatasetList.py : add protection for missing sample data in AMI
+	* getMCInfo.py : add support for generating signal cross-section
+	files
+	* add makeSignalPickle.py
+	* FilterUpdateMerge.py : update pickle file name and add QCD MC
+
+26-Jan-2015 Laurent Duflot
+	* INSTALL: improved documentation
+	* mc14_13TeV_MCSampleList.py : add diboson samples
+	* makeDatasetList.py : add veto on unwanted samples
+
+16-Jan-2015 Laurent Duflot
+	* README and INSTALL: improved documentation
+
+15-Jan-2015 Laurent Duflot
+	* MCInfoProcessor: include SUSY particles with no parent in search
+	for hard process (happend in Herwig++)
+
+14-Jan-2015 Laurent Duflot
+	* README: point to file in eos that works with current release
+
+13-Jan-2015 Laurent Duflot
+	* tag as ZeroLeptonRun2-00-00-14
+
+07-Jan-2015 Laurent Duflot
+	* mc14_13TeV_MCSampleList.py: remove mtt bins samples from ttbar
+	samples to avoid double counting
+
+05-Jan-2015 Laurent Duflot
+	* getMCInfo.py and FilterUpdateMerge.py: add support for mc14_13TeV MC list
+	* makeDatasetList.py: make mc14_13TeV the default
+
+01-Jan-2015 Laurent Duflot
+	* getMCInfo.py: improved protection against missing Counter histo
+
+23-Dec-2014 Laurent Duflot
+	* INSTALL: point to cafe 00-00-03 and to a revision of SUSYTools
+
+10-Dec-2014 Laurent Duflot
+	* PileUpRWProcessor: don't reweight mc14_13TeV MC
+	* add python/mc14_13TeV_MCSampleList
+	* makeDatasetList.py: support for mc14_13TeV
+	* tag as ZeroLeptonRun2-00-00-13
+
+08-Dec-2014 Laurent Duflot
+	* ZeroLeptonDataDrivenQCD: cleanup
+	* README: point to config file with systematics
+
+08-Dec-2014 Laurent Duflot
+	* tag as ZeroLeptonRun2-00-00-12
+
+------ code moved to atlasoff svn --------------------------------
+
+08-Dec-2014 Laurent Duflot
+	* add ZeroLeptonSystVariations: a cafe controller-like that calls its
+	children for each systematic variation
+	* zerolepton_with_syst.config: ZL with systematics
+	* Counter: add CounterRepository (map of counter indexed by string)
+	* BuildSUSYObject, ZeroLeptonSR, ZeroLeptonCRWT: adapt to run under
+	ZeroLeptonSystVariations, in particular handle syst-dependent counters
+	and trees.
+	* tag as ZeroLeptonRun2-00-00-11
+
+24-Nov-2014 Laurent Duflot
+	* makeDatasetList.py : convert to pyAMI 5 and add --datatype option
+	* launch_jobs_on_grid.py: dataset name truncating for DxAOD
+
+13-Nov-2014 Laurent Duflot
+	* launch_jobs_on_grid.py: automatically set IsMuonChannel/IsElectronChannel
+	when running on data
+
+11-Nov-2014 Laurent Duflot
+	* pfc2txt.py: fix for missing 'logical' info in PFC, use the name from
+	'physical'
+
+10-Nov-2014 Laurent Duflot
+	* launch_jobs_on_grid.py: keep oxbridge tarball otherwise the job will
+	try to download it, may cause problems.
+
+07-Nov-2014 Laurent Duflot
+	* adapt to SUSYTools-00-05-14
+	* BuildSUSYObjects: consider only Combined, MuonStandAlone and
+	SegmentTagged muons for everything (including MET, lepton veto etc)
+	* use auxdecor<> instead of auxdata<> since SUSYTools uses Decorators
+	* tagged as ZeroLeptonRun2-00-00-10
+
+05-Nov-2014 Laurent Duflot
+	* adapt to SUSYTools-00-05-13
+	* change auxdata<int> to auxdata<char> for all SUSYTools decorations...
+	* BuildSUSYObjects: adapt to new GetMET, recompute MET with calibrated
+	electrons. photons, muons and (all) jets.
+	* BuildSUSYObjects & ZeroLeptonDataDrivenQCD: use
+	xAOD::setOriginalObjectLink() to set links to original containers.
+	* ZeroLeptonDataDrivenQCD: drop METrebuider member, not used any more
+	* not functional.
+
+26-Oct-2014: Laurent Duflot
+	* launch_jobs_on_grid.py: fix PoolFileCatalog treatment
+	* PrintEvent.cxx: improved printouts
+	* JobBookeeping.cxx: adapt to potential 'scope' in rucio filepath
+
+21-Oct-2014: Laurent Duflot
+	* PrintEvent: add keys to printout and muon type
+19-Oct-2014: Laurent Duflot
+	* PrintEvent: allow to specify if container is in the TStore or Event.
+	Improved format for printout. Add MET.
+	* BuildSUSYObjects: recompute MET with muons but put first non baseline
+	muons to pt=1MeV so that MET only has baseline muons.
+	* tagged as ZeroLeptonRun2-00-00-09
+
+11-Oct-2014: Laurent Duflot
+	* add getMCInfo.py, adapted from Run 1.
+	* FilterUpdateMerge.py: fix for running on data.
+	* README: add doc for getMCInfo.py and update doc on merging.
+	* move links making from BuildSUSYObjects to ZeroLeptonDataDrivenQCD
+
+02-Oct-2014: Laurent Duflot
+	* launch_jobs_on_grid.py, README: point to zerolepton.config
+	* rework how tarball is handled
+
+01-Oct-2014: Laurent Duflot
+	* zlQCDSeeds.config: add to list of container saved so that events
+	can be used with SUSYTools processing.
+	* ZeroLeptonDataDrivenQCD: cleanup Processor dependencies
+	* tagged as ZeroLeptonRun2-00-00-08
+
+30-Sep-2014: Laurent Duflot
+	* ZeroLeptonDataDrivenQCD: rewritten to call a list of Processors
+	for each smearing iteration (BuildSUSYObjects for the jet/met and SR/CR)
+	* BuildSUSYObjects: add option UseSmearedJets that does only the
+	jet and met and assume the jets are from the smearing tool
+	* ZeroLeptonSR, ZeroLeptonCRWT and PhysObjProxyFiller: add suffix
+	variable to be able to point to smeared quantities
+	* zlQCDSeeds.config: add to list of container saved
+	* zlQCDSmear.config: adapted to new ZeroLeptonDataDrivenQCD
+
+24-Sep-2014: Laurent Duflot
+	* zlQCDSeeds.config: fix typo and update list of output containers so
+	that zlQCDSmear.config can be used on the output
+	* INSTALL: update instructions to switch to SUSYTool-00-05-09
+	* tagged as ZeroLeptonRun2-00-00-07
+
+20-Sep-2014: Laurent Duflot
+	* add PrintEvent for simple event printouts
+
+19-Sep-2014: Laurent Duflot
+	* ZeroLeptonDataDrivenQCD: apply METrebuilder and save smeared jets
+	and corresponding MET.
+
+10-Sep-2014: Laurent Duflot
+	* add ZeroLeptonDataDrivenQCD: work in progress on QCD smearing
+	* add QCDSeedSelection from Run 1 code
+	* Makefile.RootCore: add dependecy on JetSmearing
+
+05-Sep-2014: Laurent Duflot
+	* ZeroLeptonSR, ZeroLeptonCRWT: add protections for real data processing
+
+02-Sep-2014: Laurent Duflot
+	* adapt to SUSYTools-00-05-00-06
+	* tag as ZeroLeptonRun2-00-00-06
+
+21-Aug-2014: Laurent Duflot
+	* adapt to SUSYTools-00-05-00-05
+	* tag as ZeroLeptonRun2-00-00-05
+
+21-Aug-2014: Laurent Duflot
+	* add JobBookeeping: event/sum weight histogram counters, keep trace
+	of files processed with GUID (if pfc2txt.py was run on the
+	PoolFileCatalog.xml) and number of events read.
+	* MCInfoProcessor: remove histogram counters (now in JobBookeeping)
+	* launch_jobs_on_grid.py: add pfc2txt.py to the commands on the
+	worker node
+	* tagged as ZeroLeptonRun2-00-00-04
+
+20-Aug-2014: Laurent Duflot
+	* launch_jobs_on_grid.py: add protections for empty lines in inDSFile
+	* add pfc2txt.py: transform PoolFileCatalog.xml in a ascci file with
+	"logical-file-name guid" on each line. To be used in bookeeping.
+
+19-Aug-2014: Laurent Duflot
+	* PhysObjProxyFiller: change jet pT cut to <= in order to match
+	SUSYObjDef_xAOD
+
+18-Aug-2014: Laurent Duflot
+	* add README
+	* launch_jobs_on_grid.py: fix command for --signal option
+	* makeDatasetList.py: helpful message if user forgot to setup PyAMI
+	* INSTALL: drop xAODRootAccess trunk
+
+14-Aug-2014: Laurent Duflot
+	* Counter: implement cut text as separate vector<> and not histogram
+	labels in order to be safe when doing hadd (cut text is lost though)
+	* MCInfoProcessor: add histogram to count #of events and sum of
+	generator weights
+	* FilterUpdateMerge.py: merge histograms for counters
+
+13-Aug-2014: Laurent Duflot
+	* launch_jobs_on_grid.py: skip lines starting with a # in the --inDSfile
+	option. Use also tmpDir for tarball.
+	* add makeDatasetList.py to make list of datasets for analysis from AMI
+
+12-Aug-2014: Laurent Duflot
+	* ZeroLeptonNTVars: remove NTVars::Copy() add NTVarsRead as helper to
+	read small-ntuples
+	* add FilterUpdateMerge C++ code for small-tuple filtering, updating
+	and merging
+	* add FilterUpdateMerge.py : steering python script for small-ntuple merging
+	* import Run1 MCSampleList.py as mc12_8TeV_MCSampleList.py
+
+09-Aug-2014: Laurent Duflot
+	* BuildSUSYObjects: fix memory leak
+
+07-Aug-2014: Laurent Duflot
+	* PhysObjProxyUtils: add chfTileVeto()
+	* ZeroLeptonUtils: add trackMET()
+	* cafe.config: point to files only via ${ROOTCOREBIN}/data/<package>
+
+06-Aug-2014: Laurent Duflot
+	* MCInfoProcessor: add calculation of hard process for signal
+	* Counter: remove pdf and vertex counters, fixed number of bins for
+	signal counters based on SUSY::finalState range
+
+05-Aug-2014: Laurent Duflot
+	* rename SUSYxxx to ZeroLeptonxxx
+	* update config file to point to good input files
+	* switch to release rc 2.0.6
+	* add ZeroLeptonCRWT and update config file accordingly
+
+04-Aug-2014: Laurent Duflot
+	* add ZeroLeptonUtils
+	* ZeroLeptonSR: negative cell cleaning
+	* convert code to release 2.0.5 and head of SUSYTools branch
+
+01-Aug-2014: Laurent Duflot
+	* add Counter
+	* BuildSUSYObjects: no eta cut on jets
+
+31-Jul-2014: Laurent Duflot
+	* ZeroLeptonSR: minDphi, Meff, ISR variables, MT2
+	* PhysObjProxyUtils: SmallestDphi, Meff, GetAlphaISRVar,
+	GetMinPtDistinctionISR, GetMinDeltaFraction, GetMinRapidityGap,
+	GetMaxRapidityOtherJets, GetdPhiJetMet, GetISrJet, MT2
+	* add config/cafe.config as an example config file
+
+30-Jul-2014: Laurent Duflot
+	* PileUpRWProcessor: add explicit support for DC14 8 TeV MC
+	* PhysObjProxyUtils: add isbadMETmuon(), CosmicMuon(), badTileVeto()
+	* ZeroLeptonSR: vertex cut, bad muon for MET cut, bad tile cut, cosmic
+	muon cut, genWeight
+	* PhysObjProxies: add isCosmic for muons
+	* add MCInfoProcessor to compute MC cross-section normalisation (and lateer hardproc/TrueTopo)
+	* add data/MCBackgroundDB.dat with Run1 background sample with sumweights
+
+29-Jul-2014: Laurent Duflot
+	* add directory data and cut text file
+	* import SUSYCutVal, SUSYCxxUtils and SUSYParamFile from Run 1 code
+	* add PhysObjProxyUtils, PileUpRWProcessor
+	* BuildSUSYObjects: add missing ET (need fix in SUSYTools)
+
+28-Jul-2014: Laurent Duflot
+	* add PhysObjProxies and PhysObjProxyFiller
+
+24-Jul-2014: Laurent Duflot
+	* add BuildSUSYObjects that runs SUSYTools on standard physics objects
+
+23-Jul-2014: Laurent Duflot
+	* add IsData to act as a switcher for data/MC events and can enforce
+	that the event is of the expected type
+
+21-Jul-2014  Laurent Duflot
+	* add MCeventVeto / MCEventVetoHelper for event veto based on truth
+	level event properties.
+	* add GRLProcessor
+
+17-Jul-2014 Laurent Duflot
+	* add DetectorQuality for event veto based on detector status
+	* add ZeroLeptonRunPeriod to define data run periods.

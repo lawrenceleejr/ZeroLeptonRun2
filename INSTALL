@@ -1,0 +1,71 @@
+
+setupATLAS # or equivalent on your machine
+rcSetup Base,2.0.22
+
+
+## the code for ZeroLeptonRun2 is at
+## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
+# to get the trunk
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2/trunk ZeroLeptonRun2
+# to get a specific tag
+#svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2/tags/ZeroLeptonRun2-00-00-XX ZeroLeptonRun2
+
+## additional packages needed
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-04 cafe
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
+
+svn co svn+ssh://svn.cern.ch/reps/atlas-khoo/khoo/OxbridgeKinetics/tags/OxbridgeKinetics-00-00-02 OxbridgeKinetics
+# change ROOTCOREDIR to ROOTCOREBIN in OxbridgeKinetics/cmt/precompile.RootCore  and remove OxbridgeKinetics/Root/LinkDef.h
+
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-16 SUSYTools
+# in SUSYTools/cmt/Makefile.RootCore remove the right hand side of
+#PACKAGE_CXXFLAGS = 
+# i.e. leave PACKAGE_CXXFLAGS empty
+
+#
+# the following is from SUSYTools/README
+#
+rc checkout_pkg $SVNOFF/Event/xAOD/xAODMissingET/tags/xAODMissingET-00-01-13
+rc checkout_pkg $SVNOFF/Reconstruction/MET/METInterface/tags/METInterface-00-01-02
+rc checkout_pkg $SVNOFF/Reconstruction/MET/METUtilities/tags/METUtilities-00-01-11-01
+rc checkout_pkg $SVNOFF/Reconstruction/Jet/JetCalibTools/tags/JetCalibTools-00-04-20
+rc checkout_pkg $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorrection/tags/ElectronEfficiencyCorrection-00-01-13
+rc checkout_pkg $SVNOFF/InnerDetector/InDetRecTools/InDetTrackSelectionTool/tags/InDetTrackSelectionTool-00-01-10
+rc checkout_pkg $SVNOFF/Reconstruction/EventShapes/EventShapeTools/tags/EventShapeTools-00-01-03 # (needs patching)
+#
+# Patches needed:
+#
+# Lines 78-88 of EventShapeTools/Root/EventShapeCopier.cxx
+# Replace:  
+#    kt4copier.setProperty("InputEventShape", "LCTopoEventShape");
+#    kt4copier.setProperty("OutputEventShape", "Kt4LCTopoEventShape");
+#    kt4copier.setProperty("EventDensityName", "DensityForJetsR4");
+#
+#    kt6copier.setProperty("InputEventShape", "LCTopoEventShape");
+#    kt6copier.setProperty("OutputEventShape", "Kt6LCTopoEventShape");
+#    kt6copier.setProperty("EventDensityName", "DensityForJetsR6");    
+#    needinit = false;
+#  }
+#  kt4copier.fillEventShape();
+#  kt6copier.fillEventShape();
+# by: 
+#    kt4copier.setProperty("InputEventShape", "LCTopoEventShape").ignore();
+#    kt4copier.setProperty("OutputEventShape", "Kt4LCTopoEventShape").ignore();
+#    kt4copier.setProperty("EventDensityName", "DensityForJetsR4").ignore();
+#
+#    kt6copier.setProperty("InputEventShape", "LCTopoEventShape").ignore();
+#    kt6copier.setProperty("OutputEventShape", "Kt6LCTopoEventShape").ignore();
+#    needinit = false;
+#  }
+#  kt4copier.fillEventShape().ignore();
+#  kt6copier.fillEventShape().ignore();
+#
+
+
+# compile
+rc find_packages
+rc compile
+
+# for future session, one only needs to
+#setupATLAS
+#source rcSetup.sh
