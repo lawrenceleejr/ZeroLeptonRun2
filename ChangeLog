@@ -1,3 +1,9 @@
+13-Mar-2015 Laurent Duflot 
+	* tag ZeroLeptonRun2-00-00-21
+
+13-Mar-2015 Nikola Makovec
+	* ZeroLeptonSR: fix razor variables calculation
+
 25-Feb-2015 Laurent Duflot
 	* makeSignalPicklePoint: add the GG_onestepCC mchi=25 points
 
