@@ -49,6 +49,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
   m_SUSYObjTool->setProperty("IsData",(int)m_IsData);
   m_SUSYObjTool->setProperty("IsAtlfast",(int)m_IsAtlfast);
+  m_SUSYObjTool->setProperty("METTauTerm","");
 
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
