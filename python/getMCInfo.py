@@ -133,7 +133,13 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & k-factor & $N_{gen}$
             line=str(channel)+" "+str(xsecDB.name(channel))+" "+str(xsecDB.rawxsect(channel))+" "+str(xsecDB.kfactor(channel))+" "+str(xsecDB.efficiency(channel))+" "+str(xsecDB.rel_uncertainty(channel))+" "+str(info[1])+" "+str(info[0])#not very optimal
             #print line
             f.write(line+"\n")
-            lint = info[1] / (xsecDB.rawxsect(channel) * xsecDB.efficiency(channel) * xsecDB.kfactor(channel) * 1000.)
+            if  channel == 110070 or channel == 110071 :
+                # Powheg weighted events, sum(weight) = xsec independent of
+                # number of generated events so use number of generated events
+                # as an approximation of the statistics
+                lint = info[0] / (xsecDB.rawxsect(channel) * xsecDB.efficiency(channel) * xsecDB.kfactor(channel) * 1000.)
+            else:
+                lint = info[1] / (xsecDB.rawxsect(channel) * xsecDB.efficiency(channel) * xsecDB.kfactor(channel) * 1000.)
             ftex.write("%d & %s & %.3g & %3.2f & %d & %.4g & %.3g \\\\\n" % (channel,xsecDB.name(channel).replace('_','\_'),xsecDB.rawxsect(channel) * xsecDB.efficiency(channel),xsecDB.kfactor(channel),info[0],info[1],lint))
             #print channel," 0 ",info[1]
             pass
@@ -180,7 +186,7 @@ def parseCmdLine(args):
     parser = OptionParser()
     parser.add_option("--histname", dest="histname", help="histogram name containing stat and suw weight information",
                       default="Counter_JobBookeeping_JobBookeeping")
-    parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_8TeV.txt")
+    parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_13TeV.txt")
     parser.add_option("--input", dest="inputfilename", help="List of input filenames", default="")
     parser.add_option("--output", dest="outputfilename", help="output filename", default="MCBackgroundDB.dat")
     parser.add_option("--no", dest="NB", help="position of mc_channel_id in the string (splitted by the character '.')", default=3)
