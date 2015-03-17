@@ -35,12 +35,13 @@ void PhysObjProxyFiller::FillJetProxies(std::vector<JetProxy>& good_jets,
   for ( xAOD::JetContainer::const_iterator it = jets->begin();
 	it != jets->end(); ++it ){
     //std::cout << " SUSY jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << std::endl;
-    if ( std::abs((*it)->eta()) > 2.8 ) continue; // no longer in SUSYTools 
     if ( (*it)->pt() <= m_jetPtCut ) continue;
     if ( ! (*it)->auxdecor<bool>("passOR") ) continue;
     if ( ! (*it)->auxdecor<bool>("bad")  ) {
-      good_jets.push_back(JetProxy(*it));
-      if ( (*it)->auxdecor<bool>("bjet") ) b_jets.push_back(JetProxy(*it));
+      if ( std::abs((*it)->eta()) < 2.8 ) {
+	good_jets.push_back(JetProxy(*it));
+	if ( (*it)->auxdecor<bool>("bjet") ) b_jets.push_back(JetProxy(*it));
+      }
     }
     else {
       bad_jets.push_back(JetProxy(*it));
