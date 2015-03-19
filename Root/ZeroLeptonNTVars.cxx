@@ -164,6 +164,32 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("RTjetM")->SetAddress(&p_RTjetM);
 }
 
+std::string NTCRWTVars::toString()
+{ 
+  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F"); 
+  //return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:lep1Iso/F:lep1DRjet/F:lep1jetJVF/F"); 
+}
+
+void NTCRWTVars::Reset()
+{
+  lep1Pt = lep1Eta = lep1Phi = 0.f;
+  lep1sign = 0;
+  mt = 0.f;
+  Wpt = 0.f;
+  //leptonWeight     = 1.f;
+  //leptonWeightUp   = 1.f;  
+  //leptonWeightDown = 1.f;
+  //triggerWeight     = 1.f;
+  //triggerWeightUp   = 1.f;
+  //triggerWeightDown = 1.f;
+  //lep1Iso = 0.f;
+  //lep1DRjet = 999.f;
+  //lep1jetJVF = -999.f;
+}
+  
+
+
+
 std::string NTCRZVars::toString()
 { 
   return std::string("lep1Pt/F:lep2Pt/F:lep1Eta/F:lep2Eta/F:lep1Phi/F:lep2Phi/F:lep1sign/I:lep2sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1Iso/F:lep2Iso/F:lep1DRjet/F:lep2DRjet/F:lep1jetJVF/F:lep2jetJVF/F"); 

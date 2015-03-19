@@ -1,4 +1,13 @@
-13-Mar-2015 Laurent Duflot 
+19-Mar-2015 Laurent Duflot
+	* ZeroLeptonCRWT, ZeroLeptonNTVars: fill CRWT specific variables
+
+17-Mar-2015 Laurent Duflot
+	* BuildSUSYObject: set SUSYObjDef tau term to blank to remote taus from MET
+	* PhysObjProxyFiller: Eta cut at 2.8 only applies to good jets
+	* getMCInfo.py: point by default to the 13TeV cross-section file
+	* makeDatasetList.py: add qL->h in signal samples
+
+13-Mar-2015 Laurent Duflot
 	* tag ZeroLeptonRun2-00-00-21
 
 13-Mar-2015 Nikola Makovec

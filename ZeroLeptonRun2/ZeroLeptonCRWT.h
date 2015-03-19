@@ -11,6 +11,8 @@
 #include "ZeroLeptonRun2/Counter.h"
 
 class TTree;
+class TLorentzVector;
+class TVector2;
 
 #include <string>
 #include <map>
@@ -27,6 +29,8 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
+  void FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& met, int lepsign);
+
 
   TTree* m_tree;
   std::string m_stringRegion;
@@ -44,6 +48,7 @@ private:
   NTExtraVars m_extrantv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;
+  NTCRWTVars m_crwtntv;
 
   std::string m_suffix;
   PhysObjProxyFiller* m_physobjsFiller;

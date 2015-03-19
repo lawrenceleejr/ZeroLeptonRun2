@@ -162,32 +162,18 @@ class NTCRWTVars
 {
  public:
   NTCRWTVars() { Reset(); }
-  
-  void Reset()
-  {
-    lep1Pt = lep1Eta = lep1Phi = 0.f;
-    lep1sign = 0;
-    mt = 0.f;
-    Wpt = 0.f;
-    leptonWeight     = 1.f;
-    leptonWeightUp   = 1.f;  
-    leptonWeightDown = 1.f;
-    triggerWeight     = 1.f;
-    triggerWeightUp   = 1.f;
-    triggerWeightDown = 1.f;
-    lep1Iso = 0.f;
-    lep1DRjet = 999.f;
-    lep1jetJVF = -999.f;
-  }
+
+  static std::string toString();
+  void Reset();
   
   float lep1Pt, lep1Eta, lep1Phi;
   int lep1sign;
   float mt, Wpt;
-  float leptonWeight, leptonWeightUp, leptonWeightDown;
-  float triggerWeight, triggerWeightUp, triggerWeightDown;
-  float lep1Iso;
-  float lep1DRjet;
-  float lep1jetJVF;
+  //float leptonWeight, leptonWeightUp, leptonWeightDown;
+  //float triggerWeight, triggerWeightUp, triggerWeightDown;
+  //float lep1Iso;
+  //float lep1DRjet;
+  //float lep1jetJVF;
 };
 
 class NTCRYVars
@@ -305,6 +291,11 @@ inline void bookNTTheoryVars(TTree* tree, NTTheoryVars& theoryntv)
 inline void bookNTISRVars(TTree* tree, NTISRVars& isrntv)
 {
   tree->Branch("NTISRVars",&isrntv,NTISRVars::toString().c_str());
+}
+
+inline void bookNTCRWTVars(TTree* tree, NTCRWTVars& crwtntv)
+{
+  tree->Branch("NTCRWTVars",&crwtntv,NTCRWTVars::toString().c_str());
 }
 
 

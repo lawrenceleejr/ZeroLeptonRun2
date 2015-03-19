@@ -9,6 +9,8 @@
 #include "xAODRootAccess/TStore.h"
 #include "xAODTracking/Vertex.h"
 #include "xAODEventInfo/EventInfo.h"
+#include "xAODEgamma/Electron.h"
+#include "xAODMuon/Muon.h"
 #include "PATInterfaces/SystematicSet.h"
 #include "cafe/Processor.h"
 #include "cafe/Controller.h"
@@ -85,6 +87,7 @@ TTree* ZeroLeptonCRWT::bookTree(const std::string& treename)
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
   bookNTReclusteringVars(tree,m_RTntv);
+  bookNTCRWTVars(tree,m_crwtntv);
   return tree;
 }
 
@@ -295,6 +298,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   }
   bool oneLepton = false;
   TLorentzVector leptonTLV;
+  int leptonCharge = 0;
   if ( m_isMuonChannel && 
        isolated_baseline_muons.size()==1 && 
        isolated_signal_muons.size()==1 && 
@@ -303,6 +307,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
        isolated_baseline_electrons.size()==0 ) {
     oneLepton = true;
     leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[0])));
+    leptonCharge = (int)(isolated_signal_muons[0].muon()->charge());
   } 
   else if (  m_isElectronChannel && 
              isolated_baseline_electrons.size()==1 && 
@@ -312,6 +317,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
              isolated_baseline_muons.size()==0) {
     oneLepton = true;
     leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0])));
+    leptonCharge = (int)(isolated_signal_electrons[0].electron()->charge());
   }
   if ( !oneLepton ) return true;
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
@@ -506,6 +512,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.);
     m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
+    FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);
 
     m_tree->Fill();
   }
@@ -520,6 +527,23 @@ void ZeroLeptonCRWT::finish()
   else {
     out() << *m_counter << std::endl;
   }
+}
+
+
+void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& metv, int lepsign)
+{
+  crwtvars.Reset();
+  crwtvars.lep1sign = lepsign;
+  crwtvars.lep1Pt  = lepton.Pt();
+  crwtvars.lep1Eta = lepton.Eta();
+  crwtvars.lep1Phi = lepton.Phi();
+
+  double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
+  crwtvars.mt = std::sqrt(2.*lepton.Pt() * met * (1. - (lepton.Px()*metv.Px() + lepton.Py()*metv.Py())/(lepton.Pt()*met)));
+
+  double wpx = lepton.Px()+metv.Px();
+  double wpy = lepton.Py()+metv.Py();
+  crwtvars.Wpt = std::sqrt(wpx*wpx+wpy*wpy);
 }
 
 ClassImp(ZeroLeptonCRWT);
