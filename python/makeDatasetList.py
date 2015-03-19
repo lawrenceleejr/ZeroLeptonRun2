@@ -13,7 +13,7 @@ except:
 
 
 # List of susy signals
-lsignals = ['Herwigpp_UEEE3_CTEQ6L1_MSUGRA','Herwigpp_UEEE4_CTEQ6L1_Gtt','SM_SS','SM_GG','SM_SG']
+lsignals = ['Herwigpp_UEEE3_CTEQ6L1_MSUGRA','Herwigpp_UEEE4_CTEQ6L1_Gtt','SM_SS','SM_GG','SM_SG','pMSSM_qL_to_h']
 
 # List of keywords used to remove non-used datasets
 filters = ['Pythia_GGM','PG11','DGemt','DGnoL','_Wprime','_Zprime','PythiaB','_3Leptons','LeptonPhotonFilter','ADDGraviton','Sherpa_CT10_SingleTop','BlackMaxPythia8','Charybdis2Pythia8','QBHPythia8','_WimpPair_','_ZH125_','_ggH125_','_VBFH125_','_WH125_','ParticleGenerator_']
