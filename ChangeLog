@@ -1,3 +1,6 @@
+20-Mar-2015 Laurent Duflot
+	* PileUpRWProcessor: also test for run 222250 for 13TeV MC (50ns)
+
 19-Mar-2015 Laurent Duflot
 	* ZeroLeptonCRWT, ZeroLeptonNTVars: fill CRWT specific variables
 

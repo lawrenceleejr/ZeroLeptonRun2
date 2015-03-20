@@ -62,7 +62,7 @@ bool PileUpRWProcessor::processEvent(xAOD::TEvent& event)
   else runnumber = (int)eventInfo->runNumber();
 
   // no reweighting for mc14_13TeV
-  if ( runnumber != 222222) {
+  if ( runnumber != 222222  && runnumber != 222250) {
     if ( !m_PileupTool_CENTRAL->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
     if ( !m_PileupTool_UP->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
     if ( !m_PileupTool_DOWN->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
