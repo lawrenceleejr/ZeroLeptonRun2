@@ -141,11 +141,37 @@ class Sample:
         ftemp.Close()
         return copy.deepcopy(mykeys)
 
-    def MergeCounters(self,outFile,inFiles):
+    def extractChannelFromFilename(self,filename):
+        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.', 'mc14_13TeV.'):
+            if prefix in filename:
+                return int(filename.split(prefix)[1].split('.')[0])
+        return None
+
+    def normWeight(self,filename,xsecDB,isSignal):
+        if isSignal: return 1.
+
+        ds = self.extractChannelFromFilename(filename)
+        if not ds:
+            print 'Could not identify channel number for ',filename
+            sys.exit(1)
+            
+        xsec = xsecDB.xsectTimesEff(ds)
+        sumW = 0.
+        if ds >= 147910 and ds <= 147917:
+            sumW = xsecDB.process(ds).stat()
+        else:
+            sumW = xsecDB.sumweight(ds)
+
+        if sumW != 0: return xsec/sumW
+        return 0.
+
+
+    def MergeCounters(self,outFile,inFiles,xsecDB,isSignal):
         """Merge histrograms corresponding to counters"""
         if len(inFiles) == 0: return
 
         # get the list of histograms from the first file
+        scale = self.normWeight(inFiles[0],xsecDB,isSignal)
         ftemp = ROOT.TFile.Open(inFiles[0])
         if not ftemp or ftemp.IsZombie():
             print 'Could not open input file ',inFiles[0]
@@ -161,6 +187,7 @@ class Sample:
             hkeys.append(kname)
             outobj = obj.Clone()
             outobj.SetDirectory(outFile)
+            outobj.Scale(scale)
             outhists[kname] = outobj
         ftemp.Close()
         del ftemp
@@ -172,17 +199,22 @@ class Sample:
             if not ftemp or ftemp.IsZombie():
                 print 'Could not open input file ',fname
                 sys.exit(1)
+            scale = self.normWeight(fname,xsecDB,isSignal)
             for k in hkeys:
                 h = ftemp.Get(k)
                 if not h:
                     print 'Could not extract histogram',k,'in file',fname
                     sys.exit(1)
-                outhists[k].Add(h)
+                outhists[k].Add(h,scale)
                 pass
             ftemp.Close()
             del ftemp
         outFile.cd()
         for h in outhists.itervalues():
+            if not isSignal:
+                # number of events and sum weight no longer have meanings for merged and normalized counters
+                h.SetBinContent(1,0.)
+                h.SetBinContent(2,0.)
             h.Write()
         pass
 
@@ -204,7 +236,7 @@ class Sample:
         else:
             newfile = ROOT.TFile.Open(mergename,"RECREATE")
 
-        self.MergeCounters(newfile, self.files)
+        self.MergeCounters(newfile, self.files,xsecDB,isSignal)
 
         # Build a list of output trees and files that should be merged into it
         # Needed for signal grid as we have one tree name per mc channel
@@ -218,9 +250,7 @@ class Sample:
                 if self.config.doQCD or self.config.doData: 
                     ds = 1
                 else:
-                    for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.', 'mc14_13TeV.'):
-                        if prefix in filename:
-                            ds = int(filename.split(prefix)[1].split('.')[0])
+                    ds = self.extractChannelFromFilename(filename)
                 if not ds:
                     print 'Could not identify channel number for ',filename
                     sys.exit(1)
