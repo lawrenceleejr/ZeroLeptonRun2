@@ -1,5 +1,6 @@
 30-Mar-2015 Laurent Duflot
 	* FilterUpdateMerge.py: merge counters with luminosity/xsection weights
+	* tag ZeroLeptonRun2-00-00-22
 
 20-Mar-2015 Laurent Duflot
 	* PileUpRWProcessor: also test for run 222250 for 13TeV MC (50ns)
