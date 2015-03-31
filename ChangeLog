@@ -1,4 +1,8 @@
 31-Mar-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-20 --> no change on ref ttbar sample
+	* revision 
+
+31-Mar-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-19 --> few % on ref ttbar sample
 	* ZeroLeptonRunPeriod: add p13tev
 	* ZeroLeptonSR, ZeroLeptonCRWT: make p13tev the default period,

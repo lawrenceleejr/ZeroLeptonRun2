@@ -14,7 +14,7 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/Zero
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-05 cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-19 SUSYTools
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-20 SUSYTools
 # in SUSYTools/cmt/Makefile.RootCore remove the right hand side of
 #PACKAGE_CXXFLAGS = 
 # i.e. leave PACKAGE_CXXFLAGS empty
@@ -58,6 +58,7 @@ rc checkout_pkg $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorre
 #  kt4copier.fillEventShape().ignore();
 #  kt6copier.fillEventShape().ignore();
 #
+
 
 
 
