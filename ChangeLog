@@ -1,3 +1,6 @@
+31-Mar-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-17 --> no change on ref ttbar sample
+
 30-Mar-2015 Laurent Duflot
 	* FilterUpdateMerge.py: merge counters with luminosity/xsection weights
 	* tag ZeroLeptonRun2-00-00-22
