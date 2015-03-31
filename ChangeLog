@@ -6,7 +6,7 @@
 	* PhysObjProxyUtils: remove mT2 calculation
 	* Makefile.RootCore: remove OxbridgeKinetics
 	* BuildSUSYObjects: b-tagging depends on run period
-	* revision 658233
+	* revision 658235
 
 31-Mar-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-17 --> no change on ref ttbar sample
