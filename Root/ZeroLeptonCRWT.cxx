@@ -57,7 +57,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   }
   m_UseSystematics = config.get("UseSystematics",false);
 
-  m_period = periodFromString(config.get("Period","p8tev"));
+  m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRWT does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRWT: invalid run period specified"));
 
@@ -487,9 +487,9 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
 
   double mT2=-9; 
-  if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
+  //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
   double mT2_noISR=-9;
-  if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETPrime); 
+  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETPrime); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
 

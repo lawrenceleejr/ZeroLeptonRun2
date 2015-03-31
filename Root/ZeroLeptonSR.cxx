@@ -40,7 +40,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_UseSystematics = config.get("UseSystematics",false);
-  m_period = periodFromString(config.get("Period","p8tev"));
+  m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonSR: invalid run period specified"));
 
@@ -390,9 +390,9 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
 
   double mT2=-9; 
-  if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingET);
+  //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingET);
   double mT2_noISR=-9;
-  if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
+  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
 
