@@ -3,7 +3,7 @@
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
 #include "xAODJet/Jet.h"
 #include "TLorentzVector.h"
-#include "OxbridgeKinetics/OKTwoParents.h"
+//#include "OxbridgeKinetics/OKTwoParents.h"
 
 #include "ZeroLeptonRun2/Sphericity.h"
 
@@ -313,7 +313,7 @@ void PhysObjProxyUtils::RazorVariables(const std::vector<JetProxy>& jets,
 
  }
 
-
+/*
 double PhysObjProxyUtils::MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const
 {
   double mT2=0;
@@ -336,7 +336,7 @@ double PhysObjProxyUtils::MT2(const std::vector<JetProxy>& jets,const TVector2& 
     
   return mT2;    
 }
-
+*/
 
 void PhysObjProxyUtils::GetAlphaISRVar(const std::vector<JetProxy>& jets, double met, std::vector<double>& alpha_vec) const
 {

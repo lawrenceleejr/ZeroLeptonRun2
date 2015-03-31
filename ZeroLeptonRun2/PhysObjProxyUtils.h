@@ -73,7 +73,7 @@ class PhysObjProxyUtils
 			double &Eleg2, 
 			double &costhetaRp1);
   
-  double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
+  //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
 
   bool CosmicMuon(const std::vector<MuonProxy>& muons) const;
 
