@@ -2,6 +2,7 @@
 #define ZeroLeptonRun2_BuildSUSYObjects_H_
 
 #include "cafe/Processor.h"
+#include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 namespace ST{
   class SUSYObjDef_xAOD;
 }
@@ -34,6 +35,7 @@ private:
 
   std::string m_jetkey; 
   std::string m_suffix;
+  ZeroLeptonRunPeriod m_period;
 public:
   ClassDef(BuildSUSYObjects,0);
 };
