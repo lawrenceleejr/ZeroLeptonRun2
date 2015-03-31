@@ -1,5 +1,15 @@
 31-Mar-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-19 --> few % on ref ttbar sample
+	* ZeroLeptonRunPeriod: add p13tev
+	* ZeroLeptonSR, ZeroLeptonCRWT: make p13tev the default period,
+	remove mT2 from OxbridgeKinetics
+	* PhysObjProxyUtils: remove mT2 calculation
+	* Makefile.RootCore: remove OxbridgeKinetics
+	* BuildSUSYObjects: b-tagging depends on run period
+
+31-Mar-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-17 --> no change on ref ttbar sample
+	* revision 658149
 
 30-Mar-2015 Laurent Duflot
 	* FilterUpdateMerge.py: merge counters with luminosity/xsection weights
