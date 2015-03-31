@@ -33,7 +33,8 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_UseSmearedJets(false),
     m_UseSystematics(false),
     m_jetkey(),
-    m_suffix()
+    m_suffix(),
+    m_period(INVALID)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -43,6 +44,8 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_UseSmearedJets = config.get("UseSmearedJets",false);
   m_UseSystematics = config.get("UseSystematics",false);
   if ( m_UseSmearedJets && m_UseSystematics ) throw std::logic_error("Cannot use jet smearing and systematics variations at the same time");
+  m_period = periodFromString(config.get("Period","p13tev"));
+  if ( m_period == p7tev ) throw(std::domain_error("BuildSUSYObjects does not support the 7tev run period"));
 
 
   m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
@@ -139,7 +142,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillJet(**jet_itr, 20000., 10.).isSuccess() ) throw std::runtime_error("Error in FillJet");    
 
     }
-    m_SUSYObjTool->IsBJet(**jet_itr);
+    if ( m_period == p8tev ) {
+      m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
+    }
+    else if ( m_period == p13tev ) {
+      m_SUSYObjTool->IsBJet(**jet_itr,true,0.7892);
+    }
+
     //out() << "pt " << (*jet_itr)->pt() << " baseline " << (int)((*jet_itr)->auxdecor<bool>("baseline")) << " bad " << (int)((*jet_itr)->auxdecor<bool>("bad")) << " bjet " << (int)((*jet_itr)->auxdecor<bool>("bjet")) <<  " container " << (*jet_itr)->container() << std::endl;
 
 
