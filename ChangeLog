@@ -1,5 +1,10 @@
 01-Apr-2015 Laurent Duflot
-	* adapt to SUSYTools-00-05-23
+	* adapt to SUSYTools-00-05-25 --> few permil on ref ttbar sample
+	* launch_jobs_on_grid.py: extract run period from input dataset
+	* tag ZeroLeptonRun2-00-00-23
+
+01-Apr-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-23 --> few % on ref ttbar sample
 	* PileUpRWProcessor, BuildSUSYObjects, ZeroLeptonDataDrivenQCD, ZeroLeptonSystVariations: change record<blah>(blah*) to record(blah*)
 	* revision 658398
 
