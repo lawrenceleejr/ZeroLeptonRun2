@@ -89,7 +89,7 @@ bool ZeroLeptonSystVariations::processEvent(xAOD::TEvent& event)
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
   CP::SystematicSet* currentSyst = new CP::SystematicSet();
-  if ( ! store->record<CP::SystematicSet>(currentSyst,"CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not record CurrentSystematicSet");
+  if ( ! store->record(currentSyst,"CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not record CurrentSystematicSet");
 
   // counters
   int incr=0;

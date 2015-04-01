@@ -238,10 +238,10 @@ bool ZeroLeptonDataDrivenQCD::processEvent(xAOD::TEvent& event)
     throw std::runtime_error("Could not retrieve JetContainer with key "+m_jetkey);
   }
   std::pair< xAOD::JetContainer*, xAOD::ShallowAuxContainer* > smearedjets = xAOD::shallowCopyContainer( *originaljets );
-  if ( ! store->record<xAOD::JetContainer>(smearedjets.first,"SUSYJets_smeared").isSuccess() ) {
+  if ( ! store->record(smearedjets.first,"SUSYJets_smeared").isSuccess() ) {
     throw std::runtime_error("Could not store SUSYJets_smeared");
   }
-  if ( ! store->record<xAOD::ShallowAuxContainer>(smearedjets.second,"SUSYJets_smearedAux.").isSuccess() ) {
+  if ( ! store->record(smearedjets.second,"SUSYJets_smearedAux.").isSuccess() ) {
     throw std::runtime_error("Could not store SUSYJets_smearedAux.");
   }
   // fix links to containers to please METrebuilder

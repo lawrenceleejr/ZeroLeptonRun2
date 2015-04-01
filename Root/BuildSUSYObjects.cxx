@@ -122,10 +122,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not retrieve JetContainer with key "+m_jetkey);
     }
     std::pair< xAOD::JetContainer*, xAOD::ShallowAuxContainer* > susyjets = xAOD::shallowCopyContainer( *inputjets );
-    if ( ! store->record<xAOD::JetContainer>(susyjets.first,"SUSYJets"+m_suffix).isSuccess() ) {
+    if ( ! store->record(susyjets.first,"SUSYJets"+m_suffix).isSuccess() ) {
       throw std::runtime_error("Could not store SUSYJets"+m_suffix);
     }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susyjets.second,"SUSYJets"+m_suffix+"Aux.").isSuccess() ) {
+    if ( ! store->record(susyjets.second,"SUSYJets"+m_suffix+"Aux.").isSuccess() ) {
       throw std::runtime_error("Could not store SUSYJets"+m_suffix+"Aux.");
     }
     outputjets = susyjets.first;
@@ -157,7 +157,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   }
 
   /*
-  if ( ! store->record<xAOD::ShallowAuxContainer>(susyjets.second,"SUSYJetsAux"+m_suffix).isSuccess()) {
+  if ( ! store->record(susyjets.second,"SUSYJetsAux"+m_suffix).isSuccess()) {
     throw std::runtime_error("Could not store SUSYJetsAux");
   }
   */
@@ -198,10 +198,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       //    << " " << (*mu_itr)->phi() << std::endl;
     }
     
-    if ( ! store->record<xAOD::MuonContainer>(susymuons.first,"SUSYMuons").isSuccess() ) {
+    if ( ! store->record(susymuons.first,"SUSYMuons").isSuccess() ) {
       throw std::runtime_error("Could not store SUSYMuons");
     }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susymuons.second,"SUSYMuonsAux.").isSuccess()) {
+    if ( ! store->record(susymuons.second,"SUSYMuonsAux.").isSuccess()) {
       throw std::runtime_error("Could not store SUSYMuonsAux.");
     }
   }
@@ -229,10 +229,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       m_SUSYObjTool->IsSignalElectron(**el_itr);
     }
 
-    if ( ! store->record<xAOD::ElectronContainer>(susyelectrons.first,"SUSYElectrons").isSuccess() ) {
+    if ( ! store->record(susyelectrons.first,"SUSYElectrons").isSuccess() ) {
       throw std::runtime_error("Could not store SUSYElectrons");
     }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susyelectrons.second,"SUSYElectronsAux.").isSuccess()) {
+    if ( ! store->record(susyelectrons.second,"SUSYElectronsAux.").isSuccess()) {
       throw std::runtime_error("Could not store SUSYElectronsAux.");
     }
   }
@@ -261,10 +261,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillPhoton(**ph_itr).isSuccess() ) throw std::runtime_error("Error in FillPhoton");
     }
 
-    if ( ! store->record<xAOD::PhotonContainer>(susyphotons.first,"SUSYPhotons").isSuccess() ) {
+    if ( ! store->record(susyphotons.first,"SUSYPhotons").isSuccess() ) {
       throw std::runtime_error("Could not store SUSYPhotons");
     }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susyphotons.second,"SUSYPhotonsAux.").isSuccess()) {
+    if ( ! store->record(susyphotons.second,"SUSYPhotonsAux.").isSuccess()) {
       throw std::runtime_error("Could not store SUSYPhotonsAux.");
     }
   }
@@ -290,10 +290,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
     }
     
-    if ( ! store->record<xAOD::TauJetContainer>(susytaus.first,"SUSYTaus").isSuccess() ) {
+    if ( ! store->record(susytaus.first,"SUSYTaus").isSuccess() ) {
       throw std::runtime_error("Could not store SUSYTaus");
     }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susytaus.second,"SUSYTausAux.").isSuccess()) {
+    if ( ! store->record(susytaus.second,"SUSYTausAux.").isSuccess()) {
       throw std::runtime_error("Could not store SUSYTausAux.");
     }
   }
@@ -325,7 +325,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   xAOD::MissingETContainer::const_iterator met_it = rebuiltmetc->find("Final");
   if ( met_it == rebuiltmetc->end() ) throw std::runtime_error("Could not find Final MET after running  GetMET");
   MissingET->Set((*met_it)->mpx(), (*met_it)->mpy());
-  if ( ! store->record<TVector2>(MissingET,"SUSYMET"+m_suffix).isSuccess() ) {
+  if ( ! store->record(MissingET,"SUSYMET"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not store SUSYMET");
   }
 

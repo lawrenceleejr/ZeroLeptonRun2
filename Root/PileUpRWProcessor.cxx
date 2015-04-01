@@ -75,7 +75,7 @@ bool PileUpRWProcessor::processEvent(xAOD::TEvent& event)
   //std::cout << "Pileup weights " << pileupWeight->at(0) << " " << pileupWeight->at(1) << " " << pileupWeight->at(2) << std::endl;
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  RETURN_CHECK("PileUpRWProcessor::processEvent",store->record< std::vector<float> >(pileupWeight,"pileupWeights"));
+  RETURN_CHECK("PileUpRWProcessor::processEvent",store->record(pileupWeight,"pileupWeights"));
 
 
   return true;
