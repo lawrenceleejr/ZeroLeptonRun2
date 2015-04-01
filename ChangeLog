@@ -1,8 +1,12 @@
+01-Apr-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-23
+	* PileUpRWProcessor, BuildSUSYObjects, ZeroLeptonDataDrivenQCD, ZeroLeptonSystVariations: change record<blah>(blah*) to record(blah*)
+	* revision 658396
+
 31-Mar-2015 Laurent Duflot
 	* work in progress to adapt to SUSYTools-00-05-23
 	* BuildSUSYObjects: set the Is8TeV SUSYObjDef property
 	* PhysObjProxies, PhysObjProxyUtils, PhysObjProxyFiller, BuildSUSYObjects: change decorations from bool to char
-	* PileUpRWProcessor, BuildSUSYObjects, ZeroLeptonDataDrivenQCD, ZeroLeptonSystVariations: change record<blah>(blah*) to record(blah*)
 
 
 31-Mar-2015 Laurent Duflot
