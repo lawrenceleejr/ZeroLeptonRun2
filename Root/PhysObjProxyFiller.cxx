@@ -36,11 +36,11 @@ void PhysObjProxyFiller::FillJetProxies(std::vector<JetProxy>& good_jets,
 	it != jets->end(); ++it ){
     //std::cout << " SUSY jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << std::endl;
     if ( (*it)->pt() <= m_jetPtCut ) continue;
-    if ( ! (*it)->auxdecor<bool>("passOR") ) continue;
-    if ( ! (*it)->auxdecor<bool>("bad")  ) {
+    if ( (*it)->auxdecor<char>("passOR") == 0) continue;
+    if ( (*it)->auxdecor<char>("bad") == 0  ) {
       if ( std::abs((*it)->eta()) < 2.8 ) {
 	good_jets.push_back(JetProxy(*it));
-	if ( (*it)->auxdecor<bool>("bjet") ) b_jets.push_back(JetProxy(*it));
+	if ( (*it)->auxdecor<char>("bjet") == 1) b_jets.push_back(JetProxy(*it));
       }
     }
     else {
@@ -70,13 +70,13 @@ void PhysObjProxyFiller::FillElectronProxies(std::vector<ElectronProxy>& baselin
 
   for ( xAOD::ElectronContainer::const_iterator it = electrons->begin();
 	it != electrons->end(); ++it ){
-    //std::cout << " SUSY el " <<  (*it)->pt() << " " << ((*it)->auxdecor<bool>("passOR"))  << " " << ((*it)->auxdecor<bool>("baseline"))  << " " << ((*it)->auxdecor<bool>("signal")) << std::endl;
+    //std::cout << " SUSY el " <<  (*it)->pt() << " " << ((*it)->auxdecor<char>("passOR"))  << " " << ((*it)->auxdecor<char>("baseline"))  << " " << ((*it)->auxdecor<char>("signal")) << std::endl;
     if ( (*it)->pt() < m_elPtCut ) continue;
-    if ( ! (*it)->auxdecor<bool>("baseline") ) continue;
+    if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
     baseline_electrons.push_back(ElectronProxy(*it));
-    if ( (*it)->auxdecor<bool>("passOR") ) {
+    if ( (*it)->auxdecor<char>("passOR") == 1) {
       isolated_baseline_electrons.push_back(ElectronProxy(*it));
-      if ( (*it)->auxdecor<bool>("signal") ) {
+      if ( (*it)->auxdecor<char>("signal") == 1) {
 	isolated_signal_electrons.push_back(ElectronProxy(*it));
       }
     }
@@ -105,13 +105,13 @@ void PhysObjProxyFiller::FillMuonProxies(std::vector<MuonProxy>& baseline_muons,
 
   for ( xAOD::MuonContainer::const_iterator it = muons->begin();
 	it != muons->end(); ++it ){
-    //std::cout << " SUSY muon " <<  (*it)->pt() << " " << ((*it)->auxdecor<bool>("passOR"))  << " " << ((*it)->auxdecor<bool>("baseline"))  << " " << ((*it)->auxdecor<bool>("signal")) << std::endl;
+    //std::cout << " SUSY muon " <<  (*it)->pt() << " " << ((*it)->auxdecor<char>("passOR"))  << " " << ((*it)->auxdecor<char>("baseline"))  << " " << ((*it)->auxdecor<char>("signal")) << std::endl;
     if ( (*it)->pt() < m_muonPtCut ) continue;
-    if ( ! (*it)->auxdecor<bool>("baseline") ) continue;
+    if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
     baseline_muons.push_back(MuonProxy(*it));
-    if (  (*it)->auxdecor<bool>("passOR") ) {
+    if (  (*it)->auxdecor<char>("passOR") == 1) {
       isolated_baseline_muons.push_back(MuonProxy(*it));
-      if ( (*it)->auxdecor<bool>("signal") ) {
+      if ( (*it)->auxdecor<char>("signal") == 1) {
 	isolated_signal_muons.push_back(MuonProxy(*it));
       }
     }

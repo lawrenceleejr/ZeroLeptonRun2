@@ -53,6 +53,8 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_SUSYObjTool->setProperty("IsData",(int)m_IsData);
   m_SUSYObjTool->setProperty("IsAtlfast",(int)m_IsAtlfast);
   m_SUSYObjTool->setProperty("METTauTerm","");
+  if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true);
+  else m_SUSYObjTool->setProperty("Is8TeV", false);
 
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
@@ -136,7 +138,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   for( ; jet_itr != jet_end; ++jet_itr ) {    
     if ( m_UseSmearedJets ) { 
       // no calibration since it was done in a first call to BuildSUSYObjects
-      (*jet_itr)->auxdecor<bool>("baseline") = 1;
+      (*jet_itr)->auxdecor<char>("baseline") = 1;
     }
     else {
       if ( ! m_SUSYObjTool->FillJet(**jet_itr, 20000., 10.).isSuccess() ) throw std::runtime_error("Error in FillJet");    
@@ -149,7 +151,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       m_SUSYObjTool->IsBJet(**jet_itr,true,0.7892);
     }
 
-    //out() << "pt " << (*jet_itr)->pt() << " baseline " << (int)((*jet_itr)->auxdecor<bool>("baseline")) << " bad " << (int)((*jet_itr)->auxdecor<bool>("bad")) << " bjet " << (int)((*jet_itr)->auxdecor<bool>("bjet")) <<  " container " << (*jet_itr)->container() << std::endl;
+    //out() << "pt " << (*jet_itr)->pt() << " baseline " << (int)((*jet_itr)->auxdecor<char>("baseline")) << " bad " << (int)((*jet_itr)->auxdecor<char>("bad")) << " bjet " << (int)((*jet_itr)->auxdecor<char>("bjet")) <<  " container " << (*jet_itr)->container() << std::endl;
 
 
   }
@@ -188,7 +190,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ((*mu_itr)->muonType() != xAOD::Muon::Combined &&
 	   (*mu_itr)->muonType() != xAOD::Muon::MuonStandAlone && 
 	    (*mu_itr)->muonType() != xAOD::Muon::SegmentTagged) ||
-	   !(*mu_itr)->auxdecor<bool>("baseline") )
+	   (*mu_itr)->auxdecor<char>("baseline") != 1)
       {
 	(*mu_itr)->setP4(1.,(*mu_itr)->eta(),(*mu_itr)->phi()); 
       }

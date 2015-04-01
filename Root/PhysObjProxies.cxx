@@ -27,10 +27,10 @@ JetProxy::JetProxy(const TLorentzVector& in, bool isBaseline, bool isBad, bool p
 JetProxy::JetProxy(const xAOD::Jet* jet):
   TLorentzVector(jet->p4())
 {
-  m_isBaseline = jet->auxdecor<bool>("baseline");
-  m_isBad      = jet->auxdecor<bool>("bad");
-  m_passOR     = jet->auxdecor<bool>("passOR");
-  m_isBJet     = jet->auxdecor<bool>("bjet");
+  m_isBaseline = jet->auxdecor<char>("baseline")==1;
+  m_isBad      = jet->auxdecor<char>("bad")==1;
+  m_passOR     = jet->auxdecor<char>("passOR")==1;
+  m_isBJet     = jet->auxdecor<char>("bjet")==1;
   m_jet        = jet;
 }
 
@@ -51,9 +51,9 @@ ElectronProxy::ElectronProxy():
 ElectronProxy::ElectronProxy(const xAOD::Electron* el):
   TLorentzVector(el->p4())
 {
-  m_isBaseline = el->auxdecor<bool>("baseline");
-  m_isSignal   = el->auxdecor<bool>("signal");
-  m_passOR     = el->auxdecor<bool>("passOR");
+  m_isBaseline = el->auxdecor<char>("baseline")==1;
+  m_isSignal   = el->auxdecor<char>("signal")==1;
+  m_passOR     = el->auxdecor<char>("passOR")==1;
   m_el         = el;
 }
 ClassImp(ElectronProxy);
@@ -73,10 +73,10 @@ MuonProxy::MuonProxy():
 MuonProxy::MuonProxy(const xAOD::Muon_v1* muon):
   TLorentzVector(muon->p4())
 {
-  m_isBaseline = muon->auxdecor<bool>("baseline");
-  m_isSignal   = muon->auxdecor<bool>("signal");
-  m_passOR     = muon->auxdecor<bool>("passOR");
-  m_isCosmic   = muon->auxdecor<bool>("cosmic");
+  m_isBaseline = muon->auxdecor<char>("baseline")==1;
+  m_isSignal   = muon->auxdecor<char>("signal")==1;
+  m_passOR     = muon->auxdecor<char>("passOR")==1;
+  m_isCosmic   = muon->auxdecor<char>("cosmic")==1;
   m_muon       = muon;
 }
 ClassImp(MuonProxy);

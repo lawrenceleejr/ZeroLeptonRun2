@@ -10,6 +10,7 @@
 #include "PileupReweighting/PileupReweightingTool.h"
 
 #include <string>
+#include <vector>
 #include <stdexcept>
 
 PileUpRWProcessor::PileUpRWProcessor(const char *name)
