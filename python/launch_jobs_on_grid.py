@@ -66,8 +66,8 @@ def main():
 
     ## Store SUSYTools/data root files in a tar.gz used as external file
     rootCoreDir = os.environ['ROOTCOREBIN']
-    if 'compiled' in os.listdir(rootCoreDir+'/../OxbridgeKinetics/cmt/'): 
-        subprocess.call('rm -f '+rootCoreDir+'/../OxbridgeKinetics/cmt/'+'compiled', shell=True)
+    #if 'compiled' in os.listdir(rootCoreDir+'/../OxbridgeKinetics/cmt/'): 
+    #    subprocess.call('rm -f '+rootCoreDir+'/../OxbridgeKinetics/cmt/'+'compiled', shell=True)
     
     localfiles = []
     flpkgs = open(rootCoreDir+'/packages','r')
@@ -146,7 +146,8 @@ def main():
 
         # this is an attempt to work without a tarball, since skipping all
         # root file at submission cause missing links in RootCore/data
-        scriptcmd = r"""rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
+        #scriptcmd = r"""rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
         # We run in the worker top directory because that's were links are made
         # to input files. But files can be referred to via a path relative
         # to the execution directory or relative to $ROOTCOREBIN, that's why 
@@ -166,6 +167,17 @@ def main():
             if len(tags)>2 and tags[2].startswith("a"):
                 print 'ATLfast not supported yet'
                 sys.exit(1)
+        # Run period
+        if "_7TeV." in inDS:
+            print "7TeV data/MC not supported in ZeroLeptonRun2"
+            sys.exit(1)
+        elif "_8TeV." in inDS:
+            scriptcmd += " Global.Period: p8tev"
+        elif "_13TeV." in inDS or "_14TeV." in inDS :
+            scriptcmd += " Global.Period: p13tev"
+        else:
+            print "Could not identify the run period (7/8/13/14 TeV) from the input dataset ",inDS
+            sys.exit(1)
 
         # signal events
         if isSignal:
