@@ -191,9 +191,9 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mc12VetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mc12VetoCode");
     veto = *pveto;
-    bool* mc12accept = 0;
-    if ( !store->retrieve<bool>(mc12accept,"mc12Accept").isSuccess() ) throw std::runtime_error("could not retrieve mc12accept");
-    if ( ! *mc12accept ) return true;
+    bool* mcaccept = 0;
+    if ( !store->retrieve<bool>(mcaccept,"mcAccept").isSuccess() ) throw std::runtime_error("could not retrieve mcaccept");
+    if ( ! *mcaccept ) return true;
   }
   m_counter->increment(weight,incr++,"Truth filter",trueTopo);
 
