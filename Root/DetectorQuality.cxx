@@ -14,7 +14,7 @@ DetectorQuality::DetectorQuality(const char *name)
   : cafe::Processor(name), m_period(INVALID)
 {
   cafe::Config config(name);
-  m_period = periodFromString(config.get("Period","p8tev"));
+  m_period = periodFromString(config.get("Period","p13tev"));
 }
 
 bool DetectorQuality::processEvent(xAOD::TEvent& event)
