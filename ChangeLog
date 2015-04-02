@@ -1,3 +1,8 @@
+02-Apr-2015 Laurent Duflot
+	* DetectorQuality.cxx: default period is 13TeV
+	* ZeroLeptonSR, ZeroLeptonCRWT: change decoration to mcAccept for MC vetp
+	* MCEventVeto, MCEventVeto: change veto for mc14 (only Sherpa W/Z for now)
+
 01-Apr-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-25 --> few permil on ref ttbar sample
 	* launch_jobs_on_grid.py: extract run period from input dataset

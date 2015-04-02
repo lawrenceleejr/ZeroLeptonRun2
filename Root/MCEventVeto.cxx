@@ -21,7 +21,7 @@ MCEventVeto::MCEventVeto(const char *name)
     : cafe::Processor(name), m_period(INVALID)
 {
   cafe::Config config(name);
-  m_period = periodFromString(config.get("Period","p8tev"));
+  m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("MCEventVeto does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("MCEventVeto: invalid run period specified"));
 }
@@ -59,12 +59,17 @@ bool MCEventVeto::processEvent(xAOD::TEvent& event)
   //bool isHighPtJetMET = MCEventVetoHelper::isHighPtJetMET(mc_channel_number,jets,metcontainer);
   //unsigned int vetoQEDFSR = MCEventVetoHelper::vetoQEDFSR(mc_channel_number,truthPC);
 
-  bool* mc12accept = new bool(true);
+  bool* mcaccept = new bool(true);
   unsigned int* veto = new unsigned int(0);
-  *mc12accept = MCEventVetoHelper::mc12accept(*veto, mc_channel_number, truthPC, metcontainer);
+  if ( m_period == p8tev ) {
+    *mcaccept = MCEventVetoHelper::mc12accept(*veto, mc_channel_number, truthPC, metcontainer);
+  }
+  else if ( m_period == p13tev ) {
+    *mcaccept = MCEventVetoHelper::mc14accept(*veto, mc_channel_number, truthPC, metcontainer);
+  }
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  RETURN_CHECK("MCEventVeto::processEvent",store->record<bool>(mc12accept,"mc12Accept"));
+  RETURN_CHECK("MCEventVeto::processEvent",store->record<bool>(mcaccept,"mcAccept"));
   RETURN_CHECK("MCEventVeto::processEvent",store->record<unsigned int>(veto,"mc12VetoCode"));
 
   return true;

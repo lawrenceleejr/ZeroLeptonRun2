@@ -517,8 +517,6 @@ void MCEventVetoHelper::mc12HerwigVVjets_accept(unsigned int& veto,
 }
 
 
-
-
 bool MCEventVetoHelper::mc12accept(unsigned int& veto,uint32_t mc_channel_number, const xAOD::TruthParticleContainer* mcparticles, const xAOD::MissingETContainer* metc)
 {
   veto += vetoQEDFSR(mc_channel_number, mcparticles);
@@ -540,6 +538,36 @@ bool MCEventVetoHelper::mc12accept(unsigned int& veto,uint32_t mc_channel_number
 
   return true;
 }
+
+
+bool MCEventVetoHelper::mc14SherpaWZjets_accept(unsigned int& veto,
+						uint32_t channel, 
+						const xAOD::TruthParticleContainer* mcparticles)
+{
+  if ((channel >= 167740 && channel <= 167748) || (channel >= 167749 && channel <= 167760)) {// Sherpa W/Z+jets MassiveCB
+    TLorentzVector vboson;
+    bool isbosonfound = MCEventVetoHelper::trueBosonFromWorZplusJetsMCSample(vboson, channel, mcparticles);
+    if (!isbosonfound) return true;
+    // W+jets has a 40-70 bin in mc14  but not Z+jet
+    if (channel >= 167740 && channel <= 167748 ) {
+      if (vboson.Pt() > 40000.) veto += 300;
+    }
+    else {
+      if (vboson.Pt() > 70000.) veto += 300;
+    }
+
+  } 
+  return true;
+}
+
+
+
+bool MCEventVetoHelper::mc14accept(unsigned int& veto,uint32_t mc_channel_number, const xAOD::TruthParticleContainer* mcparticles, const xAOD::MissingETContainer* metc)
+{
+  if ( !MCEventVetoHelper::mc14SherpaWZjets_accept(veto,mc_channel_number, mcparticles) ) return false;
+  return true;
+}
+
 
 // reimplement Run1 functions:
 // SUSYTUtils::mc12accept(unsigned int& veto)

@@ -57,6 +57,17 @@ class MCEventVetoHelper
 				      uint32_t mc_channel_number, 
 				      const xAOD::TruthParticleContainer* mcparticles);
 
+
+  // general function for truth veto on mc14 samples
+  static bool mc14accept(unsigned int& veto,
+			 uint32_t mc_channel_number, 
+			 const xAOD::TruthParticleContainer* mcparticles, 
+			 const xAOD::MissingETContainer* metc);
+
+  static bool mc14SherpaWZjets_accept(unsigned int& veto,
+				      uint32_t mc_channel_number, 
+				      const xAOD::TruthParticleContainer* mcparticles);
+
  private:
 
 };
