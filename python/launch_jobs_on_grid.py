@@ -165,8 +165,9 @@ def main():
             tag = inDS.split(".")[-1]
             tags = tag.split("_")
             if len(tags)>2 and tags[2].startswith("a"):
-                print 'ATLfast not supported yet'
-                sys.exit(1)
+                scriptcmd += " Global.IsAtlfast: TRUE"
+
+
         # Run period
         if "_7TeV." in inDS:
             print "7TeV data/MC not supported in ZeroLeptonRun2"

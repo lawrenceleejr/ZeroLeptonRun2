@@ -1,3 +1,6 @@
+04-Apr-2015 Laurent Duflot
+	* launch_jobs_on_grid.py, zerolepton.config, zerolepton_with_syst.config: add support for AtlFast samples
+
 02-Apr-2015 Laurent Duflot
 	* DetectorQuality.cxx: default period is 13TeV
 	* ZeroLeptonSR, ZeroLeptonCRWT: change decoration to mcAccept for MC vetp
