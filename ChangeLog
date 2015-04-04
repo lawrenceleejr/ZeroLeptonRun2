@@ -1,5 +1,6 @@
 04-Apr-2015 Laurent Duflot
 	* launch_jobs_on_grid.py, zerolepton.config, zerolepton_with_syst.config: add support for AtlFast samples
+	* BuildSUSYObjects: make sure all containers have the suffix in their name, add option to do the overlap removal with photons
 
 02-Apr-2015 Laurent Duflot
 	* DetectorQuality.cxx: default period is 13TeV

@@ -32,6 +32,7 @@ private:
   bool m_IsAtlfast;
   bool m_UseSmearedJets;
   bool m_UseSystematics;
+  bool m_PhotonInOR;
 
   std::string m_jetkey; 
   std::string m_suffix;

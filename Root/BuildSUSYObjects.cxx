@@ -32,6 +32,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_IsAtlfast(false),
     m_UseSmearedJets(false),
     m_UseSystematics(false),
+    m_PhotonInOR(false),
     m_jetkey(),
     m_suffix(),
     m_period(INVALID)
@@ -44,6 +45,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_UseSmearedJets = config.get("UseSmearedJets",false);
   m_UseSystematics = config.get("UseSystematics",false);
   if ( m_UseSmearedJets && m_UseSystematics ) throw std::logic_error("Cannot use jet smearing and systematics variations at the same time");
+  m_PhotonInOR = config.get("PhotonInOR",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("BuildSUSYObjects does not support the 7tev run period"));
 
@@ -156,12 +158,6 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
   }
 
-  /*
-  if ( ! store->record(susyjets.second,"SUSYJetsAux"+m_suffix).isSuccess()) {
-    throw std::runtime_error("Could not store SUSYJetsAux");
-  }
-  */
-
   // Muons
   std::pair< xAOD::MuonContainer*, xAOD::ShallowAuxContainer* > susymuons = std::make_pair<xAOD::MuonContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);
   if ( m_UseSmearedJets ) {
@@ -198,11 +194,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       //    << " " << (*mu_itr)->phi() << std::endl;
     }
     
-    if ( ! store->record(susymuons.first,"SUSYMuons").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYMuons");
+    if ( ! store->record(susymuons.first,"SUSYMuons"+m_suffix).isSuccess() ) {
+      throw std::runtime_error("Could not store SUSYMuons"+m_suffix);
     }
-    if ( ! store->record(susymuons.second,"SUSYMuonsAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYMuonsAux.");
+    if ( ! store->record(susymuons.second,"SUSYMuons"+m_suffix+"Aux.").isSuccess()) {
+      throw std::runtime_error("Could not store SUSYMuons"+m_suffix+"Aux.");
     }
   }
 
@@ -229,11 +225,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       m_SUSYObjTool->IsSignalElectron(**el_itr);
     }
 
-    if ( ! store->record(susyelectrons.first,"SUSYElectrons").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYElectrons");
+    if ( ! store->record(susyelectrons.first,"SUSYElectrons"+m_suffix).isSuccess() ) {
+      throw std::runtime_error("Could not store SUSYElectrons"+m_suffix);
     }
-    if ( ! store->record(susyelectrons.second,"SUSYElectronsAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYElectronsAux.");
+    if ( ! store->record(susyelectrons.second,"SUSYElectrons"+m_suffix+"Aux.").isSuccess()) {
+      throw std::runtime_error("Could not store SUSYElectrons"+m_suffix+"Aux.");
     }
   }
 
@@ -261,11 +257,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillPhoton(**ph_itr).isSuccess() ) throw std::runtime_error("Error in FillPhoton");
     }
 
-    if ( ! store->record(susyphotons.first,"SUSYPhotons").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYPhotons");
+    if ( ! store->record(susyphotons.first,"SUSYPhotons"+m_suffix).isSuccess() ) {
+      throw std::runtime_error("Could not store SUSYPhotons"+m_suffix);
     }
-    if ( ! store->record(susyphotons.second,"SUSYPhotonsAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYPhotonsAux.");
+    if ( ! store->record(susyphotons.second,"SUSYPhotons"+m_suffix+"Aux.").isSuccess()) {
+      throw std::runtime_error("Could not store SUSYPhotons"+m_suffix+"Aux.");
     }
   }
 
@@ -290,28 +286,33 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
     }
     
-    if ( ! store->record(susytaus.first,"SUSYTaus").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYTaus");
+    if ( ! store->record(susytaus.first,"SUSYTaus"+m_suffix).isSuccess() ) {
+      throw std::runtime_error("Could not store SUSYTaus"+m_suffix);
     }
-    if ( ! store->record(susytaus.second,"SUSYTausAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYTausAux.");
+    if ( ! store->record(susytaus.second,"SUSYTaus"+m_suffix+"Aux.").isSuccess()) {
+      throw std::runtime_error("Could not store SUSYTaus"+m_suffix+"Aux.");
     }
   }
   */
 
   // Overlap removal
-  if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, 0.2, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+  if ( m_PhotonInOR ) {
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+  }
+  else {
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+  }
 
   // Missing ET
   TVector2* MissingET = new TVector2(0.,0.);
   xAOD::MissingETContainer* rebuiltmetc = new xAOD::MissingETContainer();
   xAOD::MissingETAuxContainer* rebuiltmetcAux = new xAOD::MissingETAuxContainer();
   rebuiltmetc->setStore(rebuiltmetcAux);
-  if ( ! store->record(rebuiltmetc,"MET_MyRefFinal").isSuccess() ) {
-    throw std::runtime_error("Unable to store MissingETContainer with tag MET_MyRefFinal");
+  if ( ! store->record(rebuiltmetc,"MET_MyRefFinal"+m_suffix).isSuccess() ) {
+    throw std::runtime_error("Unable to store MissingETContainer with tag MET_MyRefFinal"+m_suffix);
   }
-  if ( ! store->record(rebuiltmetcAux,"MET_MyRefFinalAux.").isSuccess() ) {
-    throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_MyRefFinalAux");
+  if ( ! store->record(rebuiltmetcAux,"MET_MyRefFinal"+m_suffix+"Aux.").isSuccess() ) {
+    throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_MyRefFinal"+m_suffix+"Aux");
   }
 
   if ( ! m_SUSYObjTool->GetMET(*rebuiltmetc,
