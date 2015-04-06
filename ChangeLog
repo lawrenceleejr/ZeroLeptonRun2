@@ -1,6 +1,13 @@
+06-Apr-2015 Laurent Duflot
+	* MCEventVeto, ZeroLeptonSR, ZeroLeptonCRWT: change mc12VetoCode to mcVetoCode
+	* ZeroLeptonSR, ZeroLeptonCRWT: test MC veto code also for period p13tev
+	* tag ZeroLeptonRun2-00-00-25
+
+
 04-Apr-2015 Laurent Duflot
 	* launch_jobs_on_grid.py, zerolepton.config, zerolepton_with_syst.config: add support for AtlFast samples
 	* BuildSUSYObjects: make sure all containers have the suffix in their name, add option to do the overlap removal with photons
+	* tag ZeroLeptonRun2-00-00-24
 
 02-Apr-2015 Laurent Duflot
 	* DetectorQuality.cxx: default period is 13TeV

@@ -187,9 +187,9 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && m_period == p8tev ) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) ) {
     unsigned int* pveto = 0;
-    if ( !store->retrieve<unsigned int>(pveto,"mc12VetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mc12VetoCode");
+    if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
     bool* mcaccept = 0;
     if ( !store->retrieve<bool>(mcaccept,"mcAccept").isSuccess() ) throw std::runtime_error("could not retrieve mcaccept");
