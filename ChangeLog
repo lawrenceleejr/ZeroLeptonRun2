@@ -1,5 +1,8 @@
 06-Apr-2015 Laurent Duflot
 	* mc14_13TeV_MCSampleList.py, mc14_13TeV_lYjets.xxx: add Sherpa gamma+jet MassiveCB samples
+	* create ZeroLeptonCRY
+	* BuildSUSYObjects: call IsSignalPhoton, cleanup container using suffix
+	* zerolepton.config, zerolepton_with_syst.config: add CRY
 
 06-Apr-2015 Laurent Duflot
 	* MCEventVeto, ZeroLeptonSR, ZeroLeptonCRWT: change mc12VetoCode to mcVetoCode
