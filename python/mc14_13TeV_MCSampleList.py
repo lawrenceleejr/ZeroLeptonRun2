@@ -4,7 +4,7 @@ __doc__ = """List of samples to be used in the analysis"""
 ## Baseline samples
 ##
 lZjets   = range(167797,167844+1)+ range(167749,167760+1) # SherpaMassiveCB
-lYjets   = [] # SherpaMassiveCB
+lYjets   = range(177575,177585+1) # SherpaMassiveCB
 lWjets   = range(167740,167748+1)+range(167761,167796+1)+range(180534,180542+1) # SherpaMassiveCB
 
 lttbar   = [110401] # PowhegPythia_P2012_ttbar_nonallhad

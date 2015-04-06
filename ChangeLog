@@ -1,4 +1,7 @@
 06-Apr-2015 Laurent Duflot
+	* mc14_13TeV_MCSampleList.py, mc14_13TeV_lYjets.xxx: add Sherpa gamma+jet MassiveCB samples
+
+06-Apr-2015 Laurent Duflot
 	* MCEventVeto, ZeroLeptonSR, ZeroLeptonCRWT: change mc12VetoCode to mcVetoCode
 	* ZeroLeptonSR, ZeroLeptonCRWT: test MC veto code also for period p13tev
 	* tag ZeroLeptonRun2-00-00-25
