@@ -64,8 +64,8 @@ void PhysObjProxyFiller::FillElectronProxies(std::vector<ElectronProxy>& baselin
   isolated_signal_electrons.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
   const xAOD::ElectronContainer* electrons = 0;
-  if ( !store->retrieve(electrons, "SUSYElectrons").isSuccess() ){
-    throw std::runtime_error("Could not retrieve ElectronContainer with key SUSYElectrons");
+  if ( !store->retrieve(electrons, "SUSYElectrons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve ElectronContainer with key SUSYElectrons"+m_suffix);
   }
 
   for ( xAOD::ElectronContainer::const_iterator it = electrons->begin();
@@ -99,8 +99,8 @@ void PhysObjProxyFiller::FillMuonProxies(std::vector<MuonProxy>& baseline_muons,
   isolated_signal_muons.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
   const xAOD::MuonContainer* muons = 0;
-  if ( !store->retrieve(muons, "SUSYMuons").isSuccess() ){
-    throw std::runtime_error("Could not retrieve MuonContainer with key SUSYMuons");
+  if ( !store->retrieve(muons, "SUSYMuons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve MuonContainer with key SUSYMuons"+m_suffix);
   }
 
   for ( xAOD::MuonContainer::const_iterator it = muons->begin();
