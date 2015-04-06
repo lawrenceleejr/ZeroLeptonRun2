@@ -255,6 +255,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
         
     for( ; ph_itr != ph_end; ++ph_itr ) {
       if ( ! m_SUSYObjTool->FillPhoton(**ph_itr).isSuccess() ) throw std::runtime_error("Error in FillPhoton");
+      m_SUSYObjTool->IsSignalPhoton(**ph_itr,25000.,4000.);
+      //if ((*ph_itr)->pt()>10000.) out() << "Photon : pt " << (*ph_itr)->pt() << " baseline " << (int)((*ph_itr)->auxdecor<char>("baseline")) << " signal " << (int)((*ph_itr)->auxdecor<char>("signal")) << std::endl;
     }
 
     if ( ! store->record(susyphotons.first,"SUSYPhotons"+m_suffix).isSuccess() ) {
