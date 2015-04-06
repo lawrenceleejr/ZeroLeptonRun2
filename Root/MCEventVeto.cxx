@@ -70,7 +70,7 @@ bool MCEventVeto::processEvent(xAOD::TEvent& event)
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
   RETURN_CHECK("MCEventVeto::processEvent",store->record<bool>(mcaccept,"mcAccept"));
-  RETURN_CHECK("MCEventVeto::processEvent",store->record<unsigned int>(veto,"mc12VetoCode"));
+  RETURN_CHECK("MCEventVeto::processEvent",store->record<unsigned int>(veto,"mcVetoCode"));
 
   return true;
 }
