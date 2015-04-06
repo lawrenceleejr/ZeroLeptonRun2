@@ -78,18 +78,18 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     m_SUSYObjTool->resetSystematics();
     // remove output from previous systematics
     store->remove("SUSYMET"+m_suffix).ignore();
-    store->remove("SUSYJets").ignore();
-    store->remove("SUSYJetsAux.").ignore();
-    store->remove("SUSYMuons").ignore();
-    store->remove("SUSYMuonsAux.").ignore();
-    store->remove("SUSYElectrons").ignore();
-    store->remove("SUSYElectronsAux.").ignore();
-    store->remove("SUSYPhotons").ignore();
-    store->remove("SUSYPhotonsAux.").ignore();
+    store->remove("SUSYJets"+m_suffix).ignore();
+    store->remove("SUSYJets"+m_suffix+"Aux.").ignore();
+    store->remove("SUSYMuons"+m_suffix).ignore();
+    store->remove("SUSYMuons"+m_suffix+"Aux.").ignore();
+    store->remove("SUSYElectrons"+m_suffix).ignore();
+    store->remove("SUSYElectrons"+m_suffix+"Aux.").ignore();
+    store->remove("SUSYPhotons"+m_suffix).ignore();
+    store->remove("SUSYPhotons"+m_suffix+"Aux.").ignore();
     //store->remove("SUSYTaus").ignore();
     //store->remove("SUSYTausAux.").ignore();
-    store->remove("MET_MyRefFinal").ignore();
-    store->remove("MET_MyRefFinalAux.").ignore();
+    store->remove("MET_MyRefFinal"+m_suffix).ignore();
+    store->remove("MET_MyRefFinal"+m_suffix+"Aux.").ignore();
 
     const CP::SystematicSet* currentSyst = 0;
     if ( !store->retrieve(currentSyst,"CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
