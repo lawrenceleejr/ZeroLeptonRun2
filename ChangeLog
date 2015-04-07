@@ -1,3 +1,6 @@
+07-Apr-2015 Laurent Duflot
+	* makeSignalPointPickle.py: merge the two GG_onestepCC dicts
+
 06-Apr-2015 Laurent Duflot
 	* mc14_13TeV_MCSampleList.py, mc14_13TeV_lYjets.xxx: add Sherpa gamma+jet MassiveCB samples
 	* create ZeroLeptonCRY
