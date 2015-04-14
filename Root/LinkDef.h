@@ -10,6 +10,7 @@
 #include "ZeroLeptonRun2/ZeroLeptonSR.h"
 #include "ZeroLeptonRun2/ZeroLeptonCRWT.h"
 #include "ZeroLeptonRun2/ZeroLeptonCRY.h"
+#include "ZeroLeptonRun2/ZeroLeptonCRZ.h"
 #include "ZeroLeptonRun2/GRLProcessor.h"
 #include "ZeroLeptonRun2/MCEventVeto.h"
 #include "ZeroLeptonRun2/DetectorQuality.h"
@@ -39,6 +40,7 @@
 #pragma link C++ class ZeroLeptonSR+;
 #pragma link C++ class ZeroLeptonCRWT+;
 #pragma link C++ class ZeroLeptonCRY+;
+#pragma link C++ class ZeroLeptonCRZ+;
 #endif
 
 #ifdef __CINT__

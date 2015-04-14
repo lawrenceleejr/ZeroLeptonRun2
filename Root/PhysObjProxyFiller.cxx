@@ -70,7 +70,7 @@ void PhysObjProxyFiller::FillElectronProxies(std::vector<ElectronProxy>& baselin
 
   for ( xAOD::ElectronContainer::const_iterator it = electrons->begin();
 	it != electrons->end(); ++it ){
-    //std::cout << " SUSY el " <<  (*it)->pt() << " " << ((*it)->auxdecor<char>("passOR"))  << " " << ((*it)->auxdecor<char>("baseline"))  << " " << ((*it)->auxdecor<char>("signal")) << std::endl;
+    //std::cout << " SUSY el " <<  (*it) << " " << (*it)->pt() << " " << (int)((*it)->auxdecor<char>("passOR"))  << " " << (int)((*it)->auxdecor<char>("baseline"))  << " " << (int)((*it)->auxdecor<char>("signal")) << " " << (*it)->charge() << std::endl;
     if ( (*it)->pt() < m_elPtCut ) continue;
     if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
     baseline_electrons.push_back(ElectronProxy(*it));
@@ -105,7 +105,7 @@ void PhysObjProxyFiller::FillMuonProxies(std::vector<MuonProxy>& baseline_muons,
 
   for ( xAOD::MuonContainer::const_iterator it = muons->begin();
 	it != muons->end(); ++it ){
-    //std::cout << " SUSY muon " <<  (*it)->pt() << " " << ((*it)->auxdecor<char>("passOR"))  << " " << ((*it)->auxdecor<char>("baseline"))  << " " << ((*it)->auxdecor<char>("signal")) << std::endl;
+    //std::cout << " SUSY muon " <<  (*it) << " " << (*it)->pt() << " " << (int)((*it)->auxdecor<char>("passOR"))  << " " << (int)((*it)->auxdecor<char>("baseline"))  << " " << (int)((*it)->auxdecor<char>("signal")) << " " << (*it)->charge() << std::endl;
     if ( (*it)->pt() < m_muonPtCut ) continue;
     if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
     baseline_muons.push_back(MuonProxy(*it));
