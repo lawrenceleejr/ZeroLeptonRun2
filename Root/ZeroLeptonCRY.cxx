@@ -293,6 +293,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"MET cut",trueTopo);
 
   // Leading jet Pt cut
+  if ( good_jets.empty() ) return true;
   if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
@@ -349,7 +350,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   double Eleg1=-999;
   double Eleg2=-999; 
   double costhetaRp1=-999;
-
   m_proxyUtils.RazorVariables(good_jets, 
 			      missingETCorr->X(),
 			      missingETCorr->Y(),
@@ -371,7 +371,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
-
 
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;

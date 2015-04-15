@@ -1,6 +1,10 @@
+15-Apr-2015 Laurent Duflot
+	* ZeroLeptonCRY: fix to cope with the case that there are no good jets
+	* tag ZeroLeptonRun2-00-00-28
+
 14-Apr-2015 Laurent Duflot
 	* add ZeroLeptonCRZ
-	* tag ZeroLeptonRun2-00-00-26
+	* tag ZeroLeptonRun2-00-00-27
 
 13-Apr-2015 Laurent Duflot
 	* tag ZeroLeptonRun2-00-00-26
