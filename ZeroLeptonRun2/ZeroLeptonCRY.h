@@ -51,6 +51,8 @@ private:
 
   // TODO : an unordered_map would be faster
   std::map<std::string,TTree*> m_treeRepository;
+
+  ZeroLeptonDerivationTag m_derivationTag;
 public:
   ClassDef(ZeroLeptonCRY,0);
 };

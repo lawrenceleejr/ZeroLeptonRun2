@@ -37,6 +37,9 @@ private:
   std::string m_jetkey; 
   std::string m_suffix;
   ZeroLeptonRunPeriod m_period;
+  ZeroLeptonDerivationTag m_derivationTag;
+  int m_JESNuisanceParameterSet;
+
 public:
   ClassDef(BuildSUSYObjects,0);
 };

@@ -8,6 +8,16 @@
 #include <stdexcept>
 #include <cmath>
 
+ZeroLeptonUtils::ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag): 
+  m_IsData(IsData), m_derivationTag(tag), m_MET_Track_key("MET_Track"), 
+  m_MET_key("MET_RefFinal")
+{
+  if ( m_derivationTag == p1872 ) {
+    m_MET_Track_key = "MET_TrackFix";
+    m_MET_key = "MET_RefFinalFix";
+  }
+}
+
 bool ZeroLeptonUtils::NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const
 {
   bool isNegCell=false; 
@@ -15,12 +25,12 @@ bool ZeroLeptonUtils::NegCellCleaning(xAOD::TEvent& event, const TVector2& missi
   double MET_phi = TMath::ATan2(missingET.Y(),missingET.X()); 
 
   const xAOD::MissingETContainer* metcontainer = 0;
-  if ( ! event.retrieve( metcontainer, "MET_RefFinal" ).isSuccess() ){
-    throw std::runtime_error("Could not retrieve MissingETContainer with key MET_RefFinal");
+  if ( ! event.retrieve( metcontainer, m_MET_key ).isSuccess() ){
+    throw std::runtime_error("Could not retrieve MissingETContainer with key "+m_MET_key);
   }
   xAOD::MissingETContainer::const_iterator met = metcontainer->find("SoftClus");
   if (met == metcontainer->end()) {
-    throw std::runtime_error("MissingETContainer with key MET_RefFinal has no SoftClus component");
+    throw std::runtime_error("MissingETContainer with key "+m_MET_key+"has no SoftClus component");
   }
 
   if ( ( (*met)->met()/missingET.Mod()) * std::cos((*met)->phi()-MET_phi) >= 0.5) isNegCell=true;
@@ -32,8 +42,8 @@ bool ZeroLeptonUtils::NegCellCleaning(xAOD::TEvent& event, const TVector2& missi
 void  ZeroLeptonUtils::trackMET(xAOD::TEvent& event, double& met, double& phi) const
 {
   const xAOD::MissingETContainer* metcontainer = 0;
-  if ( !event.retrieve( metcontainer, "MET_Track" ).isSuccess() ){
-    throw std::runtime_error("Coulnot retrieve MissingETContainer with key MET_Track");
+  if ( !event.retrieve( metcontainer, m_MET_Track_key ).isSuccess() ){
+    throw std::runtime_error("Could not retrieve MissingETContainer with key "+m_MET_Track_key);
   }
   // FIXME should be "Track" or "PVTrack" ?
   xAOD::MissingETContainer::const_iterator trackmet = metcontainer->find("Track");

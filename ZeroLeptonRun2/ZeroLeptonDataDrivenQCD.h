@@ -64,6 +64,7 @@ private:
   bool add(const std::list<cafe::Processor*>& procs);
   bool add(cafe::Processor *proc);
 
+  ZeroLeptonDerivationTag m_derivationTag;
 public:
   ClassDef(ZeroLeptonDataDrivenQCD,0);
 };

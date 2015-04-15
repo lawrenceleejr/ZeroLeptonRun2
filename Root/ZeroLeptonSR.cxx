@@ -31,10 +31,11 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_physobjsFiller(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData),
+    m_ZLUtils(m_IsData, NotADerivation),
     m_counter(0),
     m_counterRepository("",false,0),
-    m_treeRepository()
+    m_treeRepository(),
+    m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -44,6 +45,9 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonSR: invalid run period specified"));
 
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
   std::string cutfile = config.get("cutfile","None");
   if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonSR: invalid cut file specified"));
   m_cutVal.ReadCutValues(cutfile);
@@ -52,7 +56,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
-  m_ZLUtils = ZeroLeptonUtils(m_IsData);
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
 ZeroLeptonSR::~ZeroLeptonSR()
@@ -455,10 +459,12 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     const xAOD::MissingETContainer* metcontainer = 0;
     float metLHTOPOx = 0.f;
     float metLHTOPOy = 0.f;
-    if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
-      xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
-      metLHTOPOx = (*met_it)->mpx();
-      metLHTOPOy = (*met_it)->mpy();
+    if ( m_derivationTag != p1872 ) {
+      if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
+	xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
+	metLHTOPOx = (*met_it)->mpx();
+	metLHTOPOy = (*met_it)->mpy();
+      }
     }
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., metLHTOPOx, metLHTOPOy);

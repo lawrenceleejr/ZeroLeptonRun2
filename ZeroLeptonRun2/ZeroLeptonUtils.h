@@ -8,6 +8,7 @@ namespace xAOD {
 
 #include "TVector2.h"
 #include "xAODTracking/VertexFwd.h"
+#include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 
 //--------------------------------------------------------------------------
 // Utility functions that do not depend on physics object proxy and my
@@ -17,7 +18,7 @@ namespace xAOD {
 class ZeroLeptonUtils
 {
  public:
-  ZeroLeptonUtils(bool IsData): m_IsData(IsData) {}
+  ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag);
 
   bool NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const;
 
@@ -28,5 +29,9 @@ class ZeroLeptonUtils
 
  private:
   bool m_IsData;
+
+  ZeroLeptonDerivationTag m_derivationTag;
+  std::string m_MET_Track_key;
+  std::string m_MET_key;
 };
 #endif

@@ -35,7 +35,9 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_PhotonInOR(false),
     m_jetkey(),
     m_suffix(),
-    m_period(INVALID)
+    m_period(INVALID),
+    m_derivationTag(INVALID_Derivation),
+    m_JESNuisanceParameterSet(0)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -49,14 +51,25 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("BuildSUSYObjects does not support the 7tev run period"));
 
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
+  m_JESNuisanceParameterSet = config.get("JESNuisanceParameterSet",0);
 
   m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
-  m_SUSYObjTool->setProperty("IsData",(int)m_IsData);
-  m_SUSYObjTool->setProperty("IsAtlfast",(int)m_IsAtlfast);
+  int datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
+  m_SUSYObjTool->setProperty("DataSource",datasource);
   m_SUSYObjTool->setProperty("METTauTerm","");
   if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true);
   else m_SUSYObjTool->setProperty("Is8TeV", false);
+  m_SUSYObjTool->setProperty("JESNuisanceParameterSet",m_JESNuisanceParameterSet);
+  m_SUSYObjTool->setProperty("DoJetAreaCalib",true);
+  m_SUSYObjTool->setProperty("DoJetGSCCalib",true);
+  if ( m_derivationTag == p1872 ) {
+    m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix");
+    m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix");
+  }
 
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 

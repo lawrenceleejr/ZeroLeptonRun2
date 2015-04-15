@@ -32,10 +32,11 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_physobjsFiller(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData),
+    m_ZLUtils(m_IsData, NotADerivation),
     m_counter(0),
     m_counterRepository("",false,0),
-    m_treeRepository()
+    m_treeRepository(),
+    m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -45,6 +46,9 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRY does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRY: invalid run period specified"));
 
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
   std::string cutfile = config.get("cutfile","None");
   if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonCRY: invalid cut file specified"));
   m_cutVal.ReadCutValues(cutfile);
@@ -53,7 +57,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
-  m_ZLUtils = ZeroLeptonUtils(m_IsData);
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
 ZeroLeptonCRY::~ZeroLeptonCRY()
@@ -388,16 +392,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     bool chfVeto = m_proxyUtils.chfVeto(good_jets);
     if ( chfVeto ) cleaning += 8;
 
-    const xAOD::MissingETContainer* metcontainer = 0;
-    float metLHTOPOx = 0.f;
-    float metLHTOPOy = 0.f;
-    if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
-      xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
-      metLHTOPOx = (*met_it)->mpx() + (*leadPh)->p4().Px();
-      metLHTOPOy = (*met_it)->mpy() + (*leadPh)->p4().Py();
-    }
-
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., metLHTOPOx, metLHTOPOy);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., 0., 0.);
 
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);

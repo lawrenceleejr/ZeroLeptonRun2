@@ -38,10 +38,11 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_physobjsFiller(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData),
+    m_ZLUtils(m_IsData, NotADerivation),
     m_counter(0),
     m_counterRepository("",false,0),
-    m_treeRepository()
+    m_treeRepository(),
+    m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -60,6 +61,9 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRZ does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRZ: invalid run period specified"));
 
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
   std::string cutfile = config.get("cutfile","None");
   if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonCRZ: invalid cut file specified"));
   m_cutVal.ReadCutValues(cutfile);
@@ -67,7 +71,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
-  m_ZLUtils = ZeroLeptonUtils(m_IsData);
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
 ZeroLeptonCRZ::~ZeroLeptonCRZ()

@@ -39,10 +39,11 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_physobjsFiller(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData),
+    m_ZLUtils(m_IsData, NotADerivation),
     m_counter(0),
     m_counterRepository("",false,0),
-    m_treeRepository()
+    m_treeRepository(),
+    m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
@@ -61,6 +62,9 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRWT does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRWT: invalid run period specified"));
 
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
   m_isVR = config.get("IsVR",false);
   if ( m_isVR ) m_stringRegion = "VRWT_SRAll";
 
@@ -71,7 +75,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
-  m_ZLUtils = ZeroLeptonUtils(m_IsData);
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
 ZeroLeptonCRWT::~ZeroLeptonCRWT()

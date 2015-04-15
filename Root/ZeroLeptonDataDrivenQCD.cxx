@@ -34,14 +34,15 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_QCDSeedSelector(),
   m_physobjsFiller(PhysObjProxyFiller(20000.f,10000.f,10000.f,"")),
   m_proxyUtils(true),
-  m_ZLUtils(true),
+  m_ZLUtils(true, NotADerivation),
   m_smearingTool(0),
   m_smearFnFile(0),
   m_smearFnFile2(0),
   m_GaussianCoreSmearingType("none"),
   m_containers(),
   m_cutVal(),
-  m_processors()
+  m_processors(),
+  m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
   m_seed = config.get("RandomSeed",m_seed);
@@ -49,6 +50,11 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_GaussianCoreSmearingType = config.get("GaussianCoreSmearingType","optimal");
   m_containers = config.getVString("Containers");
   m_jetkey = config.get("JetCollectionKey","xxxx");
+
+  m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+
+  m_ZLUtils = ZeroLeptonUtils(true, m_derivationTag);
 
   gRandom->SetSeed(gRandom->GetSeed()+m_seed);
   InitialiseSmearing();
