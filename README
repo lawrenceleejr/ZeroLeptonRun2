@@ -9,7 +9,7 @@ The cafe config file is in ZeroLeptonRun2/config/zerolepton.config, you can
 copy it and modify it but for testing it is easier to just overwrite some 
 configurations from the command line like:
 
-cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/j/jpoveda/mc14_13TeV.204422.Herwigpp_UEEE4_CTEQ6L1_Tt_T800_L1.merge.AOD.e3064_s1982_s2008_r5787_r5853_tid01604167_00/AOD.01604167._000005.pool.root.1
+cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/l/lduflot/atlasreadable/datafiles/mc14_13TeV.110401.PowhegPythia_P2012_ttbar_nonallhad.merge.DAOD_SUSY1.e2928_s1982_s2008_r5787_r5853_p1872/DAOD_SUSY1.05248705._000028.pool.root.1
 
 This run a simple job with no systematics. A preliminary implementation of
 systematics that adds a tree for every systematics uses the 
@@ -51,11 +51,9 @@ pattern of signal datasets, to be safe use the --signal option.
 
 4/ Creating an updated cross-section database:
 ==============================================
-This step is necessary if you made a production that may not be represented by
-the cross-section file in ZeroLeptonRun2/data, e.g. when the number of events
-you ran on may not be the same.
+This step is necessary to produce a file in the correct format for merging.
 
-Use the getMCInfo.py tools (slightly updated version oof the Run1 tool)
+Use the getMCInfo.py tools (slightly updated version of the Run1 tool)
 to build the extended cross-section database from the un-merged small
 ntuples. The tool will extract the number of events processed and the 
 total sum of MC weights from the Counter and write an extended 
