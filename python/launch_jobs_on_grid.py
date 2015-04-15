@@ -160,6 +160,7 @@ def main():
                  scriptcmd += "crwt.IsElectronChannel: TRUE vrwt.IsElectronChannel: TRUE "
             elif 'physics_Muons' in inDS:
                  scriptcmd += "crwt.IsMuonChannel: TRUE vrwt.IsMuonChannel: TRUE "
+
         # Fast or full simulation ?
         if "mc11" in inDS or "mc12" in inDS or "mc14" in inDS :
             tag = inDS.split(".")[-1]
@@ -180,9 +181,16 @@ def main():
             print "Could not identify the run period (7/8/13/14 TeV) from the input dataset ",inDS
             sys.exit(1)
 
+        # test special derivation tags
+        tag = inDS.split(".")[-1]
+        if 'p1872' in tag:
+            scriptcmd += " Global.DerivationTag: p1872 "
+        else:
+            scriptcmd += " Global.DerivationTag: NA "
+
         # signal events
         if isSignal:
-            scriptcmd += " Global.IsSignal: TRUE"
+            scriptcmd += " Global.IsSignal: TRUE "
 
         extfiles=' --extFile '
         for f in localfiles:
