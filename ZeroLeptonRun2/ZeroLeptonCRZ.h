@@ -29,6 +29,7 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
+  void FillCRZVars(NTCRZVars& crzvars, std::vector<TLorentzVector>& lepton, const TVector2& met, std::vector<int> lepsigns);
 
 
   TTree* m_tree;
@@ -44,7 +45,7 @@ private:
   NTVars m_ntv;
   NTExtraVars m_extrantv;
   NTTheoryVars m_theoryntv;
-  NTCRZVars m_crwtntv;
+  NTCRZVars m_crzntv;
 
   std::string m_suffix;
   PhysObjProxyFiller* m_physobjsFiller;

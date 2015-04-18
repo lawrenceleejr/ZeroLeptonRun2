@@ -298,6 +298,12 @@ inline void bookNTCRWTVars(TTree* tree, NTCRWTVars& crwtntv)
   tree->Branch("NTCRWTVars",&crwtntv,NTCRWTVars::toString().c_str());
 }
 
+inline void bookNTCRZVars(TTree* tree, NTCRZVars& crzntv)
+{
+  tree->Branch("NTCRZVars",&crzntv,NTCRZVars::toString().c_str());
+}
+
+
 inline void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
 {
   tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());

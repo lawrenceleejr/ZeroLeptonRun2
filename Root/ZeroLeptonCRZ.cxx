@@ -86,7 +86,7 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
-  //bookNTCRZVars(tree,m_crzntv);
+  bookNTCRZVars(tree,m_crzntv);
   return tree;
 }
 
@@ -472,6 +472,8 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.);
 
+    FillCRZVars(m_crzntv, leptonTLVs, *missingET, leptonCharges);
+
     m_tree->Fill();
   }
   return true;
@@ -485,6 +487,28 @@ void ZeroLeptonCRZ::finish()
   else {
     out() << *m_counter << std::endl;
   }
+}
+
+void ZeroLeptonCRZ::FillCRZVars(NTCRZVars& crzvars, std::vector<TLorentzVector>& leptons, const TVector2& metv, std::vector<int> lepsigns)
+{
+  crzvars.Reset();
+  crzvars.lep1sign = lepsigns.at(0);
+  crzvars.lep1Pt  = (leptons.at(0)).Pt();
+  crzvars.lep1Eta = (leptons.at(0)).Eta();
+  crzvars.lep1Phi = (leptons.at(0)).Phi();
+
+  crzvars.lep2sign = lepsigns.at(1);
+  crzvars.lep2Pt  = (leptons.at(1)).Pt();
+  crzvars.lep2Eta = (leptons.at(1)).Eta();
+  crzvars.lep2Phi = (leptons.at(1)).Phi();
+
+
+  double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
+  crzvars.mll = (leptons.at(0)+leptons.at(1)).M();
+
+  double zpx = leptons.at(0).Px()+leptons.at(1).Py();
+  double zpy = leptons.at(0).Py()+leptons.at(1).Py();
+  crzvars.Zpt = std::sqrt(zpx*zpx+zpy*zpy);
 }
 
 
