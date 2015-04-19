@@ -72,6 +72,7 @@ TTree* ZeroLeptonCRY::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
+  bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
   //bookNTCRYVars(tree,m_cryntv);
   return tree;
@@ -396,7 +397,9 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);
-   
+      
+    m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+
     m_tree->Fill();
   }
   return true;

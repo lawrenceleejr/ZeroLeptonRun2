@@ -38,6 +38,7 @@ private:
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
+  NTReclusteringVars m_RTntv;
   NTCRYVars m_cryntv;
 
   std::string m_suffix;
