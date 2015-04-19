@@ -86,6 +86,7 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
+  bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRZVars(tree,m_crzntv);
   return tree;
 }
@@ -298,6 +299,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     leptonCharges.push_back((int)(isolated_baseline_electrons[1].electron()->charge()));
   }
   if ( leptonTLVs.empty() ) return true;
+  TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
   m_counter->increment(weight,incr++,"2 OS Baseline Leptons",trueTopo);
 
@@ -318,6 +320,11 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if ( m_isElectronChannel && isolated_signal_electrons.size()!=2 ) return true;
   m_counter->increment(weight,incr++,"2 OS Signal Leptons",trueTopo);
   */
+
+  double InvMassLepPair = dileptonTLV.M();
+  if (InvMassLepPair < 66000 || InvMassLepPair > 116000) return true;
+  m_counter->increment(weight,incr++,"M_ll Cut",trueTopo);
+
 
   // FIXME: Apply Lepton scale factors
   
@@ -472,6 +479,8 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.);
 
+    m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+
     FillCRZVars(m_crzntv, leptonTLVs, *missingET, leptonCharges);
 
     m_tree->Fill();
@@ -503,7 +512,7 @@ void ZeroLeptonCRZ::FillCRZVars(NTCRZVars& crzvars, std::vector<TLorentzVector>&
   crzvars.lep2Phi = (leptons.at(1)).Phi();
 
 
-  double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
+  //double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
   crzvars.mll = (leptons.at(0)+leptons.at(1)).M();
 
   double zpx = leptons.at(0).Px()+leptons.at(1).Py();

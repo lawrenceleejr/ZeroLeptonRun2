@@ -44,6 +44,7 @@ private:
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
+  NTReclusteringVars m_RTntv;
   NTTheoryVars m_theoryntv;
   NTCRZVars m_crzntv;
 
