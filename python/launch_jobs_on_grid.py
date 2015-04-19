@@ -232,8 +232,8 @@ def main():
             print cmd
         first = False
         ret = 0
-        print cmd
-        sys.exit(0)
+        #print cmd
+        #sys.exit(0)
         ret = subprocess.call(cmd, shell=True)
         if ret != 0:
             print 'command failed => stop script'
