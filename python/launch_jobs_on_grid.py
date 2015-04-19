@@ -21,7 +21,8 @@ def parseCmdLine(args):
     parser.add_option("--prefix", dest="prefix", help="Prefix appended to the output DS name, should be something like user.yourname",default="user.%s." % os.environ['USER']) 
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output DS name in case you need to add a version for example",default="") 
     parser.add_option("--debug", dest="debug", help="Debug mode", action='store_true', default=False)
-    parser.add_option("--runopts", dest="runopts", help="Command line arguments to ZeroLeptonCutflow executable", default="")
+    parser.add_option("--config", dest="configfile", help="cafe configuration file", default="ZeroLeptonRun2/config/zerolepton.config")
+    parser.add_option("--runopts", dest="runopts", help="Command line arguments to cafe executable", default="")
     parser.add_option("--container", dest="container", help="If the input datasets are in a container with multiple run numbers, configuure prun to keep them distinct", action='store_true', default=False)
     parser.add_option("--prunopts", dest="prunopts", help="Command line arguments to prun", default="")
     parser.add_option("--signal", dest="signal", help="Input is signal MC", action='store_true', default=False)
@@ -146,13 +147,13 @@ def main():
 
         # this is an attempt to work without a tarball, since skipping all
         # root file at submission cause missing links in RootCore/data
-        #scriptcmd = r"""rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
-        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
+        #scriptcmd = r"""rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """  + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
         # We run in the worker top directory because that's were links are made
         # to input files. But files can be referred to via a path relative
         # to the execution directory or relative to $ROOTCOREBIN, that's why 
         # we expand the tarball twice 
-        #scriptcmd = r"""pwd; TOPDIR=\$PWD; echo "topdir \$TOPDIR"; cd \$ROOTCOREBIN/..; rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; tar -xvzf \$TOPDIR/externalFiles.tar.gz; pwd; ls -lR; cd \$TOPDIR; pwd; ls; tar -xvzf externalFiles.tar.gz; ZeroLeptonRun2/python/pfc2txt.py; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe ZeroLeptonRun2/config/zerolepton.config Events: -1  Input: filelist:inputfiles Output: output.root """
+        #scriptcmd = r"""pwd; TOPDIR=\$PWD; echo "topdir \$TOPDIR"; cd \$ROOTCOREBIN/..; rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; tar -xvzf \$TOPDIR/externalFiles.tar.gz; pwd; ls -lR; cd \$TOPDIR; pwd; ls; tar -xvzf externalFiles.tar.gz; ZeroLeptonRun2/python/pfc2txt.py; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """  + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """
         # Real data ?
         if "data11" in inDS or "data12" in inDS: 
             scriptcmd += " Global.IsData: TRUE Global.IsSignal: FALSE "
@@ -231,7 +232,8 @@ def main():
             print cmd
         first = False
         ret = 0
-        #print cmd
+        print cmd
+        sys.exit(0)
         ret = subprocess.call(cmd, shell=True)
         if ret != 0:
             print 'command failed => stop script'
