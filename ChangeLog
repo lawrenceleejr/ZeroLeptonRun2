@@ -1,3 +1,10 @@
+19-Apr-2015 Laurent Duflot
+	* ZeroLeptonCRY: add reclustering variables
+	* ZeroLeptonCRZ: add reclustering variables, add M_ll cut
+	* data: add dataset lists for signa and gamma+jet p1872
+	* launch_jobs_on_grid.py: add --config option
+	* tag ZeroLeptonRun2-00-00-29
+
 18-Apr-2015 Geraldine Conti
 	* added CRZ specific variables
 
@@ -5,7 +12,7 @@
 	* adapt to SUSYTools-00-05-00-26
 	* BuildSUSYObjs: set the DataSource property of SUSYTools,
 	set DoJetAreaCalib and DoJetGSCCalib to true
-	* BuildSUSYObjs, ZeroLeptonSr, ZeroLeptonCRxx, ZeroLeptonUtils: special case 
+	* BuildSUSYObjs, ZeroLeptonSr, ZeroLeptonCRxx, ZeroLeptonUtils: special case
 	for p1872, use MET_TrackFix and MET_RefFinalFix
 	* config files: special flag for p1872, make p1872 the default, update
 	default file to a p1872 ttbar file
