@@ -247,13 +247,14 @@ void NTCRYVars::Reset()
 
 std::string NTExtraVars::toString()
 { 
-  return std::string("mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F");
+  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F");
 
 }
 
 void NTExtraVars::Reset()
 { 
-
+  mettrack = 0.f;
+  mettrack_phi = 0.f;
   mT2 = -1.f;
   mT2_noISR = 0.f;
   mT2=0.f;

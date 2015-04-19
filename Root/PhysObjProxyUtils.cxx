@@ -660,6 +660,8 @@ bool PhysObjProxyUtils::chfTileVeto(const std::vector<JetProxy>& jets) const
 
 
 void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
+					double MET_Track, 
+					double MET_Track_phi,
 					double mT2,
 					double mT2_noISR,
 					double gaminvRp1,
@@ -676,6 +678,8 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
 					double Ap)
 {
   extrantv.Reset();
+  extrantv.mettrack = MET_Track;
+  extrantv.mettrack_phi = MET_Track_phi;
   extrantv.mT2=mT2;
   extrantv.mT2_noISR=mT2_noISR;  
   extrantv. gaminvRp1=gaminvRp1;

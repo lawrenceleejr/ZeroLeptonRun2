@@ -103,6 +103,8 @@ class PhysObjProxyUtils
 		  const std::vector<JetProxy>& good_jets);
   
   void FillNTExtraVars(NTExtraVars& extrantv,
+		       double MET_Track, 
+		       double MET_Track_phi,
 		       double MT2,
 		       double MT2_noISR,
 		       double gaminvRp1,

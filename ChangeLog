@@ -1,4 +1,9 @@
 19-Apr-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: remove spurious exit(0)
+	* ZeroLeptonNTVar, ZeroLeptonSR, ZeroLeptonCRY: add MET_TRack to ExtraVars
+	* tag ZeroLeptonRun2-00-00-30
+
+19-Apr-2015 Laurent Duflot
 	* ZeroLeptonCRY: add reclustering variables
 	* ZeroLeptonCRZ: add reclustering variables, add M_ll cut
 	* data: add dataset lists for signa and gamma+jet p1872
