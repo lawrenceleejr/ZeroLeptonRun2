@@ -1,3 +1,7 @@
+20-Apr-2015 Laurent Duflot
+	* ZeroLeptonSR, ZeroLeptionCR*: fix memory leak
+	* tag ZeroLeptonRun2-00-00-31
+
 19-Apr-2015 Laurent Duflot
 	* launch_jobs_on_grid.py: remove spurious exit(0)
 	* ZeroLeptonNTVar, ZeroLeptonSR, ZeroLeptonCRY: add MET_TRack to ExtraVars

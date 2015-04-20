@@ -232,17 +232,15 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   //out() <<std::endl;  
 
   // missing ET
-  TVector2* missingET = new TVector2(0.,0.);
-  TVector2* missingETCorr = missingET;
+  TVector2* missingET = 0;
+  TVector2 missingETCorr;
   if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
   // the lead photon as if it was a Z->nunu
   if ( leadPhPt > 0. ) {
-    //out() << "MET was " << missingET->Px() << " " << missingET->Py() << std::endl;
-    missingETCorr->Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
-    //out() << "MET  is " << missingET->Px() << " " << missingET->Py() << std::endl;
+    missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
   } 
   double MissingEt = missingET->Mod();
-  double MissingEtCorr = missingETCorr->Mod();
+  double MissingEtCorr = missingETCorr.Mod();
 
 
   // bad jet veto
@@ -305,7 +303,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
 
   // Calculate variables for ntuple -----------------------------------------
-  double phi_met = TMath::ATan2(missingETCorr->Y(),missingETCorr->X());
+  double phi_met = TMath::ATan2(missingETCorr.Y(),missingETCorr.X());
   double minDphi = m_proxyUtils.SmallestdPhi(good_jets,phi_met);
   double RemainingminDPhi = m_proxyUtils.SmallestRemainingdPhi(good_jets,phi_met);
   double Meff[6];
@@ -333,9 +331,9 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
 
   double mT2=-9; 
-  //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingETCorr);
+  //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETCorr);
   double mT2_noISR=-9;
-  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingETCorr); 
+  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETCorr); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
 
@@ -356,8 +354,8 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   double Eleg2=-999; 
   double costhetaRp1=-999;
   m_proxyUtils.RazorVariables(good_jets, 
-			      missingETCorr->X(),
-			      missingETCorr->Y(),
+			      missingETCorr.X(),
+			      missingETCorr.Y(),
 			      gaminvRp1 ,
 			      shatR ,
 			      mdeltaR ,

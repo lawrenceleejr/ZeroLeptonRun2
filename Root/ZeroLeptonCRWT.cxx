@@ -248,7 +248,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   std::vector<MuonProxy> trigmatched_muons = isolated_signal_muons;
 
   // missing ET
-  TVector2* missingET = new TVector2(0.,0.);
+  TVector2* missingET = 0;
   if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
   double MissingEt = missingET->Mod();
 
