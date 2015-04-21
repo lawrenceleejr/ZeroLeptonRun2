@@ -13,6 +13,8 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/Zero
 ## additional packages needed
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-05 cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/Control/xAODRootAccess/tags/xAODRootAccess-00-01-00 xAODRootAccess
+
 
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-26 SUSYTools
 
