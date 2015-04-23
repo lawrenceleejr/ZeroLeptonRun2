@@ -6,6 +6,7 @@
 #include "ZeroLeptonRun2/PileUpRWProcessor.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/BuildSUSYObjects.h"
+#include "ZeroLeptonRun2/BuildTruthObjects.h"
 #include "ZeroLeptonRun2/IsData.h"
 #include "ZeroLeptonRun2/ZeroLeptonSR.h"
 #include "ZeroLeptonRun2/ZeroLeptonCRWT.h"
@@ -49,12 +50,15 @@
 
 #ifdef __CINT__
 #pragma link C++ class BuildSUSYObjects+;
+#pragma link C++ class BuildTruthObjects+;
 #endif
 
 #ifdef __CINT__
 #pragma link C++ class JetProxy+;
 #pragma link C++ class ElectronProxy+;
 #pragma link C++ class MuonProxy+;
+#pragma link C++ class ElectronTruthProxy+;
+#pragma link C++ class MuonTruthProxy+;
 #endif
 
 #ifdef __CINT__

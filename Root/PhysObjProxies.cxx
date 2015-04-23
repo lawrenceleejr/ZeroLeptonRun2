@@ -3,6 +3,7 @@
 #include "xAODJet/Jet.h"
 #include "xAODEgamma/Electron.h"
 #include "xAODMuon/Muon.h"
+#include "xAODTruth/TruthParticle.h"
 
 JetProxy::JetProxy():
   TLorentzVector(),
@@ -80,3 +81,31 @@ MuonProxy::MuonProxy(const xAOD::Muon_v1* muon):
   m_muon       = muon;
 }
 ClassImp(MuonProxy);
+
+ElectronTruthProxy::ElectronTruthProxy():
+  TLorentzVector(),
+  m_eltruth(0)
+{
+}
+
+ElectronTruthProxy::ElectronTruthProxy(const xAOD::TruthParticle* eltruth):
+  TLorentzVector(eltruth->p4())
+{
+  m_eltruth         = eltruth;
+}
+ClassImp(ElectronTruthProxy);
+
+
+MuonTruthProxy::MuonTruthProxy():
+  TLorentzVector(),
+  m_muontruth(0)
+{
+}
+
+MuonTruthProxy::MuonTruthProxy(const xAOD::TruthParticle* muontruth):
+  TLorentzVector(muontruth->p4())
+{
+  m_muontruth       = muontruth;
+}
+ClassImp(MuonTruthProxy);
+

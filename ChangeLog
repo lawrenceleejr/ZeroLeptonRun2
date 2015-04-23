@@ -1,3 +1,8 @@
+23-Apr-2015 Geraldine Conti
+	* Added config file to run truth code, zeroleptontruth.config
+	* Modified ZeroLeptonSR.cxx/h to run truth code on it
+	* Added BuildTruthObjects and PhysObjProxyFillerTruth needed for truth code 
+	
 20-Apr-2015 Laurent Duflot
 	* ZeroLeptonSR, ZeroLeptionCR*: fix memory leak
 	* tag ZeroLeptonRun2-00-00-31

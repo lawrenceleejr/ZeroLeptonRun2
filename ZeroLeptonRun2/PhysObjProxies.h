@@ -11,6 +11,10 @@ namespace xAOD {
 namespace xAOD {
   class Muon_v1;
 }
+namespace xAOD {
+  class TruthParticle_v1;
+  typedef TruthParticle_v1 TruthParticle;
+}
 #include "xAODEgamma/ElectronFwd.h"
 
 
@@ -91,6 +95,33 @@ public:
     ClassDef(MuonProxy,0);
 };
 
+class ElectronTruthProxy: public TLorentzVector
+{
+ public:
+  ElectronTruthProxy();
+  ElectronTruthProxy(const xAOD::TruthParticle* eltruth);
+  inline const xAOD::TruthParticle* eltruth() const {return m_eltruth;}
+
+ private:
+  const xAOD::TruthParticle* m_eltruth;
+
+ public:
+  ClassDef(ElectronTruthProxy,0);
+};
+
+class MuonTruthProxy: public TLorentzVector
+{
+ public:
+  MuonTruthProxy();
+  MuonTruthProxy(const xAOD::TruthParticle* muontruth);
+  inline const xAOD::TruthParticle* muontruth() const {return m_muontruth;}
+
+ private:
+  const xAOD::TruthParticle* m_muontruth;
+
+ public:
+  ClassDef(MuonTruthProxy,0);
+};
 
 
 #endif

@@ -24,6 +24,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_stringRegion("SRAll"), 
     m_doSmallNtuple(true),
     m_IsData(false),
+    m_IsTruth(false),
     m_IsSignal(false),
     m_UseSystematics(false),
     m_period(INVALID),
@@ -39,6 +40,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
+  m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
   m_UseSystematics = config.get("UseSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
@@ -55,6 +57,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
 
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
@@ -63,6 +66,7 @@ ZeroLeptonSR::~ZeroLeptonSR()
 {
   if ( !m_UseSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
+  if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
 
 TTree* ZeroLeptonSR::bookTree(const std::string& treename)
@@ -140,7 +144,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // get pileup weights
   std::vector<float>* pileupWeights = 0;
-  if ( !m_IsData ) {
+  if ( !m_IsData && !m_IsTruth ) {
     if ( !store->retrieve< std::vector<float> >(pileupWeights,"pileupWeights").isSuccess() ) throw std::runtime_error("could not retrieve pileupWeights");
     //out() << " pileup weight " << (*pileupWeights)[0] << std::endl;
     //weight *= (*pileupWeights)[0];
@@ -171,7 +175,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) ) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth ) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -199,21 +203,41 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // These jets have overlap removed
   std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
-  m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  }
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
+  }
   std::vector<float> btag_weight(7,1.); // not implemented in SUSYTools
   std::vector<float> ctag_weight(7,1.); // not implemented in SUSYTools
 
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
-  m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
-
+  if(! m_IsTruth){
+    m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
+  }
+  std::vector<ElectronTruthProxy> baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
+  }
   // isolated_xxx have overlap removed
   std::vector<MuonProxy> baseline_muons, isolated_baseline_muons, isolated_signal_muons;
-  m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
-
+  if(! m_IsTruth){
+    m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
+  }
+  std::vector<MuonTruthProxy> baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
+  }
   // missing ET
   TVector2* missingET = 0;
-  if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  if(!m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  }
+  if(m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
+  }
   double MissingEt = missingET->Mod();
 
 
@@ -232,11 +256,15 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   // MET track
   double MET_Track = -999.;
   double MET_Track_phi = -999.;
-  m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
-
+  if( !m_IsTruth ){
+    m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
+  }
   // primary vertex cut
-  const xAOD::Vertex* primVertex = ZeroLeptonUtils::GetPrimVtx(event);
-  if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  const xAOD::Vertex* primVertex = 0;
+  if(! m_IsTruth){
+    primVertex = ZeroLeptonUtils::GetPrimVtx(event);
+    if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
   // Cosmic muon cut
@@ -254,7 +282,10 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Bad Tile Veto",trueTopo);
 
   // Negative-cell cleaning cut
-  bool HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
+  bool HasNegCell = false ; 
+  if(! m_IsTruth){
+    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
+  }
   //out() << " NegCell " << HasNegCell << std::endl;
   if ( HasNegCell ) return true;
   m_counter->increment(weight,incr++,"Negative-cell cleaning",trueTopo);
@@ -298,9 +329,14 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Energy weighted time ",trueTopo);
 
   // MissingET cut
-  if (!(MissingEt > m_cutVal.m_cutEtMiss)) return true;
-  m_counter->increment(weight,incr++,"MET cut",trueTopo);
+  if( !m_IsTruth ){
+    if (!(MissingEt > m_cutVal.m_cutEtMiss)) return true;
+  }
+  if( m_IsTruth ){
+    if (!(MissingEt > m_cutVal.m_cutEtMissTruthTest)) return true;
+  }
 
+  m_counter->increment(weight,incr++,"MET cut",trueTopo);
   // Leading jet Pt cut
   if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
@@ -313,7 +349,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   inSR4 = false;
   inSR5 = false;
   inSR6 = false;
-  
+
   if ((good_jets.size() > 1) && 
       (good_jets[1].Pt() > m_cutVal.m_cutJetPt1)) {
     inSR1 = true; inSR2 = true;
@@ -329,13 +365,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
-
   // Calculate variables for ntuple -----------------------------------------
   double phi_met = TMath::ATan2(missingET->Y(),missingET->X());
   double minDphi = m_proxyUtils.SmallestdPhi(good_jets,phi_met);
   double RemainingminDPhi = m_proxyUtils.SmallestRemainingdPhi(good_jets,phi_met);
   //out() << " minDphi " << minDphi << " " << RemainingminDPhi << std::endl;
-
   //out() << " MissingEt " << MissingEt << std::endl;
   //out() << " jet Pt ";
   //for ( size_t i = 0; i<good_jets.size(); ++i ) out() << " " << good_jets[i].Pt();
@@ -364,7 +398,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;
-
   // Fill ISR variables. These vectors have for each jet > 50GeV the ISR variables in them. 
   std::vector<size_t> isr_jet_indices;
   std::vector<std::vector<double> > ISRvars;
@@ -398,7 +431,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   double mT2_noISR=-9;
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
-
 
   //Super Razor variables
   double gaminvRp1 =-999;
@@ -439,7 +471,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
-
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
     if ( ! m_IsData ) runnum = mc_channel_number;
@@ -450,29 +481,30 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     unsigned int cleaning = 0;
     if (fabs(time[0]) > 5) cleaning += 2;  //t2j use for all SRs
 
-    bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
-    if ( chfTileVeto ) cleaning += 4;
-
-    bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-    if ( chfVeto ) cleaning += 8;
-
+    if(!m_IsTruth){
+      bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
+      if ( chfTileVeto ) cleaning += 4;
+      bool chfVeto = m_proxyUtils.chfVeto(good_jets);
+      if ( chfVeto ) cleaning += 8;
+    }
     const xAOD::MissingETContainer* metcontainer = 0;
     float metLHTOPOx = 0.f;
     float metLHTOPOy = 0.f;
     if ( m_derivationTag != p1872 ) {
-      if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
-	xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
-	metLHTOPOx = (*met_it)->mpx();
-	metLHTOPOy = (*met_it)->mpy();
+      if(!m_IsTruth){
+	if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
+	  xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
+	  metLHTOPOx = (*met_it)->mpx();
+	  metLHTOPOy = (*met_it)->mpy();
+	}
       }
     }
-
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., metLHTOPOx, metLHTOPOy);
-
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., metLHTOPOx, metLHTOPOy,m_IsTruth);
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);
-   
-    m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+
+    if(!m_IsTruth)
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
     
     m_tree->Fill();
   }

@@ -97,7 +97,7 @@ class PhysObjProxyUtils
 		  const std::vector<float>& jetSmearSystW,
 		  const std::vector<float>* flaggedtau = NULL, 
 		  float tauMt = 0.f, float SherpaBugMET = 0.f,
-		  float metLHTOPOx =0.f, float metLHTOPOy = 0.f);
+		  float metLHTOPOx =0.f, float metLHTOPOy = 0.f, bool istruth = false);
 
   void FillNTReclusteringVars(NTReclusteringVars& RTntv, 
 		  const std::vector<JetProxy>& good_jets);

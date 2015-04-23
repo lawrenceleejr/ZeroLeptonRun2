@@ -13,6 +13,7 @@ class ZeroLeptonCutVal
   void ReadCutValues(std::string);
 
   double m_cutEtMiss;
+  double m_cutEtMissTruthTest;
   double m_cutEtMiss1Jet;
   double m_cutJetPt0;
   double m_cutJetPt1;

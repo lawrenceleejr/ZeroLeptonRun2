@@ -730,7 +730,8 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   float tauMt,
 				   float SherpaBugMET,
 				   float metLHTOPOx,
-				   float metLHTOPOy)
+				   float metLHTOPOy,
+				   bool isTruth)
 {
   ntv.Reset();
 
@@ -808,7 +809,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     float emf = 0.;
     float chf = 1.;
     float jetbtag = -1.;  // MV1 not available on xAOD
-    if ( thisjet.jet() ) {
+    if ( thisjet.jet() && !isTruth ) {
       thisjet.jet()->getAttribute(xAOD::JetAttribute::EMFrac,emf);
       std::vector<float> sumPtTrk;
       thisjet.jet()->getAttribute(xAOD::JetAttribute::SumPtTrkPt500,sumPtTrk); // FIXME or SumPtTrkPt1000 ??
