@@ -1,3 +1,6 @@
+23-Apr-2015 Laurent Duflot
+	* FilterUpdateMerge.cxx: fix bug in NTExtraVars merging
+
 23-Apr-2015 Geraldine Conti
 	* Added config file to run truth code, zeroleptontruth.config
 	* Modified ZeroLeptonSR.cxx/h to run truth code on it

@@ -51,7 +51,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( !tree  ) throw std::runtime_error("Could not find a tree named SRAllNT in "+inFiles[i]);
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
-    if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mT2);
+    if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
 
     // loop over entries
     for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
