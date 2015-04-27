@@ -29,6 +29,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_stringRegion("CRWT_SRAll"), 
     m_doSmallNtuple(true),
     m_IsData(false),
+    m_IsTruth(false),
     m_IsSignal(false),
     m_UseSystematics(false),
     m_period(INVALID),
@@ -37,6 +38,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_isElectronChannel(false),
     m_suffix(""),
     m_physobjsFiller(0),
+    m_physobjsFillerTruth(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
     m_ZLUtils(m_IsData, NotADerivation),
@@ -48,6 +50,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_IsTruth = config.get("IsTruth",false);
   if ( m_IsData ) {
     m_isMuonChannel = config.get("IsMuonChannel",false);
     m_isElectronChannel = config.get("IsElectronChannel",false);;
@@ -74,6 +77,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
 
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
@@ -82,6 +86,7 @@ ZeroLeptonCRWT::~ZeroLeptonCRWT()
 {
   if ( !m_UseSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
+  if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
 
 TTree* ZeroLeptonCRWT::bookTree(const std::string& treename)
@@ -159,7 +164,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // get pileup weights
   std::vector<float>* pileupWeights = 0;
-  if ( !m_IsData ) {
+  if ( !m_IsData && !m_IsTruth ) {
     if ( !store->retrieve< std::vector<float> >(pileupWeights,"pileupWeights").isSuccess() ) throw std::runtime_error("could not retrieve pileupWeights");
     //out() << " pileup weight " << (*pileupWeights)[0] << std::endl;
     //weight *= (*pileupWeights)[0];
@@ -191,7 +196,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) ) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth ) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -219,13 +224,24 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // These jets have overlap removed
   std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
+  if(! m_IsTruth){
   m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  }
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
+  }
   std::vector<float> btag_weight(7,1.); // not implemented in SUSYTools
   std::vector<float> ctag_weight(7,1.); // not implemented in SUSYTools
 
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
-  m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
+  }
+  std::vector<ElectronTruthProxy> baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
+  }
   // keep only signal electrons with Pt>25GeV
   for ( std::vector<ElectronProxy>::iterator it = isolated_signal_electrons.begin();
 	it != isolated_signal_electrons.end(); ) {
@@ -237,7 +253,13 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // isolated_xxx have overlap removed
   std::vector<MuonProxy> baseline_muons, isolated_baseline_muons, isolated_signal_muons;
-  m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
+  }
+  std::vector<MuonTruthProxy> baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
+  }
   // keep only signal muons with Pt>25GeV
   for ( std::vector<MuonProxy>::iterator it = isolated_signal_muons.begin();
 	it != isolated_signal_muons.end(); ) {
@@ -249,7 +271,12 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // missing ET
   TVector2* missingET = 0;
-  if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  if(! m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  }
+  if(m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
+  }
   double MissingEt = missingET->Mod();
 
 
@@ -264,15 +291,18 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     if ( *badDetectorQuality ) return true;
   }
   m_counter->increment(weight,incr++,"Detector cleaning",trueTopo);
-
   // MET track
   double MET_Track = -999.;
   double MET_Track_phi = -999.;
-  m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
-
+  if(! m_IsTruth){
+    m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
+  }
   // primary vertex cut
-  const xAOD::Vertex* primVertex = ZeroLeptonUtils::GetPrimVtx(event);
-  if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  const xAOD::Vertex* primVertex = 0;
+  if(! m_IsTruth){
+    primVertex = ZeroLeptonUtils::GetPrimVtx(event);
+    if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
   //FIXME isBadMuon not yet implement in SUSYObjDef_xAOD
@@ -327,7 +357,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
 
   // FIXME: Apply Lepton scale factors
-  
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;
   if ( m_isVR ) {
@@ -350,7 +379,10 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
 
   // Negative-cell cleaning cut
-  bool HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
+  bool HasNegCell = 0;
+  if(! m_IsTruth){
+    m_ZLUtils.NegCellCleaning(event,*missingET);
+  }
   //out() << " NegCell " << HasNegCell << std::endl;
   if ( HasNegCell ) return true;
   m_counter->increment(weight,incr++,"Negative-cell cleaning",trueTopo);
@@ -360,7 +392,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 			 (1.-(leptonTLV.Px()*missingET->Px() + leptonTLV.Py()*missingET->Py())/(leptonTLV.Pt()*MissingEt)) );
   if(!(mt >30000 && mt<100000)) return true; 
   m_counter->increment(weight,incr++,"MT cut",trueTopo);
-
 
   // Topology cut
   // Selection
@@ -426,7 +457,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
-
   // Calculate variables for ntuple -----------------------------------------
   double phi_met = TMath::ATan2(missingETPrime.Y(),missingETPrime.X());
   double minDphi = m_proxyUtils.SmallestdPhi(good_jets,phi_met);
@@ -461,7 +491,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;
-
   // Fill ISR variables. These vectors have for each jet > 50GeV the ISR variables in them. 
   std::vector<size_t> isr_jet_indices;
   std::vector<std::vector<double> > ISRvars;
@@ -496,7 +525,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETPrime); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
-
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
     if ( ! m_IsData ) runnum = mc_channel_number;
@@ -507,15 +535,18 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     unsigned int cleaning = 0;
     if (fabs(time[0]) > 5) cleaning += 2;  //t2j use for all SRs
 
-    // FIXME why not in CRWT ?
-    //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
-    //if ( chfTileVeto ) cleaning += 4;
-
-    bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-    if ( chfVeto ) cleaning += 8;
-
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.);
-    m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
+    if(! m_IsTruth){
+      // FIXME why not in CRWT ?
+      //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
+      //if ( chfTileVeto ) cleaning += 4;
+      
+      bool chfVeto = m_proxyUtils.chfVeto(good_jets);
+      if ( chfVeto ) cleaning += 8;
+    }
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth);
+    if( !m_IsTruth ){
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
+    }
     FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);
 
     m_tree->Fill();

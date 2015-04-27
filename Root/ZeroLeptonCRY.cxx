@@ -9,6 +9,8 @@
 #include "xAODEventInfo/EventInfo.h"
 #include "xAODMissingET/MissingETContainer.h"
 #include "xAODEgamma/PhotonContainer.h"
+#include "xAODTruth/TruthParticleContainer.h"
+#include "xAODTruth/TruthParticle.h"
 #include "PATInterfaces/SystematicSet.h"
 #include "cafe/Processor.h"
 #include "cafe/Controller.h"
@@ -25,11 +27,13 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_stringRegion("CRY_SRAll"), 
     m_doSmallNtuple(true),
     m_IsData(false),
+    m_IsTruth(false),
     m_IsSignal(false),
     m_UseSystematics(false),
     m_period(INVALID),
     m_suffix(""),
     m_physobjsFiller(0),
+    m_physobjsFillerTruth(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
     m_ZLUtils(m_IsData, NotADerivation),
@@ -41,6 +45,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_IsTruth = config.get("IsTruth",false);
   m_UseSystematics = config.get("UseSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRY does not support the 7tev run period"));
@@ -56,6 +61,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
 
   m_suffix = config.get("suffix","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
@@ -64,6 +70,7 @@ ZeroLeptonCRY::~ZeroLeptonCRY()
 {
   if ( !m_UseSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
+  if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
 
 TTree* ZeroLeptonCRY::bookTree(const std::string& treename)
@@ -142,7 +149,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // get pileup weights
   std::vector<float>* pileupWeights = 0;
-  if ( !m_IsData ) {
+  if ( !m_IsData && !m_IsTruth ) {
     if ( !store->retrieve< std::vector<float> >(pileupWeights,"pileupWeights").isSuccess() ) throw std::runtime_error("could not retrieve pileupWeights");
     //out() << " pileup weight " << (*pileupWeights)[0] << std::endl;
     //weight *= (*pileupWeights)[0];
@@ -173,7 +180,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev)) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -201,7 +208,12 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // These jets have overlap removed
   std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
-  m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  }
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
+  }
   std::vector<float> btag_weight(7,1.); // not implemented in SUSYTools
   std::vector<float> ctag_weight(7,1.); // not implemented in SUSYTools
   std::vector<float> time;
@@ -209,24 +221,60 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
-  m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillElectronProxies(baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons);
+  }
+  std::vector<ElectronTruthProxy> baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
+  }
 
   // isolated_xxx have overlap removed
   std::vector<MuonProxy> baseline_muons, isolated_baseline_muons, isolated_signal_muons;
-  m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
+  if(! m_IsTruth){
+    m_physobjsFiller->FillMuonProxies(baseline_muons, isolated_baseline_muons, isolated_signal_muons);
+  }
+  std::vector<MuonTruthProxy> baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
+  }
 
   const xAOD::PhotonContainer* phContainer = 0;
-  if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
-    throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
-  }
-  xAOD::PhotonContainer::const_iterator leadPh = phContainer->end();
   float leadPhPt = 0.;
-  for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
-    if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
-      leadPhPt = (*phit)->pt();
-      leadPh = phit;
+  if(! m_IsTruth){
+    if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
+      throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
+    }  
+  }
+  xAOD::PhotonContainer::const_iterator leadPh ;
+  if(! m_IsTruth){
+    xAOD::PhotonContainer::const_iterator leadPh = phContainer->end();
+    for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
+      if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
+	leadPhPt = (*phit)->pt();
+	leadPh = phit;
+      }
     }
   }
+  //
+  const xAOD::TruthParticleContainer* truthphotons = 0 ;
+  if( m_IsTruth ){
+    if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
+      throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
+    }
+  }
+  xAOD::TruthParticleContainer::const_iterator leadPhtruth = truthphotons->end();
+  if( m_IsTruth){
+  //  for ( auto phit = truthphotons->begin(); phit != truthphotons->end(); phit++){
+  //    if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
+  //      leadPhPt = (*phit)->pt();
+  //      leadPhtruth = phit;
+  //    }
+  //  }
+  }
+  //// CHANGE leadPh to leadPhtruth in the following !! GERALDINE
+  
+
   //out() << "Leading photon pt px py  " << leadPhPt ;
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
   //out() <<std::endl;  
@@ -234,11 +282,18 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // missing ET
   TVector2* missingET = 0;
   TVector2 missingETCorr;
-  if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  if(! m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+  }
+  if(m_IsTruth){
+    if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
+  }
   // the lead photon as if it was a Z->nunu
-  if ( leadPhPt > 0. ) {
-    missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
-  } 
+  if( !m_IsTruth ){
+    if ( leadPhPt > 0. ) {
+      missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py()); // TO FIX FOR TRUTH !! GERALDINE
+    } 
+  }
   double MissingEt = missingET->Mod();
   double MissingEtCorr = missingETCorr.Mod();
 
@@ -258,11 +313,16 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // MET track
   double MET_Track = -999.;
   double MET_Track_phi = -999.;
-  m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
-
+  if(! m_IsTruth){
+    m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
+  }
+  
   // primary vertex cut
-  const xAOD::Vertex* primVertex = ZeroLeptonUtils::GetPrimVtx(event);
-  if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  const xAOD::Vertex* primVertex = 0;
+  if(! m_IsTruth){
+    primVertex = ZeroLeptonUtils::GetPrimVtx(event);
+    if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
+  }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
   // Cosmic muon cut
@@ -280,7 +340,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Bad Tile Veto",trueTopo);
 
   // Negative-cell cleaning cut
-  bool HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
+  bool HasNegCell = 0;
+  if(! m_IsTruth){
+    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
+  }
   //out() << " NegCell " << HasNegCell << std::endl;
   if ( HasNegCell ) return true;
   m_counter->increment(weight,incr++,"Negative-cell cleaning",trueTopo);
@@ -385,18 +448,22 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     unsigned int cleaning = 0;
     if (fabs(time[0]) > 5) cleaning += 2;  //t2j use for all SRs
 
-    bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
-    if ( chfTileVeto ) cleaning += 4;
+    if(! m_IsTruth){
+      bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
+      if ( chfTileVeto ) cleaning += 4;
+      
+      bool chfVeto = m_proxyUtils.chfVeto(good_jets);
+      if ( chfVeto ) cleaning += 8;
+    }
 
-    bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-    if ( chfVeto ) cleaning += 8;
-
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., 0., 0.);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., 0., 0.,m_IsTruth);
 
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, gaminvRp1, shatR, mdeltaR, cosptR, gamma_R,dphi_BETA_R, dphi_leg1_leg2, costhetaR, dphi_BETA_Rp1_BETA_R, gamma_Rp1, costhetaRp1, Ap);
       
-    m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+    if(! m_IsTruth){
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+    }
 
     m_tree->Fill();
   }

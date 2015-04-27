@@ -4,6 +4,7 @@
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
 #include "ZeroLeptonRun2/PhysObjProxyFiller.h"
+#include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/ZeroLeptonUtils.h"
 #include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 #include "ZeroLeptonRun2/ZeroLeptonCutVal.h"
@@ -32,6 +33,7 @@ private:
   std::string m_stringRegion;
   bool m_doSmallNtuple;
   bool m_IsData;
+  bool m_IsTruth;
   bool m_IsSignal;
   bool m_UseSystematics;
   ZeroLeptonRunPeriod m_period;
@@ -43,6 +45,7 @@ private:
 
   std::string m_suffix;
   PhysObjProxyFiller* m_physobjsFiller;
+  PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;
   PhysObjProxyUtils m_proxyUtils;
   ZeroLeptonUtils m_ZLUtils;

@@ -73,7 +73,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   // Muons
   const xAOD::TruthParticleContainer* truthmuons = 0;
   if ( !event.retrieve( truthmuons, "TruthMuons").isSuccess() ) {
-    throw std::runtime_error("Could not retrieve truthMuons");
+    throw std::runtime_error("Could not retrieve truth particles with key TruthMuons");
   }
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthmuons2 = xAOD::shallowCopyContainer( *truthmuons );
@@ -89,7 +89,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   // Electrons
   const xAOD::TruthParticleContainer* truthelectrons = 0 ; 
   if ( !event.retrieve(truthelectrons, "TruthElectrons").isSuccess() ){
-    throw std::runtime_error("Could not retrieve truth particles with key TruthParticles");
+    throw std::runtime_error("Could not retrieve truth particles with key TruthElectrons");
   }
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthelectrons2 = xAOD::shallowCopyContainer( *truthelectrons );
@@ -102,69 +102,41 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
     throw std::runtime_error("Could not store TruthElectrons"+m_suffix+"Aux.");
   }
 
-  /*
+  
   // Photons
-  std::pair< xAOD::PhotonContainer*, xAOD::ShallowAuxContainer* > susyphotons = std::make_pair< xAOD::PhotonContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);
-  if ( m_UseSmearedJets ) {
-    if ( !store->retrieve(susyphotons.first,"SUSYPhotons").isSuccess() ){
-      throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons");
-    }
+  const xAOD::TruthParticleContainer* truthphotons = 0 ;
+  if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
+    throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
   }
-  else {
-    const xAOD::PhotonContainer* photons = 0;
-    if ( !event.retrieve(photons,"PhotonCollection").isSuccess() ){
-      throw std::runtime_error("Could not retrieve PhotonContainer with key PhotonCollection");
-    }
-
-    susyphotons = xAOD::shallowCopyContainer(*photons);
-    
-    // calibrate and fill properties
-    xAOD::PhotonContainer::iterator ph_itr = susyphotons.first->begin();
-    xAOD::PhotonContainer::iterator ph_end = susyphotons.first->end();
-    if ( !xAOD::setOriginalObjectLink(*photons, *susyphotons.first) ) throw std::runtime_error("Could not set original links in photon container copy");
-        
-    for( ; ph_itr != ph_end; ++ph_itr ) {
-      if ( ! m_SUSYObjTool->FillPhoton(**ph_itr).isSuccess() ) throw std::runtime_error("Error in FillPhoton");
-    }
-
-    if ( ! store->record<xAOD::PhotonContainer>(susyphotons.first,"SUSYPhotons").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYPhotons");
-    }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susyphotons.second,"SUSYPhotonsAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYPhotonsAux.");
-    }
+  
+  std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthphotons2 = xAOD::shallowCopyContainer( *truthphotons );
+  
+  if ( ! store->record(truthphotons2.first,"TruthPhotons").isSuccess() ) {
+    throw std::runtime_error("Could not store TruthPhotons");
   }
-*/
+  if ( ! store->record(truthphotons2.second,"TruthPhotonsAux.").isSuccess()) {
+    throw std::runtime_error("Could not store TruthPhotonsAux.");
+  }
 
-  /*
+
+  
   // Taus
-  std::pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* > susytaus = std::make_pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);
-  if ( m_UseSmearedJets ) {
-    if (!store->retrieve(susytaus.first,"SUSYTaus").isSuccess()){
-      throw std::runtime_error("Could not retrieve TauJetContainer with key SUSYTaus");
-    }
-  }
-  else {
-    const xAOD::TauJetContainer* taus = 0;
-    if (!event.retrieve(taus,"TauRecContainer").isSuccess()){
-      throw std::runtime_error("Could not retrieve TauJetContainer with key TauRecContainer");
+  const xAOD::TruthParticleContainer* truthtaus = 0 ;
+
+  if (!event.retrieve(truthtaus,"TruthTaus").isSuccess()){
+      throw std::runtime_error("Could not retrieve truth particles with key TruthTaus");
     }
 
-    susytaus = xAOD::shallowCopyContainer(*taus);
-    xAOD::TauJetContainer::iterator tau_itr = susytaus.first->begin();
-    xAOD::TauJetContainer::iterator tau_end = susytaus.first->end();
-    for( ; tau_itr != tau_end; ++tau_itr ) {
-      if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
-    }
-    
-    if ( ! store->record<xAOD::TauJetContainer>(susytaus.first,"SUSYTaus").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYTaus");
-    }
-    if ( ! store->record<xAOD::ShallowAuxContainer>(susytaus.second,"SUSYTausAux.").isSuccess()) {
-      throw std::runtime_error("Could not store SUSYTausAux.");
-    }
+  std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthtaus2 = xAOD::shallowCopyContainer( *truthtaus );
+  
+  if ( ! store->record(truthtaus2.first,"TruthTaus").isSuccess() ) {
+    throw std::runtime_error("Could not store TruthTaus");
   }
-  */
+  if ( ! store->record(truthtaus2.second,"TruthTausAux.").isSuccess()) {
+    throw std::runtime_error("Could not store TruthTausAux.");
+  }
+  
+  
 
   // Overlap removal 
   //  if ( ! m_SUSYObjTool->OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
