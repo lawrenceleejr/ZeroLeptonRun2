@@ -1,3 +1,7 @@
+27-Apr-2015 Geraldine Conti
+	* Added truth code in the control regions CRY, CRW, CRZ, VRWT (small bug still
+	to be fixed in CRY)
+
 23-Apr-2015 Laurent Duflot
 	* FilterUpdateMerge.cxx: fix bug in NTExtraVars merging
 
