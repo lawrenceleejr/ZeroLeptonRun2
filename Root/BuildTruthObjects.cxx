@@ -32,11 +32,13 @@ BuildTruthObjects::BuildTruthObjects(const char *name)
   : cafe::Processor(name),
     m_IsData(false),
     m_jetkey(),
+    m_PhotonInOR(false),
     m_suffix()
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_jetkey = config.get("JetCollectionKey","xxxx");
+  m_PhotonInOR = config.get("PhotonInOR",false);
   m_suffix = config.get("suffix","");
 
 
@@ -79,12 +81,12 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthmuons2 = xAOD::shallowCopyContainer( *truthmuons );
   //  if ( ! store->record<xAOD::TruthParticleContainer>(truthmuons2.first,"TruthMuons").isSuccess() ) { //BEFORE
-  if ( ! store->record(truthmuons2.first,"TruthMuons").isSuccess() ) { 
-    throw std::runtime_error("Could not store truthMuons");
+  if ( ! store->record(truthmuons2.first,"TruthMuons"+m_suffix).isSuccess() ) { 
+    throw std::runtime_error("Could not store truthMuons"+m_suffix);
   }
   //if ( ! store->record<xAOD::ShallowAuxContainer>(truthmuons2.second,"TruthMuonsAux.").isSuccess()) { //BEFORE
-  if ( ! store->record(truthmuons2.second,"TruthMuonsAux.").isSuccess()) {
-    throw std::runtime_error("Could not store truthMuonsAux.");
+  if ( ! store->record(truthmuons2.second,"TruthMuons"+m_suffix+"Aux.").isSuccess()) {
+    throw std::runtime_error("Could not store truthMuons"+m_suffix+"Aux.");
   }
   
   // Electrons
@@ -112,11 +114,11 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthphotons2 = xAOD::shallowCopyContainer( *truthphotons );
   
-  if ( ! store->record(truthphotons2.first,"TruthPhotons").isSuccess() ) {
-    throw std::runtime_error("Could not store TruthPhotons");
+  if ( ! store->record(truthphotons2.first,"TruthPhotons"+m_suffix).isSuccess() ) {
+    throw std::runtime_error("Could not store TruthPhotons"+m_suffix);
   }
-  if ( ! store->record(truthphotons2.second,"TruthPhotonsAux.").isSuccess()) {
-    throw std::runtime_error("Could not store TruthPhotonsAux.");
+  if ( ! store->record(truthphotons2.second,"TruthPhotons"+m_suffix+"Aux.").isSuccess()) {
+    throw std::runtime_error("Could not store TruthPhotons"+m_suffix+"Aux.");
   }
 
 
@@ -130,17 +132,24 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthtaus2 = xAOD::shallowCopyContainer( *truthtaus );
   
-  if ( ! store->record(truthtaus2.first,"TruthTaus").isSuccess() ) {
-    throw std::runtime_error("Could not store TruthTaus");
+  if ( ! store->record(truthtaus2.first,"TruthTaus"+m_suffix).isSuccess() ) {
+    throw std::runtime_error("Could not store TruthTaus"+m_suffix);
   }
-  if ( ! store->record(truthtaus2.second,"TruthTausAux.").isSuccess()) {
-    throw std::runtime_error("Could not store TruthTausAux.");
+  if ( ! store->record(truthtaus2.second,"TruthTaus"+m_suffix+"Aux.").isSuccess()) {
+    throw std::runtime_error("Could not store TruthTaus"+m_suffix+"Aux.");
   }
   
   
 
   // Overlap removal 
+
+  if ( m_PhotonInOR ) {
+    if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, truthphotons2.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.000) ) throw std::runtime_error("Error in OverlapRemoval");
+  }
+  else{
   if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05) ) throw std::runtime_error("Error in OverlapRemoval");
+  }
+
 
   // Missing ET
   const xAOD::MissingETContainer* truthCont = 0 ; //new xAOD::MissingETContainer();
@@ -179,7 +188,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   //if ( ! store->record<TVector2>(MissingET,"TruthMET"+m_suffix).isSuccess() ) {   //BEFORE
   if ( ! store->record(MissingET,"TruthMET"+m_suffix).isSuccess() ) {
 
-    throw std::runtime_error("Could not store TruthMET");
+    throw std::runtime_error("Could not store TruthMET"+m_suffix);
   }  
 
 return true;
@@ -188,7 +197,6 @@ return true;
 
 bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *electrons, const xAOD::TruthParticleContainer *muons, const xAOD::JetContainer *jets, bool doHarmonization, double dRejet, double dRjetmu, double dRjete, double dRemu, double dRee)
 {
-
   int Njetin=0;
   int Nelin=0;
   int Nmuin=0;
@@ -359,7 +367,6 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
 	  std::cout << " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 		    << " and muon at (eta,phi)=(" << (*el2_itr)->eta() <<"," << (*el2_itr)->phi() <<")"<< std::endl ;
 	  (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;  
-	  
 	}else{
 	  std::cout << " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*el2_itr)->eta() <<"," << (*el2_itr)->phi() <<") "
 		    << " and muon at (eta,phi)=(" << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<")"<< std::endl ;
@@ -368,7 +375,6 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
   // Count number of objects after overlap removal
   int Nel=0;
   el_itr = electrons->begin();
@@ -390,7 +396,6 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   for( ; jet_itr != jet_end; ++jet_itr ) {
     if((*jet_itr)->auxdecor<char>("passOR") == 1) Njet++;//if(dec_passOR( **jet_itr )) Njet++;
   }
-  
   //std::cout << " Before overlap removal: Nel=" << Nelin <<", Nmu="<< Nmuin <<", Njet=" << Njetin<< std::endl ;
   //std::cout << " After  overlap removal: Nel=" << Nel <<", Nmu="<< Nmu <<", Njet=" << Njet<< std::endl ;
   return true;

@@ -34,6 +34,7 @@ public:
 
 private:
   bool m_IsData;
+  bool m_PhotonInOR;
 
   std::string m_jetkey; 
   std::string m_suffix;
