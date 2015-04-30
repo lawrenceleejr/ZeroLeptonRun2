@@ -1,5 +1,6 @@
 30-Apr-2015 Geraldine Conti
 	* Added overlap removal procedure for truth analysis
+	* Added overlap removal for CRY incl. the photon (still buggy)
 	
 27-Apr-2015 Geraldine Conti
 	* Added truth code in the control regions CRY, CRW, CRZ, VRWT (small bug still
