@@ -265,15 +265,13 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   }
   xAOD::TruthParticleContainer::const_iterator leadPhtruth = truthphotons->end();
   if( m_IsTruth){
-  //  for ( auto phit = truthphotons->begin(); phit != truthphotons->end(); phit++){
-  //    if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
-  //      leadPhPt = (*phit)->pt();
-  //      leadPhtruth = phit;
-  //    }
-  //  }
+    for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
+      if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
+	leadPhPt = (*phittruth)->pt();
+	leadPhtruth = phittruth;
+      }
+    }
   }
-  //// CHANGE leadPh to leadPhtruth in the following !! GERALDINE
-  
 
   //out() << "Leading photon pt px py  " << leadPhPt ;
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
@@ -291,7 +289,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // the lead photon as if it was a Z->nunu
   if( !m_IsTruth ){
     if ( leadPhPt > 0. ) {
-      missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py()); // TO FIX FOR TRUTH !! GERALDINE
+      if(m_IsTruth)
+	missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py()); 
+      else
+	missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
     } 
   }
   double MissingEt = missingET->Mod();
