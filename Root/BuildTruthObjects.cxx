@@ -470,7 +470,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     bool ph_sel;
     //if(doHarmonization) ph_sel = (*ph_itr)->auxdecor<char>("signal"); //dec_signal(**ph_itr);   
     //else ph_sel = (*ph_itr)->auxdecor<char>("baseline"); //dec_baseline(**ph_itr);
-    if( (*ph_itr)->pt() > 0 && std::abs((*ph_itr)->eta()) < 100 )
+    if( (*ph_itr)->pt() > 25000 && std::abs((*ph_itr)->eta()) < 2.37 )
       ph_sel = 1 ; 
     if( !ph_sel ){
       (*ph_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **ph_itr ) = 0;    

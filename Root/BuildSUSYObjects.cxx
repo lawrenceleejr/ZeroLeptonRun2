@@ -312,7 +312,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
   // Overlap removal
   if ( m_PhotonInOR ) {
-    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
   }
   else {
     if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");

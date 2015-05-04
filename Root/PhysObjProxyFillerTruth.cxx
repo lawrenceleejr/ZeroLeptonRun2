@@ -10,6 +10,7 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
 #include "xAODTruth/TruthParticleContainer.h"
+#include "xAODBTagging/BTagging.h"
 //#include "xAODEgamma/PhotonContainer.h"
 //#include "xAODTau/TauJetContainer.h"
 
@@ -37,7 +38,9 @@ void PhysObjProxyFillerTruth::FillJetProxies(std::vector<JetProxy>& good_jets,
     if ( (*it)->pt() <= m_jetPtCut ) continue;
     if ( std::abs((*it)->eta()) < 2.8 ) {
       good_jets.push_back(JetProxy(*it));
-      if ( (*it)->auxdecor<char>("bjet") ) b_jets.push_back(JetProxy(*it));
+      // https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/Run2JetMoments
+      int tagInfo = (*it)->getAttribute<int>("ConeTruthLabelID");
+      if ( tagInfo==5 ) b_jets.push_back(JetProxy(*it));
     }
     //}
   }

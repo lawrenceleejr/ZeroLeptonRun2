@@ -333,6 +333,12 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   bool oneLepton = false;
   TLorentzVector leptonTLV;
   int leptonCharge = 0;
+
+  //if(m_IsTruth){ // GERALDINE 
+  //  signalelecistrigmatched = true;
+  //  signalmuonistrigmatched = true; 
+  //}
+  
   if ( m_isMuonChannel && 
        isolated_baseline_muons.size()==1 && 
        isolated_signal_muons.size()==1 && 
