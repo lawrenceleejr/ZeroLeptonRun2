@@ -1,3 +1,6 @@
+06-May-2015 Geraldine Conti
+	*Fixed bug with overlap removal for CRY incl. the photon
+
 04-May-2015 Geraldine Conti
 	* Added pt and eta cuts for photons for truth overlap removal procedure
 	* Fixed the call to OverlapRemoval from BuildSUSYObjs for the photon case by adding

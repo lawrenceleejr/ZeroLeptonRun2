@@ -29,8 +29,8 @@ void PhysObjProxyFillerTruth::FillJetProxies(std::vector<JetProxy>& good_jets,
   good_jets.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
   const xAOD::JetContainer* jets = 0;
-  if ( !store->retrieve(jets, "TruthJets"+m_suffix).isSuccess() ) {
-    throw std::runtime_error("Could not retrieve JetContainer with key TruthJets"+m_suffix);
+  if ( !store->retrieve(jets, "myTruthJets"+m_suffix).isSuccess() ) {
+    throw std::runtime_error("Could not retrieve JetContainer with key myTruthJets"+m_suffix);
   }
   for ( xAOD::JetContainer::const_iterator it = jets->begin();
 	it != jets->end(); ++it ){
@@ -60,8 +60,8 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
   isolated_signal_electrons.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
   const xAOD::TruthParticleContainer* electrons = 0;
-  if ( !store->retrieve(electrons, "TruthElectrons").isSuccess() ){
-    throw std::runtime_error("Could not retrieve ElectronContainer with key TruthElectrons");
+  if ( !store->retrieve(electrons, "myTruthElectrons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve ElectronContainer with key myTruthElectrons");
   }
 
   for ( xAOD::TruthParticleContainer::const_iterator it = electrons->begin();
@@ -92,8 +92,8 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
   isolated_signal_muons.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
   const xAOD::TruthParticleContainer* muons = 0;
-  if ( !store->retrieve(muons, "TruthMuons").isSuccess() ){
-    throw std::runtime_error("Could not retrieve MuonContainer with key TruthMuons");
+  if ( !store->retrieve(muons, "myTruthMuons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve MuonContainer with key myTruthMuons");
   }
 
   for ( xAOD::TruthParticleContainer::const_iterator it = muons->begin();
