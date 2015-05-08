@@ -1,3 +1,6 @@
+08-May-2015 Geraldine Conti
+	* small fix for cutEtMissTruthTest in ZeroLeptonCutVal.cxx
+	
 06-May-2015 Geraldine Conti
 	*Fixed bug with overlap removal for CRY incl. the photon
 
