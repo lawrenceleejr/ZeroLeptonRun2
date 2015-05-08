@@ -46,7 +46,7 @@ void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
   
   ZeroLeptonParamFile params(paramfilename);
   m_cutEtMiss=params.find<double>("cutEtMiss",160000);
-  m_cutEtMissTruthTest=params.find<double>("cutEtMissTruthTest",998);
+  m_cutEtMissTruthTest=params.find<double>("cutEtMissTruthTest",160000);
   m_cutEtMiss1Jet=params.find<double>("cutEtMiss1Jet",300000);
   m_cutJetPt0=params.find<double>("cutJetPt0",130000);
   m_cutJetPt1=params.find<double>("cutJetPt1",60000);
