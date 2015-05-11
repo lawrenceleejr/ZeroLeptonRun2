@@ -309,6 +309,7 @@ if __name__ == '__main__':
         AllSamples.append(WMassiveCB)
         AllSamples.append(ZMassiveCB)
         AllSamples.append(QCD)
+        AllSamples.append(GAMMAMassiveCB)
 
 
     if config.doData==True:
