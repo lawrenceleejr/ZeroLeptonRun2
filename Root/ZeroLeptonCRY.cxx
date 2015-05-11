@@ -241,14 +241,11 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   const xAOD::PhotonContainer* phContainer = 0;
   float leadPhPt = 0.;
+  xAOD::PhotonContainer::const_iterator leadPh ;
   if(! m_IsTruth){
     if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
       throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
     }  
-  }
-  xAOD::PhotonContainer::const_iterator leadPh ;
-  if(! m_IsTruth){
-    xAOD::PhotonContainer::const_iterator leadPh = phContainer->end();
     for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
       if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
 	leadPhPt = (*phit)->pt();
@@ -256,15 +253,14 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       }
     }
   }
+
   //
   const xAOD::TruthParticleContainer* truthphotons = 0 ;
+  xAOD::TruthParticleContainer::const_iterator leadPhtruth;
   if( m_IsTruth ){
     if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
       throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
     }
-  }
-  xAOD::TruthParticleContainer::const_iterator leadPhtruth = truthphotons->end();
-  if( m_IsTruth){
     for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
       if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
 	leadPhPt = (*phittruth)->pt();
@@ -272,6 +268,9 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       }
     }
   }
+  if ( leadPhPt == 0. ) return true;
+  m_counter->increment(weight,incr++,"One photon",trueTopo);
+  
 
   //out() << "Leading photon pt px py  " << leadPhPt ;
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
@@ -283,18 +282,17 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
   }
-  if(m_IsTruth){
+  else {
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
   }
+
   // the lead photon as if it was a Z->nunu
-  if( !m_IsTruth ){
-    if ( leadPhPt > 0. ) {
-      if(m_IsTruth)
-	missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py()); 
-      else
-	missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
-    } 
+  if(m_IsTruth) {
+    missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py()); 
   }
+  else {
+    missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
+  } 
   double MissingEt = missingET->Mod();
   double MissingEtCorr = missingETCorr.Mod();
 
