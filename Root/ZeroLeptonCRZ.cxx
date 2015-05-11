@@ -91,6 +91,7 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
+  bookNTExtraVars(tree,m_extrantv);
   bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRZVars(tree,m_crzntv);
   return tree;
@@ -492,7 +493,47 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
 
   double mT2=-9; 
+  double mT2_noISR=-9; 
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
+
+  //Super Razor variables
+  double gaminvRp1 =-999;
+  double shatR =-999;
+  double mdeltaR =-999;
+  double cosptR =-999;
+  double Minv2 =-999;
+  double Einv =-999;
+  double  gamma_R=-999;
+  double dphi_BETA_R =-999; 
+  double dphi_leg1_leg2 =-999; 
+  double costhetaR =-999;
+  double dphi_BETA_Rp1_BETA_R=-999;
+  double gamma_Rp1=-999;
+  double Eleg1=-999;
+  double Eleg2=-999; 
+  double costhetaRp1=-999;
+
+  m_proxyUtils.RazorVariables(good_jets, 
+			      missingETPrime.X(),
+			      missingETPrime.Y(),
+			      gaminvRp1 ,
+			      shatR ,
+			      mdeltaR ,
+			      cosptR ,
+			      Minv2 ,
+			      Einv ,
+			      gamma_R,
+			      dphi_BETA_R , 
+			      dphi_leg1_leg2 , 
+			      costhetaR ,
+			      dphi_BETA_Rp1_BETA_R,
+			      gamma_Rp1,
+			      Eleg1,
+			      Eleg2, 
+			      costhetaRp1);
+
+  double Sp,ST,Ap=-1;
+  m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
 
   if(m_doSmallNtuple) { 
@@ -515,6 +556,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     }
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth);
+
+    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, gaminvRp1, shatR, mdeltaR, cosptR, gamma_R,dphi_BETA_R, dphi_leg1_leg2, costhetaR, dphi_BETA_Rp1_BETA_R, gamma_Rp1, costhetaRp1, Ap);
+      
 
     if( !m_IsTruth ){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);

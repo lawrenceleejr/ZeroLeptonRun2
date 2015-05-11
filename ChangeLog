@@ -1,5 +1,8 @@
 11-May-2015 Laurent Duflot
-	* FilterUpdateMerge.py : add gamma+jet merging
+	* FilterUpdateMerge.py: add gamma+jet merging
+	* CRWT, CRZ : add ExtraVar block
+	* CRY : bug fix for truth vs reco handling
+	* GRLProcessor, BuildSUSYObjects : cleanup StatusCode checks
 
 08-May-2015 Geraldine Conti
 	* small fix for cutEtMissTruthTest in ZeroLeptonCutVal.cxx
