@@ -21,9 +21,9 @@ GRLProcessor::GRLProcessor(const char *name)
   m_GRLtool = new GoodRunsListSelectionTool("cafeGRL");
   std::vector<std::string> GRLXMLs;
   GRLXMLs.push_back(GRLXMLFile);
-  m_GRLtool->setProperty("GoodRunsListVec",GRLXMLs);
-  m_GRLtool->setProperty("VerboseDetStatus",verbose);
-  m_GRLtool->initialize();
+  m_GRLtool->setProperty("GoodRunsListVec",GRLXMLs).ignore();
+  m_GRLtool->setProperty("VerboseDetStatus",verbose).ignore();
+  m_GRLtool->initialize().ignore();
   if ( verbose ) m_GRLtool->getGRLCollection()->Summary();
 }
 GRLProcessor::~GRLProcessor()

@@ -59,16 +59,16 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
   int datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
-  m_SUSYObjTool->setProperty("DataSource",datasource);
-  m_SUSYObjTool->setProperty("METTauTerm","");
-  if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true);
-  else m_SUSYObjTool->setProperty("Is8TeV", false);
-  m_SUSYObjTool->setProperty("JESNuisanceParameterSet",m_JESNuisanceParameterSet);
-  m_SUSYObjTool->setProperty("DoJetAreaCalib",true);
-  m_SUSYObjTool->setProperty("DoJetGSCCalib",true);
+  m_SUSYObjTool->setProperty("DataSource",datasource).ignore();
+  m_SUSYObjTool->setProperty("METTauTerm","").ignore();
+  if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true).ignore();
+  else m_SUSYObjTool->setProperty("Is8TeV", false).ignore();
+  m_SUSYObjTool->setProperty("JESNuisanceParameterSet",m_JESNuisanceParameterSet).ignore();
+  m_SUSYObjTool->setProperty("DoJetAreaCalib",true).ignore();
+  m_SUSYObjTool->setProperty("DoJetGSCCalib",true).ignore();
   if ( m_derivationTag == p1872 ) {
-    m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix");
-    m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix");
+    m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix").ignore();
+    m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix").ignore();
   }
 
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
