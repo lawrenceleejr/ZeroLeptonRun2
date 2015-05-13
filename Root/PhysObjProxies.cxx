@@ -2,6 +2,7 @@
 
 #include "xAODJet/Jet.h"
 #include "xAODEgamma/Electron.h"
+#include "xAODEgamma/Photon.h"
 #include "xAODMuon/Muon.h"
 #include "xAODTruth/TruthParticle.h"
 
@@ -59,6 +60,36 @@ ElectronProxy::ElectronProxy(const xAOD::Electron* el):
 }
 ClassImp(ElectronProxy);
 
+PhotonProxy::PhotonProxy():
+  TLorentzVector(),
+  m_isBaseline(false),
+  m_isSignal(false),
+  m_passOR(true),
+  m_isolation(0.),
+  m_ph(0)
+{
+}
+
+PhotonProxy::PhotonProxy(const TLorentzVector& input):
+  TLorentzVector(input),
+  m_isBaseline(true),
+  m_isSignal(true),
+  m_passOR(true),
+  m_isolation(0.),
+  m_ph(0)
+{
+}
+
+PhotonProxy::PhotonProxy(const xAOD::Photon* ph):
+  TLorentzVector(ph->p4())
+{
+  m_isBaseline = ph->auxdecor<char>("baseline")==1;
+  m_isSignal   = ph->auxdecor<char>("signal")==1;
+  m_passOR     = ph->auxdecor<char>("passOR")==1;
+  ph->isolationValue(m_isolation,xAOD::Iso::topoetcone40);
+  m_ph         = ph;
+}
+ClassImp(PhotonProxy);
 
 
 MuonProxy::MuonProxy():

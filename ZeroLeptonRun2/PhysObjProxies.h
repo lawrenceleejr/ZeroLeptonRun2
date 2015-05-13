@@ -16,6 +16,7 @@ namespace xAOD {
   typedef TruthParticle_v1 TruthParticle;
 }
 #include "xAODEgamma/ElectronFwd.h"
+#include "xAODEgamma/PhotonFwd.h"
 
 
 //----------------------------------------------------------------------
@@ -70,6 +71,30 @@ class ElectronProxy: public TLorentzVector
 
 public:
     ClassDef(ElectronProxy,0);
+};
+
+class PhotonProxy: public TLorentzVector
+{
+ public:
+  PhotonProxy();
+  PhotonProxy(const xAOD::Photon* ph);
+  PhotonProxy(const TLorentzVector& input);
+
+  inline bool isBaseline() const {return m_isBaseline;}
+  inline bool isSignal() const {return m_isSignal;}
+  inline bool passOVerlapRemoval() const {return m_passOR;}
+  inline float isolation() const {return m_isolation;}
+  inline const xAOD::Photon* photon() const {return m_ph;}
+
+ private:
+  bool m_isBaseline;
+  bool m_isSignal;
+  bool m_passOR;
+  float m_isolation;
+  const xAOD::Photon* m_ph;
+
+public:
+    ClassDef(PhotonProxy,0);
 };
 
 class MuonProxy: public TLorentzVector
