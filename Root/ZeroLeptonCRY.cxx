@@ -81,7 +81,7 @@ TTree* ZeroLeptonCRY::bookTree(const std::string& treename)
   bookNTVars(tree,m_ntv,false);
   bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
-  //bookNTCRYVars(tree,m_cryntv);
+  bookNTCRYVars(tree,m_cryntv);
   return tree;
 }
 
@@ -239,6 +239,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
   }
 
+  std::vector<PhotonProxy> allphotons;
   const xAOD::PhotonContainer* phContainer = 0;
   float leadPhPt = 0.;
   xAOD::PhotonContainer::const_iterator leadPh ;
@@ -247,6 +248,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
     }  
     for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
+      allphotons.push_back(PhotonProxy(*phit));
       if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
 	leadPhPt = (*phit)->pt();
 	leadPh = phit;
@@ -262,6 +264,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
     }
     for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
+      allphotons.push_back(PhotonProxy((*phittruth)->p4()));
       if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
 	leadPhPt = (*phittruth)->pt();
 	leadPhtruth = phittruth;
@@ -459,6 +462,8 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, gaminvRp1, shatR, mdeltaR, cosptR, gamma_R,dphi_BETA_R, dphi_leg1_leg2, costhetaR, dphi_BETA_Rp1_BETA_R, gamma_Rp1, costhetaRp1, Ap);
+
+    FillNTCRYVars(m_cryntv,allphotons,*missingET);
       
     if(! m_IsTruth){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
@@ -477,6 +482,23 @@ void ZeroLeptonCRY::finish()
   else {
     out() << *m_counter << std::endl;
   }
+}
+
+void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
+				  const std::vector<PhotonProxy>& photons,
+				  TVector2& origmisset)
+{
+  cryntv.Reset();
+  for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
+    if ( phit->isBaseline() && phit->Pt() > 20000. ) {
+      cryntv.phPt.push_back(phit->Pt());
+      cryntv.phEta.push_back(phit->Eta());
+      cryntv.phPhi.push_back(phit->Phi());
+      cryntv.phIso.push_back(phit->isolation());
+    }
+  }
+  cryntv.origmet    = origmisset.Mod();
+  cryntv.origmetPhi = origmisset.Phi();
 }
 
 ClassImp(ZeroLeptonCRY);

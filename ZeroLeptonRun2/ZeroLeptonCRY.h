@@ -3,6 +3,7 @@
 
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
+#include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PhysObjProxyFiller.h"
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/ZeroLeptonUtils.h"
@@ -28,6 +29,7 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
+  void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset);
 
   TTree* m_tree;
   std::string m_stringRegion;

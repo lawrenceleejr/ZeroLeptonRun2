@@ -1,3 +1,10 @@
+13-May-2015 Laurent Duflot
+	* PhysObjProxies: add PhotonProxy
+	* ZeroLeptonNTVars: redefine CRY block content (initial met and photon
+	pt, eta, phi, isolation).
+	* ZeroLeptonCRY : fill CRY block
+
+
 11-May-2015 Laurent Duflot
 	* FilterUpdateMerge.py: add gamma+jet merging
 	* CRWT, CRZ : add ExtraVar block

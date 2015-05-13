@@ -56,6 +56,7 @@
 #ifdef __CINT__
 #pragma link C++ class JetProxy+;
 #pragma link C++ class ElectronProxy+;
+#pragma link C++ class PhotonProxy+;
 #pragma link C++ class MuonProxy+;
 #pragma link C++ class ElectronTruthProxy+;
 #pragma link C++ class MuonTruthProxy+;
