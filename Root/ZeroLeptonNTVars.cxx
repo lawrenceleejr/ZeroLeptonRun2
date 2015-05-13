@@ -217,33 +217,6 @@ void NTCRZVars::Reset()
 }
 
 
-std::string NTCRYVars::toString()
-{ 
-  return std::string("nPh/i:phQuality/i:phPt/F:phPhi/F:phEta/F:phIso/F:nLep/i:lep1Pt/F:lep2Pt/F:lep1Eta/F:lep2Eta/F:lep1Phi/F:lep2Phi/F:lep1sign/I:lep2sign/I:photonWeight/F:photonWeightUp/F:photonWeightDown/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:mass/F:fakemet/F:fakemetPhi/F:dRPhLep/F:lep1Iso/F:lep2Iso/F:lep1DRjet/F:lep2DRjet/F:lep1jetJVF/F:lep2jetJVF/F"); 
-}
-
-void NTCRYVars::Reset()
-{
-  nPh = nLep = 0;
-  phQuality = 0;
-  phPt  = lep1Pt  = lep2Pt  = 0.f;
-  phPhi = lep1Phi = lep2Phi = 0.f;
-  phEta = lep1Eta = lep2Eta = 0.f;
-  phIso = 0.f;
-  lep1sign = lep2sign = 0;
-  photonWeight     = leptonWeight     = 1.f;
-  photonWeightUp   = leptonWeightUp   = 1.f;  
-  photonWeightDown = leptonWeightDown = 1.f;
-  triggerWeight     = 1.f;
-  triggerWeightUp   = 1.f;
-  triggerWeightDown = 1.f;
-  mass = fakemet = fakemetPhi = 0.f;
-  dRPhLep = 0.f;
-  lep1Iso = lep2Iso = 0.f;
-  lep1DRjet = lep2DRjet = 999.f;
-  lep1jetJVF = lep2jetJVF = -999.f;
-}
-
 
 std::string NTExtraVars::toString()
 { 
@@ -352,4 +325,40 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
 }
 
 
+void NTCRYVars::Reset()
+{
+  phPt.clear();
+  phEta.clear();
+  phPhi.clear();
+  phIso.clear();
+  origmet = 0.f;
+  origmetPhi = 0.f;
+}
+
+
+NTCRYVarsRead::NTCRYVarsRead(): ntv()
+{
+  p_phPt = &ntv.phPt;
+  p_phPt = &ntv.phEta;
+  p_phPt = &ntv.phPhi;
+  p_phPt = &ntv.phIso;
+}
+
+void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
+{
+  tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());
+  tree->Branch("phPt",&(cryntv.phPt));
+  tree->Branch("phEta",&(cryntv.phEta));
+  tree->Branch("phPhi",&(cryntv.phPhi));
+  tree->Branch("phIso",&(cryntv.phIso));
+}
+
+void NTCRYVarsRead::setAddresses(TTree* tree)
+{
+  tree->GetBranch("NTCRYVars")->SetAddress(&ntv.origmet);
+  tree->GetBranch("phPt")->SetAddress(&p_phPt);
+  tree->GetBranch("phEta")->SetAddress(&p_phEta);
+  tree->GetBranch("phPhi")->SetAddress(&p_phPhi);
+  tree->GetBranch("phIso")->SetAddress(&p_phIso);
+}
 

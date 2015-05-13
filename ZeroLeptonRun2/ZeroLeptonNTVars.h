@@ -181,28 +181,31 @@ class NTCRYVars
  public:
   NTCRYVars() { Reset(); }
   
-  static std::string toString();
-
-
+  static std::string toString() {return std::string("origmet/F:origmetPhi/F");}
   void Reset();
-  
-  int nPh;
-  unsigned int phQuality;
-  float phPt, phPhi, phEta, phIso;
-  int nLep;
-  float lep1Pt, lep2Pt;
-  float lep1Eta, lep2Eta;
-  float lep1Phi, lep2Phi;
-  int lep1sign, lep2sign;
-  float photonWeight, photonWeightUp, photonWeightDown;
-  float leptonWeight, leptonWeightUp, leptonWeightDown;
-  float triggerWeight, triggerWeightUp, triggerWeightDown;
-  float mass;
-  float fakemet,fakemetPhi;
-  float dRPhLep;
-  float lep1Iso, lep2Iso;
-  float lep1DRjet, lep2DRjet;
-  float lep1jetJVF, lep2jetJVF;
+
+  float origmet,origmetPhi;
+
+  // WARNING: if you add another vector you need to update NTCRYVarsRead below
+  std::vector<float> phPt;
+  std::vector<float> phEta;
+  std::vector<float> phPhi;
+  std::vector<float> phIso;
+
+};
+
+class NTCRYVarsRead 
+{
+public:
+  NTCRYVarsRead();
+  void setAddresses(TTree* tree);
+
+  NTCRYVars ntv;
+private:
+  std::vector< float >* p_phPt;
+  std::vector< float >* p_phEta;
+  std::vector< float >* p_phPhi;
+  std::vector< float >* p_phIso;
 };
 
 class NTPdfVars {
@@ -305,11 +308,7 @@ inline void bookNTCRZVars(TTree* tree, NTCRZVars& crzntv)
   tree->Branch("NTCRZVars",&crzntv,NTCRZVars::toString().c_str());
 }
 
-
-inline void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
-{
-  tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());
-}
+void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv);
 
 
 
