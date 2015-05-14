@@ -1,6 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-rcSetup Base,2.1.30
+rcSetup Base,2.1.32
 
 
 ## the code for ZeroLeptonRun2 is at
@@ -13,18 +13,15 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/Zero
 ## additional packages needed
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-05 cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/Control/xAODRootAccess/tags/xAODRootAccess-00-01-00 xAODRootAccess
 
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-26 SUSYTools
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-30 SUSYTools
 
 ### from SUSYTools/doc/packages.txt
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/Reconstruction/EventShapes/EventShapeTools/tags/EventShapeTools-00-01-09 EventShapeTools
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/Reconstruction/EventShapes/EventShapeInterface/tags/EventShapeInterface-00-00-09 EventShapeInterface
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorrection/tags/ElectronEfficiencyCorrection-00-01-19 ElectronEfficiencyCorrection
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/Reconstruction/Jet/JetCalibTools/tags/JetCalibTools-00-04-34 JetCalibTools
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/Reconstruction/Jet/JetUncertainties/tags/JetUncertainties-00-09-19 JetUncertainties
-
+rc checkout_pkg $SVNOFF/Reconstruction/EventShapes/EventShapeTools/tags/EventShapeTools-00-01-09
+rc checkout_pkg $SVNOFF/Reconstruction/EventShapes/EventShapeInterface/tags/EventShapeInterface-00-00-09
+rc checkout_pkg $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorrection/tags/ElectronEfficiencyCorrection-00-01-19
+svn co $SVNPERF/CombPerf/FlavorTag/FlavorTagEfficiencyMaps/PreRun2_DC14/tags/PreRun2_DC14-00-00-07 BTagEfficiencyReader
 
 
 

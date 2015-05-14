@@ -1,4 +1,10 @@
-13-May-2015 Laurent Duflot
+14-May-2015 Laurent Duflot
+	* adapt to SUSYTools-00-05-00-30:
+	CosmicMuon vetoes 5 x more events  -> to be understood
+	ttbar: -20% in SR and -10% in CRWT
+	* tag ZeroLeptonRun2-00-00-33
+
+14-May-2015 Laurent Duflot
 	* add python/mc15_13TeV_MCSampleList.py with preliminary mc15 samples
 	* tag ZeroLeptonRun2-00-00-32
 

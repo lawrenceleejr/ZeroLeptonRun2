@@ -58,7 +58,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
 
   m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
-  int datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
+  ST::SettingDataSource datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
   m_SUSYObjTool->setProperty("DataSource",datasource).ignore();
   m_SUSYObjTool->setProperty("METTauTerm","").ignore();
   if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true).ignore();
@@ -70,6 +70,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix").ignore();
     m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix").ignore();
   }
+  //m_SUSYObjTool->setProperty("IsoWP","Gradient").ignore();
 
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
@@ -268,7 +269,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
         
     for( ; ph_itr != ph_end; ++ph_itr ) {
       if ( ! m_SUSYObjTool->FillPhoton(**ph_itr).isSuccess() ) throw std::runtime_error("Error in FillPhoton");
-      m_SUSYObjTool->IsSignalPhoton(**ph_itr,25000.,4000.);
+      m_SUSYObjTool->IsSignalPhoton(**ph_itr,25000.);
       //if ((*ph_itr)->pt()>10000.) out() << "Photon : pt " << (*ph_itr)->pt() << " baseline " << (int)((*ph_itr)->auxdecor<char>("baseline")) << " signal " << (int)((*ph_itr)->auxdecor<char>("signal")) << std::endl;
     }
 
@@ -312,10 +313,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
   // Overlap removal
   if ( m_PhotonInOR ) {
-    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
   }
   else {
-    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
   }
 
   // Missing ET
