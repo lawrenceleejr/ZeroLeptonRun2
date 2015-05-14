@@ -24,6 +24,7 @@ rc checkout_pkg $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorre
 svn co $SVNPERF/CombPerf/FlavorTag/FlavorTagEfficiencyMaps/PreRun2_DC14/tags/PreRun2_DC14-00-00-07 BTagEfficiencyReader
 
 
+svn co $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronIsolationSelection/tags/ElectronIsolationSelection-00-01-02 ElectronIsolationSelection
 
 # compile
 rc find_packages
