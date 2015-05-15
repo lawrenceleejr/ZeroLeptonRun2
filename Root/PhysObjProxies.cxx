@@ -65,7 +65,6 @@ PhotonProxy::PhotonProxy():
   m_isBaseline(false),
   m_isSignal(false),
   m_passOR(true),
-  m_isolation(0.),
   m_ph(0)
 {
 }
@@ -75,7 +74,6 @@ PhotonProxy::PhotonProxy(const TLorentzVector& input):
   m_isBaseline(true),
   m_isSignal(true),
   m_passOR(true),
-  m_isolation(0.),
   m_ph(0)
 {
 }
@@ -86,7 +84,6 @@ PhotonProxy::PhotonProxy(const xAOD::Photon* ph):
   m_isBaseline = ph->auxdecor<char>("baseline")==1;
   m_isSignal   = ph->auxdecor<char>("signal")==1;
   m_passOR     = ph->auxdecor<char>("passOR")==1;
-  ph->isolationValue(m_isolation,xAOD::Iso::topoetcone40);
   m_ph         = ph;
 }
 ClassImp(PhotonProxy);

@@ -494,7 +494,7 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
       cryntv.phPt.push_back(phit->Pt());
       cryntv.phEta.push_back(phit->Eta());
       cryntv.phPhi.push_back(phit->Phi());
-      cryntv.phIso.push_back(phit->isolation());
+      cryntv.phSignal.push_back(phit->isSignal());
     }
   }
   cryntv.origmet    = origmisset.Mod();

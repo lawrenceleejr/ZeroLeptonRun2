@@ -330,7 +330,7 @@ void NTCRYVars::Reset()
   phPt.clear();
   phEta.clear();
   phPhi.clear();
-  phIso.clear();
+  phSignal.clear();
   origmet = 0.f;
   origmetPhi = 0.f;
 }
@@ -339,9 +339,9 @@ void NTCRYVars::Reset()
 NTCRYVarsRead::NTCRYVarsRead(): ntv()
 {
   p_phPt = &ntv.phPt;
-  p_phPt = &ntv.phEta;
-  p_phPt = &ntv.phPhi;
-  p_phPt = &ntv.phIso;
+  p_phEta = &ntv.phEta;
+  p_phPhi = &ntv.phPhi;
+  p_phSignal = &ntv.phSignal;
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
@@ -350,7 +350,7 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   tree->Branch("phPt",&(cryntv.phPt));
   tree->Branch("phEta",&(cryntv.phEta));
   tree->Branch("phPhi",&(cryntv.phPhi));
-  tree->Branch("phIso",&(cryntv.phIso));
+  tree->Branch("phSignal",&(cryntv.phSignal));
 }
 
 void NTCRYVarsRead::setAddresses(TTree* tree)
@@ -359,6 +359,6 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("phPt")->SetAddress(&p_phPt);
   tree->GetBranch("phEta")->SetAddress(&p_phEta);
   tree->GetBranch("phPhi")->SetAddress(&p_phPhi);
-  tree->GetBranch("phIso")->SetAddress(&p_phIso);
+  tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
 }
 

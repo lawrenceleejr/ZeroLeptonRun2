@@ -83,18 +83,16 @@ class PhotonProxy: public TLorentzVector
   inline bool isBaseline() const {return m_isBaseline;}
   inline bool isSignal() const {return m_isSignal;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
-  inline float isolation() const {return m_isolation;}
   inline const xAOD::Photon* photon() const {return m_ph;}
 
  private:
   bool m_isBaseline;
   bool m_isSignal;
   bool m_passOR;
-  float m_isolation;
   const xAOD::Photon* m_ph;
 
 public:
-    ClassDef(PhotonProxy,0);
+    ClassDef(PhotonProxy,1);
 };
 
 class MuonProxy: public TLorentzVector

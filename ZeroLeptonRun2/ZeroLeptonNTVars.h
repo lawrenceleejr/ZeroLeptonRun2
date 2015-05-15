@@ -190,7 +190,7 @@ class NTCRYVars
   std::vector<float> phPt;
   std::vector<float> phEta;
   std::vector<float> phPhi;
-  std::vector<float> phIso;
+  std::vector<bool> phSignal;
 
 };
 
@@ -205,7 +205,7 @@ private:
   std::vector< float >* p_phPt;
   std::vector< float >* p_phEta;
   std::vector< float >* p_phPhi;
-  std::vector< float >* p_phIso;
+  std::vector< bool >*  p_phSignal;
 };
 
 class NTPdfVars {
