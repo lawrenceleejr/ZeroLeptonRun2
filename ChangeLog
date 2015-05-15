@@ -2,6 +2,7 @@
 	* ZeroLeptonCRY, PhysObjProxies: remove isolation in PhotonProxy and
 	NTCRYVars block since not used directly in IsSignalPhoton that now
 	uses the isolation tool.
+	* PhysObjProxyUtils: add protection against event with <2 jets
 
 14-May-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-00-30:

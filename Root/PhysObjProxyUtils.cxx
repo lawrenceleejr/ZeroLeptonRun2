@@ -142,6 +142,26 @@ void PhysObjProxyUtils::RazorVariables(const std::vector<JetProxy>& jets,
 					 double &Eleg2, 
 					 double &costhetaRp1)
 {
+  if (  good_jets.size() <1 ) {
+    gaminvRp1 = -999.;
+    shatR = -999.;
+    mdeltaR = -999.;
+    cosptR = -999.;
+    Minv2 = -999.;
+    Einv = -999.;
+    gamma_R= -999.;
+    dphi_BETA_R = -999.; 
+    dphi_leg1_leg2 = -999.; 
+    costhetaR = -999.;
+    dphi_BETA_Rp1_BETA_R= -999.;
+    gamma_Rp1= -999.;
+    Eleg1= -999.;
+    Eleg2= -999.; 
+    costhetaRp1 = -999.;
+    return;
+  }
+
+
   //=============================================================
   // Step 1: make megajet
   //=============================================================
