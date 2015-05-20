@@ -1,6 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-rcSetup Base,2.1.32
+rcSetup Base,2.1.33
 
 
 ## the code for ZeroLeptonRun2 is at
@@ -15,16 +15,15 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
 
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-30 SUSYTools
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-31 SUSYTools
 
-### from SUSYTools/doc/packages.txt
+### from SUSYTools/doc/README
 rc checkout_pkg $SVNOFF/Reconstruction/EventShapes/EventShapeTools/tags/EventShapeTools-00-01-09
 rc checkout_pkg $SVNOFF/Reconstruction/EventShapes/EventShapeInterface/tags/EventShapeInterface-00-00-09
 rc checkout_pkg $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronEfficiencyCorrection/tags/ElectronEfficiencyCorrection-00-01-19
+svn co $SVNOFF/PhysicsAnalysis/ElectronPhotonID/PhotonEfficiencyCorrection/tags/PhotonEfficiencyCorrection-00-01-05 PhotonEfficiencyCorrection
 svn co $SVNPERF/CombPerf/FlavorTag/FlavorTagEfficiencyMaps/PreRun2_DC14/tags/PreRun2_DC14-00-00-07 BTagEfficiencyReader
 
-
-svn co $SVNOFF/PhysicsAnalysis/ElectronPhotonID/ElectronIsolationSelection/tags/ElectronIsolationSelection-00-01-02 ElectronIsolationSelection
 
 # compile
 rc find_packages

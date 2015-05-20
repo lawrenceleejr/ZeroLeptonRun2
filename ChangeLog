@@ -1,8 +1,16 @@
+20-May-2015 Laurent Duflot
+	* previous problems with SUSYTools-00-05-00-30 understood to be due
+	to a bug in overlap removal.
+	* adapt to SUSYTools-00-05-00-31  (BuildSUSYObjects)
+	changes in ttbar cutflow compared to ZeroLeptonRun2-00-00-32 are small.
+	* tag ZeroLeptonRun2-00-00-34
+
+
 14-May-2015 Laurent Duflot
 	* ZeroLeptonCRY, PhysObjProxies: remove isolation in PhotonProxy and
 	NTCRYVars block since not used directly in IsSignalPhoton that now
 	uses the isolation tool.
-	* PhysObjProxyUtils: add protection against event with <2 jets
+	* PhysObjProxyUtils: add protection against events with <2 jets
 
 14-May-2015 Laurent Duflot
 	* adapt to SUSYTools-00-05-00-30:
