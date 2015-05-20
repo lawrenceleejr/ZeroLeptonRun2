@@ -142,7 +142,7 @@ void PhysObjProxyUtils::RazorVariables(const std::vector<JetProxy>& jets,
 					 double &Eleg2, 
 					 double &costhetaRp1)
 {
-  if (  good_jets.size() <1 ) {
+  if ( jets.size() <1 ) {
     gaminvRp1 = -999.;
     shatR = -999.;
     mdeltaR = -999.;
