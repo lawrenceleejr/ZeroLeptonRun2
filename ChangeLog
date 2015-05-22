@@ -1,11 +1,10 @@
 22-May-2015 Laurent Duflot
 	* MCEventVeto: add option for container key
-
+	* PileUpRWProcessor: no pileup reweighting for mc15_13TeV
 
 21-May-2015 Laurent Duflot
 	* PhysObjProxyUtils: bug fix in protection against events with <2 jets
 	(the bug caused no bias but the protection was not effective)
-
 
 20-May-2015 Laurent Duflot
 	* previous problems with SUSYTools-00-05-00-30 understood to be due
@@ -13,7 +12,6 @@
 	* adapt to SUSYTools-00-05-00-31  (BuildSUSYObjects)
 	changes in ttbar cutflow compared to ZeroLeptonRun2-00-00-32 are small.
 	* tag ZeroLeptonRun2-00-00-34
-
 
 14-May-2015 Laurent Duflot
 	* ZeroLeptonCRY, PhysObjProxies: remove isolation in PhotonProxy and
