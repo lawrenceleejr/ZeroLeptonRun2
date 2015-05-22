@@ -38,14 +38,16 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_period(INVALID),
     m_derivationTag(INVALID_Derivation),
     m_JESNuisanceParameterSet(0),
-    m_ECKey("")
+    m_ECKey(""),
+    m_PCKey("")
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_IsAtlfast = config.get("IsAtlfast",false);
   m_jetkey = config.get("JetCollectionKey","xxxx");
   m_suffix = config.get("suffix","");
-  m_ECKey = config.get("ElectronContainerKey","");
+  m_ECKey = config.get("ElectronContainerKey","ElectronCollection");
+  m_PCKey = config.get("PhotonContainerKey","PhotonCollection");
   m_UseSmearedJets = config.get("UseSmearedJets",false);
   m_UseSystematics = config.get("UseSystematics",false);
   if ( m_UseSmearedJets && m_UseSystematics ) throw std::logic_error("Cannot use jet smearing and systematics variations at the same time");
@@ -258,7 +260,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   }
   else {
     const xAOD::PhotonContainer* photons = 0;
-    if ( !event.retrieve(photons,"PhotonCollection").isSuccess() ){
+    if ( !event.retrieve(photons,m_PCKey).isSuccess() ){
       throw std::runtime_error("Could not retrieve PhotonContainer with key PhotonCollection");
     }
 

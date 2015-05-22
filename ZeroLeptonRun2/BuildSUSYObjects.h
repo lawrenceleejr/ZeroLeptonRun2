@@ -40,6 +40,7 @@ private:
   ZeroLeptonDerivationTag m_derivationTag;
   int m_JESNuisanceParameterSet;
   std::string m_ECKey;
+  std::string m_PCKey;
 
 public:
   ClassDef(BuildSUSYObjects,0);
