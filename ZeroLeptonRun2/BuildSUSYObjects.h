@@ -39,6 +39,7 @@ private:
   ZeroLeptonRunPeriod m_period;
   ZeroLeptonDerivationTag m_derivationTag;
   int m_JESNuisanceParameterSet;
+  std::string m_ECKey;
 
 public:
   ClassDef(BuildSUSYObjects,0);

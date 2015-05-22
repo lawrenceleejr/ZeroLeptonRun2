@@ -37,13 +37,15 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_suffix(),
     m_period(INVALID),
     m_derivationTag(INVALID_Derivation),
-    m_JESNuisanceParameterSet(0)
+    m_JESNuisanceParameterSet(0),
+    m_ECKey("")
 {
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_IsAtlfast = config.get("IsAtlfast",false);
   m_jetkey = config.get("JetCollectionKey","xxxx");
   m_suffix = config.get("suffix","");
+  m_ECKey = config.get("ElectronContainerKey","");
   m_UseSmearedJets = config.get("UseSmearedJets",false);
   m_UseSystematics = config.get("UseSystematics",false);
   if ( m_UseSmearedJets && m_UseSystematics ) throw std::logic_error("Cannot use jet smearing and systematics variations at the same time");
@@ -225,7 +227,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   }
   else {
     const xAOD::ElectronContainer* electrons = 0;
-    if ( !event.retrieve(electrons, "ElectronCollection").isSuccess() ){
+    if ( !event.retrieve(electrons, m_ECKey).isSuccess() ){
       throw std::runtime_error("Could not retrieve ElectronContainer with key ElectronCollection");
     }
     susyelectrons = xAOD::shallowCopyContainer(*electrons);

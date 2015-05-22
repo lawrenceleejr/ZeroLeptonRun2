@@ -1,6 +1,7 @@
 22-May-2015 Laurent Duflot
 	* MCEventVeto: add option for container key
 	* PileUpRWProcessor: no pileup reweighting for mc15_13TeV
+	* BuildSUSYObjects, config files: add option for Electron container key
 
 21-May-2015 Laurent Duflot
 	* PhysObjProxyUtils: bug fix in protection against events with <2 jets
