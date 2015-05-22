@@ -4,6 +4,7 @@
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 
+#include <string>
 
 // -------------------------------------------------------------------
 //  MCEventVeto:
@@ -20,6 +21,7 @@ public:
 
 private:
     ZeroLeptonRunPeriod m_period;
+    std::string m_TPCKey;
 
 public:
     ClassDef(MCEventVeto,0);

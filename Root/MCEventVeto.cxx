@@ -18,12 +18,14 @@
 #include <stdexcept>
 
 MCEventVeto::MCEventVeto(const char *name)
-    : cafe::Processor(name), m_period(INVALID)
+  : cafe::Processor(name), m_period(INVALID), m_TPCKey("")
 {
   cafe::Config config(name);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("MCEventVeto does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("MCEventVeto: invalid run period specified"));
+
+  m_TPCKey = config.get("TruthParticleContainerKey","TruthParticle");
 }
 
 bool MCEventVeto::processEvent(xAOD::TEvent& event)
@@ -44,7 +46,7 @@ bool MCEventVeto::processEvent(xAOD::TEvent& event)
   //RETURN_CHECK("MCEventVeto::processEvent", event.retrieve( truthEventC, "TruthEvent" ) );
 
   const xAOD::TruthParticleContainer* truthPC = 0;
-  RETURN_CHECK("MCEventVeto::processEvent", event.retrieve( truthPC, "TruthParticle" ) );
+  RETURN_CHECK("MCEventVeto::processEvent", event.retrieve( truthPC, m_TPCKey ) );
 
   //const xAOD::JetContainer* jets = 0;
   //RETURN_CHECK("MCEventVeto::processEvent", event.retrieve( jets, "AntiKt4TruthJets" ) );
