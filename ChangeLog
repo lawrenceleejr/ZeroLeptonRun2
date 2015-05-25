@@ -1,3 +1,6 @@
+25-May-2015 Laurent Duflot
+	* parametrise also the tau and MET container keys (for rel19 vs rel20)
+
 22-May-2015 Laurent Duflot
 	* MCEventVeto: add option for container key
 	* PileUpRWProcessor: no pileup reweighting for mc15_13TeV
