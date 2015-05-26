@@ -40,7 +40,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_physobjsFillerTruth(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData, NotADerivation),
+    m_ZLUtils(m_IsData, NotADerivation,""),
     m_counter(0),
     m_counterRepository("",false,0),
     m_treeRepository(),
@@ -75,7 +75,9 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
-  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
+
+  std::string metKey = config.get("METCOntainerKey","");
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag, metKey);
 }
 
 ZeroLeptonCRZ::~ZeroLeptonCRZ()

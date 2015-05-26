@@ -8,9 +8,10 @@
 #include <stdexcept>
 #include <cmath>
 
-ZeroLeptonUtils::ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag): 
+ZeroLeptonUtils::ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag, 
+				 const std::string& metKey): 
   m_IsData(IsData), m_derivationTag(tag), m_MET_Track_key("MET_Track"), 
-  m_MET_key("MET_RefFinal")
+  m_MET_key(metKey)
 {
   if ( m_derivationTag == p1872 ) {
     m_MET_Track_key = "MET_TrackFix";
@@ -65,3 +66,12 @@ const xAOD::Vertex* ZeroLeptonUtils::GetPrimVtx(xAOD::TEvent& event)
   }
   return NULL;
 }
+
+xAOD::JetInput::Type  ZeroLeptonUtils::JetTypeFromString(const std::string& algname)
+{
+  if ( algname.find(xAOD::JetInput::typeName(xAOD::JetInput::LCTopo)) != std::string::npos ) return xAOD::JetInput::LCTopo;
+  if ( algname.find(xAOD::JetInput::typeName(xAOD::JetInput::EMTopo)) != std::string::npos ) return xAOD::JetInput::EMTopo;
+
+  return xAOD::JetInput::Uncategorized;
+}
+
