@@ -1,5 +1,6 @@
 
 #include "ZeroLeptonRun2/BuildSUSYObjects.h"
+#include "ZeroLeptonRun2/ZeroLeptonUtils.h"
 
 #include "xAODRootAccess/tools/ReturnCheck.h"
 #include "xAODRootAccess/TEvent.h"
@@ -67,6 +68,11 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_SUSYObjTool->setProperty("METTauTerm","").ignore();
   if ( m_period == p8tev ) m_SUSYObjTool->setProperty("Is8TeV", true).ignore();
   else m_SUSYObjTool->setProperty("Is8TeV", false).ignore();
+
+  xAOD::JetInput::Type jetType =  ZeroLeptonUtils::JetTypeFromString(m_jetkey);
+  if ( jetType == xAOD::JetInput::Uncategorized ) throw(std::domain_error("ZeroLeptonSR: could not identify JetType"));
+  m_SUSYObjTool->setProperty("JetInputType", jetType).ignore();
+
   m_SUSYObjTool->setProperty("JESNuisanceParameterSet",m_JESNuisanceParameterSet).ignore();
   m_SUSYObjTool->setProperty("DoJetAreaCalib",true).ignore();
   m_SUSYObjTool->setProperty("DoJetGSCCalib",true).ignore();

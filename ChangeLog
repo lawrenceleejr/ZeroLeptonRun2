@@ -1,3 +1,7 @@
+26-May-2015 Laurent Duflot
+	* ZeroLeptonUtils, BuildSUSYObjects: extract jet type from container
+	key and set SUSYTool property (error message for rel19 can be ignored)
+
 25-May-2015 Laurent Duflot
 	* parametrise also the tau and MET container keys (for rel19 vs rel20)
 

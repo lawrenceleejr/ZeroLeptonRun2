@@ -8,17 +8,18 @@ namespace xAOD {
 
 #include "TVector2.h"
 #include "xAODTracking/VertexFwd.h"
+#include "xAODJet/JetContainerInfo.h"
 #include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 
 //--------------------------------------------------------------------------
-// Utility functions that do not depend on physics object proxy and my
+// Utility functions that do not depend on physics object proxy and may
 // require access to the event store
 //
 //--------------------------------------------------------------------------
 class ZeroLeptonUtils
 {
  public:
-  ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag);
+  ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag, const std::string& metKey);
 
   bool NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const;
 
@@ -26,6 +27,8 @@ class ZeroLeptonUtils
 
   // copied from SUSYObjDef_xAOD since it is not static there
   static const xAOD::Vertex* GetPrimVtx(xAOD::TEvent& event);
+
+  static  xAOD::JetInput::Type  JetTypeFromString(const std::string& algname);
 
  private:
   bool m_IsData;
