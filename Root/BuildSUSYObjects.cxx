@@ -45,7 +45,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   cafe::Config config(name);
   m_IsData = config.get("IsData",false);
   m_IsAtlfast = config.get("IsAtlfast",false);
-  m_jetkey = config.get("JetCollectionKey","xxxx");
+  m_jetkey = config.get("JetContainerKey","xxxx");
   m_suffix = config.get("suffix","");
   m_ECKey = config.get("ElectronContainerKey","ElectronCollection");
   m_PCKey = config.get("PhotonContainerKey","PhotonCollection");
