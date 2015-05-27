@@ -1,3 +1,7 @@
+27-May-2015 Laurent Duflot
+	* BuildSUSYObjects, ZeroLeptonDataDrivenQCD: rename recomputed MET
+	to MET_ZL (avoid RefFinal as this is not the MET for rel20/mc15)
+
 26-May-2015 Laurent Duflot
 	* ZeroLeptonUtils, BuildSUSYObjects: extract jet type from container
 	key and set SUSYTool property (error message for rel19 can be ignored)

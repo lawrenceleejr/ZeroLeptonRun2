@@ -112,8 +112,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     store->remove("SUSYPhotons"+m_suffix+"Aux.").ignore();
     //store->remove("SUSYTaus").ignore();
     //store->remove("SUSYTausAux.").ignore();
-    store->remove("MET_MyRefFinal"+m_suffix).ignore();
-    store->remove("MET_MyRefFinal"+m_suffix+"Aux.").ignore();
+    store->remove("MET_ZL"+m_suffix).ignore();
+    store->remove("MET_ZL"+m_suffix+"Aux.").ignore();
 
     const CP::SystematicSet* currentSyst = 0;
     if ( !store->retrieve(currentSyst,"CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
@@ -127,8 +127,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   else if ( m_UseSmearedJets  ){
     // remove output from previous smearing iterations
     store->remove("SUSYMET"+m_suffix).ignore();
-    store->remove("MET_MyRefFinal").ignore();
-    store->remove("MET_MyRefFinalAux.").ignore();
+    store->remove("MET_ZL").ignore();
+    store->remove("MET_ZLAux.").ignore();
   }
   //store->print();
 
@@ -334,11 +334,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   xAOD::MissingETContainer* rebuiltmetc = new xAOD::MissingETContainer();
   xAOD::MissingETAuxContainer* rebuiltmetcAux = new xAOD::MissingETAuxContainer();
   rebuiltmetc->setStore(rebuiltmetcAux);
-  if ( ! store->record(rebuiltmetc,"MET_MyRefFinal"+m_suffix).isSuccess() ) {
-    throw std::runtime_error("Unable to store MissingETContainer with tag MET_MyRefFinal"+m_suffix);
+  if ( ! store->record(rebuiltmetc,"MET_ZL"+m_suffix).isSuccess() ) {
+    throw std::runtime_error("Unable to store MissingETContainer with tag MET_ZL"+m_suffix);
   }
-  if ( ! store->record(rebuiltmetcAux,"MET_MyRefFinal"+m_suffix+"Aux.").isSuccess() ) {
-    throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_MyRefFinal"+m_suffix+"Aux");
+  if ( ! store->record(rebuiltmetcAux,"MET_ZL"+m_suffix+"Aux.").isSuccess() ) {
+    throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_ZL"+m_suffix+"Aux");
   }
 
   if ( ! m_SUSYObjTool->GetMET(*rebuiltmetc,

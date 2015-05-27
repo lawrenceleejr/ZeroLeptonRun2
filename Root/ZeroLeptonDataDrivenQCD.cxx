@@ -219,12 +219,12 @@ bool ZeroLeptonDataDrivenQCD::processEvent(xAOD::TEvent& event)
 
   // get MET recomputed after jet calibration
   const xAOD::MissingETContainer* metcontainer = 0;
-  if( !store->retrieve( metcontainer, "MET_MyRefFinal" ).isSuccess() ) {
-    throw std::runtime_error("Could not retrieve MissingETContainer with key MET_MyRefFinal");
+  if( !store->retrieve( metcontainer, "MET_ZL" ).isSuccess() ) {
+    throw std::runtime_error("Could not retrieve MissingETContainer with key MET_ZL");
   }
   const xAOD::MissingETComponentMap* metMap = 0;
   if( !event.retrieve(metMap,"METMap_RefFinal").isSuccess() ) {
-    throw std::runtime_error("Could not retrieveMissingETComponentMap  with key METMap_MyRefFinal");
+    throw std::runtime_error("Could not retrieveMissingETComponentMap  with key METMap_ZL");
   }
   xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("Final");
   //out() << " MET before smearing " <<  (*met_it)->mpx() << " " << (*met_it)->mpy() << std::endl;
