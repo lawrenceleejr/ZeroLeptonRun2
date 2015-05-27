@@ -54,7 +54,7 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
 
-  std::string metKey = config.get("METCOntainerKey","");
+  std::string metKey = config.get("METContainerKey","xxx");
   m_ZLUtils = ZeroLeptonUtils(true, m_derivationTag, metKey);
 
   gRandom->SetSeed(gRandom->GetSeed()+m_seed);
