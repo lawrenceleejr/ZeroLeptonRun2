@@ -15,7 +15,6 @@ ZeroLeptonUtils::ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag,
 {
   if ( m_derivationTag == p1872 ) {
     m_MET_Track_key = "MET_TrackFix";
-    m_MET_key = "MET_RefFinalFix";
   }
 }
 

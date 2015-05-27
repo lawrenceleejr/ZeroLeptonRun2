@@ -19,7 +19,7 @@ namespace xAOD {
 class ZeroLeptonUtils
 {
  public:
-  ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag, const std::string& metKey);
+  ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag, const std::string& metKey = "MET_ZL");
 
   bool NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const;
 

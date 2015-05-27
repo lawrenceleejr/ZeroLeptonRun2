@@ -34,7 +34,7 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_QCDSeedSelector(),
   m_physobjsFiller(PhysObjProxyFiller(20000.f,10000.f,10000.f,"")),
   m_proxyUtils(true),
-  m_ZLUtils(true, NotADerivation,""),
+  m_ZLUtils(true, NotADerivation),
   m_smearingTool(0),
   m_smearFnFile(0),
   m_smearFnFile2(0),
@@ -54,8 +54,7 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
 
-  std::string metKey = config.get("METContainerKey","xxx");
-  m_ZLUtils = ZeroLeptonUtils(true, m_derivationTag, metKey);
+  m_ZLUtils = ZeroLeptonUtils(true, m_derivationTag);
 
   gRandom->SetSeed(gRandom->GetSeed()+m_seed);
   InitialiseSmearing();

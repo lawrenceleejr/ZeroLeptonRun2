@@ -1,4 +1,5 @@
 27-May-2015 Laurent Duflot
+	* ZeroLeptonUtils, SR & CR: use recomputed MET e.g. for neg E cell veto
 	* BuildSUSYObjects, ZeroLeptonDataDrivenQCD: rename recomputed MET
 	to MET_ZL (avoid RefFinal as this is not the MET for rel20/mc15)
 

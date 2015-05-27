@@ -36,7 +36,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_physobjsFillerTruth(0),
     m_cutVal(),
     m_proxyUtils(m_IsData),
-    m_ZLUtils(m_IsData, NotADerivation,""),
+    m_ZLUtils(m_IsData, NotADerivation),
     m_counter(0),
     m_counterRepository("",false,0),
     m_treeRepository(),
@@ -64,8 +64,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
-  std::string metKey = config.get("METContainerKey","xxx");
-  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag, metKey);
+  m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
 ZeroLeptonCRY::~ZeroLeptonCRY()
