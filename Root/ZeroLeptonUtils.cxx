@@ -31,7 +31,7 @@ bool ZeroLeptonUtils::NegCellCleaning(xAOD::TEvent& event, const TVector2& missi
   }
   xAOD::MissingETContainer::const_iterator met = metcontainer->find("SoftClus");
   if (met == metcontainer->end()) {
-    throw std::runtime_error("MissingETContainer with key "+m_MET_key+"has no SoftClus component");
+    throw std::runtime_error("MissingETContainer with key "+m_MET_key+" has no SoftClus component");
   }
 
   if ( ( (*met)->met()/missingET.Mod()) * std::cos((*met)->phi()-MET_phi) >= 0.5) isNegCell=true;
