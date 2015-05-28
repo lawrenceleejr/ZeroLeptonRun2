@@ -79,6 +79,8 @@ def main():
             import mc12_8TeV_MCSampleList as mcsl
         elif 'mc14_13TeV' in config.prefix:
             import mc14_13TeV_MCSampleList as mcsl
+        elif 'mc15_13TeV' in config.prefix:
+            import mc15_13TeV_MCSampleList as mcsl
         else:
             print '--official is only supported for mc12_8TeV, mc14_8TeV and mc14_13TeV'
             sys.exit(1)
