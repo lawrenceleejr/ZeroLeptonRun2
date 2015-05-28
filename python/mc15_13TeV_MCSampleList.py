@@ -3,12 +3,13 @@ __doc__ = """List of samples to be used in the analysis"""
 ##
 ## Baseline samples
 ##
-lZjets   = [361398,361399,361404,361410,361413,361444,361446,361451,361458]  + # Sherpa
+lZjets   = range(361372,361467+1) # Sherpa
 lYjets   = range(361039,361056+1) # Sherpa
-lWjets   = range(361325,361327+1)+[361330,361337,361341] # Sherpa Wmunu
+lWjets   = range(361300,361371+1) # Sherpa
 
 lttbar   = [410000] # PowhegPythiaEvtGen_P2012_ttbar_hdamp172p5_nonallhad
-lsinglet = [410014,410015,410016, # PowhegPythia Wt
+lsinglet = [410011, 410012, # .PowhegPythia t-channel
+            410013,410014,410015,410016, # PowhegPythia Wt
             ]       
 lttbarX  = [] # MadGraph5+Pythia
 lTop     = lttbar + lsinglet + lttbarX
