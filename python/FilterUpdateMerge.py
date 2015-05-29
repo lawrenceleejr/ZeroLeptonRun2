@@ -44,7 +44,16 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
-                      action='store_true', default=False)
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
+                      help="Also merge the CRWTVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRZVars", dest="mergeCRZVars",
+                      help="Also merge the CRZVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
+                      help="Also merge the CRYVars block ?", 
+                      action='store_true', default=True)
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc14_13TeV",
@@ -266,11 +275,27 @@ class Sample:
             inList = ROOT.FilterUpdateMergeFileList()
             for name in filelist:
                 inList.add(name)
-            # currently ExtraVars only implemented in SR not CR/VR
-            if inTreeName.startswith('CR') or inTreeName.startswith('VR'):
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False)
-            else:
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars)
+
+            doExtraVars = self.config.mergeExtraVars
+            doCRWTVars = self.config.mergeCRWTVars
+            doCRZVars = self.config.mergeCRZVars
+            doCRYVars = self.config.mergeCRYVars
+            # check that the first file in the list has the requested block
+            for name in filelist:
+                testf = ROOT.TFile.Open(name)
+                if not testf or testf.IsZombie(): continue
+                testt = testf.Get(inTreeName)
+                if not testt: continue
+                if doExtraVars and not testt.GetBranch('NTExtraVars'):
+                    doExtraVars = False
+                if doCRWTVars and not testt.GetBranch('NTCRWTVars'):
+                    doCRWTVars = False
+                if doCRZVars and not testt.GetBranch('NTCRZVars'):
+                    doCRZVars = False
+                if doCRYVars and not testt.GetBranch('NTCRYVars'):
+                    doCRYVars = False
+                break
+            merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doCRWTVars, doCRZVars, doCRYVars)
             newfile.cd()
             outTree.Write()
 

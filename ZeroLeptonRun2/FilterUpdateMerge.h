@@ -35,15 +35,17 @@ class FilterUpdateMerge
   void process(TTree* outTree, const std::string& inTreeName, 
 	       const std::vector<std::string>& inFiles, 
 	       bool isSignal, bool doXSecReweighting, bool doFiltering,
-	       bool doExtraVars);
+	       bool doExtraVars, bool doCRWTVars, bool doCRZVars, 
+	       bool doCRYVars);
 
   // trick for python that has trouble to handle vector<>
   void process(TTree* outTree, const std::string& inTreeName, 
 	       const FilterUpdateMergeFileList& inFiles, 
 	       bool isSignal, bool doXSecNormalisation, bool doFiltering,
-	       bool doExtraVars)
+	       bool doExtraVars, bool doCRWTVars, bool doCRZVars, 
+	       bool doCRYVars)
   {
-    process(outTree, inTreeName, inFiles.files(), isSignal, doXSecNormalisation, doFiltering,doExtraVars);
+    process(outTree, inTreeName, inFiles.files(), isSignal, doXSecNormalisation, doFiltering, doExtraVars, doCRWTVars, doCRZVars, doCRYVars);
   }
 
  private:

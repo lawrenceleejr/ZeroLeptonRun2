@@ -1,4 +1,7 @@
 28-May-2015 Laurent Duflot
+	* FilterUpdateMerge: merge also the CRWT, CRZ and CRY blocks
+
+28-May-2015 Laurent Duflot
 	* makeDatasetList.py: add mc15_13TeV
 	* mc15_13TeV_MCSampleList.py: updated list of samples
 	* tagged as ZeroLeptonRun2-00-00-35
