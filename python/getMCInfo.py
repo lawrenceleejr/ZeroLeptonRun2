@@ -214,6 +214,8 @@ if __name__ == '__main__':
         import mc12_8TeV_MCSampleList as MCSampleList
     elif config.prefix == 'mc14_13TeV':
         import mc14_13TeV_MCSampleList as MCSampleList
+    elif config.prefix == 'mc15_13TeV':
+        import mc15_13TeV_MCSampleList as MCSampleList
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)

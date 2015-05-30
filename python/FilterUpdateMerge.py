@@ -151,7 +151,7 @@ class Sample:
         return copy.deepcopy(mykeys)
 
     def extractChannelFromFilename(self,filename):
-        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.', 'mc14_13TeV.'):
+        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
             if prefix in filename:
                 return int(filename.split(prefix)[1].split('.')[0])
         return None
@@ -316,6 +316,8 @@ if __name__ == '__main__':
         from mc12_8TeV_MCSampleList import *
     elif config.prefix == 'mc14_13TeV':
         from mc14_13TeV_MCSampleList import *
+    elif config.prefix == 'mc15_13TeV':
+        from mc15_13TeV_MCSampleList import *
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)
