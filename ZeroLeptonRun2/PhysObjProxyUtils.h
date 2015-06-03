@@ -10,6 +10,7 @@ class NTExtraVars;
 #include "TLorentzVector.h"
 
 #include <vector>
+#include <map>
 #include "fastjet/PseudoJet.hh"
 
 //-----------------------------------------------------------------------
@@ -73,6 +74,9 @@ class PhysObjProxyUtils
 			double &Eleg2, 
 			double &costhetaRp1);
   
+  void RJigsawVariables(const std::vector<JetProxy>& jets, 
+			std::map<TString,double> RJigsawVariables);
+
   //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
 
   bool CosmicMuon(const std::vector<MuonProxy>& muons) const;
