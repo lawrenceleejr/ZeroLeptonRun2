@@ -18,6 +18,7 @@ public:
   bool processEvent(xAOD::TEvent& event);
 private:
   GoodRunsListSelectionTool* m_GRLtool;
+  bool m_passAll;
 
 public:
   ClassDef(GRLProcessor,0);
