@@ -14,6 +14,20 @@
 #include "fastjet/ClusterSequence.hh"
 
 
+#include "RestFrames/RestFrame.hh"
+#include "RestFrames/RFrame.hh"
+#include "RestFrames/RLabFrame.hh"
+#include "RestFrames/RDecayFrame.hh"
+#include "RestFrames/RVisibleFrame.hh"
+#include "RestFrames/RInvisibleFrame.hh"
+#include "RestFrames/RSelfAssemblingFrame.hh"
+#include "RestFrames/InvisibleMassJigsaw.hh"
+#include "RestFrames/InvisibleRapidityJigsaw.hh"
+#include "RestFrames/ContraBoostInvariantJigsaw.hh"
+#include "RestFrames/MinimizeMassesCombinatoricJigsaw.hh"
+#include "RestFrames/InvisibleGroup.hh"
+#include "RestFrames/CombinatoricGroup.hh"
+#include "RestFrames/FramePlot.hh"
 
 void PhysObjProxyUtils::EnergyWeightedTime(const std::vector<JetProxy>& jets, 
 					   std::vector<float>& time) const
@@ -121,6 +135,10 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
 
 
 };
+
+void PhysObjProxyUtils::RJigsawVariables( const std::vector<JetProxy>& jets,
+  std::map<TString,double> RJigsawVars
+  ){}
 
 
 void PhysObjProxyUtils::RazorVariables(const std::vector<JetProxy>& jets, 
