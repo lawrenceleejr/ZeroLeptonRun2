@@ -1,6 +1,7 @@
 03-Jun-2015 Laurent Duflot
 	* GRLProcessor: add a passAll option
 	* ZeroLeptonSR: no MET_HadTopo for p2352
+	* ZeroLeptonRunPeriod: add p2352
 
 29-May-2015 Laurent Duflot
 	* getMCInfo.py, FilterUpdateMerge.py: add mc15_13TeV
