@@ -93,6 +93,8 @@ class PhysObjProxyUtils
   void RJigsawInit();
 
   void RJigsawVariables(const std::vector<JetProxy>& jets, 
+			Double_t metx,
+			Double_t mety,
 			std::map<TString,double> RJigsawVariables);
 
   //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
