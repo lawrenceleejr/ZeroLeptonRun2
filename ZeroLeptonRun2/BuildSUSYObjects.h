@@ -45,6 +45,7 @@ private:
   std::vector<CP::SystematicSet> m_tauEffSystSetList;
 
   std::string m_jetkey; 
+  std::string m_taukey; 
   std::string m_suffix;
   ZeroLeptonRunPeriod m_period;
   ZeroLeptonDerivationTag m_derivationTag;

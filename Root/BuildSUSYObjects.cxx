@@ -36,6 +36,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
     m_UseSystematics(false),
     m_PhotonInOR(false),
     m_jetkey(),
+    m_taukey(),
     m_suffix(),
     m_period(INVALID),
     m_derivationTag(INVALID_Derivation),
@@ -47,6 +48,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsAtlfast = config.get("IsAtlfast",false);
   m_jetkey = config.get("JetContainerKey","xxxx");
+  m_taukey = config.get("TauContainerKey","xxxx");
   m_suffix = config.get("suffix","");
   m_ECKey = config.get("ElectronContainerKey","ElectronCollection");
   m_PCKey = config.get("PhotonContainerKey","PhotonCollection");
@@ -349,7 +351,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   }
   else {
     const xAOD::TauJetContainer* taus = 0;
-    if (!event.retrieve(taus,"TauRecContainer").isSuccess()){
+    if (!event.retrieve(taus,m_taukey).isSuccess()){
       throw std::runtime_error("Could not retrieve TauJetContainer with key TauRecContainer");
     }
     
