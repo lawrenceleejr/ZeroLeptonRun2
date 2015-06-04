@@ -152,7 +152,7 @@ TauProxy::TauProxy():
 {
 }
 
-TauProxy::TauProxy(const xAOD::TauJet_v1* tau):
+TauProxy::TauProxy(const xAOD::TauJet* tau):
   TLorentzVector(tau->p4())
 {
   m_isBaseline = tau->auxdecor<char>("baseline")==1;

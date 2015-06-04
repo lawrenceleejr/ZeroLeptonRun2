@@ -11,17 +11,16 @@ namespace xAOD {
 namespace xAOD {
   class Muon_v1;
 }
-namespace xAOD {
-	class TauJet_v1;
-	class TruthParticle_v1;
-}
+//namespace xAOD {
+//  class TauJet_v1;
+//}
 namespace xAOD {
   class TruthParticle_v1;
   typedef TruthParticle_v1 TruthParticle;
 }
 #include "xAODEgamma/ElectronFwd.h"
 #include "xAODEgamma/PhotonFwd.h"
-
+#include "xAODTau/TauJet.h"
 
 //----------------------------------------------------------------------
 // These classes act as proxies for the xAOD physics objects in order
@@ -154,11 +153,11 @@ class TauProxy: public TLorentzVector
 {
  public:
   TauProxy();
-  TauProxy(const xAOD::TauJet_v1* tau);
+  TauProxy(const xAOD::TauJet* tau);
 
   inline bool isBaseline() const {return m_isBaseline;}
   inline bool isSignal() const {return m_isSignal;}
-  inline const xAOD::TauJet_v1* tau() const {return m_tau;}
+  inline const xAOD::TauJet* tau() const {return m_tau;}
   inline void getSF(float& sf, float& sfStatUp, float& sfStatDown, float& sfSystUp, float& sfSystDown) const {
     sf         = m_sf;
     sfStatUp   = m_sfStatUp;
@@ -175,7 +174,7 @@ class TauProxy: public TLorentzVector
   float m_sfStatDown;
   float m_sfSystUp;
   float m_sfSystDown;
-  const xAOD::TauJet_v1* m_tau;
+  const xAOD::TauJet* m_tau;
   
  public:
   ClassDef(TauProxy,0);

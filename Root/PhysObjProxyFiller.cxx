@@ -11,6 +11,7 @@
 #include "xAODEgamma/ElectronContainer.h"
 //#include "xAODEgamma/PhotonContainer.h"
 #include "xAODTau/TauJetContainer.h"
+#include "xAODTau/TauJet.h"
 
 #include <iostream>
 
