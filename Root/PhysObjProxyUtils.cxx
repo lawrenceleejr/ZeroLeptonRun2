@@ -751,7 +751,9 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   float SherpaBugMET,
 				   float metLHTOPOx,
 				   float metLHTOPOy,
-				   bool isTruth)
+				   bool isTruth,
+				   std::vector<TauProxy> baseline_taus,
+				   std::vector<TauProxy> signal_taus)
 {
   ntv.Reset();
 
@@ -889,6 +891,22 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 			    metLHTOPOy*metLHTOPOy);
   
   ntv.jetSmearSystW = jetSmearSystW;
+
+  ntv.tauN = signal_taus.size();
+  ntv.tauLooseN = baseline_taus.size();
+  //std::cout<<"tauN="<<ntv.tauN<<" tauLooseN="<<ntv.tauLooseN<<std::endl;
+  for ( size_t tau0=0; tau0<baseline_taus.size(); tau0++) 
+  {
+    const TauProxy& thistau = baseline_taus[tau0];
+    float sf, sfStatUp, sfStatDown, sfSystUp, sfSystDown;
+    thistau.getSF(sf,sfStatUp,sfStatDown,sfSystUp,sfSystDown);
+    ntv.tauLooseSF.push_back(sf);
+    ntv.tauLooseSFStatUp.push_back(sfStatUp);
+    ntv.tauLooseSFStatDown.push_back(sfStatDown);
+    ntv.tauLooseSFSystUp.push_back(sfSystUp);
+    ntv.tauLooseSFSystDown.push_back(sfSystDown);
+    //std::cout<<" tauLooseSF = "<<sf<<"+"<<sfStatUp<<"-"<<sfStatDown<<"+"<<sfSystUp<<"-"<<sfSystDown<<std::endl;
+  }
 }
 
 

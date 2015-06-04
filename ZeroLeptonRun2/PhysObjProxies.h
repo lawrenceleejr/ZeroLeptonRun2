@@ -12,6 +12,10 @@ namespace xAOD {
   class Muon_v1;
 }
 namespace xAOD {
+	class TauJet_v1;
+	class TruthParticle_v1;
+}
+namespace xAOD {
   class TruthParticle_v1;
   typedef TruthParticle_v1 TruthParticle;
 }
@@ -146,5 +150,35 @@ class MuonTruthProxy: public TLorentzVector
   ClassDef(MuonTruthProxy,0);
 };
 
+class TauProxy: public TLorentzVector
+{
+ public:
+  TauProxy();
+  TauProxy(const xAOD::TauJet_v1* tau);
+
+  inline bool isBaseline() const {return m_isBaseline;}
+  inline bool isSignal() const {return m_isSignal;}
+  inline const xAOD::TauJet_v1* tau() const {return m_tau;}
+  inline void getSF(float& sf, float& sfStatUp, float& sfStatDown, float& sfSystUp, float& sfSystDown) const {
+    sf         = m_sf;
+    sfStatUp   = m_sfStatUp;
+    sfStatDown = m_sfStatDown;
+    sfSystUp   = m_sfSystUp;
+    sfSystDown = m_sfSystDown;
+  }
+
+ private:
+  bool m_isBaseline;
+  bool m_isSignal;
+  float m_sf;
+  float m_sfStatUp;
+  float m_sfStatDown;
+  float m_sfSystUp;
+  float m_sfSystDown;
+  const xAOD::TauJet_v1* m_tau;
+  
+ public:
+  ClassDef(TauProxy,0);
+};
 
 #endif

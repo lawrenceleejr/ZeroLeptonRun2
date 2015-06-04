@@ -10,7 +10,7 @@
 #include "xAODJet/JetContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
 //#include "xAODEgamma/PhotonContainer.h"
-//#include "xAODTau/TauJetContainer.h"
+#include "xAODTau/TauJetContainer.h"
 
 #include <iostream>
 
@@ -121,4 +121,31 @@ void PhysObjProxyFiller::FillMuonProxies(std::vector<MuonProxy>& baseline_muons,
   std::sort(baseline_muons.begin(),baseline_muons.end(),PtOrder<MuonProxy>);
   std::sort(isolated_baseline_muons.begin(),isolated_baseline_muons.end(),PtOrder<MuonProxy>);
   std::sort(isolated_signal_muons.begin(),isolated_signal_muons.end(),PtOrder<MuonProxy>);
+}
+
+
+
+void PhysObjProxyFiller::FillTauProxies(std::vector<TauProxy>& baseline_taus,
+					std::vector<TauProxy>& signal_taus)
+{
+  baseline_taus.clear();
+  signal_taus.clear();
+  xAOD::TStore* store = xAOD::TActiveStore::store();
+  const xAOD::TauJetContainer* taus = 0;
+  if ( !store->retrieve(taus, "SUSYTaus").isSuccess() ){
+    throw std::runtime_error("Could not retrieve TauJetContainer with key SUSYTaus");
+  }
+
+  for ( xAOD::TauJetContainer::const_iterator it = taus->begin();
+	it != taus->end(); ++it ){
+    if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
+    baseline_taus.push_back(TauProxy(*it));
+    if ( (*it)->auxdecor<char>("signal") == 1) {
+      signal_taus.push_back(TauProxy(*it));
+    }
+  }
+
+  // sort collections (calibration might have changed the order)
+  std::sort(baseline_taus.begin(),baseline_taus.end(),PtOrder<TauProxy>);
+  std::sort(signal_taus.begin(),signal_taus.end(),PtOrder<TauProxy>);
 }

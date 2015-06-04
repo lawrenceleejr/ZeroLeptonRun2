@@ -5,7 +5,7 @@ std::string NTVars::toString()
 { 
   return
  
-std::string("RunNumber/i:EventNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauMt/F:SherpaBugMET/F:metNOCHCORRCELL/F:metLHTOPO/F:metLHTOPONOCHCORRCELL/F"); 
+std::string("RunNumber/i:EventNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:metNOCHCORRCELL/F:metLHTOPO/F:metLHTOPONOCHCORRCELL/F"); 
 }
 
 void NTVars::Reset()
@@ -55,6 +55,7 @@ void NTVars::Reset()
   pdfId1 = pdfId2 = 0;
   tauN = 0;
   tauJetBDTLoose = 0;
+  tauLooseN = 0;
   tauMt = 0.f;
   SherpaBugMET = 0.f;
   metNOCHCORRCELL = 0.f;
@@ -76,6 +77,11 @@ void NTVars::Reset()
   jetFracSamplingMax.clear();
   jetFracSamplingMaxIndex.clear();
   
+  tauLooseSF.clear();
+  tauLooseSFStatUp.clear();
+  tauLooseSFStatDown.clear();
+  tauLooseSFSystUp.clear();
+  tauLooseSFSystDown.clear();
 }
 
 NTVarsRead::NTVarsRead(): ntv()
@@ -94,7 +100,11 @@ NTVarsRead::NTVarsRead(): ntv()
   p_jetFracSamplingMax = &ntv.jetFracSamplingMax;
   p_jetFracSamplingMaxIndex = &ntv.jetFracSamplingMaxIndex;
   
- 
+  p_tauLooseSF         = &ntv.tauLooseSF;
+  p_tauLooseSFStatUp   = &ntv.tauLooseSFStatUp;
+  p_tauLooseSFStatDown = &ntv.tauLooseSFStatDown;
+  p_tauLooseSFSystUp   = &ntv.tauLooseSFSystUp;
+  p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown; 
 }
 
 
@@ -117,6 +127,11 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   tree->GetBranch("jetFracSamplingMax")->SetAddress(&p_jetFracSamplingMax);
   tree->GetBranch("jetFracSamplingMaxIndex")->SetAddress(&p_jetFracSamplingMaxIndex);
 
+  tree->GetBranch("tauLooseSF")->SetAddress(&p_tauLooseSF);
+  tree->GetBranch("tauLooseSFStatUp")->SetAddress(&p_tauLooseSFStatUp);
+  tree->GetBranch("tauLooseSFStatDown")->SetAddress(&p_tauLooseSFStatDown);
+  tree->GetBranch("tauLooseSFSystUp")->SetAddress(&p_tauLooseSFSystUp);
+  tree->GetBranch("tauLooseSFSystDown")->SetAddress(&p_tauLooseSFSystDown);
 }
 
 
@@ -309,6 +324,12 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   if ( addJetSmearSystW ) {
     tree->Branch("jetSmearSystW",&(ntv.jetSmearSystW)); 
   }
+
+  tree->Branch("tauLooseSF",&(ntv.tauLooseSF));
+  tree->Branch("tauLooseSFStatUp",&(ntv.tauLooseSFStatUp));
+  tree->Branch("tauLooseSFStatDown",&(ntv.tauLooseSFStatDown));
+  tree->Branch("tauLooseSFSystUp",&(ntv.tauLooseSFSystUp));
+  tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)

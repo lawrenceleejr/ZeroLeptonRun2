@@ -4,6 +4,7 @@
 class JetProxy;
 class ElectronProxy;
 class MuonProxy;
+class TauProxy;
 
 #include <vector>
 #include <string>
@@ -28,6 +29,9 @@ class PhysObjProxyFiller
 		       std::vector<MuonProxy>& isolated_baseline_muons,
 		       std::vector<MuonProxy>& isolated_signal_muons);
 
+  // fill with baseline and signal tau
+  void FillTauProxies(std::vector<TauProxy>& baseline_taus,
+		      std::vector<TauProxy>& signal_taus);
  private:
   float m_jetPtCut;
   float m_elPtCut;

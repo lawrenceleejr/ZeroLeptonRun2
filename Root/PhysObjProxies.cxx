@@ -4,6 +4,7 @@
 #include "xAODEgamma/Electron.h"
 #include "xAODEgamma/Photon.h"
 #include "xAODMuon/Muon.h"
+#include "xAODTau/TauJet.h"
 #include "xAODTruth/TruthParticle.h"
 
 JetProxy::JetProxy():
@@ -136,4 +137,33 @@ MuonTruthProxy::MuonTruthProxy(const xAOD::TruthParticle* muontruth):
   m_muontruth       = muontruth;
 }
 ClassImp(MuonTruthProxy);
+
+
+TauProxy::TauProxy():
+  TLorentzVector(),
+  m_isBaseline(false),
+  m_isSignal(false),
+  m_sf(0.f),
+  m_sfStatUp(0.f),
+  m_sfStatDown(0.f),
+  m_sfSystUp(0.f),
+  m_sfSystDown(0.f),
+  m_tau(0) 
+{
+}
+
+TauProxy::TauProxy(const xAOD::TauJet_v1* tau):
+  TLorentzVector(tau->p4())
+{
+  m_isBaseline = tau->auxdecor<char>("baseline")==1;
+  m_isSignal   = tau->auxdecor<char>("signal")==1;
+  m_sf         = tau->auxdecor<float>("SFJetID");
+  m_sfStatUp   = tau->auxdecor<float>("SFJetIDStatUp");
+  m_sfStatDown = tau->auxdecor<float>("SFJetIDStatDown");
+  m_sfSystUp   = tau->auxdecor<float>("SFJetIDSystUp");
+  m_sfSystDown = tau->auxdecor<float>("SFJetIDSystDown");
+
+  m_tau       = tau;
+}
+ClassImp(TauProxy);
 

@@ -1,3 +1,8 @@
+04-Jun-2015 Laurent Duflot
+	* ZeroLeptonNTVars, PhysObjProxies, PhysObjProxyFiller,
+	PhysObjProxyUtils, BuildSUSYObjects, ZeroLeptonSR, LinkDef.h: add taus
+
+
 03-Jun-2015 Laurent Duflot
 	* GRLProcessor: add a passAll option
 	* ZeroLeptonSR: no MET_HadTopo for p2352

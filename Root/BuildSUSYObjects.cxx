@@ -8,6 +8,7 @@
 #include "xAODRootAccess/TStore.h"
 #include "xAODCore/ShallowCopy.h"
 #include "xAODBase/IParticleHelpers.h"
+#include "AthContainers/AuxElement.h"
 
 #include "xAODJet/JetContainer.h"
 #include "xAODJet/JetAuxContainer.h"
@@ -82,6 +83,54 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   }
   //m_SUSYObjTool->setProperty("IsoWP","Gradient").ignore();
 
+  // set our own tau selection
+  TauAnalysisTools::TauSelectionTool* tauSelTool;
+  TauAnalysisTools::TauEfficiencyCorrectionsTool* tauEffTool;
+  tauSelTool = new TauAnalysisTools::TauSelectionTool("TauSelectionTool");
+  tauSelTool->msg().setLevel( MSG::WARNING);
+  //tauSelTool->msg().setLevel( MSG::VERBOSE);
+  tauSelTool->setProperty("PtMin", 20. ).ignore(); // pt in GeV
+  std::vector<double> vAbsEtaRegion = {0, 1.37, 1.52, 2.5};
+  tauSelTool->setProperty("AbsEtaRegion", vAbsEtaRegion).ignore();
+  tauSelTool->setProperty("AbsCharge", 1.).ignore();
+  std::vector<size_t> vNTracks = {1, 3};
+  tauSelTool->setProperty( "NTracks", vNTracks).ignore();
+  tauSelTool->setProperty( "JetIDWP",  int(TauAnalysisTools::JETIDBDTMEDIUM)).ignore();
+
+  tauSelTool->setProperty(
+    "SelectionCuts",
+    (int) TauAnalysisTools::SelectionCuts(TauAnalysisTools::CutPt |
+					  TauAnalysisTools::CutAbsEta    |
+					  TauAnalysisTools::CutAbsCharge |
+					  TauAnalysisTools::CutNTrack    |
+					  TauAnalysisTools::CutJetIDWP )
+			  ).ignore();
+
+  tauSelTool->initialize().ignore();
+  m_tauSelTool = tauSelTool;
+
+  tauEffTool = new TauAnalysisTools::TauEfficiencyCorrectionsTool("TauEfficiencyCorrectionsTool",tauSelTool);
+  tauEffTool->msg().setLevel( MSG::WARNING);
+  //tauEffTool->msg().setLevel( MSG::VERBOSE);
+  tauEffTool->setProperty("EfficiencyCorrectionType", (int)TauAnalysisTools::SFJetID).ignore();
+  tauEffTool->setProperty("SysDirection", 1).ignore();
+  tauEffTool->initialize().ignore();
+  m_tauEffTool = tauEffTool;
+
+  m_SUSYObjTool->setProperty("TauSelectionTool",m_tauSelTool).ignore();
+  m_SUSYObjTool->setProperty("TauEfficiencyCorrectionsTool",m_tauEffTool).ignore();
+
+  const CP::SystematicSet& recommendedSystematics = m_tauEffTool->recommendedSystematics();
+  std::vector<CP::SystematicSet> systSetList;
+  systSetList.reserve(recommendedSystematics.size()*2); // allow for continuous systematics
+  systSetList.push_back(CP::SystematicSet());
+  for(const auto& syst : recommendedSystematics){
+    systSetList.push_back(CP::SystematicSet());
+    systSetList.back().insert(syst);
+  }
+  m_tauEffSystSetList = systSetList;
+
+
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
   if ( !m_SUSYObjTool->initialize().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef !");
@@ -110,8 +159,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     store->remove("SUSYElectrons"+m_suffix+"Aux.").ignore();
     store->remove("SUSYPhotons"+m_suffix).ignore();
     store->remove("SUSYPhotons"+m_suffix+"Aux.").ignore();
-    //store->remove("SUSYTaus").ignore();
-    //store->remove("SUSYTausAux.").ignore();
+    store->remove("SUSYTaus").ignore();
+    store->remove("SUSYTausAux.").ignore();
     store->remove("MET_ZL"+m_suffix).ignore();
     store->remove("MET_ZL"+m_suffix+"Aux.").ignore();
 
@@ -291,7 +340,6 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     }
   }
 
-  /*
   // Taus
   std::pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* > susytaus = std::make_pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);
   if ( m_UseSmearedJets ) {
@@ -304,12 +352,40 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if (!event.retrieve(taus,"TauRecContainer").isSuccess()){
       throw std::runtime_error("Could not retrieve TauJetContainer with key TauRecContainer");
     }
-
+    
+    xAOD::TauJet::Decorator<float> dec_SFJetID("SFJetID");
+    xAOD::TauJet::Decorator<float> dec_SFJetIDStatUp("SFJetIDStatUp");
+    xAOD::TauJet::Decorator<float> dec_SFJetIDStatDown("SFJetIDStatDown");
+    xAOD::TauJet::Decorator<float> dec_SFJetIDSystUp("SFJetIDSystUp");
+    xAOD::TauJet::Decorator<float> dec_SFJetIDSystDown("SFJetIDSystDown");
     susytaus = xAOD::shallowCopyContainer(*taus);
     xAOD::TauJetContainer::iterator tau_itr = susytaus.first->begin();
     xAOD::TauJetContainer::iterator tau_end = susytaus.first->end();
     for( ; tau_itr != tau_end; ++tau_itr ) {
+      
       if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
+      if( (*tau_itr)->auxdecor<char>("baseline")==1 ){
+	for ( const auto& syst : m_tauEffSystSetList ){
+	  // one by one apply systematic variation 
+	  if (m_tauEffTool->applySystematicVariation(syst) != CP::SystematicCode::Ok){
+	    throw std::runtime_error("Could not configure for systematic variatoin" );
+	  }else{
+	    m_tauEffTool->applyEfficiencyScaleFactor( **tau_itr );
+	    std::string systName = syst.name();
+	    float sf = (float)( *tau_itr )->auxdata< double >("TauScaleFactorJetID");
+	    //std::cout<<"TauScaleFactorJetID syst:"<<systName<<" "<<sf<<std::endl;
+	    if( systName == "" )                               dec_SFJetID( **tau_itr )         = sf;
+	    else if( systName == "TAUS_EFF_JETID_STAT__1up"   ) dec_SFJetIDStatUp( **tau_itr )   = sf;
+	    else if( systName == "TAUS_EFF_JETID_STAT__1down" ) dec_SFJetIDStatDown( **tau_itr ) = sf;
+	    else if( systName == "TAUS_EFF_JETID_SYST__1up"   ) dec_SFJetIDSystUp( **tau_itr )    = sf;
+	    else if( systName == "TAUS_EFF_JETID_SYST__1down" ) dec_SFJetIDSystDown( **tau_itr )  = sf;
+	  }
+	  CP::SystematicSet defaultSet;
+	  if(m_tauEffTool->applySystematicVariation(defaultSet) != CP::SystematicCode::Ok){
+	    throw std::runtime_error("Could not configure TauEfficiencyCorrectionsTool for default systematic setting");
+	  }
+	}
+      }
     }
     
     if ( ! store->record(susytaus.first,"SUSYTaus"+m_suffix).isSuccess() ) {
@@ -319,7 +395,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not store SUSYTaus"+m_suffix+"Aux.");
     }
   }
-  */
+
 
   // Overlap removal
   if ( m_PhotonInOR ) {

@@ -35,6 +35,7 @@ class NTVars
   float chfjet0,chfjet1;
   int pdfId1, pdfId2;
   int tauN, tauJetBDTLoose;
+  int tauLooseN;
   float tauMt;
   float SherpaBugMET;
   float metNOCHCORRCELL;
@@ -59,6 +60,11 @@ class NTVars
   std::vector< float > jetFracSamplingMax;
   std::vector< float > jetFracSamplingMaxIndex;
 
+  std::vector< float > tauLooseSF;
+  std::vector< float > tauLooseSFStatUp;
+  std::vector< float > tauLooseSFStatDown;
+  std::vector< float > tauLooseSFSystUp;
+  std::vector< float > tauLooseSFSystDown;
   
 };
 
@@ -93,6 +99,11 @@ private:
   std::vector< float >* p_jetFracSamplingMax;
   std::vector< float >* p_jetFracSamplingMaxIndex;
  
+  std::vector< float >* p_tauLooseSF;
+  std::vector< float >* p_tauLooseSFStatUp;
+  std::vector< float >* p_tauLooseSFStatDown;
+  std::vector< float >* p_tauLooseSFSystUp;
+  std::vector< float >* p_tauLooseSFSystDown;
 };
 
 

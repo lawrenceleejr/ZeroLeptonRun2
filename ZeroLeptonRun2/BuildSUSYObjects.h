@@ -3,6 +3,12 @@
 
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
+#include "AsgTools/ToolHandle.h"
+#include "TauAnalysisTools/TauSelectionTool.h"
+#include "TauAnalysisTools/TauEfficiencyCorrectionsTool.h"
+namespace CP{
+	class SystematicSet;
+}
 namespace ST{
   class SUSYObjDef_xAOD;
 }
@@ -33,6 +39,10 @@ private:
   bool m_UseSmearedJets;
   bool m_UseSystematics;
   bool m_PhotonInOR;
+
+  ToolHandle<TauAnalysisTools::ITauSelectionTool> m_tauSelTool;
+  ToolHandle<TauAnalysisTools::ITauEfficiencyCorrectionsTool> m_tauEffTool;
+  std::vector<CP::SystematicSet> m_tauEffSystSetList;
 
   std::string m_jetkey; 
   std::string m_suffix;
