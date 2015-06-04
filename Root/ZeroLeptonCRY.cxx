@@ -390,7 +390,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   float ttbarWeightHT = 1.;
   float ttbarWeightPt2 = 1.;
   float ttbarAvgPt = 0.;
-  float HT = meffincl -  MissingEtCorr;
+  //float HT = meffincl -  MissingEtCorr;
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;

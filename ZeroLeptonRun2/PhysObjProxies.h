@@ -3,24 +3,12 @@
 
 #include "TLorentzVector.h"
 
-//FIXME once forward declaration works
-namespace xAOD {
-  class Jet_v1;
-  typedef Jet_v1 Jet;
-}
-namespace xAOD {
-  class Muon_v1;
-}
-//namespace xAOD {
-//  class TauJet_v1;
-//}
-namespace xAOD {
-  class TruthParticle_v1;
-  typedef TruthParticle_v1 TruthParticle;
-}
+#include "xAODJet/Jet.h"
 #include "xAODEgamma/ElectronFwd.h"
 #include "xAODEgamma/PhotonFwd.h"
+#include "xAODMuon/Muon.h"
 #include "xAODTau/TauJet.h"
+#include "xAODTruth/TruthParticleFwd.h"
 
 //----------------------------------------------------------------------
 // These classes act as proxies for the xAOD physics objects in order
@@ -102,23 +90,23 @@ class MuonProxy: public TLorentzVector
 {
  public:
   MuonProxy();
-  MuonProxy(const xAOD::Muon_v1* muon);
+  MuonProxy(const xAOD::Muon* muon);
 
   inline bool isBaseline() const {return m_isBaseline;}
   inline bool isSignal() const {return m_isSignal;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
   inline bool isCosmic() const {return m_isCosmic;}
-  inline const xAOD::Muon_v1* muon() const {return m_muon;}
+  inline const xAOD::Muon* muon() const {return m_muon;}
 
  private:
   bool m_isBaseline;
   bool m_isSignal;
   bool m_passOR;
   bool m_isCosmic;
-  const xAOD::Muon_v1* m_muon;
+  const xAOD::Muon* m_muon;
 
 public:
-    ClassDef(MuonProxy,0);
+    ClassDef(MuonProxy,1);
 };
 
 class ElectronTruthProxy: public TLorentzVector

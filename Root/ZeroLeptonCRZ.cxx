@@ -29,8 +29,8 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_stringRegion("CRZ_SRAll"), 
     m_doSmallNtuple(true),
     m_IsData(false),
-    m_IsTruth(false),
     m_IsSignal(false),
+    m_IsTruth(false),
     m_UseSystematics(false),
     m_period(INVALID),
     m_isMuonChannel(false),
@@ -486,7 +486,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   float ttbarWeightHT = 1.;
   float ttbarWeightPt2 = 1.;
   float ttbarAvgPt = 0.;
-  float HT = meffincl -  MissingEt;
+  //float HT = meffincl -  MissingEt;
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;

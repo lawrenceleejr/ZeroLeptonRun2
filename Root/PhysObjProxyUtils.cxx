@@ -1042,11 +1042,9 @@ PhysObjProxyUtils::ReclJets PhysObjProxyUtils::Recluster(const std::vector<JetPr
 std::vector<int> PhysObjProxyUtils::GetSortedJetIndexes(const std::vector<TLorentzVector> jets)
 {
    float vec_pt[500];
-   int vec_index[500];
   
    for (UInt_t iJet=0; iJet< jets.size(); ++iJet){
        vec_pt[iJet]= jets[iJet].Pt();
-       vec_index[iJet]= iJet;
    }
   
    // now obtain list of sorted indexes

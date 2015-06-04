@@ -100,7 +100,7 @@ MuonProxy::MuonProxy():
 {
 }
 
-MuonProxy::MuonProxy(const xAOD::Muon_v1* muon):
+MuonProxy::MuonProxy(const xAOD::Muon* muon):
   TLorentzVector(muon->p4())
 {
   m_isBaseline = muon->auxdecor<char>("baseline")==1;
