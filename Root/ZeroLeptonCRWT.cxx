@@ -615,16 +615,16 @@ void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& le
 {
   crwtvars.Reset();
   crwtvars.lep1sign = lepsign;
-  crwtvars.lep1Pt  = lepton.Pt();
+  crwtvars.lep1Pt  = lepton.Pt() * 0.001;
   crwtvars.lep1Eta = lepton.Eta();
   crwtvars.lep1Phi = lepton.Phi();
 
   double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
-  crwtvars.mt = std::sqrt(2.*lepton.Pt() * met * (1. - (lepton.Px()*metv.Px() + lepton.Py()*metv.Py())/(lepton.Pt()*met)));
+  crwtvars.mt = std::sqrt(2.*lepton.Pt() * met * (1. - (lepton.Px()*metv.Px() + lepton.Py()*metv.Py())/(lepton.Pt()*met))) * 0.001;
 
   double wpx = lepton.Px()+metv.Px();
   double wpy = lepton.Py()+metv.Py();
-  crwtvars.Wpt = std::sqrt(wpx*wpx+wpy*wpy);
+  crwtvars.Wpt = std::sqrt(wpx*wpx+wpy*wpy) * 0.001;
 }
 
 ClassImp(ZeroLeptonCRWT);

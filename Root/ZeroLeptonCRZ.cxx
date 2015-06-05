@@ -583,22 +583,22 @@ void ZeroLeptonCRZ::FillCRZVars(NTCRZVars& crzvars, std::vector<TLorentzVector>&
 {
   crzvars.Reset();
   crzvars.lep1sign = lepsigns.at(0);
-  crzvars.lep1Pt  = (leptons.at(0)).Pt();
+  crzvars.lep1Pt  = (leptons.at(0)).Pt() * 0.001;
   crzvars.lep1Eta = (leptons.at(0)).Eta();
   crzvars.lep1Phi = (leptons.at(0)).Phi();
 
   crzvars.lep2sign = lepsigns.at(1);
-  crzvars.lep2Pt  = (leptons.at(1)).Pt();
+  crzvars.lep2Pt  = (leptons.at(1)).Pt() * 0.001;
   crzvars.lep2Eta = (leptons.at(1)).Eta();
   crzvars.lep2Phi = (leptons.at(1)).Phi();
 
 
   //double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
-  crzvars.mll = (leptons.at(0)+leptons.at(1)).M();
+  crzvars.mll = (leptons.at(0)+leptons.at(1)).M() * 0.001;
 
   double zpx = leptons.at(0).Px()+leptons.at(1).Py();
   double zpy = leptons.at(0).Py()+leptons.at(1).Py();
-  crzvars.Zpt = std::sqrt(zpx*zpx+zpy*zpy);
+  crzvars.Zpt = std::sqrt(zpx*zpx+zpy*zpy) * 0.001;
 }
 
 

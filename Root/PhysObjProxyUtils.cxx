@@ -698,22 +698,22 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
 					double Ap)
 {
   extrantv.Reset();
-  extrantv.mettrack = MET_Track;
+  extrantv.mettrack = MET_Track * 0.001;
   extrantv.mettrack_phi = MET_Track_phi;
-  extrantv.mT2=mT2;
-  extrantv.mT2_noISR=mT2_noISR;  
-  extrantv. gaminvRp1=gaminvRp1;
-  extrantv. shatR=shatR;
-  extrantv. mdeltaR=mdeltaR;
-  extrantv. cosptR=cosptR;
-  extrantv. gamma_R=gamma_R;
-  extrantv. dphi_BETA_R=dphi_BETA_R;
-  extrantv.  dphi_leg1_leg2=dphi_leg1_leg2;
-  extrantv.  costhetaR=costhetaR;
-  extrantv. dphi_BETA_Rp1_BETA_R=dphi_BETA_Rp1_BETA_R;
-  extrantv. gamma_Rp1=gamma_Rp1;
-  extrantv. costhetaRp1=costhetaRp1;
-  extrantv. Ap=Ap;
+  extrantv.mT2=mT2 * 0.001;
+  extrantv.mT2_noISR=mT2_noISR * 0.001;  
+  extrantv.gaminvRp1=gaminvRp1;
+  extrantv.shatR=shatR;
+  extrantv.mdeltaR=mdeltaR;
+  extrantv.cosptR=cosptR;
+  extrantv.gamma_R=gamma_R;
+  extrantv.dphi_BETA_R=dphi_BETA_R;
+  extrantv.dphi_leg1_leg2=dphi_leg1_leg2;
+  extrantv.costhetaR=costhetaR;
+  extrantv.dphi_BETA_Rp1_BETA_R=dphi_BETA_Rp1_BETA_R;
+  extrantv.gamma_Rp1=gamma_Rp1;
+  extrantv.costhetaRp1=costhetaRp1;
+  extrantv.Ap=Ap;
 }
 
 
@@ -767,7 +767,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.genWeight = genWeight;
   ntv.ttbarWeightHT = ttbarWeightHT;
   ntv.ttbarWeightPt2 = ttbarWeightPt2;
-  ntv.ttbarAvgPt = ttbarAvgPt;
+  ntv.ttbarAvgPt = ttbarAvgPt * 0.001;
   ntv.WZweight = WZweight;
   ntv.bTagWeight     = (bTagWeight.size() >= 1) ? bTagWeight.at(0) : 1.;
   ntv.bTagWeightBUp   = (bTagWeight.size() >= 5) ? bTagWeight.at(4) : 1.;
@@ -785,12 +785,12 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.cTagWeightLDown = (cTagWeight.size() >= 4) ? cTagWeight.at(3) : 1.;  
   ntv.nBJet = nBJet;
   ntv.nCJet = nCJet;  
-  ntv.MET = MissingEt;
+  ntv.MET = MissingEt * 0.001;
   ntv.METPhi = METPhi;
   ntv.deltaPhi = minDphi;
   ntv.deltaPhiRemaining=RemainingminDPhi;
   
-  ntv.MeffIncl= meffincl;
+  ntv.MeffIncl= meffincl * 0.001;
   ntv.normWeight=(normWeight.size() >= 1) ? normWeight.at(0) : 1.;
   ntv.normWeightUp=(normWeight.size() >= 2) ? normWeight.at(1) : 1.;
   ntv.normWeightDown=(normWeight.size() >= 3) ? normWeight.at(2) : 1.;
@@ -799,7 +799,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.cleaning=cleaning;
   ntv.timing=timing;
 
-  ntv.SherpaBugMET = SherpaBugMET;
+  ntv.SherpaBugMET = SherpaBugMET * 0.001;
 
   // pdgid of incoming partons
   // FIXME
@@ -855,10 +855,10 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     }
 
     if (pt > 40000.) {
-      ntv.jetPt.push_back(pt);
+      ntv.jetPt.push_back(pt * 0.001);
       ntv.jetEta.push_back(eta);
       ntv.jetPhi.push_back(phi);
-      ntv.jetM.push_back(m);
+      ntv.jetM.push_back(m * 0.001);
       ntv.jetBTag.push_back(jetbtag);
       ntv.jetFlav.push_back(jetflav);
       ntv.jetTagU.push_back(jettagU);
@@ -884,11 +884,11 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     }
   }
   ntv.metNOCHCORRCELL = std::sqrt(metNOCHCORRCELLx*metNOCHCORRCELLx+
-				  metNOCHCORRCELLy*metNOCHCORRCELLy);
+				  metNOCHCORRCELLy*metNOCHCORRCELLy) * 0.001;
   ntv.metLHTOPONOCHCORRCELL = std::sqrt(metLHTOPONOCHCORRCELLx*metLHTOPONOCHCORRCELLx+
-					metLHTOPONOCHCORRCELLy*metLHTOPONOCHCORRCELLy);
+					metLHTOPONOCHCORRCELLy*metLHTOPONOCHCORRCELLy) * 0.001;
   ntv.metLHTOPO = std::sqrt(metLHTOPOx*metLHTOPOx+
-			    metLHTOPOy*metLHTOPOy);
+			    metLHTOPOy*metLHTOPOy) * 0.001;
   
   ntv.jetSmearSystW = jetSmearSystW;
 
@@ -898,7 +898,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   for ( size_t tau0=0; tau0<baseline_taus.size(); tau0++) 
   {
     const TauProxy& thistau = baseline_taus[tau0];
-    ntv.tauPt.push_back(thistau.Pt());
+    ntv.tauPt.push_back(thistau.Pt() * 0.001);
     ntv.tauEta.push_back(thistau.Eta());
     ntv.tauPhi.push_back(thistau.Phi());
     float sf, sfStatUp, sfStatDown, sfSystUp, sfSystDown;
@@ -923,8 +923,14 @@ void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv,
   const float fCut=0.1;  //trimming cut 
   myRT=Recluster(good_jets, 40000., fCut, 1.0);
   RTntv.RTjets10SubJetIndeces = myRT.recl_jets_subInds;
-  RTntv.RTjetM = myRT.recl_jets_M;
-  RTntv.RTjetPt = myRT.recl_jets_Pt;
+
+  std::vector<float> pts =  myRT.recl_jets_Pt;
+  for ( size_t i = 0; i < pts.size(); i++ ) {pts[i] *= 0.001;}
+  std::vector<float> masses =  myRT.recl_jets_M;
+  for ( size_t i = 0; i < masses.size(); i++ ) {masses[i] *= 0.001;}
+
+  RTntv.RTjetM = masses;
+  RTntv.RTjetPt = pts;
   RTntv.RTjetEta = myRT.recl_jets_Eta;
   RTntv.RTjetPhi = myRT.recl_jets_Phi;
 

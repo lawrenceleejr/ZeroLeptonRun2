@@ -505,13 +505,13 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
   cryntv.Reset();
   for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
     if ( phit->isBaseline() && phit->Pt() > 20000. ) {
-      cryntv.phPt.push_back(phit->Pt());
+      cryntv.phPt.push_back(phit->Pt() * 0.001);
       cryntv.phEta.push_back(phit->Eta());
       cryntv.phPhi.push_back(phit->Phi());
       cryntv.phSignal.push_back(phit->isSignal());
     }
   }
-  cryntv.origmet    = origmisset.Mod();
+  cryntv.origmet    = origmisset.Mod() * 0.001;
   cryntv.origmetPhi = origmisset.Phi();
 }
 
