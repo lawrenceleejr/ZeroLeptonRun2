@@ -89,3 +89,50 @@ The file path of input files for MC should allow to retreive the dataset ID,
  so this is currently not possible for files in rucio.
 
 You need to have the code compiled as it uses C++ code.
+
+
+
+6/ Cleaning cuts:
+================
+
+Starting version ZeroLeptonRun2-00-00-36, the cleaning cuts have been removed
+(except detector status) and a flag is added in the "cleaning" word
+
+SR:
+bit 0 : set if   bad jet veto
+bit 2 : set if   bad MET muon
+bit 3 : set if   bad Tile veto
+bit 4 : set if   negative energy cell veto
+bit 5 : set if   leading jet timing (not used in Run 1)
+bit 6 : set if   chfTileVeto (8TeV)
+bit 7 : set if   chfVeto (not used in Run 1)
+
+CRWT:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfVeto (not used in Run 1)
+
+CRZ:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad Tile veto
+bit 4 : set if   negative energy cell veto
+bit 5 : set if   leading jet timing (not used in Run 1)
+bit 6 : set if   chfVeto (not used in Run 1)
+
+CRY:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfTileVeto (8TeV)
+bit 8 : set if   chfVeto (not used in Run 1)

@@ -246,11 +246,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   }
   double MissingEt = missingET->Mod();
 
-
-  // bad jet veto
-  if ( !bad_jets.empty() ) return true;
-  m_counter->increment(weight,incr++,"JetCleaning",trueTopo);
-
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
     bool* badDetectorQuality = 0 ; 
@@ -273,66 +268,24 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
-  // Cosmic muon cut
-  if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) ) return true;
-  m_counter->increment(weight,incr++,"CosmicMuons",trueTopo);
-
-  //FIXME isBadMuon not yet implement in SUSYObjDef_xAOD
-
-  // bad muons for MET cut: based on non isolated muons
-  if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) return true;
-  m_counter->increment(weight,incr++,"IsBadMETMuon",trueTopo);
-
-  // bad Tile cut
-  if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) return true;
-  m_counter->increment(weight,incr++,"Bad Tile Veto",trueTopo);
-
   // Negative-cell cleaning cut
   bool HasNegCell = false ; 
   if(! m_IsTruth){
     HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
   }
-  //out() << " NegCell " << HasNegCell << std::endl;
-  if ( HasNegCell ) return true;
-  m_counter->increment(weight,incr++,"Negative-cell cleaning",trueTopo);
-
 
   // 0 lepton
   if ( !isolated_baseline_electrons.empty() ) return true;
   if ( !isolated_baseline_muons.empty() ) return true;
   m_counter->increment(weight,incr++,"0 Lepton",trueTopo);
  
-  // Topology cut
-  // Selection
-  bool inSRmono=false;
-  bool inSR1=false;
-  bool inSR2=false;
-  bool inSR3=false;
-  bool inSR4=false;
-  bool inSR5=false;
-  bool inSR6=false;
 
   if (good_jets.size()<1) return true;  
-  if ((good_jets.size()>=1)) inSRmono=true; 
-  if ((good_jets.size()>=2)) {inSR1=true; inSR2=true;}
-  if ((good_jets.size()>=3)) inSR3=true;
-  if ((good_jets.size()>=4)) inSR4=true;
-  if ((good_jets.size()>=5)) inSR5=true;
-  if ((good_jets.size()>=6)) inSR6=true;
-  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
-  m_counter->increment(weight,incr++,"SignalRegion vs. Number of jets",trueTopo);
+  m_counter->increment(weight,incr++,"At least one jet",trueTopo);
   
-  // jet timing cut
+  // jet timing
   std::vector<float> time;
   m_proxyUtils.EnergyWeightedTime(good_jets,time);
-  if ((good_jets.size()>=2) && (fabs(time[0])>5)) { inSR1=false; }
-  if ((good_jets.size()>=2) && (fabs(time[0])>5)) { inSR2=false; }
-  if ((good_jets.size()>=3) && (fabs(time[1])>5)) { inSR3=false; }
-  if ((good_jets.size()>=4) && (fabs(time[2])>5)) { inSR4=false; }
-  if ((good_jets.size()>=5) && (fabs(time[3])>5)) { inSR5=false; }
-  if ((good_jets.size()>=6) && (fabs(time[4])>5)) { inSR6=false; }
-  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
-  m_counter->increment(weight,incr++,"Energy weighted time ",trueTopo);
 
   // MissingET cut
   if( !m_IsTruth ){
@@ -348,14 +301,15 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
   // Other jet pT cuts depending on selection
-  inSRmono = (MissingEt > m_cutVal.m_cutEtMiss1Jet);
-  inSR1 = false;
-  inSR2 = false;
-  inSR3 = false;
-  inSR4 = false;
-  inSR5 = false;
-  inSR6 = false;
+  bool inSRmono=false;
+  bool inSR1=false;
+  bool inSR2=false;
+  bool inSR3=false;
+  bool inSR4=false;
+  bool inSR5=false;
+  bool inSR6=false;
 
+  inSRmono = (MissingEt > m_cutVal.m_cutEtMiss1Jet);
   if ((good_jets.size() > 1) && 
       (good_jets[1].Pt() > m_cutVal.m_cutJetPt1)) {
     inSR1 = true; inSR2 = true;
@@ -485,14 +439,37 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
     // other cleaning tests
     unsigned int cleaning = 0;
-    if (fabs(time[0]) > 5) cleaning += 2;  //t2j use for all SRs
+    unsigned int power2 = 1;
+
+    // bad jet veto
+    if ( !bad_jets.empty() ) cleaning += power2;
+    power2 *= 2;
+
+    // bad muons for MET cut: based on non isolated muons
+    if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) cleaning += power2;
+    power2 *= 2;
+
+    // bad Tile cut
+    if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
+    power2 *= 2;
+
+    // Negative-cell cleaning cut
+    if ( HasNegCell ) cleaning += power2;
+    power2 *= 2;
+
+    // leading jet timing
+    if (fabs(time[0]) > 5) cleaning += power2;
+    power2 *= 2;
 
     if(!m_IsTruth){
       bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
-      if ( chfTileVeto ) cleaning += 4;
+      if ( m_period == p8tev && chfTileVeto ) cleaning += power2;
       bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-      if ( chfVeto ) cleaning += 8;
+      if ( chfVeto ) cleaning += power2 * 2;
     }
+    power2 *= 4;
+
+
     const xAOD::MissingETContainer* metcontainer = 0;
     float metLHTOPOx = 0.f;
     float metLHTOPOy = 0.f;

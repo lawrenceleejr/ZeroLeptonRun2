@@ -1,5 +1,7 @@
 05-Jun-2015 Laurent Duflot
 	* ZeroLeptonNTVars, PhysObjProxyUtils: add tau pT, eta, phi
+	* PhysObjProxies, BuildSUSYObjects: add isBad to muons
+	* SR+CR : remove cleaning cuts and fill 'cleaning' variable with decision
 
 04-Jun-2015 Laurent Duflot
 	* ZeroLeptonNTVars, PhysObjProxies, PhysObjProxyFiller,
