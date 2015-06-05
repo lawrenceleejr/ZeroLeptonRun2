@@ -4,9 +4,9 @@ __doc__ = """
 This script can be used to launch jobs on the grid
 Usage:
 setup RootCore and pathena 
-chmod u+x ZeroLepton/python/launch_jobs_on_grid.py;
-ZeroLepton/python/launch_jobs_on_grid.py --help
-ZeroLepton/python/launch_jobs_on_grid.py
+chmod u+x ZeroLeptonRun2/python/launch_jobs_on_grid.py;
+ZeroLeptonRun2/python/launch_jobs_on_grid.py --help
+ZeroLeptonRun2/python/launch_jobs_on_grid.py
 """
 
 import os,sys,subprocess,datetime,re
@@ -21,15 +21,12 @@ def parseCmdLine(args):
     parser.add_option("--prefix", dest="prefix", help="Prefix appended to the output DS name, should be something like user.yourname",default="user.%s." % os.environ['USER']) 
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output DS name in case you need to add a version for example",default="") 
     parser.add_option("--debug", dest="debug", help="Debug mode", action='store_true', default=False)
-    parser.add_option("--config", dest="configfile", help="cafe configuration file", default="ZeroLeptonRun2/config/zerolepton.config")
+    parser.add_option("--config", dest="configfile", help="cafe configuration file", default="")
     parser.add_option("--runopts", dest="runopts", help="Command line arguments to cafe executable", default="")
     parser.add_option("--container", dest="container", help="If the input datasets are in a container with multiple run numbers, configuure prun to keep them distinct", action='store_true', default=False)
     parser.add_option("--prunopts", dest="prunopts", help="Command line arguments to prun", default="")
     parser.add_option("--signal", dest="signal", help="Input is signal MC", action='store_true', default=False)
 
-    #parser.add_option("--procs", dest="procs", help="Determine 'procs' argument from DS name", action='store_true', default=False)
-    #parser.add_option("--pdf", dest="pdf", help="Determine 'pdf' argument from DS name plus ship pdf library", action='store_true', default=False)
-    #parser.add_option("--d3pddump", dest="d3pddump", help="Retrieve the skimmed ntuple", action='store_true', default=False)
     parser.add_option("--tmpDir", dest="tmpDir", help="Tmp dir", default="")
     (config, args) = parser.parse_args(args)
     return config
@@ -65,27 +62,14 @@ def main():
         print "You did not specify any input dataset or file containing a list of input datasets.\nPlease type launch_jobs_on_grid.py -h"
         sys.exit(0)
 
-    ## Store SUSYTools/data root files in a tar.gz used as external file
+    # find local file to explicitely include them on the prun command line
     rootCoreDir = os.environ['ROOTCOREBIN']
-    #if 'compiled' in os.listdir(rootCoreDir+'/../OxbridgeKinetics/cmt/'): 
-    #    subprocess.call('rm -f '+rootCoreDir+'/../OxbridgeKinetics/cmt/'+'compiled', shell=True)
-    
     localfiles = []
     flpkgs = open(rootCoreDir+'/packages','r')
     for pkgname in flpkgs:
         pkgname = pkgname.split(':')[0]
         if not os.path.isdir(pkgname): continue
         localfiles += findFiles(pkgname,('.root','.txt','.xml','.env'))
-
-    # cmd = 'tar cvzf externalFiles.tar.gz'
-    # for f in localfiles:
-    #     cmd += ' '+f
-    # if config.debug:
-    #     print cmd
-    # ret = subprocess.call(cmd, shell=True)
-    # if ret != 0:
-    #     print 'failed to build external tar.gz file'
-    #     sys.exit(1)
 
     ## Loop over input datasets
     first = True
@@ -145,17 +129,22 @@ def main():
 
         print 'output DS: ' + outDS
 
-        # this is an attempt to work without a tarball, since skipping all
-        # root file at submission cause missing links in RootCore/data
-        #scriptcmd = r"""rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """  + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
-        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
-        # We run in the worker top directory because that's were links are made
-        # to input files. But files can be referred to via a path relative
-        # to the execution directory or relative to $ROOTCOREBIN, that's why 
-        # we expand the tarball twice 
-        #scriptcmd = r"""pwd; TOPDIR=\$PWD; echo "topdir \$TOPDIR"; cd \$ROOTCOREBIN/..; rm -f \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/liboxbridgekinetics*; ln -sf \$ROOTCOREBIN/../OxbridgeKinetics/lib/* \$ROOTCOREBIN/lib/\$ROOTCORECONFIG/; tar -xvzf \$TOPDIR/externalFiles.tar.gz; pwd; ls -lR; cd \$TOPDIR; pwd; ls; tar -xvzf externalFiles.tar.gz; ZeroLeptonRun2/python/pfc2txt.py; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """  + config.configfile + """ Events: -1  Input: filelist:inputfiles Output: output.root """
+        # which cafe config file should be used ?
+        if config.configfile == "":
+            if "mc15" in inDS or "data15" in inDS:
+                cafeconfig = "ZeroLeptonRun2/config/zerolepton.config"
+            elif "mc14" in inDS or "data12" in inDS:
+                cafeconfig = "ZeroLeptonRun2/config/zerolepton_DC14.config"
+            else:
+                print "Unexpected dataset name, could not figure out which cafe config file to use"
+                sys.exit(1)
+        else:
+            cafeconfig = config.configfile
+
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
+
         # Real data ?
-        if "data11" in inDS or "data12" in inDS: 
+        if "data11" in inDS or "data12" in inDS or "data15" in inDS: 
             scriptcmd += " Global.IsData: TRUE Global.IsSignal: FALSE "
             if 'physics_Egamma' in inDS:
                  scriptcmd += "crwt.IsElectronChannel: TRUE vrwt.IsElectronChannel: TRUE "
@@ -163,7 +152,7 @@ def main():
                  scriptcmd += "crwt.IsMuonChannel: TRUE vrwt.IsMuonChannel: TRUE "
 
         # Fast or full simulation ?
-        if "mc11" in inDS or "mc12" in inDS or "mc14" in inDS :
+        if "mc11" in inDS or "mc12" in inDS or "mc14" in inDS  or "mc15" in inDS :
             tag = inDS.split(".")[-1]
             tags = tag.split("_")
             if len(tags)>2 and tags[2].startswith("a"):
@@ -186,6 +175,8 @@ def main():
         tag = inDS.split(".")[-1]
         if 'p1872' in tag:
             scriptcmd += " Global.DerivationTag: p1872 "
+        if 'p2353' in tag:
+            scriptcmd += " Global.DerivationTag: p2353 "
         else:
             scriptcmd += " Global.DerivationTag: NA "
 
@@ -200,7 +191,6 @@ def main():
 
         outputs = "output.root"
         scriptcmd += " " + config.runopts
-        #cmd = r"""prun --excludeFile=\*.root,\*.xml,\*.env,\*.txt,\*oxbridgekinetics-0.6\*,\*OxbridgeKinetics/lib\* --exec "%(scriptcmd)s" --useRootCore --inDS %(inDS)s --outputs %(outputs)s --extFile externalFiles.tar.gz --outDS %(outDS)s  %(prunopts)s""" % {'inDS':inDS,'outDS':outDS,'scriptcmd':scriptcmd,'prunopts':config.prunopts,'outputs':outputs}
         cmd = r"""prun --excludeFile=\*/.svn/\*,\*oxbridgekinetics-0.6/\*,\*OxbridgeKinetics/lib\* --exec "%(scriptcmd)s" --useRootCore --inDS %(inDS)s --outputs %(outputs)s  --outDS %(outDS)s  %(prunopts)s""" % {'inDS':inDS,'outDS':outDS,'scriptcmd':scriptcmd,'prunopts':config.prunopts,'outputs':outputs}
         cmd += extfiles
         if config.container and not 'data11' in inDS:
@@ -232,18 +222,12 @@ def main():
             print cmd
         first = False
         ret = 0
-        #print cmd
-        #sys.exit(0)
+        print cmd
+        sys.exit(0)
         ret = subprocess.call(cmd, shell=True)
         if ret != 0:
             print 'command failed => stop script'
             #sys.exit(1)
-    # if config.tmpDir != "":
-    #     if os.path.exists(config.tmpDir+'/TarBall_prun.tar.gz'):
-    #          ret = subprocess.call('rm -f %s' % config.tmpDir+'/TarBall_prun.tar.gz', shell=True)
-    # else:
-    #     if os.path.exists('/tmp/'+os.environ['USER']+'/TarBall_prun.tar.gz'):
-    #         ret = subprocess.call('rm -f %s' % '/tmp/'+os.environ['USER']+'/TarBall_prun.tar.gz', shell=True)
     return
 
 if __name__ == "__main__":

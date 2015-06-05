@@ -2,6 +2,7 @@
 	* PhysObjProxyUtils + CR: change energies to GeV in the *mini-tuple*
 	(the rest of the code still use MeV !) razor variables unchanged.
 	* ZeroLeptonRunPeriod, SR: change p2352 (skim) to p2353 (no skim)
+	* README, config files, python scripts: make mc15/data15 the default
 
 05-Jun-2015 Laurent Duflot
 	* ZeroLeptonNTVars, PhysObjProxyUtils: add tau pT, eta, phi

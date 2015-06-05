@@ -193,7 +193,7 @@ def parseCmdLine(args):
     parser.add_option("--lds", dest="lds", help="List of dataset numbers like 105200, lW, lTop", default="")
     parser.add_option("--indir", dest="indir", help="Input directory (can be used instead of --input)", default="")
     parser.add_option("--isSignal", dest="isSignal", help="isSignal",action='store_true', default=False)
-    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc14_13TeV") 
+    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc15_13TeV") 
     (config, args) = parser.parse_args(args)
     return config
 

@@ -43,10 +43,10 @@ def parseCmdLine(args):
     To get the whole list of options type : get_list_dataset.py -h"""
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--prefix", dest="prefix", help="Prefix to search datasets in AMI",default="mc14_13TeV") 
+    parser.add_option("--prefix", dest="prefix", help="Prefix to search datasets in AMI",default="mc15_13TeV") 
     parser.add_option("--datatype", dest="datatype", help="datatype",default="%.merge.DAOD_SUSY1%") 
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output file name",default="") 
-    parser.add_option("--tag", dest="tag", help="Production tag",default="r5853_p1872") 
+    parser.add_option("--tag", dest="tag", help="Production tag",default="_r6630_r6264_p2353") 
     parser.add_option("--server", dest="server", help="AMI server (main or replica)",default="main") 
     parser.add_option("--official", dest="official", help="Select only baseline or alternative samples from MCSampleList", action='store_true', default=False)
     parser.add_option("--baseline", dest="baseline", help="Select only baseline samples from MCSampleList", action='store_true', default=False)

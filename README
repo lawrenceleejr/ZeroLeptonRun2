@@ -9,11 +9,19 @@ The cafe config file is in ZeroLeptonRun2/config/zerolepton.config, you can
 copy it and modify it but for testing it is easier to just overwrite some 
 configurations from the command line like:
 
-cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/l/lduflot/atlasreadable/datafiles/mc14_13TeV.110401.PowhegPythia_P2012_ttbar_nonallhad.merge.DAOD_SUSY1.e2928_s1982_s2008_r5787_r5853_p1872/DAOD_SUSY1.05248705._000028.pool.root.1
+for DC14
+
+cafe ZeroLeptonRun2/config/zerolepton_DC14.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/l/lduflot/atlasreadable/datafiles/mc14_13TeV.110401.PowhegPythia_P2012_ttbar_nonallhad.merge.DAOD_SUSY1.e2928_s1982_s2008_r5787_r5853_p1872/DAOD_SUSY1.05248705._000028.pool.root.1
+
+for mc15 / data 15 :
+
+cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/atlasdatadisk/rucio/mc15_13TeV/23/fb/DAOD_SUSY1.05556008._000039.pool.root.1
 
 This run a simple job with no systematics. A preliminary implementation of
 systematics that adds a tree for every systematics uses the 
 zerolepton_with_syst.config  config file.
+
+
 
 To run the truth code, an example is given below : 
 
@@ -29,7 +37,7 @@ ZeroLeptonRun2/python/makeDatasetList.py --help
 For example, 
 ZeroLeptonRun2/python/makeDatasetList.py --baseline
 
-will make the list of mc14_13TeV corresponding to the baseline samples.
+will make the list of mc15_13TeV corresponding to the baseline samples.
 
 
 

@@ -3,7 +3,6 @@
 import sys, os, copy
 
 import ROOT
-#from mc12_8TeV_MCSampleList import *
 
 
 def parseCmdLine():
@@ -56,7 +55,7 @@ def parseCmdLine():
                       action='store_true', default=True)
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
-    parser.add_option("--prefix", dest="prefix", default="mc14_13TeV",
+    parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
                       help="Prefix to identify mc production",) 
 
     (config, args) = parser.parse_args()
