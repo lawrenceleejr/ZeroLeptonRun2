@@ -473,7 +473,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     const xAOD::MissingETContainer* metcontainer = 0;
     float metLHTOPOx = 0.f;
     float metLHTOPOy = 0.f;
-    if ( m_derivationTag != p1872 && m_derivationTag != p2352 ) {
+    if ( m_derivationTag != p1872 && m_derivationTag != p2353 ) {
       if(!m_IsTruth){
 	if( event.retrieve( metcontainer, "MET_LocHadTopo" ).isSuccess() ) {
 	  xAOD::MissingETContainer::const_iterator met_it = metcontainer->find("LocHadTopo");
