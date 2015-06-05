@@ -256,6 +256,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       if ( ! m_SUSYObjTool->FillMuon(**mu_itr).isSuccess() ) throw std::runtime_error("Error in FillMuon");
       m_SUSYObjTool->IsSignalMuon(**mu_itr);
       m_SUSYObjTool->IsCosmicMuon(**mu_itr);
+      m_SUSYObjTool->IsBadMuon(**mu_itr);
 
       // kill non baseline muon by setting 4-vector to small value
       if ( ((*mu_itr)->muonType() != xAOD::Muon::Combined &&

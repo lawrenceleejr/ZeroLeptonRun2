@@ -96,6 +96,7 @@ class MuonProxy: public TLorentzVector
   inline bool isSignal() const {return m_isSignal;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
   inline bool isCosmic() const {return m_isCosmic;}
+  inline bool isBad() const {return m_isBad;}
   inline const xAOD::Muon* muon() const {return m_muon;}
 
  private:
@@ -103,6 +104,7 @@ class MuonProxy: public TLorentzVector
   bool m_isSignal;
   bool m_passOR;
   bool m_isCosmic;
+  bool m_isBad;
   const xAOD::Muon* m_muon;
 
 public:

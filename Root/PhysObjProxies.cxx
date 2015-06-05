@@ -96,6 +96,7 @@ MuonProxy::MuonProxy():
   m_isSignal(false),
   m_passOR(true),
   m_isCosmic(true),
+  m_isBad(true),
   m_muon(0)
 {
 }
@@ -107,6 +108,7 @@ MuonProxy::MuonProxy(const xAOD::Muon* muon):
   m_isSignal   = muon->auxdecor<char>("signal")==1;
   m_passOR     = muon->auxdecor<char>("passOR")==1;
   m_isCosmic   = muon->auxdecor<char>("cosmic")==1;
+  m_isBad      = muon->auxdecor<char>("bad")==1;
   m_muon       = muon;
 }
 ClassImp(MuonProxy);
