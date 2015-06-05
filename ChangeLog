@@ -1,6 +1,6 @@
 05-Jun-2015 Laurent Duflot
 	* PhysObjProxyUtils + CR: change energies to GeV in the *mini-tuple*
-	(the rest of the code still use MeV !)
+	(the rest of the code still use MeV !) razor variables unchanged.
 
 05-Jun-2015 Laurent Duflot
 	* ZeroLeptonNTVars, PhysObjProxyUtils: add tau pT, eta, phi
