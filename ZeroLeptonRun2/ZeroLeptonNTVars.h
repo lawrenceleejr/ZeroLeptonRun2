@@ -60,6 +60,9 @@ class NTVars
   std::vector< float > jetFracSamplingMax;
   std::vector< float > jetFracSamplingMaxIndex;
 
+  std::vector< float > tauPt;
+  std::vector< float > tauEta;
+  std::vector< float > tauPhi;
   std::vector< float > tauLooseSF;
   std::vector< float > tauLooseSFStatUp;
   std::vector< float > tauLooseSFStatDown;
@@ -99,6 +102,9 @@ private:
   std::vector< float >* p_jetFracSamplingMax;
   std::vector< float >* p_jetFracSamplingMaxIndex;
  
+  std::vector< float >* p_tauPt;
+  std::vector< float >* p_tauEta;
+  std::vector< float >* p_tauPhi;
   std::vector< float >* p_tauLooseSF;
   std::vector< float >* p_tauLooseSFStatUp;
   std::vector< float >* p_tauLooseSFStatDown;

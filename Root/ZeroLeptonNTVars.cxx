@@ -77,6 +77,9 @@ void NTVars::Reset()
   jetFracSamplingMax.clear();
   jetFracSamplingMaxIndex.clear();
   
+  tauPt.clear();
+  tauEta.clear();
+  tauPhi.clear();
   tauLooseSF.clear();
   tauLooseSFStatUp.clear();
   tauLooseSFStatDown.clear();
@@ -100,6 +103,9 @@ NTVarsRead::NTVarsRead(): ntv()
   p_jetFracSamplingMax = &ntv.jetFracSamplingMax;
   p_jetFracSamplingMaxIndex = &ntv.jetFracSamplingMaxIndex;
   
+  p_tauPt   = &ntv.tauPt;
+  p_tauEta  = &ntv.tauEta;
+  p_tauPhi  = &ntv.tauPhi;
   p_tauLooseSF         = &ntv.tauLooseSF;
   p_tauLooseSFStatUp   = &ntv.tauLooseSFStatUp;
   p_tauLooseSFStatDown = &ntv.tauLooseSFStatDown;
@@ -127,6 +133,9 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   tree->GetBranch("jetFracSamplingMax")->SetAddress(&p_jetFracSamplingMax);
   tree->GetBranch("jetFracSamplingMaxIndex")->SetAddress(&p_jetFracSamplingMaxIndex);
 
+  tree->GetBranch("tauPt")->SetAddress(&p_tauPt);
+  tree->GetBranch("tauEta")->SetAddress(&p_tauEta);
+  tree->GetBranch("tauPhi")->SetAddress(&p_tauPhi);
   tree->GetBranch("tauLooseSF")->SetAddress(&p_tauLooseSF);
   tree->GetBranch("tauLooseSFStatUp")->SetAddress(&p_tauLooseSFStatUp);
   tree->GetBranch("tauLooseSFStatDown")->SetAddress(&p_tauLooseSFStatDown);
@@ -325,6 +334,9 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
     tree->Branch("jetSmearSystW",&(ntv.jetSmearSystW)); 
   }
 
+  tree->Branch("tauPt",&(ntv.tauPt));
+  tree->Branch("tauEta",&(ntv.tauEta));
+  tree->Branch("tauPhi",&(ntv.tauPhi));
   tree->Branch("tauLooseSF",&(ntv.tauLooseSF));
   tree->Branch("tauLooseSFStatUp",&(ntv.tauLooseSFStatUp));
   tree->Branch("tauLooseSFStatDown",&(ntv.tauLooseSFStatDown));

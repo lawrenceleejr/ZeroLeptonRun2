@@ -898,6 +898,9 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   for ( size_t tau0=0; tau0<baseline_taus.size(); tau0++) 
   {
     const TauProxy& thistau = baseline_taus[tau0];
+    ntv.tauPt.push_back(thistau.Pt());
+    ntv.tauEta.push_back(thistau.Eta());
+    ntv.tauPhi.push_back(thistau.Phi());
     float sf, sfStatUp, sfStatDown, sfSystUp, sfSystDown;
     thistau.getSF(sf,sfStatUp,sfStatDown,sfSystUp,sfSystDown);
     ntv.tauLooseSF.push_back(sf);

@@ -1,8 +1,10 @@
+05-Jun-2015 Laurent Duflot
+	* ZeroLeptonNTVars, PhysObjProxyUtils: add tau pT, eta, phi
+
 04-Jun-2015 Laurent Duflot
 	* ZeroLeptonNTVars, PhysObjProxies, PhysObjProxyFiller,
 	PhysObjProxyUtils, BuildSUSYObjects, ZeroLeptonSR, LinkDef.h: add taus
 	* SR, CR, PhysObjProxies, PhysObjProxyUtils: code cleanup
-
 
 03-Jun-2015 Laurent Duflot
 	* GRLProcessor: add a passAll option
