@@ -177,6 +177,8 @@ def main():
             scriptcmd += " Global.DerivationTag: p1872 "
         if 'p2353' in tag:
             scriptcmd += " Global.DerivationTag: p2353 "
+        if 'p2363' in tag:
+            scriptcmd += " Global.DerivationTag: p2353 "
         else:
             scriptcmd += " Global.DerivationTag: NA "
 

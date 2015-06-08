@@ -1,4 +1,7 @@
 08-Jun-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: add p2363
+
+08-Jun-2015 Laurent Duflot
 	* ZeroLeptonRunPeriod, ZeroLeptonSR: add p2363
 	* rel20: switch to SUSYTools-00-06-09
 	* tagged as ZeroLeptonRun2-00-00-38
