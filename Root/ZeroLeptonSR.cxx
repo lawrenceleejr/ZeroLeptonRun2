@@ -78,6 +78,7 @@ TTree* ZeroLeptonSR::bookTree(const std::string& treename)
   bookNTVars(tree,m_ntv,false);
   bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
+  bookNTRJigsawVars(tree,m_rjigsawntv);
   return tree;
 }
 
@@ -433,6 +434,24 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
+  m_proxyUtils.RJigsawInit();
+  
+  std::map<TString,float> RJigsawVariables;
+
+  m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+                                missingET->X(),
+                                missingET->Y(),
+                                RJigsawVariables);
+
+
+  if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
+  else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
+
+
+  std::cout << "in SR function..."  << std::endl;
+  std::cout << RJigsawVariables["RJVars_C_0_CosTheta"]  << std::endl;
+  std::cout << RJigsawVariables["RJVars_G_0_CosTheta"    ] << std::endl;
+
   //Super Razor variables
   double gaminvRp1 =-999;
   double shatR =-999;
@@ -503,10 +522,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., metLHTOPOx, metLHTOPOy,m_IsTruth);
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);
+    m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 
     if(!m_IsTruth)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
-    
+
     m_tree->Fill();
   }
   return true;

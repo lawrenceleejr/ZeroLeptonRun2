@@ -247,6 +247,63 @@ public:
   float gamma_Rp1; 
   float costhetaRp1;
   float Ap;
+
+  float RJVars_SS_Mass           ; 
+
+};
+
+class NTRJigsawVars {
+public:
+  NTRJigsawVars() { 
+    Reset(); 
+  }
+
+  static std::string toString();
+   
+  void Reset();
+
+  float RJVars_SS_Mass           ; 
+  float RJVars_SS_InvGamma       ; 
+  float RJVars_SS_dPhiBetaR      ; 
+  float RJVars_SS_dPhiVis        ; 
+  float RJVars_SS_CosTheta       ; 
+  float RJVars_SS_dPhiDecayAngle ; 
+  float RJVars_SS_VisShape       ; 
+  float RJVars_SS_MDeltaR        ; 
+  float RJVars_S1_Mass           ; 
+  float RJVars_S1_CosTheta       ; 
+  float RJVars_S2_Mass           ; 
+  float RJVars_S2_CosTheta       ; 
+  float RJVars_I1_Depth          ; 
+  float RJVars_I2_Depth          ; 
+  float RJVars_V1_N              ; 
+  float RJVars_V2_N              ;     
+
+  // Gluino Variables
+  float RJVars_MG      ;       
+  float RJVars_DeltaBetaGG      ;       
+  float RJVars_dphiVG      ;       
+  float RJVars_G_0_CosTheta      ;       
+  float RJVars_C_0_CosTheta      ;       
+  float RJVars_G_0_dPhiGC        ;     
+  float RJVars_G_0_MassRatioGC   ;   
+  float RJVars_G_0_Jet1_pT       ; 
+  float RJVars_G_0_Jet2_pT       ;        
+  float RJVars_G_1_CosTheta      ;       
+  float RJVars_C_1_CosTheta      ;       
+  float RJVars_G_1_dPhiGC        ;     
+  float RJVars_G_1_MassRatioGC   ;      
+  float RJVars_G_1_Jet1_pT       ; 
+  float RJVars_G_1_Jet2_pT       ; 
+
+  //QCD Variables
+  float RJVars_QCD_dPhiR         ;  
+  float RJVars_QCD_Rpt           ;  
+  float RJVars_QCD_Rmsib         ;  
+  float RJVars_QCD_Rpsib         ;  
+  float RJVars_QCD_Delta1         ;  
+  float RJVars_QCD_Delta2         ;  
+  
 };
 
 class NTTheoryVars {
@@ -287,6 +344,15 @@ inline void bookNTExtraVars(TTree* tree, NTExtraVars& extrantv)
 {
   tree->Branch("NTExtraVars",&extrantv,NTExtraVars::toString().c_str());
 }
+
+inline void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv)
+{
+  tree->Branch("NTRJigsawVars",&rjigsawntv,NTRJigsawVars::toString().c_str());
+  // tree->Branch("NTRJigsawVars",&rjigsawntv,"RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_G_0_CosTheta/F") ;
+}
+
+// void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv);
+
 
 inline void bookNTTheoryVars(TTree* tree, NTTheoryVars& theoryntv)
 {

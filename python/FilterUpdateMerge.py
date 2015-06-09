@@ -45,6 +45,9 @@ def parseCmdLine():
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
                       action='store_true', default=False)
+    parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
+                      help="Also merge the RJigsawVars block ?", 
+                      action='store_true', default=False)
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc14_13TeV",
@@ -268,9 +271,9 @@ class Sample:
                 inList.add(name)
             # currently ExtraVars only implemented in SR not CR/VR
             if inTreeName.startswith('CR') or inTreeName.startswith('VR'):
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False)
+                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False, False)
             else:
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars)
+                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars, self.config.mergeExtraVars)
             newfile.cd()
             outTree.Write()
 

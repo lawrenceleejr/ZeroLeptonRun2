@@ -12,6 +12,7 @@
 FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB): 
   m_xsecDB(xsecDB),
   addExtraVars(false),
+  addRJigsawVars(false),
   addCRZVars(false),
   addCRWTVars(false),
   addCRYVars(false),
@@ -25,7 +26,7 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
 void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
 				 const std::vector<std::string>& inFiles, 
 				 bool isSignal, bool doXSecNormalisation, 
-				 bool doFiltering, bool doExtraVars)
+				 bool doFiltering, bool doExtraVars, bool doRJigsawVars)
 {
   // book output tuple variables
   NTVars outVars;
@@ -35,7 +36,9 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   bookNTReclusteringVars(outTree,outRTVars);
   
   NTExtraVars inExtraVars, outExtraVars;
+  NTRJigsawVars inRJigsawVars, outRJigsawVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
+  if ( doRJigsawVars ) bookNTRJigsawVars(outTree,outRJigsawVars);
 
   // read, update, filter, copy
   unsigned int previousRun = 0;
@@ -51,7 +54,9 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( !tree  ) throw std::runtime_error("Could not find a tree named SRAllNT in "+inFiles[i]);
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
+    std::cout << "doing the setaddress thing -----------------------------" << std::endl;
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
 
     // loop over entries
     for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
@@ -59,6 +64,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
       outVars = inVars.ntv;
       outRTVars = inRTVars.RTntv;
       if ( doExtraVars) outExtraVars = inExtraVars;
+      if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
 
       if ( doFiltering  && !acceptEvent(inVars.ntv) ) continue;
 

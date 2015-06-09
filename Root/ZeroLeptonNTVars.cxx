@@ -220,8 +220,12 @@ void NTCRZVars::Reset()
 
 std::string NTExtraVars::toString()
 { 
-  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F");
+  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F:RJVars_SS_Mass");
+}
 
+std::string NTRJigsawVars::toString()
+{ 
+  return std::string("RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_SS_dPhiBetaR/F:RJVars_SS_dPhiVis/F:RJVars_SS_CosTheta/F:RJVars_SS_dPhiDecayAngle/F:RJVars_SS_VisShape/F:RJVars_SS_MDeltaR/F:RJVars_S1_Mass/F:RJVars_S1_CosTheta/F:RJVars_S2_Mass/F:RJVars_S2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_G_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_G_0_dPhiGC/F:RJVars_G_0_MassRatioGC/F:RJVars_G_0_Jet1_pT/F:RJVars_G_0_Jet2_pT/F:RJVars_G_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_G_1_dPhiGC/F:RJVars_G_1_MassRatioGC/F:RJVars_G_1_Jet1_pT/F:RJVars_G_1_Jet2_pT/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
 }
 
 void NTExtraVars::Reset()
@@ -244,6 +248,50 @@ void NTExtraVars::Reset()
   gamma_Rp1=0.f; 
   costhetaRp1=0.f; 
   Ap =0.f;
+
+}
+
+
+void NTRJigsawVars::Reset()
+{ 
+
+  RJVars_SS_Mass           =1.f; 
+  RJVars_SS_InvGamma       =1.f; 
+  // RJVars_SS_dPhiBetaR      =1.f; 
+  // RJVars_SS_dPhiVis        =1.f; 
+  // RJVars_SS_CosTheta       =1.f; 
+  // RJVars_SS_dPhiDecayAngle =1.f; 
+  // RJVars_SS_VisShape       =1.f; 
+  // RJVars_SS_MDeltaR        =1.f; 
+  // RJVars_S1_Mass           =1.f; 
+  // RJVars_S1_CosTheta       =1.f; 
+  // RJVars_S2_Mass           =1.f; 
+  // RJVars_S2_CosTheta       =1.f; 
+  // RJVars_I1_Depth          =1.f; 
+  // RJVars_I2_Depth          =1.f; 
+  // RJVars_V1_N              =1.f; 
+  // RJVars_V2_N              =1.f;     
+  // RJVars_MG                =1.f;       
+  // RJVars_DeltaBetaGG       =1.f;       
+  // RJVars_dphiVG            =1.f;       
+  // RJVars_G_0_CosTheta      =1.f;       
+  // RJVars_C_0_CosTheta      =1.f;       
+  // RJVars_G_0_dPhiGC        =1.f;     
+  // RJVars_G_0_MassRatioGC   =1.f;   
+  // RJVars_G_0_Jet1_pT       =1.f; 
+  // RJVars_G_0_Jet2_pT       =1.f;        
+  // RJVars_G_1_CosTheta      =1.f;       
+  // RJVars_C_1_CosTheta      =1.f;       
+  // RJVars_G_1_dPhiGC        =1.f;     
+  // RJVars_G_1_MassRatioGC   =1.f;      
+  // RJVars_G_1_Jet1_pT       =1.f; 
+  // RJVars_G_1_Jet2_pT       =1.f; 
+  // RJVars_QCD_dPhiR         =1.f;  
+  // RJVars_QCD_Rpt           =1.f;  
+  // RJVars_QCD_Rmsib         =1.f;  
+  // RJVars_QCD_Rpsib         =1.f;  
+  // RJVars_QCD_Delta1        =1.f;  
+  // RJVars_QCD_Delta2        =1.f;  
 }
 
 std::string NTTheoryVars::toString()
@@ -323,6 +371,15 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   tree->Branch("RTjetM",&(RTntv.RTjetM));
 
 }
+
+
+// void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv){
+//   tree->Branch("NTRJigsawVars",&rjigsawntv, "RJVars_SS_Mass/F"  );
+// }
+
+
+
+
 
 
 void NTCRYVars::Reset()
