@@ -320,6 +320,8 @@ if __name__ == '__main__':
         from mc14_13TeV_MCSampleList import *
     elif config.prefix == 'mc15_13TeV':
         from mc15_13TeV_MCSampleList import *
+    elif config.prefix == 'mc15_week1':
+        from mc15_13TeV_week1_MCSampleList import *
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)

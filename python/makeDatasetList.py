@@ -81,8 +81,10 @@ def main():
             import mc14_13TeV_MCSampleList as mcsl
         elif 'mc15_13TeV' in config.prefix:
             import mc15_13TeV_MCSampleList as mcsl
+        elif 'mc15_week1' in config.prefix:
+            import mc15_13TeV_week1_MCSampleList as mcsl
         else:
-            print '--official is only supported for mc12_8TeV, mc14_8TeV and mc14_13TeV'
+            print '--official is only supported for mc12_8TeV, mc14_8TeV, mc14_13TeV, mc15_13TeV and mc15_week1'
             sys.exit(1)
         if config.sample:
             officialids = mcsl.__dict__[str(config.sample)]
