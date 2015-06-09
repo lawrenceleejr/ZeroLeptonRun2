@@ -387,6 +387,38 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   LAB_R->AnalyzeEvent();
 
 
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // 1st order squark vars
+
+
+  RJigsawVariables[ "RJVars_SS_Mass"           ] = SS->GetMass();
+  RJigsawVariables[ "RJVars_SS_InvGamma"       ] = 1./SS->GetGammaInParentFrame();
+  RJigsawVariables[ "RJVars_SS_dPhiBetaR"      ] = SS->GetDeltaPhiBoostVisible();
+  RJigsawVariables[ "RJVars_SS_dPhiVis"        ] = SS->GetDeltaPhiVisible();
+  RJigsawVariables[ "RJVars_SS_CosTheta"       ] = SS->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_SS_dPhiDecayAngle" ] = SS->GetDeltaPhiDecayAngle();
+  RJigsawVariables[ "RJVars_SS_VisShape"       ] = SS->GetVisibleShape();
+  RJigsawVariables[ "RJVars_SS_MDeltaR"        ] = SS->GetVisibleShape() * SS->GetMass() ;
+  RJigsawVariables[ "RJVars_S1_Mass"           ] = S1->GetMass();
+  RJigsawVariables[ "RJVars_S1_CosTheta"       ] = S1->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_S2_Mass"           ] = S2->GetMass();
+  RJigsawVariables[ "RJVars_S2_CosTheta"       ] = S2->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_I1_Depth"          ] = S1->GetFrameDepth(I1);
+  RJigsawVariables[ "RJVars_I2_Depth"          ] = S2->GetFrameDepth(I2);
+  RJigsawVariables[ "RJVars_V1_N"              ] = VIS->GetNElementsInFrame(V1);
+  RJigsawVariables[ "RJVars_V2_N"              ] = VIS->GetNElementsInFrame(V2);
+
+  // end
+  ////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // 2nd order "gluino-like" vars
+
   RestFrames::RDecayFrame* G[2];
   RestFrames::RDecayFrame* C[2];
   RestFrames::RVisibleFrame* VS[2];
@@ -456,12 +488,88 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     RJigsawVariables[ Form("RJVars_G_%d_Jet1_pT",i)     ] = jet1PT[i];
     RJigsawVariables[ Form("RJVars_G_%d_Jet2_pT",i)     ] = jet2PT[i];
 
-  std::cout << RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)]  << std::endl;
-  std::cout << RJigsawVariables[Form("RJVars_G_%d_CosTheta",i)    ] << std::endl;
-  std::cout << "In SklimmerAnalysis: leaving function"  << std::endl;
-
   }
 
+
+
+  // Some new Gluino variables....
+
+  TLorentzVector vV1 = G[0]->GetVisibleFourVector(G[0]);
+  TLorentzVector vV2 = G[1]->GetVisibleFourVector(G[1]);
+  float MG = (vV1.M2()-vV2.M2())/(2.*(vV1.E()-vV2.E()));
+
+  float PG = G[0]->GetMomentum(GG_R);
+  float MGG = 2.*sqrt(PG*PG + MG*MG);
+  float gaminvGG = 2.*MG/MGG;
+  float gaminv = 1./SS->GetGammaInParentFrame();
+  float beta = sqrt(1.- gaminv*gaminv);
+  float betaGG = sqrt(1.- gaminvGG*gaminvGG);
+
+  //*** velocity difference between 'massive' and 'mass-less'
+  float DeltaBetaGG = -(betaGG-beta)/(1.-betaGG*beta);
+
+  //*** delta phi between GG visible decay products and GG decay axis
+  float dphiVG = GG_R->GetDeltaPhiDecayVisible();
+
+
+  RJigsawVariables[ "RJVars_MG"          ] = MG;
+  RJigsawVariables[ "RJVars_DeltaBetaGG" ] = DeltaBetaGG;
+  RJigsawVariables[ "RJVars_dphiVG"      ] = dphiVG;
+
+
+  // Gluino-level variables end
+  ////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // QCD Variables
+
+
+  // dphiR and Rptshat (formerly cosPT)
+  // for QCD rejection
+  double dphiR = SS->GetDeltaPhiBoostVisible();
+  double PTCM = SS->GetFourVector(LAB).Pt();
+  double Rptshat = PTCM / (PTCM + SS->GetMass()/4.);
+
+  // QCD rejection using the 'background tree'
+  // MET 'sibling' in background tree auxillary calculations
+  TLorentzVector Psib = I_alt->GetSiblingFrame()->GetFourVector(LAB_alt);
+  TLorentzVector Pmet = I_alt->GetFourVector(LAB_alt);
+  double Psib_dot_METhat = max(0., Psib.Vect().Dot(MET_TV3.Unit()));
+  double Mpar2 = Psib.E()*Psib.E()-Psib.Vect().Dot(MET_TV3.Unit())*Psib.Vect().Dot(MET_TV3.Unit());
+  double Msib2 = Psib.M2();
+  double MB2 = 2.*(Pmet.E()*Psib.E()-MET_TV3.Dot(Psib.Vect()));
+  TVector3 boostPsibM = (Pmet+Psib).BoostVector();
+
+
+  // QCD rejection variables from 'background tree'
+  double DepthBKG = S_alt->GetFrameDepth(I_alt);
+  int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
+  double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
+  double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
+  double RpsibM = Psib_dot_METhat / (Psib_dot_METhat + MET_TV3.Mag());
+  double RmsibM = 1. / ( MB2/(Mpar2-Msib2) + 1.);
+  Psib.Boost(-boostPsibM);
+  double cosPsibM = -1.*Psib.Vect().Unit().Dot(boostPsibM.Unit());
+  cosPsibM = (1.-cosPsibM)/2.;
+  double DeltaQCD1 = (cosPsibM-RpsibM)/(cosPsibM+RpsibM);
+  double DeltaQCD2 = (cosPsibM-RmsibM)/(cosPsibM+RmsibM);
+
+  RJigsawVariables[ "RJVars_QCD_dPhiR"    ] = dphiR;
+  RJigsawVariables[ "RJVars_QCD_Rpt"      ] = Rptshat;
+  RJigsawVariables[ "RJVars_QCD_Rmsib"    ] = RmsibM;
+  RJigsawVariables[ "RJVars_QCD_Delta2"   ]  = DeltaQCD2;
+  RJigsawVariables[ "RJVars_QCD_Rpsib"    ] = RpsibM;
+  RJigsawVariables[ "RJVars_QCD_Delta1"   ]  = DeltaQCD1;
+
+  // end
+  ////////////////////////////////////////////////////////////////////////////////
+
+
+
+  return;
 
 }
 
