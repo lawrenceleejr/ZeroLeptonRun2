@@ -26,6 +26,7 @@ def parseCmdLine(args):
     parser.add_option("--container", dest="container", help="If the input datasets are in a container with multiple run numbers, configuure prun to keep them distinct", action='store_true', default=False)
     parser.add_option("--prunopts", dest="prunopts", help="Command line arguments to prun", default="")
     parser.add_option("--signal", dest="signal", help="Input is signal MC", action='store_true', default=False)
+    parser.add_option("--noGRL", dest="noGRL", help="If true no GRL is applied", action='store_true', default=False)
 
     parser.add_option("--tmpDir", dest="tmpDir", help="Tmp dir", default="")
     (config, args) = parser.parse_args(args)
@@ -112,6 +113,9 @@ def main():
             outDS = outDS.replace('BFilter','BF')
             outDS = outDS.replace('CVeto','CV')
             outDS = outDS.replace('BVeto','BV')
+            outDS = outDS.replace('PowhegPythia8EvtGen_','PowHP8EvG_')
+            outDS = outDS.replace('PowhegPythiaEvtGen_','PowHPEvG_')
+            outDS = outDS.replace('SinglePhoton','1Gam_')
             if len(outDS) > 100: outDS = outDS.replace('_AUET2CTEQ6L1MPI','')
             if len(outDS) > 100: outDS = outDS.replace('_AUET2BCTEQ6L1','')
             if len(outDS) > 100: outDS = outDS.replace('_AUET2_CTEQ6L1','')
@@ -121,13 +125,18 @@ def main():
             if len(outDS) > 100: outDS = outDS.replace('_AU2CT10','')
             if len(outDS) > 100: outDS = outDS.replace('_CT10','')
             if len(outDS) > 100: outDS = outDS.replace('_UEEE3_CTEQ6L','')
+            if len(outDS) > 100: outDS = outDS.replace('_AZNLOCTEQ6L1','')
+            if len(outDS) > 100: outDS = outDS.replace('_A14NNPDF23LO','')
+            if len(outDS) > 100: outDS = outDS.replace('_P2012','')
+            if len(outDS) > 100: outDS = outDS.replace('_hdamp172p5','')
             if '_tid' in outDS and len(outDS) > 100:
                 rstr = outDS.split(config.suffix)[0].split('_tid')[1]
                 outDS = outDS.replace('_tid%s' % rstr,'')
 
             if 'mc11_7TeV' in outDS: outDS = outDS.replace('(.e\d{4})(_s\d{4})*(_r\d{4})*','')
 
-        print 'output DS: ' + outDS
+
+        print 'output DS: ' + outDS, len(outDS+"_o.root/") 
 
         # which cafe config file should be used ?
         if config.configfile == "":
@@ -141,7 +150,8 @@ def main():
         else:
             cafeconfig = config.configfile
 
-        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles Output: output.root """ 
+        outputs = "o.root" 
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles Output: o.root """ 
 
         # Real data ?
         if "data11" in inDS or "data12" in inDS or "data15" in inDS: 
@@ -177,8 +187,6 @@ def main():
             scriptcmd += " Global.DerivationTag: p1872 "
         if 'p2353' in tag:
             scriptcmd += " Global.DerivationTag: p2353 "
-        if 'p2363' in tag:
-            scriptcmd += " Global.DerivationTag: p2353 "
         else:
             scriptcmd += " Global.DerivationTag: NA "
 
@@ -186,12 +194,15 @@ def main():
         if isSignal:
             scriptcmd += " Global.IsSignal: TRUE "
 
+        # GRL
+        if config.noGRL:
+            scriptcmd += " grl.passAll: TRUE "
+
         extfiles=' --extFile '
         for f in localfiles:
             extfiles += f+','
         extfiles = extfiles[:-1]+' '
 
-        outputs = "output.root"
         scriptcmd += " " + config.runopts
         cmd = r"""prun --excludeFile=\*/.svn/\*,\*oxbridgekinetics-0.6/\*,\*OxbridgeKinetics/lib\* --exec "%(scriptcmd)s" --useRootCore --inDS %(inDS)s --outputs %(outputs)s  --outDS %(outDS)s  %(prunopts)s""" % {'inDS':inDS,'outDS':outDS,'scriptcmd':scriptcmd,'prunopts':config.prunopts,'outputs':outputs}
         cmd += extfiles
