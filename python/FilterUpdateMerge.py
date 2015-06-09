@@ -157,6 +157,7 @@ class Sample:
 
     def normWeight(self,filename,xsecDB,isSignal):
         if isSignal: return 1.
+        if self.config.doData: return 1.
 
         ds = self.extractChannelFromFilename(filename)
         if not ds:
@@ -179,7 +180,8 @@ class Sample:
         if len(inFiles) == 0: return
 
         # get the list of histograms from the first file
-        scale = self.normWeight(inFiles[0],xsecDB,isSignal)
+        scale = 1.
+        if self.config.doNormWeight: scale = self.normWeight(inFiles[0],xsecDB,isSignal)
         ftemp = ROOT.TFile.Open(inFiles[0])
         if not ftemp or ftemp.IsZombie():
             print 'Could not open input file ',inFiles[0]
@@ -207,7 +209,8 @@ class Sample:
             if not ftemp or ftemp.IsZombie():
                 print 'Could not open input file ',fname
                 sys.exit(1)
-            scale = self.normWeight(fname,xsecDB,isSignal)
+            scale = 1.
+            if self.config.doNormWeight: scale = self.normWeight(fname,xsecDB,isSignal)
             for k in hkeys:
                 h = ftemp.Get(k)
                 if not h:
@@ -339,10 +342,13 @@ if __name__ == '__main__':
 
 
     if config.doData==True:
+        # Run 1 streams
         DataJetTauEtmiss = Sample('Data',['JetTauEtmiss'],config.inputfile_data,config,Extraname="JetTauEtmiss")
         DataMuon = Sample('Data',['Muon'],config.inputfile_data,config,Extraname="Muon")
         DataEgamma = Sample('Data',['Egamma'],config.inputfile_data,config,Extraname="Egamma")
-        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma]
+        # Run 2 stream
+        DataMain = Sample('Data',['Main'],config.inputfile_data,config,Extraname="Main")
+        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma,DataMain]
         
     if config.doQCD==True:
         QCDdd1 = Sample('QCDdd',['JetTauEtmiss'],config.inputfile_qcd,config)
