@@ -91,7 +91,8 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
 	  if ( inVars.ntv.RunNumber != previousRun ) {
 	    rel_uncertainty = m_xsecDB->rel_uncertainty(inVars.ntv.RunNumber);
 	    xsec = m_xsecDB->xsectTimesEff(inVars.ntv.RunNumber);
-	    if ( inVars.ntv.RunNumber >= 147910 and inVars.ntv.RunNumber <= 147917 ) {
+	    if ( ( inVars.ntv.RunNumber >= 147910 and inVars.ntv.RunNumber <= 147917 ) ||
+		 ( inVars.ntv.RunNumber >= 361020 and inVars.ntv.RunNumber <= 361032 )   )  {
 	      std::cout << " JZxW sample, normalize with # of evts instead of sum weights " << std::endl;
 	      sumW = m_xsecDB->process(inVars.ntv.RunNumber).stat();
 	    }
