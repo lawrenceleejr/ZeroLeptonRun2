@@ -2,6 +2,7 @@
 #define ZeroLeptonRun2_JobBookeeping_H_
 
 #include "cafe/Processor.h"
+#include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 
 class TH1D;
 class TFile;
@@ -28,6 +29,8 @@ private:
   std::vector<std::string> m_openedFiles;
   std::vector<std::string> m_closedFiles;
   std::map<std::string, std::string> m_fileCatalog;
+
+  ZeroLeptonDerivationTag m_derivationTag;
 
 public:
   ClassDef(JobBookeeping,0);

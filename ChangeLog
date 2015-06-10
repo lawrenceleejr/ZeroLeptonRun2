@@ -1,3 +1,6 @@
+10-Jun-2015 Laurent Duflot
+	* JobBookKeeping, config files: use metadata information for derivations
+
 09-Jun-2015 Laurent Duflot
 	* FilterUpdateMerge.py: update for Run 2 stream; few protections added
 	* launch_jobs_on_grid.py: add --noGRL option, add p2363 support,
