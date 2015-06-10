@@ -1,5 +1,6 @@
 10-Jun-2015 Laurent Duflot
 	* JobBookKeeping, config files: use metadata information for derivations
+	* BuildSUSYObjects: add trigger bits (list to be revised)
 
 09-Jun-2015 Laurent Duflot
 	* FilterUpdateMerge.py: update for Run 2 stream; few protections added

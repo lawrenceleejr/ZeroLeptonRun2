@@ -27,6 +27,7 @@ svn co $SVNPERF/CombPerf/FlavorTag/FlavorTagEfficiencyMaps/PreRun2_DC14/tags/Pre
 
 # compile
 rc find_packages
+export CXXFLAGS=-DZLDC14
 rc compile
 
 # for future session, one only needs to

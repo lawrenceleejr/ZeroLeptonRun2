@@ -10,6 +10,7 @@
 #include "xAODBase/IParticleHelpers.h"
 #include "AthContainers/AuxElement.h"
 
+#include "xAODEventInfo/EventInfo.h"
 #include "xAODJet/JetContainer.h"
 #include "xAODJet/JetAuxContainer.h"
 #include "xAODMuon/MuonContainer.h"
@@ -64,6 +65,16 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
 
   m_JESNuisanceParameterSet = config.get("JESNuisanceParameterSet",0);
 
+}
+
+BuildSUSYObjects::~BuildSUSYObjects()
+{
+  if ( m_SUSYObjTool ) delete m_SUSYObjTool;
+}
+
+void BuildSUSYObjects::initSUSYTools()
+{
+  // SUSYObjDef_xAOD needs a TEvent to be defined, moved from constructor to begin()
   m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
   ST::SettingDataSource datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
@@ -138,13 +149,13 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   if ( !m_SUSYObjTool->initialize().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef !");
 }
 
-BuildSUSYObjects::~BuildSUSYObjects()
-{
-  if ( m_SUSYObjTool ) delete m_SUSYObjTool;
-}
 
 bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 {
+  // SUSYTools initialisation must be delayed until we have a TEvent associated
+  // with a file due to xAODConfigTool 
+  if ( !m_SUSYObjTool ) initSUSYTools();
+
   // Need to lump in all object treatment because of overlap removal and
   // xAOD Physics object forward declaration problems
   xAOD::TStore* store = xAOD::TActiveStore::store();
@@ -437,9 +448,65 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
   //out() << " MET after smearing " <<  MissingET->X() << " " << MissingET->Y()  << std::endl;
 
+  if ( m_suffix == "" ) fillTriggerInfo(event);
 
   return true;
 }
+
+void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
+{
+#ifndef ZLDC14
+  static std::vector<std::string> trigNames = {
+    "L1_XE50",
+    "L1_XE70",
+    "HLT_xe70",
+    "HLT_xe70_pueta",
+    "HLT_xe100",
+    "HLT_xe100_pueta",
+    "HLT_e28_tight_iloose",
+    "HLT_e60_medium",
+    "HLT_mu26_imedium",
+    "HLT_mu50",
+    "HLT_j30_xe10_razor170",
+    "HLT_xe70_tc_em",
+    "HLT_xe70_tc_lcw",
+    "HLT_xe70_mht",
+    "HLT_xe70_pufit",
+    "HLT_xe100_tc_em",
+    "HLT_xe100_tc_lcw",
+    "HLT_xe100_mht",
+    "HLT_xe100_pufit",
+    "HLT_3j175",
+    "HLT_4j85",
+    "HLT_5j85",
+    "HLT_6j25",
+    "HLT_6j45_0eta240",
+    "HLT_6j55_0eta240_L14J20",
+    "HLT_7j45",
+    "L1_2J15",
+    "HLT_2j55_bloose"
+  };
+
+  const xAOD::EventInfo* eventInfo = 0;
+  if ( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) throw std::runtime_error("BuildSUSYObjects: Could not retrieve EventInfo");
+
+  std::bitset<32> triggers;
+  for ( size_t i = 0; i < trigNames.size(); i++ ) {
+    char pass =  m_SUSYObjTool->isTrigPassed(trigNames[i]);
+    triggers[i] = pass;
+    eventInfo->auxdecor<char>(trigNames[i]) = pass;
+  }
+
+  xAOD::TStore* store = xAOD::TActiveStore::store();
+  unsigned long* triggerSet = new unsigned long;
+  *triggerSet =  triggers.to_ulong();
+  if ( ! store->record(triggerSet,"triggerbits").isSuccess() ) {
+    throw std::runtime_error("Could not store trigger bits");
+  }
+  //std::cout << " trigger " << triggers << " " << *triggerSet << std::endl;
+#endif
+}
+
 
 
 ClassImp(BuildSUSYObjects);

@@ -32,6 +32,8 @@ public:
   bool processEvent(xAOD::TEvent& event);
 
 private:
+  void initSUSYTools();
+  void fillTriggerInfo(xAOD::TEvent& event) const;
 
   ST::SUSYObjDef_xAOD* m_SUSYObjTool;
   bool m_IsData;
