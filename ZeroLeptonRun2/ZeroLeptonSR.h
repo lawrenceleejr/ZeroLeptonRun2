@@ -40,6 +40,7 @@ private:
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
+  NTRJigsawVars m_rjigsawntv;
   NTReclusteringVars m_RTntv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;

@@ -12,6 +12,7 @@
 FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB): 
   m_xsecDB(xsecDB),
   addExtraVars(false),
+  addRJigsawVars(false),
   addCRZVars(false),
   addCRWTVars(false),
   addCRYVars(false),
@@ -25,9 +26,13 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
 void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
 				 const std::vector<std::string>& inFiles, 
 				 bool isSignal, bool doXSecNormalisation, 
+<<<<<<< HEAD
 				 bool doFiltering, bool doExtraVars, 
 				 bool doCRWTVars, bool doCRZVars, 
 				 bool doCRYVars)
+=======
+				 bool doFiltering, bool doExtraVars, bool doRJigsawVars)
+>>>>>>> Works for some number of the variables right now. going to fill out other variables now
 {
   // book output tuple variables
   NTVars outVars;
@@ -37,7 +42,9 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   bookNTReclusteringVars(outTree,outRTVars);
   
   NTExtraVars inExtraVars, outExtraVars;
+  NTRJigsawVars inRJigsawVars, outRJigsawVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
+  if ( doRJigsawVars ) bookNTRJigsawVars(outTree,outRJigsawVars);
 
   NTCRWTVars inCRWTVars, outCRWTVars;
   if ( doCRWTVars ) bookNTCRWTVars(outTree,outCRWTVars);
@@ -63,10 +70,15 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( !tree  ) throw std::runtime_error("Could not find a tree named SRAllNT in "+inFiles[i]);
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
+    std::cout << "doing the setaddress thing -----------------------------" << std::endl;
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
+<<<<<<< HEAD
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
     if ( doCRZVars ) tree->GetBranch("NTCRZVars")->SetAddress(&inCRZVars.lep1Pt);
     if ( doCRYVars) inCRYVars.setAddresses(tree);
+=======
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
+>>>>>>> Works for some number of the variables right now. going to fill out other variables now
 
     // loop over entries
     for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
@@ -75,8 +87,12 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
       outRTVars = inRTVars.RTntv;
       outCRYVars = inCRYVars.ntv;
       if ( doExtraVars) outExtraVars = inExtraVars;
+<<<<<<< HEAD
       if ( doCRWTVars) outCRWTVars = inCRWTVars;
       if ( doCRZVars) outCRZVars = inCRZVars;
+=======
+      if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
+>>>>>>> Works for some number of the variables right now. going to fill out other variables now
 
       if ( doFiltering  && !acceptEvent(inVars.ntv) ) continue;
 

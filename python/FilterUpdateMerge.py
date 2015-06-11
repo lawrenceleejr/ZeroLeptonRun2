@@ -43,6 +43,7 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
+<<<<<<< HEAD
                       action='store_true', default=True)
     parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
                       help="Also merge the CRWTVars block ?", 
@@ -53,6 +54,12 @@ def parseCmdLine():
     parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
                       help="Also merge the CRYVars block ?", 
                       action='store_true', default=True)
+=======
+                      action='store_true', default=False)
+    parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
+                      help="Also merge the RJigsawVars block ?", 
+                      action='store_true', default=False)
+>>>>>>> Works for some number of the variables right now. going to fill out other variables now
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
@@ -277,6 +284,7 @@ class Sample:
             inList = ROOT.FilterUpdateMergeFileList()
             for name in filelist:
                 inList.add(name)
+<<<<<<< HEAD
 
             doExtraVars = self.config.mergeExtraVars
             doCRWTVars = self.config.mergeCRWTVars
@@ -298,6 +306,13 @@ class Sample:
                     doCRYVars = False
                 break
             merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doCRWTVars, doCRZVars, doCRYVars)
+=======
+            # currently ExtraVars only implemented in SR not CR/VR
+            if inTreeName.startswith('CR') or inTreeName.startswith('VR'):
+                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False, False)
+            else:
+                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars, self.config.mergeExtraVars)
+>>>>>>> Works for some number of the variables right now. going to fill out other variables now
             newfile.cd()
             outTree.Write()
 

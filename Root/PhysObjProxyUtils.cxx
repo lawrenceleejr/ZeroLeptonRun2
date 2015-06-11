@@ -326,10 +326,10 @@ void PhysObjProxyUtils::RJigsawInit(){
 }
 
 
-void RJigsawVariables(const std::vector<JetProxy>& jets, 
+void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& jets, 
   Double_t metx,
   Double_t mety,
-  std::map<TString,double>& RJigsawVariables){
+  std::map<TString,float>& RJigsawVariables){
 
 
 
@@ -340,13 +340,32 @@ void RJigsawVariables(const std::vector<JetProxy>& jets,
 
   vector<RestFrames::GroupElementID> jetID_R;                    // ID for tracking jets in tree
 
+  std::cout << "number of jets is " << jets.size() << std::endl;
 
-  if(jets->size() < 2){
-    RJigsawVariables = 0;
+  if(jets.size() < 2){
+    RJigsawVariables = std::map<TString, float>();
     return;
   } 
 
-  // Still need to add jets to frames
+  // Still need to add jets to frames ///////////////
+  std::vector<TLorentzVector> myjets;
+  for(size_t ijet=0; ijet<jets.size(); ijet++) 
+    {
+      TLorentzVector jet;
+      jet.SetPtEtaPhiM(jets[ijet].Pt(),
+           jets[ijet].Eta(),
+           jets[ijet].Phi(),
+           jets[ijet].M());
+      myjets.push_back(jet);
+    }
+
+  for(size_t ijet=0; ijet<jets.size(); ijet++) 
+    {
+      VIS->AddLabFrameFourVector( myjets[ijet] );
+      jetID_R.push_back( VIS_R->AddLabFrameFourVector( myjets[ijet] )  );
+      VIS_alt->AddLabFrameFourVector( myjets[ijet] );
+    }
+
 
 
   TVector3 MET_TV3;
@@ -374,7 +393,7 @@ void RJigsawVariables(const std::vector<JetProxy>& jets,
   RestFrames::RVisibleFrame* VC[2];
   RestFrames::RInvisibleFrame* X[2];
   // Randomize the two hemispheres
-  int flip = (gRandom->Rndm() > 0.5);
+  int flip = (m_random.Rndm() > 0.5);
   G[flip] = Ga_R;
   G[(flip+1)%2] = Gb_R;
   C[flip] = Ca_R;
@@ -419,25 +438,27 @@ void RJigsawVariables(const std::vector<JetProxy>& jets,
     jet1PT[i] = pTmax[0];
     jet2PT[i] = pTmax[1];
     std::cout << "In SklimmerAnalysis: " << jet1PT[i] << " " << jet2PT[i] << std::endl;
+    std::cout << "In SklimmerAnalysis: " << NV[i] << std::endl;
 
 
 
     if(NV[i] > 1){
-      eventInfo->auxdecor<float>(Form("C_%d_CosTheta",i)     ) = C[i]->GetCosDecayAngle();
-      eventInfo->auxdecor<float>(Form("G_%d_dPhiGC",i)     ) = G[i]->GetDeltaPhiDecayPlanes(C[i]);
-      eventInfo->auxdecor<float>(Form("G_%d_MassRatioGC",i)     ) = (C[i]->GetMass()-X[i]->GetMass())/(G[i]->GetMass()-X[i]->GetMass());
+      RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)     ] = C[i]->GetCosDecayAngle();
+      RJigsawVariables[Form("RJVars_G_%d_dPhiGC",i)       ] = G[i]->GetDeltaPhiDecayPlanes(C[i]);
+      RJigsawVariables[Form("RJVars_G_%d_MassRatioGC",i)  ] = (C[i]->GetMass()-X[i]->GetMass())/(G[i]->GetMass()-X[i]->GetMass());
     } else {
-      eventInfo->auxdecor<float>(Form("C_%d_CosTheta",i)     ) = -10.;
-      eventInfo->auxdecor<float>(Form("G_%d_dPhiGC",i)     ) = -10.;
-      eventInfo->auxdecor<float>(Form("G_%d_MassRatioGC",i)     ) = -10.;
+      RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)     ] = -10.;
+      RJigsawVariables[Form("RJVars_G_%d_dPhiGC",i)       ] = -10.;
+      RJigsawVariables[Form("RJVars_G_%d_MassRatioGC",i)  ] = -10.;
     }
 
-    eventInfo->auxdecor<float>(Form("G_%d_CosTheta",i)     ) = G[i]->GetCosDecayAngle();
+    RJigsawVariables[ Form("RJVars_G_%d_CosTheta",i)    ] = G[i]->GetCosDecayAngle();
+    RJigsawVariables[ Form("RJVars_G_%d_Jet1_pT",i)     ] = jet1PT[i];
+    RJigsawVariables[ Form("RJVars_G_%d_Jet2_pT",i)     ] = jet2PT[i];
 
-    eventInfo->auxdecor<float>(Form("G_%d_Jet1_pT",i)     ) = jet1PT[i];
-    eventInfo->auxdecor<float>(Form("G_%d_Jet2_pT",i)     ) = jet2PT[i];
-
-  // std::cout << "In SklimmerAnalysis: " << jet2PT[i] << std::endl;
+  std::cout << RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)]  << std::endl;
+  std::cout << RJigsawVariables[Form("RJVars_G_%d_CosTheta",i)    ] << std::endl;
+  std::cout << "In SklimmerAnalysis: leaving function"  << std::endl;
 
   }
 
@@ -1038,7 +1059,53 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
   extrantv.Ap=Ap;
 }
 
+void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
+              std::map<TString,float> & RJigsawVariables
+          )
+{
+  // rjigsawntv.Reset();
 
+  std::cout << "In filling function----------------" << std::endl;
+  std::cout << RJigsawVariables["RJVars_G_0_CosTheta"] << " -----------------------" << std::endl;
+
+  rjigsawntv.RJVars_SS_Mass           = RJigsawVariables["RJVars_SS_Mass"] ;
+  rjigsawntv.RJVars_SS_InvGamma       = RJigsawVariables["RJVars_SS_InvGamma"] ;
+  rjigsawntv.RJVars_SS_dPhiBetaR      = RJigsawVariables["RJVars_SS_dPhiBetaR"] ;
+  rjigsawntv.RJVars_SS_dPhiVis        = RJigsawVariables["RJVars_SS_dPhiVis"] ;
+  rjigsawntv.RJVars_SS_CosTheta       = RJigsawVariables["RJVars_SS_CosTheta"] ;
+  rjigsawntv.RJVars_SS_dPhiDecayAngle = RJigsawVariables["RJVars_SS_dPhiDecayAngle"] ;
+  rjigsawntv.RJVars_SS_VisShape       = RJigsawVariables["RJVars_SS_VisShape"] ;
+  rjigsawntv.RJVars_SS_MDeltaR        = RJigsawVariables["RJVars_SS_MDeltaR"] ;
+  rjigsawntv.RJVars_S1_Mass           = RJigsawVariables["RJVars_S1_Mass"] ;
+  rjigsawntv.RJVars_S1_CosTheta       = RJigsawVariables["RJVars_S1_CosTheta"] ;
+  rjigsawntv.RJVars_S2_Mass           = RJigsawVariables["RJVars_S2_Mass"] ;
+  rjigsawntv.RJVars_S2_CosTheta       = RJigsawVariables["RJVars_S2_CosTheta"] ;
+  rjigsawntv.RJVars_I1_Depth          = RJigsawVariables["RJVars_I1_Depth"] ;
+  rjigsawntv.RJVars_I2_Depth          = RJigsawVariables["RJVars_I2_Depth"] ;
+  rjigsawntv.RJVars_V1_N              = RJigsawVariables["RJVars_V1_N"] ;
+  rjigsawntv.RJVars_V2_N              = RJigsawVariables["RJVars_V2_N"] ;
+  rjigsawntv.RJVars_MG                = RJigsawVariables["RJVars_MG"] ;
+  rjigsawntv.RJVars_DeltaBetaGG       = RJigsawVariables["RJVars_DeltaBetaGG"] ;
+  rjigsawntv.RJVars_dphiVG            = RJigsawVariables["RJVars_dphiVG"] ;
+  rjigsawntv.RJVars_G_0_CosTheta      = RJigsawVariables["RJVars_G_0_CosTheta"] ;
+  rjigsawntv.RJVars_C_0_CosTheta      = RJigsawVariables["RJVars_C_0_CosTheta"] ;
+  rjigsawntv.RJVars_G_0_dPhiGC        = RJigsawVariables["RJVars_G_0_dPhiGC"] ;
+  rjigsawntv.RJVars_G_0_MassRatioGC   = RJigsawVariables["RJVars_G_0_MassRatioGC"] ;
+  rjigsawntv.RJVars_G_0_Jet1_pT       = RJigsawVariables["RJVars_G_0_Jet1_pT"] ;
+  rjigsawntv.RJVars_G_0_Jet2_pT       = RJigsawVariables["RJVars_G_0_Jet2_pT"] ;
+  rjigsawntv.RJVars_G_1_CosTheta      = RJigsawVariables["RJVars_G_1_CosTheta"] ;
+  rjigsawntv.RJVars_C_1_CosTheta      = RJigsawVariables["RJVars_C_1_CosTheta"] ;
+  rjigsawntv.RJVars_G_1_dPhiGC        = RJigsawVariables["RJVars_G_1_dPhiGC"] ;
+  rjigsawntv.RJVars_G_1_MassRatioGC   = RJigsawVariables["RJVars_G_1_MassRatioGC"] ;
+  rjigsawntv.RJVars_G_1_Jet1_pT       = RJigsawVariables["RJVars_G_1_Jet1_pT"] ;
+  rjigsawntv.RJVars_G_1_Jet2_pT       = RJigsawVariables["RJVars_G_1_Jet2_pT"] ;
+  rjigsawntv.RJVars_QCD_dPhiR         = RJigsawVariables["RJVars_QCD_dPhiR"] ;
+  rjigsawntv.RJVars_QCD_Rpt           = RJigsawVariables["RJVars_QCD_Rpt"] ;
+  rjigsawntv.RJVars_QCD_Rmsib         = RJigsawVariables["RJVars_QCD_Rmsib"] ;
+  rjigsawntv.RJVars_QCD_Rpsib         = RJigsawVariables["RJVars_QCD_Rpsib"] ;
+  rjigsawntv.RJVars_QCD_Delta1        = RJigsawVariables["RJVars_QCD_Delta1"] ;
+  rjigsawntv.RJVars_QCD_Delta2        = RJigsawVariables["RJVars_QCD_Delta2"] ;
+}
 
 
 void PhysObjProxyUtils::FillNTVars(NTVars& ntv, 

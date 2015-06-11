@@ -7,8 +7,10 @@ class TauProxy;
 class NTVars;
 class NTReclusteringVars;
 class NTExtraVars;
+class NTRJigsawVars;
 #include "TVector2.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
 
 #include <vector>
 #include <map>
@@ -92,10 +94,10 @@ class PhysObjProxyUtils
   
   void RJigsawInit();
 
-  void RJigsawVariables(const std::vector<JetProxy>& jets, 
+  void CalculateRJigsawVariables(const std::vector<JetProxy>& jets, 
 			Double_t metx,
 			Double_t mety,
-			std::map<TString,double> RJigsawVariables);
+			std::map<TString,float>& RJigsawVariables);
 
   //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
 
@@ -148,6 +150,8 @@ class PhysObjProxyUtils
 		       double Ap);
     
 
+	void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
+
   class ReclJets {
       public:
         std::vector<TLorentzVector> recl_jets_tlv;
@@ -182,6 +186,9 @@ class PhysObjProxyUtils
     
  private:
   bool m_IsData;
+
+
+  TRandom3 m_random;
 
 
 
