@@ -28,11 +28,7 @@ PACKAGE_BINFLAGS =
 PACKAGE_LIBFLAGS = 
 
 # the list of packages we depend on:
-<<<<<<< HEAD
 PACKAGE_DEP      = cafe xAODCore xAODRootAccess xAODEventInfo xAODJet xAODTruth xAODMissingET xAODMuon xAODEgamma xAODTau xAODTracking GoodRunsLists SUSYTools JetSmearing PATInterfaces xAODCutFlow Ext_RestFrames
-=======
-PACKAGE_DEP      = cafe xAODCore xAODRootAccess xAODEventInfo xAODJet xAODTruth xAODMissingET xAODMuon xAODEgamma xAODTau xAODTracking GoodRunsLists SUSYTools JetSmearing PATInterfaces Ext_RestFrames
->>>>>>> 63a1e72b67bdc2885a719dc340720353bbc0a3d3
 
 # the list of packages we use if present, but that we can work without :
 PACKAGE_TRYDEP   = 
