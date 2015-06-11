@@ -35,27 +35,17 @@ class FilterUpdateMerge
   void process(TTree* outTree, const std::string& inTreeName, 
 	       const std::vector<std::string>& inFiles, 
 	       bool isSignal, bool doXSecReweighting, bool doFiltering,
-<<<<<<< HEAD
-	       bool doExtraVars, bool doCRWTVars, bool doCRZVars, 
+	       bool doExtraVars, bool dRJigsawVars, bool doCRWTVars, bool doCRZVars, 
 	       bool doCRYVars);
-=======
-	       bool doExtraVars, bool doRJigsawVars);
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
 
   // trick for python that has trouble to handle vector<>
   void process(TTree* outTree, const std::string& inTreeName, 
 	       const FilterUpdateMergeFileList& inFiles, 
 	       bool isSignal, bool doXSecNormalisation, bool doFiltering,
-<<<<<<< HEAD
-	       bool doExtraVars, bool doCRWTVars, bool doCRZVars, 
+	       bool doExtraVars, bool doRJigsawVars, bool doCRWTVars, bool doCRZVars, 
 	       bool doCRYVars)
   {
-    process(outTree, inTreeName, inFiles.files(), isSignal, doXSecNormalisation, doFiltering, doExtraVars, doCRWTVars, doCRZVars, doCRYVars);
-=======
-	       bool doExtraVars, bool doRJigsawVars)
-  {
-    process(outTree, inTreeName, inFiles.files(), isSignal, doXSecNormalisation, doFiltering,doExtraVars,doRJigsawVars);
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
+    process(outTree, inTreeName, inFiles.files(), isSignal, doXSecNormalisation, doFiltering, doExtraVars, doRJigsawVars, doCRWTVars, doCRZVars, doCRYVars);
   }
 
  private:

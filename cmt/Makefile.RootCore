@@ -28,11 +28,7 @@ PACKAGE_BINFLAGS =
 PACKAGE_LIBFLAGS = 
 
 # the list of packages we depend on:
-<<<<<<< HEAD
-PACKAGE_DEP      = cafe xAODCore xAODRootAccess xAODEventInfo xAODJet xAODTruth xAODMissingET xAODMuon xAODEgamma xAODTau xAODTracking GoodRunsLists SUSYTools JetSmearing PATInterfaces xAODCutFlow
-=======
-PACKAGE_DEP      = cafe xAODCore xAODRootAccess xAODEventInfo xAODJet xAODTruth xAODMissingET xAODMuon xAODEgamma xAODTau xAODTracking GoodRunsLists SUSYTools JetSmearing PATInterfaces Ext_RestFrames
->>>>>>> adding skeleton for RestFrames
+PACKAGE_DEP      = cafe xAODCore xAODRootAccess xAODEventInfo xAODJet xAODTruth xAODMissingET xAODMuon xAODEgamma xAODTau xAODTracking GoodRunsLists SUSYTools JetSmearing PATInterfaces xAODCutFlow Ext_RestFrames
 
 # the list of packages we use if present, but that we can work without :
 PACKAGE_TRYDEP   = 

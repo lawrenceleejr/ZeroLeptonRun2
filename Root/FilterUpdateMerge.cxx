@@ -26,13 +26,9 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
 void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
 				 const std::vector<std::string>& inFiles, 
 				 bool isSignal, bool doXSecNormalisation, 
-<<<<<<< HEAD
-				 bool doFiltering, bool doExtraVars, 
+				 bool doFiltering, bool doExtraVars, bool doRJigsawVars, 
 				 bool doCRWTVars, bool doCRZVars, 
 				 bool doCRYVars)
-=======
-				 bool doFiltering, bool doExtraVars, bool doRJigsawVars)
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
 {
   // book output tuple variables
   NTVars outVars;
@@ -72,13 +68,10 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     inRTVars.setAddresses(tree);
     std::cout << "doing the setaddress thing -----------------------------" << std::endl;
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
-<<<<<<< HEAD
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
     if ( doCRZVars ) tree->GetBranch("NTCRZVars")->SetAddress(&inCRZVars.lep1Pt);
     if ( doCRYVars) inCRYVars.setAddresses(tree);
-=======
-    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
 
     // loop over entries
     for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
@@ -87,12 +80,9 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
       outRTVars = inRTVars.RTntv;
       outCRYVars = inCRYVars.ntv;
       if ( doExtraVars) outExtraVars = inExtraVars;
-<<<<<<< HEAD
+      if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
       if ( doCRWTVars) outCRWTVars = inCRWTVars;
       if ( doCRZVars) outCRZVars = inCRZVars;
-=======
-      if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
 
       if ( doFiltering  && !acceptEvent(inVars.ntv) ) continue;
 
