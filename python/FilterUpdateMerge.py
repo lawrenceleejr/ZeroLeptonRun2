@@ -59,7 +59,10 @@ def parseCmdLine():
     parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
                       help="Also merge the RJigsawVars block ?", 
                       action='store_true', default=False)
+<<<<<<< HEAD
 >>>>>>> Works for some number of the variables right now. going to fill out other variables now
+=======
+>>>>>>> 63a1e72b67bdc2885a719dc340720353bbc0a3d3
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
@@ -312,7 +315,10 @@ class Sample:
                 merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False, False)
             else:
                 merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars, self.config.mergeExtraVars)
+<<<<<<< HEAD
 >>>>>>> Works for some number of the variables right now. going to fill out other variables now
+=======
+>>>>>>> 63a1e72b67bdc2885a719dc340720353bbc0a3d3
             newfile.cd()
             outTree.Write()
 
