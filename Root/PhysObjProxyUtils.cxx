@@ -363,7 +363,9 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     {
       VIS->AddLabFrameFourVector( myjets[ijet] );
       jetID_R.push_back( VIS_R->AddLabFrameFourVector( myjets[ijet] )  );
-      VIS_alt->AddLabFrameFourVector( myjets[ijet] );
+      TLorentzVector temp = myjets[ijet];
+      temp.SetPtEtaPhiM(temp.Pt(),0.,temp.Phi(),temp.M());
+      VIS_alt->AddLabFrameFourVector( temp );
     }
 
 
@@ -501,7 +503,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float PG = G[0]->GetMomentum(GG_R);
   float MGG = 2.*sqrt(PG*PG + MG*MG);
   float gaminvGG = 2.*MG/MGG;
-  float gaminv = 1./SS->GetGammaInParentFrame();
+  //float gaminv = 1./SS->GetGammaInParentFrame();
+  float gaminv = SS->GetVisibleShape();
   float beta = sqrt(1.- gaminv*gaminv);
   float betaGG = sqrt(1.- gaminvGG*gaminvGG);
 
