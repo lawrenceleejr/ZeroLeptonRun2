@@ -1,3 +1,9 @@
+26-Jun-2015 Laurent Duflot
+	* update to SUSYTools-00-06-12: ~10% more signal leptons in CRWT
+	* BuildSUSYObjects, PhysObjProxyFiller: adapt to SUSYTools changes
+	* there are no compatible DC14 SUSYTools tag
+	* tagged as ZeroLeptonRun2-00-00-40
+
 25-Jun-2015 Laurent Duflot
 	* ZeroLeptonCRWT, ZeroLeptonCRZ, ZeroLeptonCRY: add RJigsaw block
 	* BuildSUSYObjects: update list of triggers

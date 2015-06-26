@@ -45,7 +45,8 @@ void PhysObjProxyFiller::FillJetProxies(std::vector<JetProxy>& good_jets,
       }
     }
     else {
-      bad_jets.push_back(JetProxy(*it));
+      // pT cut no longer applied in SUSYTools for bad jets
+      if ( (*it)->pt() > 20000.) bad_jets.push_back(JetProxy(*it));
     }
   }
 

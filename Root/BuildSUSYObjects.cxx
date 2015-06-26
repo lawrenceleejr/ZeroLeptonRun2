@@ -59,6 +59,7 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
   m_PhotonInOR = config.get("PhotonInOR",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("BuildSUSYObjects does not support the 7tev run period"));
+  if ( m_period == p8tev ) throw(std::domain_error("Due to interface changes in SUSYTools BuildSUSYObjects no longer supports the 8tev run period"));
 
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
@@ -229,11 +230,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       (*jet_itr)->auxdecor<char>("baseline") = 1;
     }
     else {
-      if ( ! m_SUSYObjTool->FillJet(**jet_itr, 20000., 10.).isSuccess() ) throw std::runtime_error("Error in FillJet");    
-
+      if ( ! m_SUSYObjTool->FillJet(**jet_itr, true).isSuccess() ) throw std::runtime_error("Error in FillJet");    
+      m_SUSYObjTool->IsSignalJet(**jet_itr, 20000.,10., -1e+99); // no JVT cut
     }
     if ( m_period == p8tev ) {
-      m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
+      //FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
     }
     else if ( m_period == p13tev ) {
       m_SUSYObjTool->IsBJet(**jet_itr);
@@ -413,7 +414,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
   // Overlap removal
   if ( m_PhotonInOR ) {
-    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+    if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, susyphotons.first, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
   }
   else {
     if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
@@ -437,7 +438,9 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 			       susymuons.first,
 			       susyphotons.first,
 			       0,
-			       false).isSuccess() 
+			       false,
+			       false,
+			       0).isSuccess() 
        ) throw std::runtime_error("Error in GetMET");
   xAOD::MissingETContainer::const_iterator met_it = rebuiltmetc->find("Final");
   if ( met_it == rebuiltmetc->end() ) throw std::runtime_error("Could not find Final MET after running  GetMET");

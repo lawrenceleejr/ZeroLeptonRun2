@@ -1,6 +1,7 @@
 
 setupATLAS # or equivalent on your machine
-rcSetup Base,2.3.14
+#rcSetup Base,2.3.15
+rcSetup SUSY,2.3.15a
 
 ## the code for ZeroLeptonRun2 is at
 ## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
@@ -15,10 +16,10 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/
 svn co https://github.com/lawrenceleejr/Ext_RestFrames/trunk Ext_RestFrames
 
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-10 SUSYTools
+#svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-12 SUSYTools
 
 ### from SUSYTools/doc/README
-rc checkout_pkg atlasoff/Reconstruction/MET/METUtilities/tags/METUtilities-00-01-40
+#rc checkout SUSYTools/doc/packages.txt
 
 
 

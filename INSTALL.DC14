@@ -1,4 +1,7 @@
 
+***************  THIS VERSION IS INCOMPATIBLE WITH DC14 *******************
+
+
 setupATLAS # or equivalent on your machine
 rcSetup Base,2.1.33
 
