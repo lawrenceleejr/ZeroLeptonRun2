@@ -15,7 +15,7 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/
 svn co https://github.com/lawrenceleejr/Ext_RestFrames/trunk Ext_RestFrames
 
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-09 SUSYTools
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-10 SUSYTools
 
 ### from SUSYTools/doc/README
 rc checkout_pkg atlasoff/Reconstruction/MET/METUtilities/tags/METUtilities-00-01-40

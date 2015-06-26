@@ -1,7 +1,8 @@
 25-Jun-2015 Laurent Duflot
 	* ZeroLeptonCRWT, ZeroLeptonCRZ, ZeroLeptonCRY: add RJigsaw block
 	* BuildSUSYObjects: update list of triggers
-
+	* update to SUSYTools-00-06-10
+	* tagged as ZeroLeptonRun2-00-00-39
 
 25-Jun-2015 Laurent Duflot
 	* ZeroLeptonCRWT, ZeroLeptonCRZ: for Run 2 data, set both
@@ -31,7 +32,7 @@
 	patterns for mc15.
 
 11-Jun-2015 Geraldine Conti
-	* Commented out the cleaning cuts for the truth analysis in CRY, CRWT and CRZ
+	* Commented out the cleaning cuts for the truth analysis in CRY, CRWT ad CRZ
 
 10-Jun-2015 Laurent Duflot
 	* JobBookKeeping, config files: use metadata information for derivations
