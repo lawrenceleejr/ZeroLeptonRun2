@@ -484,7 +484,15 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_6j55_0eta240_L14J20",
     "HLT_7j45",
     "L1_2J15",
-    "HLT_2j55_bloose"
+    "HLT_2j55_bloose",
+    "HLT_j80_xe80",
+    "HLT_e24_lhmedium_iloose_L1EM18VH",
+    "HLT_e60_lhmedium",
+    "HLT_mu20_iloose_L1MU15",
+    "HLT_mu40",
+    "HLT_mu50",
+    "HLT_g120_loose",
+    "HLT_g120_lhloose"
   };
 
   const xAOD::EventInfo* eventInfo = 0;

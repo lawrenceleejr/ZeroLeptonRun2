@@ -1,5 +1,6 @@
 25-Jun-2015 Laurent Duflot
 	* ZeroLeptonCRWT, ZeroLeptonCRZ, ZeroLeptonCRY: add RJigsaw block
+	* BuildSUSYObjects: update list of triggers
 
 
 25-Jun-2015 Laurent Duflot

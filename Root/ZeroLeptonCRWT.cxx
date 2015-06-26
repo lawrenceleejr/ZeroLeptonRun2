@@ -226,7 +226,17 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection
-  // FIXME : no trigger information in xAOD yet 
+  // FIXME : implement trigger selection 
+  // example of how to access trigger pass/not pass
+  /*
+  out() << " HLT_j80_xe80 " << (int)eventInfo->auxdata<char>("HLT_j80_xe80") <<
+    " L1_XE50 " << (int)eventInfo->auxdata<char>("L1_XE50") <<
+    " HLT_mu20_iloose_L1MU15 " << (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15") <<
+    " HLT_mu26_imedium " << (int)eventInfo->auxdata<char>("HLT_mu26_imedium") <<
+    " HLT_e24_lhmedium_iloose_L1EM18VH " << (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH") <<
+    " HLT_e28_tight_iloose " << (int)eventInfo->auxdata<char>("HLT_e28_tight_iloose") <<
+    std::endl;
+  */
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
