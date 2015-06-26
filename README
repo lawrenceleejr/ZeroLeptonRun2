@@ -1,0 +1,146 @@
+
+
+1/ Install and run ZeroLeptonRun2:
+==================================
+
+The instructions for installing and compiling are in ZeroLeptonRun2/INSTALL 
+
+The cafe config file is in ZeroLeptonRun2/config/zerolepton.config, you can
+copy it and modify it but for testing it is easier to just overwrite some 
+configurations from the command line like:
+
+for DC14
+
+cafe ZeroLeptonRun2/config/zerolepton_DC14.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/l/lduflot/atlasreadable/datafiles/mc14_13TeV.110401.PowhegPythia_P2012_ttbar_nonallhad.merge.DAOD_SUSY1.e2928_s1982_s2008_r5787_r5853_p1872/DAOD_SUSY1.05248705._000028.pool.root.1
+
+for mc15 / data 15 :
+
+cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: //eos/atlas/atlasdatadisk/rucio/mc15_13TeV/6d/97/DAOD_SUSY1.05556029._000058.pool.root.1
+
+This run a simple job with no systematics. A preliminary implementation of
+systematics that adds a tree for every systematics uses the 
+zerolepton_with_syst.config  config file.
+
+
+
+To run the truth code, an example is given below : 
+
+cafe ZeroLeptonRun2/config/zeroleptontruth.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/c/conti/atlasreadable/datafiles/mc15_13TeV.361007.Pythia8EvtGen_A14NNPDF23LO_jetjet_JZ7.evgen.EVNT.e3569_tid04904951_00/DAOD_TRUTH1.DAOD.04904951._000779.pool.root
+
+
+
+2/ Extract dataset informations from AMI:
+=========================================
+localSetupPyAMI
+ZeroLeptonRun2/python/makeDatasetList.py --help
+
+For example, 
+ZeroLeptonRun2/python/makeDatasetList.py --baseline
+
+will make the list of mc15_13TeV corresponding to the baseline samples.
+
+
+
+
+3/ Running jobs on the grid:
+============================
+#to reduce the size of the tarball it's better to clear libraries etc 
+rc clean
+localSetupPandaClient
+ZeroLeptonRun2/python/launch_jobs_on_grid.py --help
+
+For example, with baseline.ds a text file with the list of dataset extracted with makeDatasetList.py:
+ZeroLeptonRun2/python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=10 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.lduflot.' --suffix='_test2' --tmpDir=/scratch/duflot  --inDSfile baseline.ds
+
+If the inDS contains the string data11/data12, the job will be configured to 
+read real data. For MC, if the inDS still has the AMI tags, the script can
+figure out if ATLFAST was used. On the other hand, it knows about a limited 
+pattern of signal datasets, to be safe use the --signal option.
+
+
+
+
+4/ Creating an updated cross-section database:
+==============================================
+This step is necessary to produce a file in the correct format for merging.
+
+Use the getMCInfo.py tools (slightly updated version of the Run1 tool)
+to build the extended cross-section database from the un-merged small
+ntuples. The tool will extract the number of events processed and the 
+total sum of MC weights from the Counter and write an extended 
+cross-section file that includes these informations.
+
+For example, one can list all downloaded small tuples in a file input.list
+(the file path should allow to extract the dataset IDs) an do
+
+ZeroLeptonRun2/python/getMCInfo.py --input input.list
+
+this will create MCBackgroundDB.dat (and .tex) in the local directory.
+You need to have the code compiled as it uses C++ code from SUSYTools.
+
+
+
+
+5/ Merging small ntuples for ZeroLeptonHistFitter:
+==================================================
+The filter/merge/update step is done by FilterUpdateMerge.py:
+ZeroLeptonRun2/python/FilterUpdateMerge.py --help  
+
+For example:
+ZeroLeptonRun2/python/FilterUpdateMerge.py --doBackground --input_mc=small.list --doNormWeight  --dbName updatedDB.dat
+
+Where the --dbName option points to an updated cross-section database built 
+with the previous step (needed as the previous steps adds the number of events
+processed and corresponding sum weights.
+
+The file path of input files for MC should allow to retreive the dataset ID,
+ so this is currently not possible for files in rucio.
+
+You need to have the code compiled as it uses C++ code.
+
+
+
+6/ Cleaning cuts:
+================
+
+Starting version ZeroLeptonRun2-00-00-36, the cleaning cuts have been removed
+(except detector status) and a flag is added in the "cleaning" word
+
+SR:
+bit 0 : set if   bad jet veto
+bit 2 : set if   bad MET muon
+bit 3 : set if   bad Tile veto
+bit 4 : set if   negative energy cell veto
+bit 5 : set if   leading jet timing (not used in Run 1)
+bit 6 : set if   chfTileVeto (8TeV)
+bit 7 : set if   chfVeto (not used in Run 1)
+
+CRWT:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfVeto (not used in Run 1)
+
+CRZ:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad Tile veto
+bit 4 : set if   negative energy cell veto
+bit 5 : set if   leading jet timing (not used in Run 1)
+bit 6 : set if   chfVeto (not used in Run 1)
+
+CRY:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfTileVeto (8TeV)
+bit 8 : set if   chfVeto (not used in Run 1)
