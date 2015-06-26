@@ -29,7 +29,6 @@ PileUpRWProcessor::PileUpRWProcessor(const char *name)
 
   m_PileupTool_CENTRAL = std::auto_ptr<CP::PileupReweightingTool>(new CP::PileupReweightingTool("PileUpReweightingTool_CENTRAL"));
   if ( !m_PileupTool_CENTRAL->setProperty("Prefix","CENTRAL_").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
-  if ( !m_PileupTool_CENTRAL->setProperty("Input","EventInfo").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_CENTRAL->setProperty("ConfigFiles",prwFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_CENTRAL->setProperty("LumiCalcFiles",lumicalcFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_CENTRAL->initialize().isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
@@ -37,7 +36,6 @@ PileUpRWProcessor::PileUpRWProcessor(const char *name)
   m_PileupTool_UP = std::auto_ptr<CP::PileupReweightingTool>(new CP::PileupReweightingTool("PileUpReweightingTool_UP"));
   if ( !m_PileupTool_UP->setProperty("Prefix","UP_").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_UP->setProperty("DataScaleFactor",1.1).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
-  if ( !m_PileupTool_UP->setProperty("Input","EventInfo").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_UP->setProperty("ConfigFiles",prwFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_UP->setProperty("LumiCalcFiles",lumicalcFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_UP->initialize().isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
@@ -45,7 +43,6 @@ PileUpRWProcessor::PileUpRWProcessor(const char *name)
   m_PileupTool_DOWN = std::auto_ptr<CP::PileupReweightingTool>(new CP::PileupReweightingTool("PileUpReweightingTool_DOWN"));
   if ( !m_PileupTool_DOWN->setProperty("Prefix","DOWN_").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_DOWN->setProperty("DataScaleFactor",0.9).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
-  if ( !m_PileupTool_DOWN->setProperty("Input","EventInfo").isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_DOWN->setProperty("ConfigFiles",prwFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_DOWN->setProperty("LumiCalcFiles",lumicalcFiles).isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
   if ( !m_PileupTool_DOWN->initialize().isSuccess()) throw std::runtime_error("Could not initialise PileupReweightingTool");
@@ -64,9 +61,9 @@ bool PileUpRWProcessor::processEvent(xAOD::TEvent& event)
 
   // no reweighting for mc14_13TeV nor in mc15_13TeV
   if ( runnumber != 222222  && runnumber != 222250  && runnumber != 222510) {
-    if ( !m_PileupTool_CENTRAL->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
-    if ( !m_PileupTool_UP->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
-    if ( !m_PileupTool_DOWN->execute().isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
+    if ( !m_PileupTool_CENTRAL->apply(*eventInfo).isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
+    if ( !m_PileupTool_UP->apply(*eventInfo).isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
+    if ( !m_PileupTool_DOWN->apply(*eventInfo).isSuccess()) throw std::runtime_error("Could not execute PileupReweightingTool");
     (*pileupWeight)[0] = eventInfo->auxdata<double>("CENTRAL_PileupWeight");
     (*pileupWeight)[1] = eventInfo->auxdata<double>("UP_PileupWeight");
     (*pileupWeight)[2] = eventInfo->auxdata<double>("DOWN_PileupWeight");
