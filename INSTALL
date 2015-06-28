@@ -22,7 +22,6 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/ta
 #rc checkout SUSYTools/doc/packages.txt
 
 
-
 # compile
 rc find_packages
 rc compile
