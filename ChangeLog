@@ -1,3 +1,9 @@
+28-Jun-2015 Laurent Duflot
+	* BuildSUSYObjects: comment destructor due to crash in SUSYObjDef_xAOD
+	destructor
+	* update to SUSYTools-00-06-13: no change in ttbar cutflow
+	* tagged as ZeroLeptonRun2-00-00-41
+
 26-Jun-2015 Laurent Duflot
 	* update to SUSYTools-00-06-12: ~10% more signal leptons in CRWT
 	* BuildSUSYObjects, PhysObjProxyFiller: adapt to SUSYTools changes

@@ -70,7 +70,8 @@ BuildSUSYObjects::BuildSUSYObjects(const char *name)
 
 BuildSUSYObjects::~BuildSUSYObjects()
 {
-  if ( m_SUSYObjTool ) delete m_SUSYObjTool;
+  //FIXME crash in SUSYObjDef_xAOD destructor
+  //if ( m_SUSYObjTool ) delete m_SUSYObjTool;
 }
 
 void BuildSUSYObjects::initSUSYTools()
