@@ -1,4 +1,7 @@
 28-Jun-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py: update list of baseline samples, still a few missing "core" samples
+
+28-Jun-2015 Laurent Duflot
 	* BuildSUSYObjects: comment destructor due to crash in SUSYObjDef_xAOD
 	destructor
 	* update to SUSYTools-00-06-13: no change in ttbar cutflow
