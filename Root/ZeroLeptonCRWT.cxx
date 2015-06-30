@@ -286,6 +286,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   // FIXME : trigger matching
   std::vector<MuonProxy> trigmatched_muons = isolated_signal_muons;
 
+  std::vector<TauProxy> baseline_taus, signal_taus;
+  if(! m_IsTruth){
+    m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
+  }
+
   // missing ET
   TVector2* missingET = 0;
   if(! m_IsTruth){
@@ -625,7 +630,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       power2 *= 2;
     }
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0.,0.,m_IsTruth);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0.,0.,m_IsTruth,baseline_taus,signal_taus);
 
     if( !m_IsTruth ){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);

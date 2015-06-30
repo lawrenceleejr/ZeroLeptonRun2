@@ -1,5 +1,6 @@
 30-Jun-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py, mc15_13TeV_week1_MCSampleList.py: update list of baseline samples
+	* ZeroLeptonCRxx: fill tau variables
 
 29-Jun-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py: update list of baseline samples, still a few missing "core" samples
