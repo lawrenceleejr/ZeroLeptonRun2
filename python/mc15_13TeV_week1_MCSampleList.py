@@ -6,7 +6,7 @@ __doc__ = """2015 week1 samples for first tests"""
 lZjets   = range(361444,361449+1) # Sherpa Znunu
 lZjets  +=  [361106,361107,361108] # Pythia8 Zll
 
-lYjets   = range(361039,361047+1) # Sherpa
+lYjets   = range(361039,361056+1) # Sherpa
 lWjets   = range(361100,361108+1) # PowHeg+Pythia8
 
 lttbar   = [410000] # PowhegPythiaEvtGen_P2012_ttbar_hdamp172p5_nonallhad
