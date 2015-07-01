@@ -1,3 +1,6 @@
+01-Jul-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx: add derivation tags p2372, p2375 and p2377
+
 30-Jun-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py, mc15_13TeV_week1_MCSampleList.py: update list of baseline samples
 	* ZeroLeptonCRxx: fill tau variables
