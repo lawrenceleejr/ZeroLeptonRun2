@@ -25,6 +25,12 @@ filters = ['Pythia_GGM','PG11','DGemt','DGnoL','_Wprime','_Zprime','PythiaB','_3
 # preproduction samples +  no pileup 
 badtags = ['_r5720_','_r5721_'] + ['_r5803_','_r5804_','_r5862_']
 
+# mc15 reco tag lists
+mc15_rtags = {}
+mc15_rtags['week1']  = ['r6633', 'r6853' ]
+mc15_rtags['50ns']  = [ 'r6630', 'r6655', 'r6647', 'r6793', 'r6828', 'r6767', 'r6802' ]
+mc15_rtags['25ns']  = [ 'r6725', 'r6765' ]
+
 
 def badDataset(datasetName,generatorString,version):
     dsname = datasetName
@@ -44,6 +50,7 @@ def parseCmdLine(args):
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("--prefix", dest="prefix", help="Prefix to search datasets in AMI",default="mc15_13TeV") 
+    parser.add_option("--whichMC15", dest="whichMC15", help="week1, 50ns or 25ns",default="") 
     parser.add_option("--datatype", dest="datatype", help="datatype",default="%.merge.DAOD_SUSY1%") 
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output file name",default="") 
     parser.add_option("--tag", dest="tag", help="Production tag",default="_r6630_r6264_p2353") 
@@ -67,6 +74,18 @@ def main():
     client = pyAMI.client.Client('atlas')
     pyAMI.client.endpoint = config.server
     pyAMI.atlas.api.init()
+
+    # consistency checks
+    if config.whichMC15 != '':
+        if config.whichMC15 == 'week1' and config.prefix != 'mc15_week1':
+            print 'prefix changed to mc15_week1 in agrement with whichMC15'
+            config.prefix = 'mc15_week1'
+        elif config.whichMC15 == '50ns'  and config.prefix != 'mc15_13TeV':
+            print 'prefix changed to mc15_13TeV in agrement with whichMC15'
+            config.prefix = 'mc15_13TeV'
+        elif config.whichMC15 == '25ns'  and config.prefix != 'mc15_13TeV':
+            print 'prefix changed to mc15_13TeV in agrement with whichMC15'
+            config.prefix = 'mc15_13TeV'
 
     # data type is NTUP_SUSY for 2011/2012 and AOD for 2014 on
     datatype = config.datatype
@@ -96,9 +115,21 @@ def main():
     # get all datasets matching prefix & tag and then filter them
     from pyAMI.atlas.api import get_dataset_info, list_datasets
 
-    dskey = config.prefix+datatype+config.tag
-    print 'Querying AMI for datasets matching pattern',dskey
-    alldatasets = list_datasets(client,dskey)
+    alldatasets = []
+    if config.whichMC15 != '':
+        prefix = config.prefix
+        if prefix == 'mc15_week1': prefix = 'mc15_13TeV'
+        for tag in mc15_rtags[config.whichMC15]:
+            dskey = prefix+datatype+tag+config.tag
+            print 'Querying AMI for datasets matching pattern',dskey
+            alldatasets += list_datasets(client,dskey)
+    else:
+        prefix = config.prefix
+        if prefix == 'mc15_week1': prefix = 'mc15_13TeV'
+        dskey = config.prefix+datatype+config.tag
+        print 'Querying AMI for datasets matching pattern',dskey
+        alldatasets = list_datasets(client,dskey)
+
     acceptedDS = []
     for DSlist in alldatasets:
         dsname = DSlist['ldn']
