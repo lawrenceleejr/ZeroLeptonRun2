@@ -2,6 +2,8 @@
 	* add baseline mc15 xAOD sample lists
 	* makeDatasetList.py: add option --whichMC15 to automatically loop over the various
 	r-tags for each mc15 week1/50ns/25ns production.
+	* BuildSUSYObjects: have different tool names for CRY and others, move IsSignalJet and isBJet
+	tests after overlap removal
 
 01-Jul-2015 Laurent Duflot
 	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx: add derivation tags p2372, p2375 and p2377

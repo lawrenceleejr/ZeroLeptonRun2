@@ -77,7 +77,7 @@ BuildSUSYObjects::~BuildSUSYObjects()
 void BuildSUSYObjects::initSUSYTools()
 {
   // SUSYObjDef_xAOD needs a TEvent to be defined, moved from constructor to begin()
-  m_SUSYObjTool = new ST::SUSYObjDef_xAOD("ZLST");
+  m_SUSYObjTool = new ST::SUSYObjDef_xAOD( m_PhotonInOR ? "ZLST_GAMMA" : "ZLST");
   m_SUSYObjTool->msg().setLevel( MSG::WARNING);
   ST::SettingDataSource datasource = m_IsData ? ST::Data : (m_IsAtlfast ? ST::AtlfastII : ST::FullSim);
   m_SUSYObjTool->setProperty("DataSource",datasource).ignore();
@@ -101,7 +101,7 @@ void BuildSUSYObjects::initSUSYTools()
   // set our own tau selection
   TauAnalysisTools::TauSelectionTool* tauSelTool;
   TauAnalysisTools::TauEfficiencyCorrectionsTool* tauEffTool;
-  tauSelTool = new TauAnalysisTools::TauSelectionTool("TauSelectionTool");
+  tauSelTool = new TauAnalysisTools::TauSelectionTool( m_PhotonInOR ? "TauSelectionTool_GAMMA" : "TauSelectionTool");
   tauSelTool->msg().setLevel( MSG::WARNING);
   //tauSelTool->msg().setLevel( MSG::VERBOSE);
   tauSelTool->setProperty("PtMin", 20. ).ignore(); // pt in GeV
@@ -232,15 +232,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     }
     else {
       if ( ! m_SUSYObjTool->FillJet(**jet_itr, true).isSuccess() ) throw std::runtime_error("Error in FillJet");    
-      m_SUSYObjTool->IsSignalJet(**jet_itr, 20000.,10., -1e+99); // no JVT cut
     }
-    if ( m_period == p8tev ) {
-      //FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
-    }
-    else if ( m_period == p13tev ) {
-      m_SUSYObjTool->IsBJet(**jet_itr);
-    }
-
     //out() << "pt " << (*jet_itr)->pt() << " baseline " << (int)((*jet_itr)->auxdecor<char>("baseline")) << " bad " << (int)((*jet_itr)->auxdecor<char>("bad")) << " bjet " << (int)((*jet_itr)->auxdecor<char>("bjet")) <<  " container " << (*jet_itr)->container() << std::endl;
 
 
@@ -420,6 +412,21 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   else {
     if ( ! m_SUSYObjTool->OverlapRemoval(susyelectrons.first, susymuons.first, outputjets, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
   }
+
+  // signal and btag jet now depend on OR, so loop again on jets
+  for ( const auto& jet_itr : *outputjets ) {
+    if ( !m_UseSmearedJets ) { 
+      m_SUSYObjTool->IsSignalJet(*jet_itr, 20000.,10., -1e+99); // no JVT cut
+    }
+    if ( m_period == p8tev ) {
+      //FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
+    }
+    else if ( m_period == p13tev ) {
+      m_SUSYObjTool->IsBJet(*jet_itr);
+    }
+
+  }
+
 
   // Missing ET
   TVector2* MissingET = new TVector2(0.,0.);
