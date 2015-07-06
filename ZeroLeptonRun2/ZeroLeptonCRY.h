@@ -29,7 +29,7 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset);
+  void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose, std::vector<float>& vetcone20, std::vector<float>& vptcone20,std::vector<float>& vGLetcone20, std::vector<float>& vGLptcone20,std::vector<float>& vGetcone20, std::vector<float>& vGptcone20,std::vector<float>& vpt, std::vector<float>& veta);
 
   TTree* m_tree;
   std::string m_stringRegion;

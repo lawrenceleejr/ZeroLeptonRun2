@@ -1,3 +1,6 @@
+06-Jul-2015 Geraldine Conti
+	*add variables for photon isolation and quality
+	
 03-Jul-2015 Laurent Duflot
 	* add baseline mc15 xAOD sample lists
 	* makeDatasetList.py: add option --whichMC15 to automatically loop over the various

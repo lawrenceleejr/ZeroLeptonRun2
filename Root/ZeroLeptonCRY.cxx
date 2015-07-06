@@ -246,24 +246,60 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   const xAOD::PhotonContainer* phContainer = 0;
   float leadPhPt = 0.;
   xAOD::PhotonContainer::const_iterator leadPh ;
+  std::vector<bool> vtight ;
+  std::vector<bool> vloose ;
+  std::vector<float> vGLtopoetcone20;
+  std::vector<float> vGtopoetcone20;
+  std::vector<float> vtopoetcone20;
+  std::vector<float> vGLptvarcone20;
+  std::vector<float> vGptvarcone20;
+  std::vector<float> vptvarcone20;
+  std::vector<float> vpt;
+  std::vector<float> veta;
   if(! m_IsTruth){
     if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
       throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
-    }  
+    }
     for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
       allphotons.push_back(PhotonProxy(*phit));
-      // ADD ISOLATION VALUES 
-      float myval = 0 ; 
-      (*phit)->isolationValue(myval,xAOD::Iso::topoetcone20);
-      //std::cout << "TEST ISO : " << myval << std::endl;
-
+      // Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx
+      float topoetcone20=0;
+      float ptvarcone20=0;
+      (*phit)->isolationValue(topoetcone20,xAOD::Iso::topoetcone20);
+      (*phit)->isolationValue(ptvarcone20,xAOD::Iso::ptvarcone20);
+      vptvarcone20.push_back(ptvarcone20);
+      vGLptvarcone20.push_back(0.057*ptvarcone20+95.57);
+      vGptvarcone20.push_back(0.1143*ptvarcone20+92.14);
+      //
+      vtopoetcone20.push_back(topoetcone20);
+      vGLtopoetcone20.push_back(0.057*topoetcone20+95.57);
+      vGtopoetcone20.push_back(0.1143*topoetcone20+92.14);
+      //
+      vpt.push_back((*phit)->pt());
+      veta.push_back((*phit)->eta());
+      //
+      // Photon quality
+      bool tight=false;
+      if(!(*phit)->passSelection(tight,"Tight")){
+	std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+      }
+      //if(tight){                                                                                                                                                                                                                                                                                                                                                       
+      //        std::cout << "Passed Tight" << std::endl;                                                                                                                                                                                                                                                                                                                      //}                                                                                                                                                                                                                                                                                                                                                                
+      bool loose=false;
+      if(!(*phit)->passSelection(loose,"Loose")){
+	std::cout<<"WARNING: Loose decision is not available"<<std::endl;
+      }
+      //if(loose){                                                                                                                                                                                                                                                                                                                                                       
+      //        std::cout << "Passed Loose" << std::endl;                                                                                                                                                                                                                                                                                                                      //}                                                                                                                                                                                                                                                                                                                                                                
+      vloose.push_back(loose);
+      vtight.push_back(tight);
+      //
       if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
-	leadPhPt = (*phit)->pt();
-	leadPh = phit;
+        leadPhPt = (*phit)->pt();
+        leadPh = phit;
       }
     }
   }
-
   //
   const xAOD::TruthParticleContainer* truthphotons = 0 ;
   xAOD::TruthParticleContainer::const_iterator leadPhtruth;
@@ -499,7 +535,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 
-    FillNTCRYVars(m_cryntv,allphotons,*missingET);
+    FillNTCRYVars(m_cryntv,allphotons,*missingET,vtight,vloose,vtopoetcone20,vptvarcone20,vGLtopoetcone20,vGLptvarcone20,vGtopoetcone20,vGptvarcone20,vpt,veta);
       
     if(! m_IsTruth){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
@@ -522,7 +558,11 @@ void ZeroLeptonCRY::finish()
 
 void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
 				  const std::vector<PhotonProxy>& photons,
-				  TVector2& origmisset)
+				  TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose,
+				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,
+				  std::vector<float>& vGLtopoetcone20, std::vector<float>& vGLptvarcone20,
+				  std::vector<float>& vGtopoetcone20, std::vector<float>& vGptvarcone20,
+				  std::vector<float>& vpt,std::vector<float>& veta)
 {
   cryntv.Reset();
   for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
@@ -531,8 +571,19 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
       cryntv.phEta.push_back(phit->Eta());
       cryntv.phPhi.push_back(phit->Phi());
       cryntv.phSignal.push_back(phit->isSignal());
-      //cryntv.phTopoetcone20.push_back(phit->topoetcone20());
-      //cryntv.phPtvarcone20.push_back(phit->ptvarcone20());
+      
+      for (Int_t n=0;n<vloose.size();n++){
+	if(fabs(phit->Pt()-vpt.at(n))<0.001 && fabs(phit->Eta()-veta.at(n))<0.001){
+	  cryntv.phLoose.push_back(vloose.at(n));
+	  cryntv.phTight.push_back(vtight.at(n));
+	  cryntv.phTopoetcone20.push_back(vtopoetcone20.at(n));
+	  cryntv.phPtvarcone20.push_back(vptvarcone20.at(n));
+	  cryntv.phGLTopoetcone20.push_back(vGLtopoetcone20.at(n));
+          cryntv.phGLPtvarcone20.push_back(vGLptvarcone20.at(n));
+          cryntv.phGTopoetcone20.push_back(vGtopoetcone20.at(n));
+          cryntv.phGPtvarcone20.push_back(vGptvarcone20.at(n));
+	}
+      }
     }
   }
   cryntv.origmet    = origmisset.Mod() * 0.001;

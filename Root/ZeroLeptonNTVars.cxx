@@ -407,8 +407,14 @@ void NTCRYVars::Reset()
   phSignal.clear();
   origmet = 0.f;
   origmetPhi = 0.f;
-  phTopoetcone20.clear();// GERALDINE
-  phPtvarcone20.clear(); // GERALDINE
+  phTopoetcone20.clear();
+  phPtvarcone20.clear(); 
+  phGLTopoetcone20.clear();
+  phGLPtvarcone20.clear();
+  phGTopoetcone20.clear();
+  phGPtvarcone20.clear();
+  phLoose.clear();
+  phTight.clear();
 }
 
 
@@ -420,6 +426,12 @@ NTCRYVarsRead::NTCRYVarsRead(): ntv()
   p_phSignal = &ntv.phSignal;
   p_phTopoetcone20 = &ntv.phTopoetcone20;
   p_phPtvarcone20 = &ntv.phPtvarcone20;
+  p_phGLTopoetcone20 = &ntv.phGLTopoetcone20;
+  p_phGLPtvarcone20 = &ntv.phGLPtvarcone20;
+  p_phGTopoetcone20 = &ntv.phGTopoetcone20;
+  p_phGPtvarcone20 = &ntv.phGPtvarcone20;
+  p_phLoose = &ntv.phLoose;
+  p_phTight = &ntv.phTight;
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
@@ -431,6 +443,12 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   tree->Branch("phSignal",&(cryntv.phSignal));
   tree->Branch("phTopoetcone20",&(cryntv.phTopoetcone20));
   tree->Branch("phPtvarcone20",&(cryntv.phPtvarcone20));
+  tree->Branch("phGLTopoetcone20",&(cryntv.phGLTopoetcone20));
+  tree->Branch("phGLPtvarcone20",&(cryntv.phGLPtvarcone20));
+  tree->Branch("phGTopoetcone20",&(cryntv.phGTopoetcone20));
+  tree->Branch("phGPtvarcone20",&(cryntv.phGPtvarcone20));
+  tree->Branch("phLoose",&(cryntv.phLoose));
+  tree->Branch("phTight",&(cryntv.phTight));
 }
 
 void NTCRYVarsRead::setAddresses(TTree* tree)
@@ -442,5 +460,11 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
   tree->GetBranch("phTopoetcone20")->SetAddress(&p_phTopoetcone20);
   tree->GetBranch("phPtvarcone20")->SetAddress(&p_phPtvarcone20);
+  tree->GetBranch("phGLTopoetcone20")->SetAddress(&p_phGLTopoetcone20);
+  tree->GetBranch("phGLPtvarcone20")->SetAddress(&p_phGLPtvarcone20);
+  tree->GetBranch("phGTopoetcone20")->SetAddress(&p_phGTopoetcone20);
+  tree->GetBranch("phGPtvarcone20")->SetAddress(&p_phGPtvarcone20);
+  tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
+  tree->GetBranch("phTight")->SetAddress(&p_phTight);
 }
 
