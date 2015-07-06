@@ -153,6 +153,7 @@ def main():
         pass
 
     # write file
+    coveredids = set()
     fout = open('datasets.txt','w')
     for info in dsinfos:
         try:
@@ -174,6 +175,7 @@ def main():
                     # to re-implement get_dataset_xsec_effic for PyAMI5
                     xsec = info[u'crossSection']
                     effic =  info[u'approx_GenFiltEff']
+                    coveredids.add(int(info[u'datasetNumber']))
                 nevts = info['totalEvents']
                 nfiles = info['nFiles']
                 if not dsname.endswith('/'): dsname += '/'
@@ -181,6 +183,14 @@ def main():
         except KeyError as prop:
             print 'Missing property',prop,'for dataset ',dsname,'in AMI, skip'
     fout.close()
+
+    if len(coveredids) == 0:
+        if not config.prefix.startswith('data'): print 'Could not extract any channel IDs from datasets found, this is OK for data but suspicioud for MC'
+    else:
+        for id in officialids:
+            if not id in coveredids:
+                print 'No dataset found for channel ',id
+
     pass
 
 
