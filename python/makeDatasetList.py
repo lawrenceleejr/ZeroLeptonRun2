@@ -199,8 +199,8 @@ def main():
                         if approx_GenFiltEff: 
                             effic = approx_GenFiltEff 
                         else:
-                            print 'No approx_GenFiltEff found for',dsname,'set to zero !!!!'
-                            effic = 0
+                            print 'No approx_GenFiltEff found for',dsname,'set to 1 !!!!'
+                            effic = 1
                         pass
                 nevts = info['totalEvents']
                 nfiles = info['nFiles']
