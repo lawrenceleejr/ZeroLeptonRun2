@@ -78,6 +78,7 @@ def parseCmdLine(args):
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output file name",default="") 
     parser.add_option("--tag", dest="tag", help="Production tag",default="_r6630_r6264_p2353") 
     parser.add_option("--server", dest="server", help="AMI server (main or replica)",default="main") 
+    parser.add_option("--onlyComplete", dest="onlyComplete", help="skip datasets not marked with all events available", action='store_true', default=False)
     parser.add_option("--official", dest="official", help="Select only baseline or alternative samples from MCSampleList", action='store_true', default=False)
     parser.add_option("--baseline", dest="baseline", help="Select only baseline samples from MCSampleList", action='store_true', default=False)
     parser.add_option("--sample", dest="sample", help="Selected any sample list defined in MCSampleList, e.g. lTop", default=None)
@@ -185,6 +186,9 @@ def main():
             version  = info['version']
             if badDataset(dsname,generatorString,version): continue
             availability = info['prodsysStatus']
+            if config.onlyComplete and availability != u'ALL EVENTS AVAILABLE':
+                print 'Skip incomplete dataset',dsname,availability
+                continue
             nFiles = int(info['nFiles'])
             if nFiles>0:
                 period = 'MC'

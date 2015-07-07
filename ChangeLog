@@ -1,6 +1,8 @@
 07-Jul-2015 Laurent Duflot
 	* makeDatasetList.py: when approx_GenFiltEff is not found for a dataset
 	look in its parents. Same for the cross-section.
+	* makeDatasetList.py: add --onlyComplete to keep only complete datasets
+	* mc15_13TeV_MCSampleList.py: correct typo, sample 361082 was missing
 
 06-Jul-2015 Laurent Duflot
 	* makeDatasetList.py: list mc_channel_nb with no dataset found
