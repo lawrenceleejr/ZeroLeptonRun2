@@ -170,12 +170,38 @@ def main():
                 if info.has_key('period'):
                     period = info['period']
                 else:
-                    #(xsec, effic) = get_dataset_xsec_effic(client,info.info['logicalDatasetName'])
+                    datasetNumber = int(info[u'datasetNumber'])
+                    coveredids.add(datasetNumber)
                     # confirmed with AMI team that this should be enought, no need
                     # to re-implement get_dataset_xsec_effic for PyAMI5
                     xsec = info[u'crossSection']
-                    effic =  info[u'approx_GenFiltEff']
-                    coveredids.add(int(info[u'datasetNumber']))
+
+                    # there are sometime problems in the propagation of this
+                    # property to the xAOD/derived datasets so go back in
+                    # parentage to find the information
+                    if info.has_key(u'approx_GenFiltEff'):
+                        effic =  info[u'approx_GenFiltEff']
+                        pass
+                    else:
+                        #print 'No approx_GenFiltEff, seek in parentage of ',dsname
+                        approx_GenFiltEff = None
+                        prov =  pyAMI.atlas.api.get_dataset_prov(client, dsname)
+                        for parent in prov['node']:
+                            # minbias overlays are also parents so need to 
+                            # check the channel number
+                            if int( parent[u'logicalDatasetName'].split(".")[1]) == datasetNumber:
+                                parentinfo = get_dataset_info(client,parent[u'logicalDatasetName'])[0]
+                                if parentinfo.has_key(u'approx_GenFiltEff'):
+                                    approx_GenFiltEff = parentinfo[u'approx_GenFiltEff']
+                                    break
+                                pass
+                            pass
+                        if approx_GenFiltEff: 
+                            effic = approx_GenFiltEff 
+                        else:
+                            print 'No approx_GenFiltEff found for',dsname,'set to zero !!!!'
+                            effic = 0
+                        pass
                 nevts = info['totalEvents']
                 nfiles = info['nFiles']
                 if not dsname.endswith('/'): dsname += '/'
