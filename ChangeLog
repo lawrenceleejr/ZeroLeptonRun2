@@ -1,6 +1,6 @@
 07-Jul-2015 Laurent Duflot
 	* makeDatasetList.py: when approx_GenFiltEff is not found for a dataset
-	look in its parents
+	look in its parents. Same for the cross-section.
 
 06-Jul-2015 Laurent Duflot
 	* makeDatasetList.py: list mc_channel_nb with no dataset found

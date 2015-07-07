@@ -32,6 +32,29 @@ mc15_rtags['50ns']  = [ 'r6630', 'r6655', 'r6647', 'r6793', 'r6828', 'r6767', 'r
 mc15_rtags['25ns']  = [ 'r6725', 'r6765' ]
 
 
+def genParamsFromParents(client,datasetName,datasetNumber):
+    from pyAMI.atlas.api import get_dataset_info
+    approx_GenFiltEff = None
+    xsec = None
+    prov =  pyAMI.atlas.api.get_dataset_prov(client, datasetName)
+    for parent in prov['node']:
+        # minbias overlays are also parents so need to 
+        # check the channel number
+        if int( parent[u'logicalDatasetName'].split(".")[1]) == datasetNumber:
+            parentinfo = get_dataset_info(client,parent[u'logicalDatasetName'])[0]
+            if parentinfo.has_key(u'approx_GenFiltEff'):
+                approx_GenFiltEff = parentinfo[u'approx_GenFiltEff']
+                pass
+            if parentinfo.has_key(u'crossSection') and parentinfo[u'crossSection'] != u'NULL':
+                xsec = float(parentinfo[u'crossSection'])
+                pass
+            if approx_GenFiltEff and xsec:
+                break
+        pass
+    return (xsec,approx_GenFiltEff)
+
+    
+
 def badDataset(datasetName,generatorString,version):
     dsname = datasetName
     if '/' in dsname: dsname = dsname[:-1]
@@ -174,34 +197,22 @@ def main():
                     coveredids.add(datasetNumber)
                     # confirmed with AMI team that this should be enought, no need
                     # to re-implement get_dataset_xsec_effic for PyAMI5
-                    xsec = info[u'crossSection']
 
-                    # there are sometime problems in the propagation of this
-                    # property to the xAOD/derived datasets so go back in
+
+                    # there are sometime problems in the propagation of these
+                    # properties to the xAOD/derived datasets so go back in
                     # parentage to find the information
+                    xsec = info[u'crossSection']
                     if info.has_key(u'approx_GenFiltEff'):
                         effic =  info[u'approx_GenFiltEff']
-                        pass
-                    else:
-                        #print 'No approx_GenFiltEff, seek in parentage of ',dsname
-                        approx_GenFiltEff = None
-                        prov =  pyAMI.atlas.api.get_dataset_prov(client, dsname)
-                        for parent in prov['node']:
-                            # minbias overlays are also parents so need to 
-                            # check the channel number
-                            if int( parent[u'logicalDatasetName'].split(".")[1]) == datasetNumber:
-                                parentinfo = get_dataset_info(client,parent[u'logicalDatasetName'])[0]
-                                if parentinfo.has_key(u'approx_GenFiltEff'):
-                                    approx_GenFiltEff = parentinfo[u'approx_GenFiltEff']
-                                    break
-                                pass
-                            pass
-                        if approx_GenFiltEff: 
-                            effic = approx_GenFiltEff 
-                        else:
-                            print 'No approx_GenFiltEff found for',dsname,'set to 1 !!!!'
-                            effic = 1
-                        pass
+                    if xsec == u'NULL' or not info.has_key(u'approx_GenFiltEff'):
+                        xsec,effic = genParamsFromParents(client,dsname,datasetNumber)
+
+                    if not xsec: xsec = 0
+                    if not effic:
+                        print 'No approx_GenFiltEff found for',dsname,'set to 0 !!!!'
+                        effic = 0
+                    pass
                 nevts = info['totalEvents']
                 nfiles = info['nFiles']
                 if not dsname.endswith('/'): dsname += '/'
@@ -211,7 +222,7 @@ def main():
     fout.close()
 
     if len(coveredids) == 0:
-        if not config.prefix.startswith('data'): print 'Could not extract any channel IDs from datasets found, this is OK for data but suspicioud for MC'
+        if not config.prefix.startswith('data'): print 'Could not extract any channel IDs from datasets found, this is OK for data but suspicious for MC'
     else:
         for id in officialids:
             if not id in coveredids:
