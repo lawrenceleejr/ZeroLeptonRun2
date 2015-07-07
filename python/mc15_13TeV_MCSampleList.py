@@ -24,8 +24,7 @@ lTop     = lttbar + lsinglet + lttbarX
 
 # diboson samples
 lDiBoson =  range(361063,361072+1)  # Sherpa ZZ+WZ (leptons)
-lDiBoson += range(361083,361087+1) # Sherpa WqqZll WqqZnunu
-lDiBoson += [361081,36102] # Sherpa WqqWlnu
+lDiBoson += range(361081,361087+1) # Sherpa semileptonic
 lTriBoson = [361073]+range(361075,361076,361080+1)  # 
 
 
