@@ -205,6 +205,10 @@ class NTCRYVars
   std::vector<bool> phSignal;
   std::vector<float> phTopoetcone20;
   std::vector<float> phPtvarcone20;
+  std::vector<float> phPtcone20;
+  std::vector<float> phTopoetcone40;
+  std::vector<float> phPtvarcone40;
+  std::vector<float> phPtcone40;
   //std::vector<int>   phisEMTight;
   std::vector<bool> phLoose;
   std::vector<bool> phTight;
@@ -224,6 +228,10 @@ private:
   std::vector< bool >*  p_phSignal;
   std::vector< float >* p_phTopoetcone20;
   std::vector< float >* p_phPtvarcone20;
+  std::vector< float >* p_phPtcone20;
+  std::vector< float >* p_phTopoetcone40;
+  std::vector< float >* p_phPtvarcone40;
+  std::vector< float >* p_phPtcone40;
   //std::vector< int >*   p_phisEMTight;
   std::vector< bool >*  p_phLoose;
   std::vector< bool >*  p_phTight;
