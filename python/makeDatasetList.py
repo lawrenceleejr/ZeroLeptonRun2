@@ -178,7 +178,11 @@ def main():
 
     # write file
     coveredids = set()
-    fout = open('datasets.txt','w')
+    if not(config.suffix==""):
+        myoutputfile = 'datasets_'+config.suffix+'.txt'
+    else:
+        myoutputfile = 'datasets.txt'
+    fout = open(myoutputfile,'w')
     for info in dsinfos:
         try:
             dsname = info['logicalDatasetName']
