@@ -108,12 +108,14 @@ Starting version ZeroLeptonRun2-00-00-36, the cleaning cuts have been removed
 
 SR:
 bit 0 : set if   bad jet veto
-bit 2 : set if   bad MET muon
-bit 3 : set if   bad Tile veto
-bit 4 : set if   negative energy cell veto
-bit 5 : set if   leading jet timing (not used in Run 1)
-bit 6 : set if   chfTileVeto (8TeV)
-bit 7 : set if   chfVeto (not used in Run 1)
+bit 1 : set if   bad MET muon
+bit 2 : set if   bad Tile veto
+bit 3 : set if   negative energy cell veto
+bit 4 : set if   leading jet timing (not used in Run 1)
+bit 5 : set if   chfTileVeto (8TeV)
+bit 6 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&3)==0'
+
 
 CRWT:
 bit 0 : set if   bad jet veto
@@ -124,6 +126,7 @@ bit 4 : set if   bad Tile veto
 bit 5 : set if   negative energy cell veto
 bit 6 : set if   leading jet timing (not used in Run 1)
 bit 7 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&15)==0'
 
 CRZ:
 bit 0 : set if   bad jet veto
@@ -133,6 +136,7 @@ bit 3 : set if   bad Tile veto
 bit 4 : set if   negative energy cell veto
 bit 5 : set if   leading jet timing (not used in Run 1)
 bit 6 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&7)==0'
 
 CRY:
 bit 0 : set if   bad jet veto
@@ -144,3 +148,4 @@ bit 5 : set if   negative energy cell veto
 bit 6 : set if   leading jet timing (not used in Run 1)
 bit 7 : set if   chfTileVeto (8TeV)
 bit 8 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&15)==0'
