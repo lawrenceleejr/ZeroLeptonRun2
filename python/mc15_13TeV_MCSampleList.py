@@ -8,6 +8,8 @@ lZjets  += range(361372,361395+1) # Sherpa Zee
 lZjets  += range(361396,361419+1) # Sherpa Zmumu
 lZjets  += range(361420,361443+1) # Sherpa Ztautau
 
+lZjetsLO = range(407100,407183+1) # L0 Z+jets
+
 lYjets   = range(361039,361061+1) # Sherpa
 
 lWjets   = range(361300,361323+1) # Sherpa Wenu missing pt<70
@@ -44,6 +46,6 @@ lbaseline = lZjets + lWjets + lYjets + lTop + lQCDMC + lDiBoson
 ##[187150,187158+1]+[187160,187168+1]+[187170,187178+1]+[187180,187188+1]+[206618,206620+1] # diboson PowhegPythia
 
 
-lalt = []
+lalt = lZjetsLO #[]
 
 #print lbaseline

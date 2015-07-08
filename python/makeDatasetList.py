@@ -209,7 +209,11 @@ def main():
                     xsec = info[u'crossSection']
                     if info.has_key(u'approx_GenFiltEff'):
                         effic =  info[u'approx_GenFiltEff']
-                    if xsec == u'NULL' or not info.has_key(u'approx_GenFiltEff'):
+
+                    if config.sample=='lZjetsLO':
+                        effic = 1
+
+                    if ((xsec == u'NULL' or not info.has_key(u'approx_GenFiltEff')) and not(config.sample=='lZjetsLO')):
                         xsec,effic = genParamsFromParents(client,dsname,datasetNumber)
 
                     if not xsec: xsec = 0

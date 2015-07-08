@@ -348,6 +348,9 @@ if __name__ == '__main__':
         AllSamples.append(QCD)
         AllSamples.append(GAMMAMassiveCB)
 
+    if config.doZLO==True:
+        ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
+        AllSamples.append(ZLO)
 
     if config.doData==True:
         # Run 1 streams
