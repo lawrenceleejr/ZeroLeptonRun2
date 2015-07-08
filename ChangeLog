@@ -1,4 +1,8 @@
 08-Jul-2015 Geraldine Conti
+	* FilterUpdateMerge.py : add option for LO Z+Jets
+	* makeDatasetList.py   : fixed filter efficiencies to 1 for these samples
+	* makeDatasetList.py   : added suffix in .txt file name
+	* mc15_13TeV_MCSampleList.py : added LO Z+jets samples as alternate samples
 	* Cleaning of some photon isolation variables
 
 07-Jul-2015 Laurent Duflot
