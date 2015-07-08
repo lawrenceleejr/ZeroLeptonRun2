@@ -409,6 +409,10 @@ void NTCRYVars::Reset()
   origmetPhi = 0.f;
   phTopoetcone20.clear();
   phPtvarcone20.clear(); 
+  phPtcone20.clear();
+  phTopoetcone40.clear();
+  phPtvarcone40.clear();
+  phPtcone40.clear();
   //phisEMTight.clear();
   phLoose.clear();
   phTight.clear();
@@ -423,6 +427,10 @@ NTCRYVarsRead::NTCRYVarsRead(): ntv()
   p_phSignal = &ntv.phSignal;
   p_phTopoetcone20 = &ntv.phTopoetcone20;
   p_phPtvarcone20 = &ntv.phPtvarcone20;
+  p_phPtcone20 = &ntv.phPtcone20;
+  p_phTopoetcone40 = &ntv.phTopoetcone40;
+  p_phPtvarcone40 = &ntv.phPtvarcone40;
+  p_phPtcone40 = &ntv.phPtcone40;
   //p_phisEMTight  = &ntv.phisEMTight;
   p_phLoose = &ntv.phLoose;
   p_phTight = &ntv.phTight;
@@ -437,6 +445,10 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   tree->Branch("phSignal",&(cryntv.phSignal));
   tree->Branch("phTopoetcone20",&(cryntv.phTopoetcone20));
   tree->Branch("phPtvarcone20",&(cryntv.phPtvarcone20));
+  tree->Branch("phPtcone20",&(cryntv.phPtcone20));
+  tree->Branch("phTopoetcone40",&(cryntv.phTopoetcone40));
+  tree->Branch("phPtvarcone40",&(cryntv.phPtvarcone40));
+  tree->Branch("phPtcone40",&(cryntv.phPtcone40));
   //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
   tree->Branch("phLoose",&(cryntv.phLoose));
   tree->Branch("phTight",&(cryntv.phTight));
@@ -451,6 +463,10 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
   tree->GetBranch("phTopoetcone20")->SetAddress(&p_phTopoetcone20);
   tree->GetBranch("phPtvarcone20")->SetAddress(&p_phPtvarcone20);
+  tree->GetBranch("phPtcone20")->SetAddress(&p_phPtcone20);
+  tree->GetBranch("phTopoetcone40")->SetAddress(&p_phTopoetcone40);
+  tree->GetBranch("phPtvarcone40")->SetAddress(&p_phPtvarcone40);
+  tree->GetBranch("phPtcone40")->SetAddress(&p_phPtcone40);
   //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
   tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
   tree->GetBranch("phTight")->SetAddress(&p_phTight);

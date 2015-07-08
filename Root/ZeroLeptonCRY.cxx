@@ -250,6 +250,11 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   std::vector<bool> vloose ;
   std::vector<float> vtopoetcone20;
   std::vector<float> vptvarcone20;
+  std::vector<float> vptcone20;
+  std::vector<float> vtopoetcone40;
+  std::vector<float> vptvarcone40;
+  std::vector<float> vptcone40;
+
   //std::vector<int> visEMTight;
   std::vector<float> vpt;
   std::vector<float> veta;
@@ -262,10 +267,24 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       // Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx
       float topoetcone20=0;
       float ptvarcone20=0;
+      float ptcone20=0;
+      float topoetcone40=0;
+      float ptvarcone40=0;
+      float ptcone40=0;
+
       (*phit)->isolationValue(topoetcone20,xAOD::Iso::topoetcone20);
       (*phit)->isolationValue(ptvarcone20,xAOD::Iso::ptvarcone20);
+      (*phit)->isolationValue(ptcone20,xAOD::Iso::ptcone20);
+      (*phit)->isolationValue(topoetcone40,xAOD::Iso::topoetcone40);
+      (*phit)->isolationValue(ptvarcone40,xAOD::Iso::ptvarcone40);
+      (*phit)->isolationValue(ptcone40,xAOD::Iso::ptcone40);
+
       vptvarcone20.push_back(ptvarcone20);
       vtopoetcone20.push_back(topoetcone20);
+      vptcone20.push_back(ptcone20);
+      vptvarcone40.push_back(ptvarcone40);
+      vtopoetcone40.push_back(topoetcone40);
+      vptcone40.push_back(ptcone40);
       //
       vpt.push_back((*phit)->pt());
       veta.push_back((*phit)->eta());
@@ -301,6 +320,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     }
     for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
       allphotons.push_back(PhotonProxy((*phittruth)->p4()));
+
       if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
 	leadPhPt = (*phittruth)->pt();
 	leadPhtruth = phittruth;
@@ -529,6 +549,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
     FillNTCRYVars(m_cryntv,allphotons,*missingET,vtight,vloose,vtopoetcone20,vptvarcone20,
 		  //visEMTight,
+		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
 		  vpt,veta);
       
     if(! m_IsTruth){
@@ -553,8 +574,9 @@ void ZeroLeptonCRY::finish()
 void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
 				  const std::vector<PhotonProxy>& photons,
 				  TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose,
-				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,
+				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,std::vector<float>& vptcone20,
 				  //std::vector<int>& visEMTight,
+				  std::vector<float>& vtopoetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,
 				  std::vector<float>& vpt,std::vector<float>& veta)
 {
   cryntv.Reset();
@@ -571,6 +593,11 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
 	  cryntv.phTight.push_back(vtight.at(n));
 	  cryntv.phTopoetcone20.push_back(vtopoetcone20.at(n));
 	  cryntv.phPtvarcone20.push_back(vptvarcone20.at(n));
+	  cryntv.phPtcone20.push_back(vptcone20.at(n));
+	  cryntv.phTopoetcone40.push_back(vtopoetcone40.at(n));
+          cryntv.phPtvarcone40.push_back(vptvarcone40.at(n));
+          cryntv.phPtcone40.push_back(vptcone40.at(n));
+
 	  //cryntv.phisEMTight.push_back(visEMTight.at(n));
 	}
       }
