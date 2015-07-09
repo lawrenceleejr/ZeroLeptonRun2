@@ -1,3 +1,7 @@
+09-Jul-2015 Geraldine Conti
+	* commented out trigger for truth code 
+	* added lines needed to run on truth signal in truth config file
+	
 09-Jul-2015 Marija Vranjes Milosavljevic
 	* ZeroLeptonSR.cxx, ZeroLeptonCRWT.cxx, ZeroLeptonCRY.cxx, ZeroLeptonCRZ.cxx, BuildSUSYObjects.cxx: adding trigger
 	selections for EPS note
