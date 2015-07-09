@@ -201,7 +201,8 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection
-  // FIXME : no trigger information in xAOD yet 
+  
+  if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
@@ -330,7 +331,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
       (good_jets[4].Pt() > m_cutVal.m_cutJetPt4)) inSR5 = true;
   if (inSR5 && (good_jets.size() > 5) &&
       (good_jets[5].Pt() > m_cutVal.m_cutJetPt5)) inSR6 = true;
-  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
+ // if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
   // Calculate variables for ntuple -----------------------------------------

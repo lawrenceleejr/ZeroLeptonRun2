@@ -503,7 +503,11 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_mu40",
     "HLT_mu50",
     "HLT_g120_loose",
-    "HLT_g120_lhloose"
+    "HLT_g120_lhloose",
+    "HLT_mu18",
+    "HLT_e17_lhloose_L1EM15",
+    "HLT_e17_loose_L1EM15",
+    "HLT_mu14_iloose"    
   };
 
   const xAOD::EventInfo* eventInfo = 0;

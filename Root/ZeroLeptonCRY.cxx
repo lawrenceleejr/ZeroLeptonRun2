@@ -205,8 +205,9 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // FIXME : to be implemented ... not in xAOD yet
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
-  // Trigger selection
-  // FIXME : no trigger information in xAOD yet 
+  // Trigger selection 
+  
+  if( (!(int)eventInfo->auxdata<char>("HLT_g120_loose")==1) || (!(int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed

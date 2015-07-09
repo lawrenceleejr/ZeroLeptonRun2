@@ -225,8 +225,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   // FIXME : to be implemented ... not in xAOD yet
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
-  // Trigger selection
-  // FIXME : implement trigger selection 
+  // Trigger selection 
   // example of how to access trigger pass/not pass
   /*
   out() << " HLT_j80_xe80 " << (int)eventInfo->auxdata<char>("HLT_j80_xe80") <<
@@ -237,6 +236,15 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     " HLT_e28_tight_iloose " << (int)eventInfo->auxdata<char>("HLT_e28_tight_iloose") <<
     std::endl;
   */
+
+
+
+  bool passEltrigger=false;
+  bool passMutrigger=false;
+  if((int)eventInfo->auxdata<char>("HLT_e17_lhloose_L1EM15")==1 || (int)eventInfo->auxdata<char>("HLT_e17_loose_L1EM15")==1) passEltrigger = true;
+  if((int)eventInfo->auxdata<char>("HLT_mu14_iloose")==1 || (int)eventInfo->auxdata<char>("HLT_mu18")==1) passMutrigger = true; 
+  if( !(passEltrigger || passMutrigger) ) return true; 
+
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
@@ -455,7 +463,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       (good_jets[4].Pt() > m_cutVal.m_cutJetPt4)) inSR5 = true;
   if (inSR5 && (good_jets.size() > 5) &&
       (good_jets[5].Pt() > m_cutVal.m_cutJetPt5)) inSR6 = true;
-  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
+//  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
   // Calculate variables for ntuple -----------------------------------------
