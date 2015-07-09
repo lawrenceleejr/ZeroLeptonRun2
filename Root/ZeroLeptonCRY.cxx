@@ -207,7 +207,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // Trigger selection 
   if(! m_IsTruth){
-    if( (!(int)eventInfo->auxdata<char>("HLT_g120_loose")==1) || (!(int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
+    if( !((int)eventInfo->auxdata<char>("HLT_g120_loose")==1) && !((int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
   }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
