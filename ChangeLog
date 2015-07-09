@@ -1,6 +1,7 @@
 09-Jul-2015 Marija Vranjes Milosavljevic
 	* ZeroLeptonSR.cxx, ZeroLeptonCRWT.cxx, ZeroLeptonCRY.cxx, ZeroLeptonCRZ.cxx, BuildSUSYObjects.cxx: adding trigger
 	selections for EPS note
+	* adding ZeroLeptonRun2/data/mc15_13TeV_forEPS.ds with MC datasets list for EPS
 
 
 08-Jul-2015 Laurent Duflot
