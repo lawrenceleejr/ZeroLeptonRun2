@@ -201,8 +201,9 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection
-  
-  if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+  if(! m_IsTruth){
+    if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+  }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed

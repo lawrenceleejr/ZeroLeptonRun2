@@ -241,10 +241,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   bool passEltrigger=false;
   bool passMutrigger=false;
-  if((int)eventInfo->auxdata<char>("HLT_e17_lhloose_L1EM15")==1 || (int)eventInfo->auxdata<char>("HLT_e17_loose_L1EM15")==1) passEltrigger = true;
-  if((int)eventInfo->auxdata<char>("HLT_mu14_iloose")==1 || (int)eventInfo->auxdata<char>("HLT_mu18")==1) passMutrigger = true; 
-  if( !(passEltrigger || passMutrigger) ) return true; 
-
+  if(! m_IsTruth){
+    if((int)eventInfo->auxdata<char>("HLT_e17_lhloose_L1EM15")==1 || (int)eventInfo->auxdata<char>("HLT_e17_loose_L1EM15")==1) passEltrigger = true;
+    if((int)eventInfo->auxdata<char>("HLT_mu14_iloose")==1 || (int)eventInfo->auxdata<char>("HLT_mu18")==1) passMutrigger = true; 
+    if( !(passEltrigger || passMutrigger) ) return true; 
+  }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
