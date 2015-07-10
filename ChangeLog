@@ -1,3 +1,8 @@
+10-Jul-2015 Geraldine Conti
+	* BuildSUSYObjects.cxx : isTrigPassed -> IsTrigPassed
+	* ZeroLeptonSystVariations.cxx : commented out #include "PATInterfaces/SystematicList.h"
+	* INSTALL : use Base,2.3.18 (no SUSY 2.3.18 available yet)
+	
 09-Jul-2015 Geraldine Conti
 	* commented out trigger for truth code
 	* added lines needed to run on truth signal in truth config file
