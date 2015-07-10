@@ -515,7 +515,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
 
   std::bitset<32> triggers;
   for ( size_t i = 0; i < trigNames.size(); i++ ) {
-    char pass =  m_SUSYObjTool->isTrigPassed(trigNames[i]);
+    char pass =  m_SUSYObjTool->IsTrigPassed(trigNames[i]);
     triggers[i] = pass;
     eventInfo->auxdecor<char>(trigNames[i]) = pass;
   }

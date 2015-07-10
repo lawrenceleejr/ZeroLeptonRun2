@@ -6,7 +6,7 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
 #include "xAODRootAccess/TStore.h"
-#include "PATInterfaces/SystematicList.h"
+//#include "PATInterfaces/SystematicList.h"
 #include "PATInterfaces/SystematicVariation.h"
 #include "PATInterfaces/SystematicRegistry.h"
 #include "PATInterfaces/SystematicCode.h"
