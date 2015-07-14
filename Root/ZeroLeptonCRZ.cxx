@@ -341,16 +341,16 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
        ((!m_IsTruth && isolated_baseline_electrons.size()==0) || (m_IsTruth && isolated_baseline_electrons_truth.size()==0)) ) {
     if(!m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons[0].muon()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_muons[0].muon()->charge())*13);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons[1].muon()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_muons[1].muon()->charge())*13);
     }
     
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons_truth[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons_truth[0].muontruth()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_muons_truth[0].muontruth()->charge())*13);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons_truth[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons_truth[1].muontruth()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_muons_truth[1].muontruth()->charge())*13);
     } 
     
   } 
@@ -359,16 +359,16 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 	     ((!m_IsTruth && isolated_baseline_muons.size()==0) || (m_IsTruth && isolated_baseline_muons_truth.size()==0)) ) {
     if(!m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons[0].electron()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_electrons[0].electron()->charge())*11);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons[1].electron()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_electrons[1].electron()->charge())*11);
     }
     
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons_truth[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[0].eltruth()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[0].eltruth()->charge())*11);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons_truth[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[1].eltruth()->charge()));
+      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[1].eltruth()->charge())*11);
     }
     
   }

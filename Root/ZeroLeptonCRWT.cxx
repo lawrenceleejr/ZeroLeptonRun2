@@ -371,11 +371,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     // to add for truth ? 
     if(!m_IsTruth){
       leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[0])));
-      leptonCharge = (int)(isolated_signal_muons[0].muon()->charge());
+      leptonCharge = (int)(isolated_signal_muons[0].muon()->charge())*13;
     }
     if(m_IsTruth){
       leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[0])));
-      leptonCharge = (int)(isolated_signal_muons_truth[0].muontruth()->charge());
+      leptonCharge = (int)(isolated_signal_muons_truth[0].muontruth()->charge())*13;
     }
   } 
   else if (  m_isElectronChannel && 
@@ -387,11 +387,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     oneLepton = true;
     if(!m_IsTruth){
       leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0])));
-      leptonCharge = (int)(isolated_signal_electrons[0].electron()->charge());
+      leptonCharge = (int)(isolated_signal_electrons[0].electron()->charge())*11;
     }
     if(m_IsTruth){
       leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[0])));
-      leptonCharge = (int)(isolated_signal_electrons_truth[0].eltruth()->charge());
+      leptonCharge = (int)(isolated_signal_electrons_truth[0].eltruth()->charge())*11;
     }
   }
   if ( !oneLepton ) return true;
