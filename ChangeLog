@@ -4,7 +4,7 @@
 	* reduced cuts in cutfile8TeV.dat for latest production (to be changed back after the EPS rush)
 	M       python/mc15_13TeV_MCSampleList.py
 	M       data/cutfile8TeV.dat
-	M       data/mc15_13TeV_forEPS.ds
+	M       data/mc15_13TeV_forEPS_p2372.ds
 
 10-Jul-2015 Geraldine Conti
 	* update to SUSYTools-00-06-15
