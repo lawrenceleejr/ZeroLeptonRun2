@@ -1,3 +1,6 @@
+14-Jul-2015 Geraldine Conti
+	* PhysObjProxyFiller.cxx: added b-jet requirements (pT>40, |eta|<2.5)
+
 14-Jul-2015 Marija Vranjes Milosavljevic
 	* adding p2372 MC list used for EPS results
 	* added alternative lWjetsAlt and lZjetsAlt to the mc15_13TeV_MCSampleList.py
