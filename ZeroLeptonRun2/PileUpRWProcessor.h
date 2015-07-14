@@ -19,6 +19,7 @@ public:
   PileUpRWProcessor(const char *name);
   bool processEvent(xAOD::TEvent& event);
 private:
+  bool m_noReweighting;
   std::auto_ptr<CP::PileupReweightingTool> m_PileupTool_CENTRAL;
   std::auto_ptr<CP::PileupReweightingTool> m_PileupTool_UP;
   std::auto_ptr<CP::PileupReweightingTool> m_PileupTool_DOWN;
