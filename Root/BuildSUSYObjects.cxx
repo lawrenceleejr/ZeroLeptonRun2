@@ -154,6 +154,7 @@ void BuildSUSYObjects::initSUSYTools()
 
 bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 {
+
   // SUSYTools initialisation must be delayed until we have a TEvent associated
   // with a file due to xAODConfigTool 
   if ( !m_SUSYObjTool ) initSUSYTools();
@@ -257,6 +258,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     xAOD::MuonContainer::iterator mu_itr = (susymuons.first)->begin();
     xAOD::MuonContainer::iterator mu_end = (susymuons.first)->end();
     if ( !xAOD::setOriginalObjectLink(*muons, *susymuons.first) ) throw std::runtime_error("Could not set original links in Muon container copy");
+
     for( ; mu_itr != mu_end; ++mu_itr ) {
       if ( ! m_SUSYObjTool->FillMuon(**mu_itr).isSuccess() ) throw std::runtime_error("Error in FillMuon");
       m_SUSYObjTool->IsSignalMuon(**mu_itr);
@@ -273,14 +275,21 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       }
       //out() << " Muon " << (*mu_itr)->pt() << " " << (*mu_itr)->eta()
       //    << " " << (*mu_itr)->phi() << std::endl;
-    }
     
+      float muSF = 0;
+      muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*susymuons.first);
+      //float testSF = (float) m_SUSYObjTool->GetSignalMuonSF(**mu_itr);
+      //std::cout << "MUON WEIGHT : " << muSF << "  " << (*mu_itr)->pt() << "  " << testSF << std::endl;
+      (*mu_itr)->auxdecor<float>("sf") = muSF ; 
+    }
+
     if ( ! store->record(susymuons.first,"SUSYMuons"+m_suffix).isSuccess() ) {
       throw std::runtime_error("Could not store SUSYMuons"+m_suffix);
     }
     if ( ! store->record(susymuons.second,"SUSYMuons"+m_suffix+"Aux.").isSuccess()) {
       throw std::runtime_error("Could not store SUSYMuons"+m_suffix+"Aux.");
     }
+
   }
 
   // Electrons
@@ -296,7 +305,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not retrieve ElectronContainer with key ElectronCollection");
     }
     susyelectrons = xAOD::shallowCopyContainer(*electrons);
-    
+
     // calibrate and fill properties
     xAOD::ElectronContainer::iterator el_itr = susyelectrons.first->begin();
     xAOD::ElectronContainer::iterator el_end = susyelectrons.first->end();
@@ -304,6 +313,12 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     for( ; el_itr != el_end; ++el_itr ) {
       if ( ! m_SUSYObjTool->FillElectron(**el_itr,10000.,2.47).isSuccess() ) throw std::runtime_error("Error in FillElectron");
       m_SUSYObjTool->IsSignalElectron(**el_itr);
+
+      float elSF=0;
+      elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*susyelectrons.first);
+      (*el_itr)->auxdecor<float>("sf") = elSF ; 
+      //float testSF = (float) m_SUSYObjTool->GetSignalElecSF(**el_itr);
+      //std::cout << "ELECTRON WEIGHT : " << elSF << "  " << (*el_itr)->pt() << "  " << testSF << std::endl;
     }
 
     if ( ! store->record(susyelectrons.first,"SUSYElectrons"+m_suffix).isSuccess() ) {

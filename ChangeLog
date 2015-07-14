@@ -1,6 +1,7 @@
 14-Jul-2015 Geraldine Conti
 	* PhysObjProxyFiller.cxx: added b-jet requirements (pT>40, |eta|<2.5)
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : add leptonID in lep1sign/lep2sign variables
+	* Added lepton SF as decoration to the muon/electron
 	
 14-Jul-2015 Marija Vranjes Milosavljevic
 	* adding p2372 MC list used for EPS results
