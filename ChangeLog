@@ -1,9 +1,17 @@
+14-Jul-2015 Marija Vranjes Milosavljevic
+	* adding p2372 MC list used for EPS results
+	* added alternative lWjetsAlt and lZjetsAlt to the mc15_13TeV_MCSampleList.py
+	* reduced cuts in cutfile8TeV.dat for latest production (to be changed back after the EPS rush)
+	M       python/mc15_13TeV_MCSampleList.py
+	M       data/cutfile8TeV.dat
+	M       data/mc15_13TeV_forEPS.ds
+
 10-Jul-2015 Geraldine Conti
 	* update to SUSYTools-00-06-15
 	* BuildSUSYObjects.cxx : isTrigPassed -> IsTrigPassed
 	* ZeroLeptonSystVariations.cxx : commented out #include "PATInterfaces/SystematicList.h"
 	* Trigger : updated for CRWT and CRZ (following Yu's recommendations)
-	
+
 09-Jul-2015 Geraldine Conti
 	* commented out trigger for truth code
 	* added lines needed to run on truth signal in truth config file

@@ -16,6 +16,7 @@ lWjets   = range(361300,361323+1) # Sherpa Wenu missing pt<70
 lWjets  += range(361324,361347+1) # Sherpa Wmunu  missing pt<70 
 lWjets  += range(361348,361371+1) # Sherpa Wtaunu
 
+
 lttbar   = [410000] # PowhegPythiaEvtGen_P2012_ttbar_hdamp172p5_nonallhad
 lsinglet = [410011, 410012, # PowhegPythia t-channel
             410013, 410014, 410015, 410016, # PowhegPythia Wt
@@ -45,6 +46,10 @@ lbaseline = lZjets + lWjets + lYjets + lTop + lQCDMC + lDiBoson
 
 ##[187150,187158+1]+[187160,187168+1]+[187170,187178+1]+[187180,187188+1]+[206618,206620+1] # diboson PowhegPythia
 
+lZjetsAlt = [361106,361107,361108] # PowhegPythia8 samples
+lZjetsAlt   += range(361444,361467+1) # Sherpa Znunu
+
+lWjetsAlt   = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 samples
 
 lalt = lZjetsLO #[]
 

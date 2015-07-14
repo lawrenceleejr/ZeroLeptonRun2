@@ -1,13 +1,13 @@
 # Signal Region Definition 
-cutEtMiss=130000.
-cutEtMiss1Jet=300000.
+cutEtMiss=50000.
+cutEtMiss1Jet=100000.
 
-cutJetPt0=100000.
-cutJetPt1=60000.
-cutJetPt2=60000.
-cutJetPt3=60000.
-cutJetPt4=60000.
-cutJetPt5=60000.
+cutJetPt0=60000.
+cutJetPt1=40000.
+cutJetPt2=40000.
+cutJetPt3=40000.
+cutJetPt4=40000.
+cutJetPt5=40000.
 cutJetPtWRes=40000.
 
 cutDeltaPhi=0.4
