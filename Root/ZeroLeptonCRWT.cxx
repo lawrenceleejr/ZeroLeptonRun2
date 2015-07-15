@@ -395,7 +395,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     }
   }
   if ( !oneLepton ) return true;
-  m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
 
   // Apply Lepton scale factors
   float lepSF=0;
@@ -410,6 +409,8 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       thism.getSF(lepSF);
     }
   weight *= lepSF ; 
+
+  m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
   
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;

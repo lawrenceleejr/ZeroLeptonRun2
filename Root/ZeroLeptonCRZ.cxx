@@ -375,6 +375,19 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if ( leptonTLVs.empty() ) return true;
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
+
+  float lepSF[2];
+  if(m_isElectronChannel){
+    isolated_signal_electrons[0].getSF(lepSF[0]);
+    isolated_signal_electrons[1].getSF(lepSF[1]);
+  }
+  if(m_isMuonChannel){
+    isolated_signal_muons[0].getSF(lepSF[0]);
+    isolated_signal_muons[1].getSF(lepSF[1]);
+  }
+  weight *= lepSF[0] ;
+  weight *= lepSF[1] ;
+
   m_counter->increment(weight,incr++,"2 OS Baseline Leptons",trueTopo);
 
   // leading lepton is signal lepton and trigger matched
@@ -398,21 +411,6 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   double InvMassLepPair = dileptonTLV.M();
   if (InvMassLepPair < 66000 || InvMassLepPair > 116000) return true;
   m_counter->increment(weight,incr++,"M_ll Cut",trueTopo);
-
-
-  // Apply Lepton scale factors
-  float lepSF[2]; 
-  if(m_isElectronChannel){
-    isolated_signal_electrons[0].getSF(lepSF[0]); 
-    isolated_signal_electrons[1].getSF(lepSF[1]);
-  }
-  if(m_isMuonChannel){
-    isolated_signal_muons[0].getSF(lepSF[0]);
-    isolated_signal_muons[1].getSF(lepSF[1]);
-  }
-
-  weight *= lepSF[0] ;
-  weight *= lepSF[1] ;
 
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;
