@@ -397,17 +397,19 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if ( !oneLepton ) return true;
 
   // Apply Lepton scale factors
-  float lepSF=0;
-  for ( size_t e0=0; e0<isolated_signal_electrons.size(); e0++)
-    {
-      const ElectronProxy& thise = isolated_signal_electrons[e0];
-      thise.getSF(lepSF);
-    }
-  for ( size_t m0=0; m0<isolated_signal_muons.size(); m0++)
-    {
-      const MuonProxy& thism = isolated_signal_muons[m0];
-      thism.getSF(lepSF);
-    }
+  float lepSF=1;
+  if ( !m_IsData ) {
+    for ( size_t e0=0; e0<isolated_signal_electrons.size(); e0++)
+      {
+	const ElectronProxy& thise = isolated_signal_electrons[e0];
+	thise.getSF(lepSF);
+      }
+    for ( size_t m0=0; m0<isolated_signal_muons.size(); m0++)
+      {
+	const MuonProxy& thism = isolated_signal_muons[m0];
+	thism.getSF(lepSF);
+      }
+  }
   weight *= lepSF ; 
 
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);

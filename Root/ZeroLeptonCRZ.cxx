@@ -377,17 +377,21 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
 
   float lepSF[2];
-  if(m_isElectronChannel){
-    isolated_signal_electrons[0].getSF(lepSF[0]);
-    isolated_signal_electrons[1].getSF(lepSF[1]);
-  }
-  if(m_isMuonChannel){
-    isolated_signal_muons[0].getSF(lepSF[0]);
-    isolated_signal_muons[1].getSF(lepSF[1]);
+  lepSF[0] = 1.;
+  lepSF[1] = 1.;
+  if ( !m_IsData ) {
+    if(m_isElectronChannel){
+      isolated_signal_electrons[0].getSF(lepSF[0]);
+      isolated_signal_electrons[1].getSF(lepSF[1]);
+    }
+    if(m_isMuonChannel){
+      isolated_signal_muons[0].getSF(lepSF[0]);
+      isolated_signal_muons[1].getSF(lepSF[1]);
+    }
   }
   weight *= lepSF[0] ;
   weight *= lepSF[1] ;
-
+  
   m_counter->increment(weight,incr++,"2 OS Baseline Leptons",trueTopo);
 
   // leading lepton is signal lepton and trigger matched
