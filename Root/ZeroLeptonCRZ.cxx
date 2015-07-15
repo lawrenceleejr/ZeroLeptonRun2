@@ -337,64 +337,61 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   std::vector<TLorentzVector> leptonTLVs;
   std::vector<int> leptonCharges;
   if ( m_isMuonChannel && 
-       ((!m_IsTruth && isolated_baseline_muons.size()==2) || (m_IsTruth && isolated_baseline_muons_truth.size()==2)) &&
+       ((!m_IsTruth && isolated_signal_muons.size()==2) || (m_IsTruth && isolated_signal_muons_truth.size()==2)) &&
        ((!m_IsTruth && isolated_baseline_electrons.size()==0) || (m_IsTruth && isolated_baseline_electrons_truth.size()==0)) ) {
     if(!m_IsTruth){
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons[0].muon()->charge())*13);
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons[1].muon()->charge())*13);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[0]))));
+      leptonCharges.push_back((int)(isolated_signal_muons[0].muon()->charge())*13);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[1]))));
+      leptonCharges.push_back((int)(isolated_signal_muons[1].muon()->charge())*13);
     }
     
     if(m_IsTruth){
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons_truth[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons_truth[0].muontruth()->charge())*13);
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons_truth[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_muons_truth[1].muontruth()->charge())*13);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[0]))));
+      leptonCharges.push_back((int)(isolated_signal_muons_truth[0].muontruth()->charge())*13);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[1]))));
+      leptonCharges.push_back((int)(isolated_signal_muons_truth[1].muontruth()->charge())*13);
     } 
     
   } 
   else if (  m_isElectronChannel && 
-             ((!m_IsTruth && isolated_baseline_electrons.size()==2) || (m_IsTruth && isolated_baseline_electrons_truth.size()==2)) && 
+             ((!m_IsTruth && isolated_signal_electrons.size()==2) || (m_IsTruth && isolated_signal_electrons_truth.size()==2)) && 
 	     ((!m_IsTruth && isolated_baseline_muons.size()==0) || (m_IsTruth && isolated_baseline_muons_truth.size()==0)) ) {
     if(!m_IsTruth){
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons[0].electron()->charge())*11);
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons[1].electron()->charge())*11);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0]))));
+      leptonCharges.push_back((int)(isolated_signal_electrons[0].electron()->charge())*11);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[1]))));
+      leptonCharges.push_back((int)(isolated_signal_electrons[1].electron()->charge())*11);
     }
     
     if(m_IsTruth){
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons_truth[0]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[0].eltruth()->charge())*11);
-      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons_truth[1]))));
-      leptonCharges.push_back((int)(isolated_baseline_electrons_truth[1].eltruth()->charge())*11);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[0]))));
+      leptonCharges.push_back((int)(isolated_signal_electrons_truth[0].eltruth()->charge())*11);
+      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[1]))));
+      leptonCharges.push_back((int)(isolated_signal_electrons_truth[1].eltruth()->charge())*11);
     }
     
   }
   if ( leptonTLVs.empty() ) return true;
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
-  
-  if((m_isElectronChannel && isolated_signal_electrons.size()!=2) || (m_isMuonChannel && isolated_signal_muons.size()!=2)) return true;
-  
+
   float lepSF[2];
   lepSF[0] = 1.;
   lepSF[1] = 1.;
   if ( !m_IsData ) {
-    if(m_isElectronChannel){
+    if(!isolated_signal_electrons.empty()){
       isolated_signal_electrons[0].getSF(lepSF[0]);
       isolated_signal_electrons[1].getSF(lepSF[1]);
     }
-    if(m_isMuonChannel){
+    if(!isolated_signal_muons.empty()){
       isolated_signal_muons[0].getSF(lepSF[0]);
       isolated_signal_muons[1].getSF(lepSF[1]);
     }
   }
-  weight *= lepSF[0] ;
-  weight *= lepSF[1] ;
-  
-  m_counter->increment(weight,incr++,"2 OS Baseline Leptons",trueTopo);
+  weight *= lepSF[0];
+  weight *= lepSF[1];
+  m_counter->increment(weight,incr++,"2 OS Signal Leptons",trueTopo);
 
   // leading lepton is signal lepton and trigger matched
   /*
