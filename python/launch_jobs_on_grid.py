@@ -182,13 +182,18 @@ def main():
             sys.exit(1)
 
         # test special derivation tags
-        tag = inDS.split(".")[-1]
-        if 'p1872' in tag:
-            scriptcmd += " Global.DerivationTag: p1872 "
-        elif 'p2353' in tag:
-            scriptcmd += " Global.DerivationTag: p2353 "
-        else:
-            scriptcmd += " Global.DerivationTag: NA "
+        if not 'Global.DerivationTag' in config.runopts:
+            tag = inDS.split(".")[-1]
+            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377' ]
+            found = False
+            for t in knowntags:
+                if t in tag:
+                    scriptcmd += " Global.DerivationTag: "+t
+                    found = True
+                    break
+                pass
+            if not found:
+                scriptcmd += " Global.DerivationTag: NA "
 
         # signal events
         if isSignal:

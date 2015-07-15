@@ -1,17 +1,25 @@
+14-Jul-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: automatically recognize all supported
+	derivations from sample name
+
+
 15-Jul-2015 Geraldine Conti
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : apply lepSF to total weight
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : changed HLT_mu40 to HLT_mu50
 	* ZeroLeptonCRY.cxx : added lines for photon SF (still commented out - needs fixing)
-	* ZeroLeptonCRZ.cxx : ask for two isolated signal leptons in CRZ 
-	
-08-Jul-2015 Laurent Duflot
+	* ZeroLeptonCRZ.cxx : ask for two isolated signal leptons in CRZ
+
+
+14-Jul-2015 Laurent Duflot
 	* PileUpRWProcessor, config file, data/: update pileup reweighting
 	to apply PRW to 50ns mc15
+
 
 14-Jul-2015 Geraldine Conti
 	* PhysObjProxyFiller.cxx: added b-jet requirements (pT>40, |eta|<2.5)
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : add leptonID in lep1sign/lep2sign variables
 	* Added lepton SF as decoration to the muon/electron
+
 
 14-Jul-2015 Marija Vranjes Milosavljevic
 	* adding p2372 MC list used for EPS results
