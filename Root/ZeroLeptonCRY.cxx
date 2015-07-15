@@ -393,6 +393,19 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // at least one photon
   if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
+
+  // photon scale factor
+  float phSF=1;
+  if ( !m_IsData ) {
+    for ( size_t p0=0; p0<allphotons.size(); p0++)
+      {
+        const PhotonProxy& thisp = allphotons[p0];
+        thisp.getSF(phSF);
+      }
+  }
+  weight *= phSF ;
+
+
   m_counter->increment(weight,incr++,">=1 photon",trueTopo);
 
  
