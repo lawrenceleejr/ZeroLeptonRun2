@@ -2,6 +2,7 @@
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : apply lepSF to total weight
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : changed HLT_mu40 to HLT_mu50
 	* ZeroLeptonCRY.cxx : added lines for photon SF (still commented out - needs fixing)
+	* ZeroLeptonCRZ.cxx : ask for two isolated signal leptons in CRZ 
 	
 08-Jul-2015 Laurent Duflot
 	* PileUpRWProcessor, config file, data/: update pileup reweighting
