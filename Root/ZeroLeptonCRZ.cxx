@@ -375,7 +375,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if ( leptonTLVs.empty() ) return true;
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
-
+  
+  if((m_isElectronChannel && isolated_signal_electrons.size()!=2) || (m_isMuonChannel && isolated_signal_muons.size()!=2)) return true;
+  
   float lepSF[2];
   lepSF[0] = 1.;
   lepSF[1] = 1.;
