@@ -74,7 +74,7 @@ def parseCmdLine(args):
     parser = OptionParser()
     parser.add_option("--prefix", dest="prefix", help="Prefix to search datasets in AMI",default="mc15_13TeV") 
     parser.add_option("--whichMC15", dest="whichMC15", help="week1, 50ns or 25ns",default="") 
-    parser.add_option("--datatype", dest="datatype", help="datatype",default="%.merge.DAOD_SUSY1%") 
+    parser.add_option("--datatype", dest="datatype", help="datatype",default="%.merge.DAOD_SUSY1.%") 
     parser.add_option("--suffix", dest="suffix", help="Suffix appended to the output file name",default="") 
     parser.add_option("--tag", dest="tag", help="Production tag",default="_r6630_r6264_p2353") 
     parser.add_option("--server", dest="server", help="AMI server (main or replica)",default="main") 
