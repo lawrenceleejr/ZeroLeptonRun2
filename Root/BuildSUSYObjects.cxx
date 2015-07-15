@@ -492,7 +492,6 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_e28_tight_iloose",
     "HLT_e60_medium",
     "HLT_mu26_imedium",
-    "HLT_mu50",
     "HLT_j30_xe10_razor170",
     "HLT_xe70_tc_em",
     "HLT_xe70_tc_lcw",
