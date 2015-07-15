@@ -397,8 +397,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if ( !oneLepton ) return true;
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
 
-  // FIXME: Apply Lepton scale factors
-
+  // Apply Lepton scale factors
   float lepSF=0;
   for ( size_t e0=0; e0<isolated_signal_electrons.size(); e0++)
     {
@@ -410,6 +409,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       const MuonProxy& thism = isolated_signal_muons[m0];
       thism.getSF(lepSF);
     }
+  weight *= lepSF ; 
   
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;

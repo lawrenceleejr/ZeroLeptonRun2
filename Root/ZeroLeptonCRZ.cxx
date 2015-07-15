@@ -400,7 +400,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"M_ll Cut",trueTopo);
 
 
-  // FIXME: Apply Lepton scale factors
+  // Apply Lepton scale factors
   float lepSF[2]; 
   if(m_isElectronChannel){
     isolated_signal_electrons[0].getSF(lepSF[0]); 
@@ -410,6 +410,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     isolated_signal_muons[0].getSF(lepSF[0]);
     isolated_signal_muons[1].getSF(lepSF[1]);
   }
+
+  weight *= lepSF[0] ;
+  weight *= lepSF[1] ;
 
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;
