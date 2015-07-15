@@ -1,8 +1,10 @@
 14-Jul-2015 Laurent Duflot
 	* launch_jobs_on_grid.py: automatically recognize all supported
 	derivations from sample name
-	* ZeroLeptonCRZ.cxx : fix for two isolated leptons
-
+	* ZeroLeptonCRZ.cxx : fix for two isolated signal leptons
+	* makeDatasetList.py: make sure the default dataType matches only SUSY1 and not SUSY10
+	* mc15_13TeV_MCSampleList.py: add PowhegPythia8 W and Z samples as alternative samples
+	* data/*forEPS*: update list of samples for EPS
 
 15-Jul-2015 Geraldine Conti
 	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : apply lepSF to total weight

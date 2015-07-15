@@ -47,10 +47,9 @@ lbaseline = lZjets + lWjets + lYjets + lTop + lQCDMC + lDiBoson
 ##[187150,187158+1]+[187160,187168+1]+[187170,187178+1]+[187180,187188+1]+[206618,206620+1] # diboson PowhegPythia
 
 lZjetsAlt = [361106,361107,361108] # PowhegPythia8 samples
-lZjetsAlt   += range(361444,361467+1) # Sherpa Znunu
 
 lWjetsAlt   = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 samples
 
-lalt = lZjetsLO #[]
+lalt = lZjetsLO + lZjetsAlt + lWjetsAlt
 
 #print lbaseline
