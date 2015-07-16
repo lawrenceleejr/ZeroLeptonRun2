@@ -19,9 +19,10 @@
 
 JobBookeeping::JobBookeeping(const char *name)
   : cafe::Processor(name), m_counter(0), m_fileInfos(0), m_eventCounter(0),
-    m_derivationTag(INVALID_Derivation)
+    m_derivationTag(INVALID_Derivation),  m_IsData(false)
 {
   cafe::Config config(name);
+  m_IsData = config.get("IsData",false);
   m_derivationTag = derivationTagFromString(config.get("DerivationTag","xxxx"));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("JobBookeeping: invalid derivation tag specified"));
 
@@ -61,10 +62,13 @@ void JobBookeeping::inputFileOpened(TFile *file)
 {
   m_eventCounter = 0;
   m_openedFiles.push_back(file->GetName());
+  if ( m_IsData ) {
+    out() << " Derivation bookeeping temporarily switched off for real data due to bugs in event processing " << std::endl;
+    return;
+  }
   if ( m_derivationTag == p2353 || m_derivationTag == p2363 || 
        m_derivationTag == p2372 || m_derivationTag == p2375 ||
-       m_derivationTag == p2377 ) {
-
+       m_derivationTag == p2377 ) {    
 
     // extract information from CutBookkeeperContainer in Metadata
     // https://twiki.cern.ch/twiki/bin/view/AtlasProtected/AnalysisMetadata

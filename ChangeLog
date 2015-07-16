@@ -1,3 +1,7 @@
+16-Jul-2015 Laurent Duflot
+	* JobBookeeping, config files: don't do the derivation bookeeping
+	for data as there is a bug in data processing
+
 15-Jul-2015 Laurent Duflot
 	* launch_jobs_on_grid.py: automatically recognize all supported
 	derivations from sample name
