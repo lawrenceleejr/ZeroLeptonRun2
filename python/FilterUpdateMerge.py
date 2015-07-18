@@ -268,6 +268,10 @@ class Sample:
                 if not ds:
                     print 'Could not identify channel number for ',filename
                     sys.exit(1)
+                if xsecDB.rawxsect(ds) < 0.:
+                    print 'No cross section for sample',ds,'skip file',filename
+                    continue
+
                 newtname=self.getNewTreeName(inTree, ds)
                 if outTreeDict.has_key(newtname):
                     outTreeDict[newtname][2].append(filename)
@@ -348,9 +352,9 @@ if __name__ == '__main__':
         AllSamples.append(QCD)
         AllSamples.append(GAMMAMassiveCB)
 
-    if config.doZLO==True:
-        ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
-        AllSamples.append(ZLO)
+    #if config.doZLO==True:
+    #    ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
+    #    AllSamples.append(ZLO)
 
     if config.doData==True:
         # Run 1 streams

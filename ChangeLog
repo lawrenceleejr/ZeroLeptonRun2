@@ -1,3 +1,7 @@
+18-Jul-2015 Laurent Duflot
+	* FilterUpdateMerge.py, getMCInfo.py: skip samples with no cross-section available
+
+
 16-Jul-2015 Laurent Duflot
 	* JobBookeeping, config files: don't do the derivation bookeeping
 	for data as there is a bug in data processing

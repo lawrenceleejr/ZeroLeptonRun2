@@ -88,7 +88,11 @@ def getMCInfo(config,isSignal=False):
         # get dataset number from input file
         channel = int(file.split(".")[int(config.NB)])
         if len(lds) and not channel in lds: continue
-        
+
+        if ( xsecDB.rawxsect(channel) < 0. ): 
+            print 'No cross section for sample',channel,'skip file',file
+            continue
+
         # get weight from histogram
         fname = file
         if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
