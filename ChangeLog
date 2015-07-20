@@ -1,6 +1,7 @@
 20-Jul-2015 Laurent Duflot
 	* python: add scripts to validate production: running on all files,
 	look for duplicate events
+	* INSTALL: new version of cafe
 
 
 18-Jul-2015 Laurent Duflot
