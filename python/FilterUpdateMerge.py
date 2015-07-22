@@ -268,7 +268,7 @@ class Sample:
                 if not ds:
                     print 'Could not identify channel number for ',filename
                     sys.exit(1)
-                if not self.config.doData and xsecDB.rawxsect(ds) < 0.:
+                if not self.config.doData and not isSignal and xsecDB.rawxsect(ds) < 0.:
                     print 'No cross-section for sample',ds,'skip file',filename
                     continue
 

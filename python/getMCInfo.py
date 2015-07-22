@@ -89,7 +89,7 @@ def getMCInfo(config,isSignal=False):
         channel = int(file.split(".")[int(config.NB)])
         if len(lds) and not channel in lds: continue
 
-        if ( xsecDB.rawxsect(channel) < 0. ): 
+        if ( not isSignal and xsecDB.rawxsect(channel) < 0. ): 
             print 'No cross section for sample',channel,'skip file',file
             continue
 
@@ -105,11 +105,11 @@ def getMCInfo(config,isSignal=False):
             #     hsum[channel].Add(hist)
             nb_of_events=0
             weight=0
-            if config.isSignal==False:
+            if isSignal==False:
                 nb_of_events=hist.GetBinContent(1)
                 weight=hist.GetBinContent(2)
                 updateMap(myMap,xsecDB,channel,nb_of_events,weight)
-            else:                    
+            else:
                 for ybin in range(1,hist.GetNbinsY()+1):
                     nb_of_events=hist.GetBinContent(1,ybin)
                     weight=hist.GetBinContent(2,ybin)
@@ -123,7 +123,7 @@ def getMCInfo(config,isSignal=False):
 
     f=open(config.outputfilename,'w')
     ftex=open(config.outputfilename.split('.')[0]+'.tex','w')
-    if config.isSignal==False:
+    if isSignal==False:
         f.write("id/I:name/C:xsec/F:kfac/F:eff/F:relunc/F:sumw/F:stat/F\n")
         ftex.write(r"""\begin{table}
 \scriptsize
@@ -188,7 +188,7 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathca
 def parseCmdLine(args):
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--histname", dest="histname", help="histogram name containing stat and suw weight information",
+    parser.add_option("--histname", dest="histname", help="histogram name containing stat and sum weight information",
                       default="Counter_JobBookeeping_JobBookeeping")
     parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_13TeV.txt")
     parser.add_option("--input", dest="inputfilename", help="List of input filenames", default="")
@@ -227,4 +227,4 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    myMap=getMCInfo(config)
+    myMap=getMCInfo(config,config.isSignal)
