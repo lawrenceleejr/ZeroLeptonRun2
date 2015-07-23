@@ -31,8 +31,8 @@
 BuildTruthObjects::BuildTruthObjects(const char *name)
   : cafe::Processor(name),
     m_IsData(false),
-    m_jetkey(),
     m_PhotonInOR(false),
+    m_jetkey(),
     m_suffix()
 {
   cafe::Config config(name);

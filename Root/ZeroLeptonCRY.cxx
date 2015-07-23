@@ -602,7 +602,7 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
       cryntv.phPhi.push_back(phit->Phi());
       cryntv.phSignal.push_back(phit->isSignal());
       
-      for (Int_t n=0;n<vloose.size();n++){
+      for (size_t n=0;n<vloose.size();n++){
 	if(fabs(phit->Pt()-vpt.at(n))<0.001 && fabs(phit->Eta()-veta.at(n))<0.001){
 	  cryntv.phLoose.push_back(vloose.at(n));
 	  cryntv.phTight.push_back(vtight.at(n));

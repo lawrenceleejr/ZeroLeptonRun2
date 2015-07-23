@@ -1,5 +1,6 @@
 23-Jul-2015 Laurent Duflot
 	* ZeroLeptonSR, ZeroLeptonCRZ, ZeroLeptonCRWT: code cleanup
+	* PhysObjProxyUtils, ZeroLeptonCRY, BuildTruthObjects, FilterUpdateMerge: code cleanup
 
 
 22-Jul-2015 Laurent Duflot

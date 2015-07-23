@@ -539,10 +539,10 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
 
   // QCD rejection variables from 'background tree'
-  double DepthBKG = S_alt->GetFrameDepth(I_alt);
-  int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
-  double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
-  double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
+  //double DepthBKG = S_alt->GetFrameDepth(I_alt);
+  //int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
+  //double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
+  //double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
   double RpsibM = Psib_dot_METhat / (Psib_dot_METhat + MET_TV3.Mag());
   double RmsibM = 1. / ( MB2/(Mpar2-Msib2) + 1.);
   Psib.Boost(-boostPsibM);

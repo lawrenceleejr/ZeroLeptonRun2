@@ -74,7 +74,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( doCRYVars) inCRYVars.setAddresses(tree);
 
     // loop over entries
-    for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
+    for ( size_t j = 0; j < static_cast<size_t>(tree->GetEntries()); ++j ) {
       tree->GetEntry(j);
       outVars = inVars.ntv;
       outRTVars = inRTVars.RTntv;
