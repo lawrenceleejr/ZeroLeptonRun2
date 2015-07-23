@@ -1,3 +1,7 @@
+23-Jul-2015 Laurent Duflot
+	* ZeroLeptonSR, ZeroLeptonCRZ, ZeroLeptonCRWT: code cleanup
+
+
 22-Jul-2015 Laurent Duflot
 	* FilterUpdateMerge.py, getMCInfo.py: add protections for signal samples
 	* getMCInfo.py: better treatment of signal samples with derivation

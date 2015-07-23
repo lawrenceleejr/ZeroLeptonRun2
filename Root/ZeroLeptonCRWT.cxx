@@ -453,36 +453,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
-  // Other jet pT cuts depending on selection
-  bool inSRmono=false;
-  bool inSR1=false;
-  bool inSR2=false;
-  bool inSR3=false;
-  bool inSR4=false;
-  bool inSR5=false;
-  bool inSR6=false;
-
-  inSRmono = (MissingEt > m_cutVal.m_cutEtMiss1Jet);
-  inSR1 = false;
-  inSR2 = false;
-  inSR3 = false;
-  inSR4 = false;
-  inSR5 = false;
-  inSR6 = false;
-  
-  if ((good_jets.size() > 1) && 
-      (good_jets[1].Pt() > m_cutVal.m_cutJetPt1)) {
-    inSR1 = true; inSR2 = true;
-  }
-  if (inSR2 && (good_jets.size() > 2) &&
-      (good_jets[2].Pt() > m_cutVal.m_cutJetPt2)) inSR3 = true;
-  if (inSR3 && (good_jets.size() > 3) &&
-      (good_jets[3].Pt() > m_cutVal.m_cutJetPt3)) inSR4 = true;
-  if (inSR4 && (good_jets.size() > 4) &&
-      (good_jets[4].Pt() > m_cutVal.m_cutJetPt4)) inSR5 = true;
-  if (inSR5 && (good_jets.size() > 5) &&
-      (good_jets[5].Pt() > m_cutVal.m_cutJetPt5)) inSR6 = true;
-//  if (!(inSRmono||inSR1||inSR2||inSR3||inSR4||inSR5||inSR6)) return true;
+  // leave counter to keep same cutflow
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
   // Calculate variables for ntuple -----------------------------------------
