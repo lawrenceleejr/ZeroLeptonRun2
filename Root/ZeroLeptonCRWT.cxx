@@ -627,6 +627,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       if ( chfVeto ) cleaning += power2;
       power2 *= 2;
     }
+    else power2 *= 256;
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0.,0.,m_IsTruth,baseline_taus,signal_taus);
 

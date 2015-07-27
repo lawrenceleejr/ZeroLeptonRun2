@@ -550,10 +550,12 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       
       bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       if (  m_period == p8tev && chfTileVeto ) cleaning += power2;
+      power2 *= 2;
       bool chfVeto = m_proxyUtils.chfVeto(good_jets);
       if ( chfVeto ) cleaning += power2;
+      power2 *= 2;
     }
-    power2 *= 4;
+    else power2 *= 512;
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
 

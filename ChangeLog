@@ -1,3 +1,7 @@
+27-Jul-2015 Laurent Duflot
+	* ZeroLeptonCRY: fix 'cleaning' variable (last bit not filled)
+	* ZeroLeptoCRWT, ZeroLeptonCRZ: set bit number avec if (truth)
+
 23-Jul-2015 Laurent Duflot
 	* ZeroLeptonSR, ZeroLeptonCRZ, ZeroLeptonCRWT: code cleanup
 	* PhysObjProxyUtils, ZeroLeptonCRY, BuildTruthObjects, FilterUpdateMerge: code cleanup
