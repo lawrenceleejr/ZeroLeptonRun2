@@ -436,6 +436,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   for ( const auto& jet_itr : *outputjets ) {
     if ( !m_UseSmearedJets ) { 
       m_SUSYObjTool->IsSignalJet(*jet_itr, 20000.,10., -1e+99); // no JVT cut
+      m_SUSYObjTool->IsBadJet(*jet_itr, 1e+99); // no JVT cut (sic)
     }
     if ( m_period == p8tev ) {
       //FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
