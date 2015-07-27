@@ -3,6 +3,7 @@
 	* ZeroLeptoCRWT, ZeroLeptonCRZ: set bit number avec if (truth)
 	* BuildSUSYObjects.cxx: need to call explicitely IsBadJet after
 	SUSYTools-00-01-14
+	* tagged as ZeroLeptonRun2-00-00-45
 
 23-Jul-2015 Laurent Duflot
 	* ZeroLeptonSR, ZeroLeptonCRZ, ZeroLeptonCRWT: code cleanup
