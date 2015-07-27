@@ -3,7 +3,6 @@
 
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/Counter.h"
-#include "PATInterfaces/SystematicSet.h"
 
 #include <string>
 #include <list>
@@ -16,7 +15,7 @@ class TFile;
 // ZeroLeptonSystVariations
 //
 // Works a bit like a cafe::Controller except that the child
-// Processors are called for each smearing draw.
+// Processors are called for each systematics
 //--------------------------------------------------------------------------
 class ZeroLeptonSystVariations : public cafe::Processor {
 public:
@@ -30,13 +29,10 @@ public:
 
 private:
   Counter* m_counter;
-  std::vector<CP::SystematicSet> m_systList;
 
   std::list<cafe::Processor*> m_processors;
   bool add(const std::list<cafe::Processor*>& procs);
   bool add(cafe::Processor *proc);
-
-  std::string m_SystPrefix;
 
 public:
   ClassDef(ZeroLeptonSystVariations,0);

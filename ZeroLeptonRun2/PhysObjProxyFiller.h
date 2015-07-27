@@ -32,6 +32,10 @@ class PhysObjProxyFiller
   // fill with baseline and signal tau
   void FillTauProxies(std::vector<TauProxy>& baseline_taus,
 		      std::vector<TauProxy>& signal_taus);
+
+  // change suffix
+  void setSuffix(const std::string& suffix) {m_suffix = suffix;}
+
  private:
   float m_jetPtCut;
   float m_elPtCut;

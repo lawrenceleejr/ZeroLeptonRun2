@@ -33,7 +33,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
-    m_UseSystematics(false),
+    m_DoSystematics(false),
     m_period(INVALID),
     m_isVR(false),
     m_isMuonChannel(false),
@@ -53,7 +53,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
-  m_UseSystematics = config.get("UseSystematics",false);
+  m_DoSystematics = config.get("DoSystematics",false);
 
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRWT does not support the 7tev run period"));
@@ -88,7 +88,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
 
 ZeroLeptonCRWT::~ZeroLeptonCRWT()
 {
-  if ( !m_UseSystematics && m_counter ) delete m_counter;
+  if ( !m_DoSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
   if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
@@ -122,7 +122,7 @@ void ZeroLeptonCRWT::begin()
     sSR+="NT";
   }
 
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     m_counterRepository = CounterRepository("ZeroLeptonCounter"+m_stringRegion,m_IsSignal,getDirectory());
   }
   else {
@@ -137,15 +137,19 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 {
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  if ( m_UseSystematics ) {
+  std::string systag = "";
+  if ( m_DoSystematics ) {
     CP::SystematicSet* currentSyst = 0;
     if ( ! store->retrieve(currentSyst, "CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
     m_counter = m_counterRepository.counter(currentSyst->name());
-    if (currentSyst->name() == "" ) {
+    std::string sysname = currentSyst->name();
+    if (sysname != "" ) systag = "_"+sysname+"_";
+    if ( sysname == "" ) {
       m_tree = getTree(m_stringRegion+"NT");
     }
     else {
-      m_tree = getTree(m_stringRegion+"NT_"+currentSyst->name());
+      m_tree = getTree(m_stringRegion+"NT_"+sysname);
+      m_physobjsFiller->setSuffix(m_suffix+systag);
     }
   }
 
@@ -305,7 +309,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   // missing ET
   TVector2* missingET = 0;
   if(! m_IsTruth){
-    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix+systag).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix+systag);
   }
   if(m_IsTruth){
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
@@ -360,7 +364,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   //  signalelecistrigmatched = true;
   //  signalmuonistrigmatched = true; 
   //}
-  
   if ( m_isMuonChannel && 
        (( !m_IsTruth && isolated_baseline_muons.size()==1)      || (m_IsTruth && isolated_baseline_muons_truth.size()==1)) &&  
        (( !m_IsTruth && isolated_signal_muons.size()==1)        || (m_IsTruth && isolated_signal_muons_truth.size()==1)) && 
@@ -398,6 +401,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   // Apply Lepton scale factors
   float lepSF=1;
+  /*
   if ( !m_IsData ) {
     for ( size_t e0=0; e0<isolated_signal_electrons.size(); e0++)
       {
@@ -411,7 +415,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       }
   }
   weight *= lepSF ; 
-
+  */
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
   
   // Add lepton to jets (SR) or MET (VR)
@@ -427,7 +431,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   
   // Negative-cell cleaning cut
   bool HasNegCell = 0;
-  if(! m_IsTruth){
+  if(! m_IsTruth && systag == "" ){
     m_ZLUtils.NegCellCleaning(event,*missingET);
   }
   //out() << " NegCell " << HasNegCell << std::endl;
@@ -648,7 +652,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
 void ZeroLeptonCRWT::finish()
 {
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
   } 
   else {

@@ -26,7 +26,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
-    m_UseSystematics(false),
+    m_DoSystematics(false),
     m_period(INVALID),
     m_suffix(""),
     m_physobjsFiller(0),
@@ -42,7 +42,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
-  m_UseSystematics = config.get("UseSystematics",false);
+  m_DoSystematics = config.get("DoSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonSR: invalid run period specified"));
@@ -65,7 +65,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
 
 ZeroLeptonSR::~ZeroLeptonSR()
 {
-  if ( !m_UseSystematics && m_counter ) delete m_counter;
+  if ( !m_DoSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
   if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
@@ -98,7 +98,7 @@ void ZeroLeptonSR::begin()
     sSR+="NT";
   }
 
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     m_counterRepository = CounterRepository("ZeroLeptonCounter"+m_stringRegion,m_IsSignal,getDirectory());
   }
   else {
@@ -113,15 +113,19 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 {
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  if ( m_UseSystematics ) {
+  std::string systag = "";
+  if ( m_DoSystematics ) {
     CP::SystematicSet* currentSyst = 0;
     if ( ! store->retrieve(currentSyst, "CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
-    m_counter = m_counterRepository.counter(currentSyst->name());
-    if (currentSyst->name() == "" ) {
+    std::string sysname = currentSyst->name();
+    if (sysname != "" ) systag = "_"+sysname+"_";
+    m_counter = m_counterRepository.counter(sysname);
+    if (sysname == "" ) {
       m_tree = getTree(m_stringRegion+"NT");
     }
     else {
-      m_tree = getTree(m_stringRegion+"NT_"+currentSyst->name());
+      m_tree = getTree(m_stringRegion+"NT_"+sysname);
+      m_physobjsFiller->setSuffix(m_suffix+systag);
     }
   }
 
@@ -243,7 +247,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   // missing ET
   TVector2* missingET = 0;
   if(!m_IsTruth){
-    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix+systag).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix+systag);
   }
   if(m_IsTruth){
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
@@ -274,7 +278,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // Negative-cell cleaning cut
   bool HasNegCell = false ; 
-  if(! m_IsTruth){
+  if(! m_IsTruth && systag == ""){
     HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
   }
 
@@ -492,7 +496,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
 void ZeroLeptonSR::finish()
 {
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
   } 
   else {

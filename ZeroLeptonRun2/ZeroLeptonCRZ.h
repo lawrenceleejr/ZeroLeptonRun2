@@ -39,7 +39,7 @@ private:
   bool m_IsData;
   bool m_IsSignal;
   bool m_IsTruth;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
   bool m_isMuonChannel;
   bool m_isElectronChannel;

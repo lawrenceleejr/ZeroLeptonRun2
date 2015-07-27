@@ -35,7 +35,7 @@ private:
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
 
   NTVars m_ntv;
