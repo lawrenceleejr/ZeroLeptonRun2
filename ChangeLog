@@ -6,6 +6,7 @@
 	* ZeroLeptonSR and CRs: adapt to changes above
 	* zerolepton.config: support for systematics in BuildSUSYObjects
 	* zerolepton_with_systematics.config: remove
+	* ZerloLeptonNTVars: add "systWeights" events weights from systematics
 
 
 27-Jul-2015 Laurent Duflot

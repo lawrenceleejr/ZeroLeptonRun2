@@ -64,7 +64,8 @@ class NTVars
   std::vector< float > tauLooseSFStatDown;
   std::vector< float > tauLooseSFSystUp;
   std::vector< float > tauLooseSFSystDown;
-  
+
+  std::vector< float > systWeights;
 };
 
 // this is a helper class to read an ntuple with an NTVars, as it need the
@@ -105,6 +106,8 @@ private:
   std::vector< float >* p_tauLooseSFStatDown;
   std::vector< float >* p_tauLooseSFSystUp;
   std::vector< float >* p_tauLooseSFSystDown;
+
+  std::vector< float >* p_systWeights;
 };
 
 

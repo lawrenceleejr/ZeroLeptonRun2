@@ -635,6 +635,12 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0.,0.,m_IsTruth,baseline_taus,signal_taus);
 
+    if ( systag == "" ) {
+      std::vector<float>* p_systweights = 0;
+      if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
+      m_ntv.systWeights = *p_systweights;
+    }
+
     if( !m_IsTruth ){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
     }

@@ -82,6 +82,8 @@ void NTVars::Reset()
   tauLooseSFStatDown.clear();
   tauLooseSFSystUp.clear();
   tauLooseSFSystDown.clear();
+
+  systWeights.clear();
 }
 
 NTVarsRead::NTVarsRead(): ntv()
@@ -107,6 +109,8 @@ NTVarsRead::NTVarsRead(): ntv()
   p_tauLooseSFStatDown = &ntv.tauLooseSFStatDown;
   p_tauLooseSFSystUp   = &ntv.tauLooseSFSystUp;
   p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown; 
+
+  p_systWeights = &ntv.systWeights;
 }
 
 
@@ -136,6 +140,9 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   tree->GetBranch("tauLooseSFStatDown")->SetAddress(&p_tauLooseSFStatDown);
   tree->GetBranch("tauLooseSFSystUp")->SetAddress(&p_tauLooseSFSystUp);
   tree->GetBranch("tauLooseSFSystDown")->SetAddress(&p_tauLooseSFSystDown);
+
+  tree->GetBranch("systWeights")->SetAddress(&p_systWeights);
+
 }
 
 
@@ -383,6 +390,8 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("tauLooseSFStatDown",&(ntv.tauLooseSFStatDown));
   tree->Branch("tauLooseSFSystUp",&(ntv.tauLooseSFSystUp));
   tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
+
+  tree->Branch("systWeights",&(ntv.systWeights));
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
