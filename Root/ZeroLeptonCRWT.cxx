@@ -606,8 +606,8 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       // Negative-cell cleaning cut
       if ( HasNegCell ) cleaning += power2;
       power2 *= 2;
-      
-      // leading jet timing
+
+      // average timing of 2 leading jets
       if (fabs(time[0]) > 5) cleaning += power2;
       power2 *= 2;
       
