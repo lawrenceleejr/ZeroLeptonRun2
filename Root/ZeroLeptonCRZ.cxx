@@ -380,24 +380,14 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
 
-  /*
-  float lepSF[2];
-  lepSF[0] = 1.;
-  lepSF[1] = 1.;
-  if ( !m_IsData ) {
-    if(!isolated_signal_electrons.empty()){
-      isolated_signal_electrons[0].getSF(lepSF[0]);
-      isolated_signal_electrons[1].getSF(lepSF[1]);
-    }
-    if(!isolated_signal_muons.empty()){
-      isolated_signal_muons[0].getSF(lepSF[0]);
-      isolated_signal_muons[1].getSF(lepSF[1]);
-    }
-  }
-  weight *= lepSF[0];
-  weight *= lepSF[1];
-  */
   m_counter->increment(weight,incr++,"2 OS Signal Leptons",trueTopo);
+
+  // Apply Lepton scale factors
+  float muSF = eventInfo->auxdecor<float>("muSF");
+  if ( muSF != 0.f ) weight *= muSF;
+  float elSF = eventInfo->auxdecor<float>("elSF");
+  if ( elSF != 0.f ) weight *= elSF;
+
 
   // leading lepton is signal lepton and trigger matched
   /*

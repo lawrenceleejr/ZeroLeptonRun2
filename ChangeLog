@@ -1,3 +1,6 @@
+28-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects, ZeroLeptonCRx: propagate e/mu/photon SF
+
 27-Jul-2015 Laurent Duflot
 	* BuildSUSYObjects: rewrite using SUSYTools functions and include loop
 	on systematics (from ZeroLeptonSystVariations)

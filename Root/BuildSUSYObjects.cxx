@@ -330,8 +330,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	    <<std::endl;
       */
     }
-    float muSF = 0;
-    muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons);
+    float muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
     eventInfo->auxdecor<float>("muSF") = muSF ; 
 
 
@@ -358,8 +357,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	    <<std::endl;
       */
     }
-    float elSF = 0;
-    elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*electrons);
+    float elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*electrons);
     eventInfo->auxdecor<float>("elSF") = elSF ; 
 
 
