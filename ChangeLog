@@ -2,6 +2,7 @@
 	* launch_jobs_on_grid.py: use zeroleptontruth.config for TRUTH1,
 	protection against DerivationTag to be set for TRUTH1
 	* FilterUpdateMerge.py : added DB sample in AllSamples
+	* makeDatasetList.py : fix for TRUTH1 samples (effic=1)
 
 28-Jul-2015 Laurent Duflot
 	* BuildSUSYObjects, ZeroLeptonCRx: propagate e/mu/photon SF

@@ -214,10 +214,10 @@ def main():
                     if info.has_key(u'approx_GenFiltEff'):
                         effic =  info[u'approx_GenFiltEff']
 
-                    if config.sample=='lZjetsLO':
+                    if config.datatype=='%TRUTH1%':
                         effic = 1
 
-                    if ((xsec == u'NULL' or not info.has_key(u'approx_GenFiltEff')) and not(config.sample=='lZjetsLO')):
+                    if ((xsec == u'NULL' or not info.has_key(u'approx_GenFiltEff')) and not(config.datatype=='%TRUTH1%')):
                         xsec,effic = genParamsFromParents(client,dsname,datasetNumber)
 
                     if not xsec: xsec = 0
