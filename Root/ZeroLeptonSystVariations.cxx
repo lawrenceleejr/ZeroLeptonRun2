@@ -46,7 +46,8 @@ void ZeroLeptonSystVariations::begin()
 
 ZeroLeptonSystVariations::~ZeroLeptonSystVariations()
 {
-  if ( m_counter ) delete m_counter;    for ( std::list<Processor*>::iterator it = m_processors.begin();
+  if ( m_counter ) delete m_counter;
+  for ( std::list<Processor*>::iterator it = m_processors.begin();
 	it != m_processors.end();
 	++it ) {
     delete *it;
