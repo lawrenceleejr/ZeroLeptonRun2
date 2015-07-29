@@ -37,8 +37,9 @@ class NTRJigsawVars;
 class PhysObjProxyUtils
 {
  public:
- PhysObjProxyUtils(bool IsData): m_IsData(IsData) {}
-  
+  PhysObjProxyUtils(bool IsData);
+  ~PhysObjProxyUtils() ;
+
   void EnergyWeightedTime(const std::vector<JetProxy>& jets, std::vector<float>& time) const;
 
   bool badTileVeto(const std::vector<JetProxy>& jets, const TVector2& MissingET) const;

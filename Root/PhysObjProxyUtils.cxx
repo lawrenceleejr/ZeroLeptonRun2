@@ -13,6 +13,99 @@
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
 
+PhysObjProxyUtils::PhysObjProxyUtils(bool IsData): 
+  m_IsData(IsData),
+  LAB_alt(0),
+  S_alt(0),
+  V_alt(0),
+  I_alt(0),
+  INV_alt(0),
+  VIS_alt(0),
+  MinMass_alt(0),
+  Rapidity_alt(0),
+  LAB(0),
+  SS(0),
+  S1(0),
+  S2(0),
+  V1(0),
+  V2(0),
+  I1(0),
+  I2(0),
+  INV(0),
+  VIS(0),
+  MinMassJigsaw(0),
+  RapidityJigsaw(0),
+  ContraBoostJigsaw(0),
+  HemiJigsaw(0),
+  LAB_R(0),
+  GG_R(0),
+  Ga_R(0),
+  Gb_R(0),
+  Ca_R(0),
+  Cb_R(0),
+  V1a_R(0),
+  V2a_R(0),
+  Xa_R(0),
+  V1b_R(0),
+  V2b_R(0),
+  Xb_R(0),
+  INV_R(0),
+  VIS_R(0),
+  MinMassJigsaw_R(0),
+  RapidityJigsaw_R(0),
+  ContraBoostJigsaw_R(0),
+  HemiJigsaw_R(0),
+  CaHemiJigsaw_R(0),
+  CbHemiJigsaw_R(0)
+{
+}
+
+PhysObjProxyUtils::~PhysObjProxyUtils() 
+{
+  if ( !LAB_alt) delete LAB_alt;
+  if ( !S_alt) delete S_alt;
+  if ( !V_alt) delete V_alt;
+  if ( !I_alt) delete I_alt;
+  if ( !INV_alt) delete INV_alt;
+  if ( !VIS_alt) delete VIS_alt;
+  if ( !MinMass_alt) delete MinMass_alt;
+  if ( !Rapidity_alt) delete Rapidity_alt;
+  if ( !LAB) delete LAB;
+  if ( !SS) delete SS;
+  if ( !S1) delete S1;
+  if ( !S2) delete S2;
+  if ( !V1) delete V1;
+  if ( !V2) delete V2;
+  if ( !I1) delete I1;
+  if ( !I2) delete I2;
+  if ( !INV) delete INV;
+  if ( !VIS) delete VIS;
+  if ( !MinMassJigsaw) delete MinMassJigsaw;
+  if ( !RapidityJigsaw) delete RapidityJigsaw;
+  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
+  if ( !HemiJigsaw) delete HemiJigsaw;
+
+  if ( !LAB_R) delete LAB_R;
+  if ( !GG_R) delete GG_R;
+  if ( !Ga_R) delete Ga_R;
+  if ( !Gb_R) delete Gb_R;
+  if ( !Ca_R) delete Ca_R;
+  if ( !Cb_R) delete Cb_R;
+  if ( !V1a_R) delete V1a_R;
+  if ( !V2a_R) delete V2a_R;
+  if ( !Xa_R) delete Xa_R;
+  if ( !V1b_R) delete V1b_R;
+  if ( !V2b_R) delete V2b_R;
+  if ( !Xb_R) delete Xb_R;
+  if ( !INV_R) delete INV_R;
+  if ( !VIS_R) delete VIS_R;
+  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
+  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
+  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
+  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
+  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
+  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+}
 
 
 void PhysObjProxyUtils::EnergyWeightedTime(const std::vector<JetProxy>& jets, 
@@ -124,6 +217,54 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
 
 
 void PhysObjProxyUtils::RJigsawInit(){
+
+
+  // cleanup previously computed variables
+  if ( !LAB_alt) delete LAB_alt;
+  if ( !S_alt) delete S_alt;
+  if ( !V_alt) delete V_alt;
+  if ( !I_alt) delete I_alt;
+  if ( !INV_alt) delete INV_alt;
+  if ( !VIS_alt) delete VIS_alt;
+  if ( !MinMass_alt) delete MinMass_alt;
+  if ( !Rapidity_alt) delete Rapidity_alt;
+  if ( !LAB) delete LAB;
+  if ( !SS) delete SS;
+  if ( !S1) delete S1;
+  if ( !S2) delete S2;
+  if ( !V1) delete V1;
+  if ( !V2) delete V2;
+  if ( !I1) delete I1;
+  if ( !I2) delete I2;
+  if ( !INV) delete INV;
+  if ( !VIS) delete VIS;
+  if ( !MinMassJigsaw) delete MinMassJigsaw;
+  if ( !RapidityJigsaw) delete RapidityJigsaw;
+  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
+  if ( !HemiJigsaw) delete HemiJigsaw;
+
+  if ( !LAB_R) delete LAB_R;
+  if ( !GG_R) delete GG_R;
+  if ( !Ga_R) delete Ga_R;
+  if ( !Gb_R) delete Gb_R;
+  if ( !Ca_R) delete Ca_R;
+  if ( !Cb_R) delete Cb_R;
+  if ( !V1a_R) delete V1a_R;
+  if ( !V2a_R) delete V2a_R;
+  if ( !Xa_R) delete Xa_R;
+  if ( !V1b_R) delete V1b_R;
+  if ( !V2b_R) delete V2b_R;
+  if ( !Xb_R) delete Xb_R;
+  if ( !INV_R) delete INV_R;
+  if ( !VIS_R) delete VIS_R;
+  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
+  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
+  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
+  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
+  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
+  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+
+
 
   LAB_alt = new RestFrames::RLabFrame("LAB","lab");
 
