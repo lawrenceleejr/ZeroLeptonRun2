@@ -349,6 +349,7 @@ if __name__ == '__main__':
         AllSamples.append(Top)
         AllSamples.append(WMassiveCB)
         AllSamples.append(ZMassiveCB)
+        AllSamples.append(DB) 
         AllSamples.append(QCD)
         AllSamples.append(GAMMAMassiveCB)
 

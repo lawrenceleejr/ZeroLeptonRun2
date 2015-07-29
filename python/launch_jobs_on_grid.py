@@ -140,10 +140,12 @@ def main():
 
         # which cafe config file should be used ?
         if config.configfile == "":
-            if "mc15" in inDS or "data15" in inDS:
+            if ("mc15" in inDS or "data15" in inDS) and not("TRUTH1" in inDS):
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton.config"
             elif "mc14" in inDS or "data12" in inDS:
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton_DC14.config"
+            elif "TRUTH1" in inDS:
+                cafeconfig = "ZeroLeptonRun2/config/zeroleptontruth.config"
             else:
                 print "Unexpected dataset name, could not figure out which cafe config file to use"
                 sys.exit(1)
@@ -186,14 +188,15 @@ def main():
             tag = inDS.split(".")[-1]
             knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377' ]
             found = False
-            for t in knowntags:
-                if t in tag:
-                    scriptcmd += " Global.DerivationTag: "+t
-                    found = True
-                    break
-                pass
-            if not found:
-                scriptcmd += " Global.DerivationTag: NA "
+            if not('TRUTH1' in inDS):
+                for t in knowntags:
+                    if t in tag:
+                        scriptcmd += " Global.DerivationTag: "+t
+                        found = True
+                        break
+                    pass
+                if not found:
+                    scriptcmd += " Global.DerivationTag: NA "
 
         # signal events
         if isSignal:
