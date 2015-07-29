@@ -13,10 +13,11 @@
 #include <stdexcept>
 
 MCInfoProcessor::MCInfoProcessor(const char *name): 
-  cafe::Processor(name), m_isSignal(false), m_mcDB(0)
+  cafe::Processor(name), m_truthPKey(), m_isSignal(false), m_mcDB(0)
 {
   cafe::Config config(name);
   m_isSignal = config.get("IsSignal",false);
+  m_truthPKey = config.get("TruthParticleContainerKey","xxxx");
   std::string mcDBFile = config.get("MCDBFile","SUSYTools/data/mc12_8TeV/");
   bool mcDBextended = config.get("MCDBExtended",false);
   m_mcDB = new SUSY::CrossSectionDB(mcDBFile,mcDBextended);
@@ -52,7 +53,7 @@ bool MCInfoProcessor::processEvent(xAOD::TEvent& event)
 unsigned int MCInfoProcessor::hardProcess(xAOD::TEvent& event) const
 {
   const xAOD::TruthParticleContainer* mcparticles = 0;
-  if ( ! event.retrieve(mcparticles, "TruthParticle").isSuccess() ) throw std::runtime_error("MCInfoProcessor::hardProcess :: Could not retrieve TruthParticleContainer with key TruthParticle");
+  if ( ! event.retrieve(mcparticles, m_truthPKey).isSuccess() ) throw std::runtime_error("MCInfoProcessor::hardProcess :: Could not retrieve TruthParticleContainer with key "+m_truthPKey);
   const xAOD::TruthParticle*  firstSUSY = 0;
   const xAOD::TruthParticle*  secondSUSY = 0;
   for ( xAOD::TruthParticleContainer::const_iterator it = mcparticles->begin();
@@ -64,6 +65,7 @@ unsigned int MCInfoProcessor::hardProcess(xAOD::TEvent& event) const
 	(id>2000010 && id<2000017) || // sleptonR
 	(id>1000020 && id<1000040)    // gauginos
 	) {
+      //std::cout << " SUSY particle found " << id << " " <<  ( (*it)->hasProdVtx() ? (*it)->prodVtx()->incomingParticle(0)->absPdgId() : 0 ) << std::endl;
       if ( ((*it)->hasProdVtx() && (*it)->prodVtx()->incomingParticle(0)->absPdgId() < 1000000 )   // SUSY with SM parents
 	   || !(*it)->hasProdVtx() // ugly but happens in Herwig++
 	   ) {

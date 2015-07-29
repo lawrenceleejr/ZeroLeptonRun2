@@ -47,6 +47,7 @@ ElectronProxy::ElectronProxy():
   m_isBaseline(false),
   m_isSignal(false),
   m_passOR(true),
+  m_sf(0.f),
   m_el(0)
 {
 }
@@ -57,6 +58,7 @@ ElectronProxy::ElectronProxy(const xAOD::Electron* el):
   m_isBaseline = el->auxdecor<char>("baseline")==1;
   m_isSignal   = el->auxdecor<char>("signal")==1;
   m_passOR     = el->auxdecor<char>("passOR")==1;
+  m_sf         = el->auxdecor<float>("sf");
   m_el         = el;
 }
 ClassImp(ElectronProxy);
@@ -66,6 +68,7 @@ PhotonProxy::PhotonProxy():
   m_isBaseline(false),
   m_isSignal(false),
   m_passOR(true),
+  m_sf(0.f),
   m_ph(0)
 {
 }
@@ -75,6 +78,7 @@ PhotonProxy::PhotonProxy(const TLorentzVector& input):
   m_isBaseline(true),
   m_isSignal(true),
   m_passOR(true),
+  m_sf(0.f),
   m_ph(0)
 {
 }
@@ -85,6 +89,7 @@ PhotonProxy::PhotonProxy(const xAOD::Photon* ph):
   m_isBaseline = ph->auxdecor<char>("baseline")==1;
   m_isSignal   = ph->auxdecor<char>("signal")==1;
   m_passOR     = ph->auxdecor<char>("passOR")==1;
+  m_sf         = ph->auxdecor<float>("sf");
   m_ph         = ph;
 }
 ClassImp(PhotonProxy);
@@ -97,6 +102,7 @@ MuonProxy::MuonProxy():
   m_passOR(true),
   m_isCosmic(true),
   m_isBad(true),
+  m_sf(0.f),
   m_muon(0)
 {
 }
@@ -109,6 +115,7 @@ MuonProxy::MuonProxy(const xAOD::Muon* muon):
   m_passOR     = muon->auxdecor<char>("passOR")==1;
   m_isCosmic   = muon->auxdecor<char>("cosmic")==1;
   m_isBad      = muon->auxdecor<char>("bad")==1;
+  m_sf         = muon->auxdecor<float>("sf");
   m_muon       = muon;
 }
 ClassImp(MuonProxy);

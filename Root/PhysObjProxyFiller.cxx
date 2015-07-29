@@ -41,11 +41,14 @@ void PhysObjProxyFiller::FillJetProxies(std::vector<JetProxy>& good_jets,
     if ( (*it)->auxdecor<char>("bad") == 0  ) {
       if ( std::abs((*it)->eta()) < 2.8 ) {
 	good_jets.push_back(JetProxy(*it));
-	if ( (*it)->auxdecor<char>("bjet") == 1) b_jets.push_back(JetProxy(*it));
+        if ( (*it)->auxdecor<char>("bjet") == 1
+             && std::abs((*it)->eta()) < 2.5
+             && (*it)->pt() >= 40000.) b_jets.push_back(JetProxy(*it));
       }
     }
     else {
-      bad_jets.push_back(JetProxy(*it));
+      // pT cut no longer applied in SUSYTools for bad jets
+      if ( (*it)->pt() > 20000.) bad_jets.push_back(JetProxy(*it));
     }
   }
 

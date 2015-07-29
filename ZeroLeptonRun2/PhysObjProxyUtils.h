@@ -37,8 +37,9 @@ class NTRJigsawVars;
 class PhysObjProxyUtils
 {
  public:
- PhysObjProxyUtils(bool IsData): m_IsData(IsData) {}
-  
+  PhysObjProxyUtils(bool IsData);
+  ~PhysObjProxyUtils() ;
+
   void EnergyWeightedTime(const std::vector<JetProxy>& jets, std::vector<float>& time) const;
 
   bool badTileVeto(const std::vector<JetProxy>& jets, const TVector2& MissingET) const;
@@ -103,12 +104,14 @@ class PhysObjProxyUtils
 
   bool CosmicMuon(const std::vector<MuonProxy>& muons) const;
 
+
   bool isbadMETmuon(const std::vector<MuonProxy>& muons,
 		    float MET, const TVector2& MissingET) const;
 
 
   void FillNTVars(NTVars& ntv, 
 		  unsigned int RunNumber, unsigned int EventNumber,
+		  unsigned int LumiBlockNumber,
 		  unsigned int veto, float weight, 
 		  std::vector<float>& normWeight, 
 		  std::vector<float>& pileupWeight, float genWeight, 
@@ -123,7 +126,6 @@ class PhysObjProxyUtils
 		  const std::vector<float>& jetSmearSystW,
 		  const std::vector<float>* flaggedtau = NULL, 
 		  float tauMt = 0.f, float SherpaBugMET = 0.f,
-		  float metLHTOPOx =0.f, float metLHTOPOy = 0.f, 
 		  bool istruth = false,
 		  std::vector<TauProxy> baseline_taus = std::vector<TauProxy>(),
 		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>());
@@ -187,10 +189,7 @@ class PhysObjProxyUtils
  private:
   bool m_IsData;
 
-
   TRandom3 m_random;
-
-
 
 
   	// For RJigsaw Frame Objects
@@ -237,11 +236,6 @@ class PhysObjProxyUtils
 	RestFrames::MinimizeMassesCombinatoricJigsaw * HemiJigsaw_R; //!
 	RestFrames::MinimizeMassesCombinatoricJigsaw * CaHemiJigsaw_R; //!
 	RestFrames::MinimizeMassesCombinatoricJigsaw * CbHemiJigsaw_R; //!
-
-
-
-
-
 
 
 };

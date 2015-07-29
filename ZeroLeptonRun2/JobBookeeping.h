@@ -31,6 +31,7 @@ private:
   std::map<std::string, std::string> m_fileCatalog;
 
   ZeroLeptonDerivationTag m_derivationTag;
+  bool m_IsData;
 
 public:
   ClassDef(JobBookeeping,0);

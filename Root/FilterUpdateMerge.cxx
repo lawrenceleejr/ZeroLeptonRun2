@@ -26,9 +26,9 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
 void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
 				 const std::vector<std::string>& inFiles, 
 				 bool isSignal, bool doXSecNormalisation, 
-				 bool doFiltering, bool doExtraVars, bool doRJigsawVars, 
-				 bool doCRWTVars, bool doCRZVars, 
-				 bool doCRYVars)
+				 bool doFiltering, bool doExtraVars, 
+				 bool doRJigsawVars, bool doCRWTVars, 
+				 bool doCRZVars, bool doCRYVars)
 {
   // book output tuple variables
   NTVars outVars;
@@ -38,8 +38,9 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   bookNTReclusteringVars(outTree,outRTVars);
   
   NTExtraVars inExtraVars, outExtraVars;
-  NTRJigsawVars inRJigsawVars, outRJigsawVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
+
+  NTRJigsawVars inRJigsawVars, outRJigsawVars;
   if ( doRJigsawVars ) bookNTRJigsawVars(outTree,outRJigsawVars);
 
   NTCRWTVars inCRWTVars, outCRWTVars;
@@ -66,7 +67,6 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( !tree  ) throw std::runtime_error("Could not find a tree named SRAllNT in "+inFiles[i]);
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
-    std::cout << "doing the setaddress thing -----------------------------" << std::endl;
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
     if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
@@ -74,7 +74,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     if ( doCRYVars) inCRYVars.setAddresses(tree);
 
     // loop over entries
-    for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
+    for ( size_t j = 0; j < static_cast<size_t>(tree->GetEntries()); ++j ) {
       tree->GetEntry(j);
       outVars = inVars.ntv;
       outRTVars = inRTVars.RTntv;

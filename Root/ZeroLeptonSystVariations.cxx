@@ -6,7 +6,8 @@
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
 #include "xAODRootAccess/TStore.h"
-#include "PATInterfaces/SystematicList.h"
+//#include "PATInterfaces/SystematicList.h"
+#include "PATInterfaces/SystematicSet.h"
 #include "PATInterfaces/SystematicVariation.h"
 #include "PATInterfaces/SystematicRegistry.h"
 #include "PATInterfaces/SystematicCode.h"
@@ -17,9 +18,7 @@
 ZeroLeptonSystVariations::ZeroLeptonSystVariations(const char *name): 
   cafe::Processor(name), 
   m_counter(0),
-  m_systList(),
-  m_processors(),
-  m_SystPrefix("")  
+  m_processors()
 {
   cafe::Config config(name);
 
@@ -29,8 +28,6 @@ ZeroLeptonSystVariations::ZeroLeptonSystVariations(const char *name):
     cafe::ParseRun parser;
     add(parser.parse(run));
   }
-
-  m_SystPrefix = config.get("SystPrefix","");
 
 }
 
@@ -43,39 +40,14 @@ void ZeroLeptonSystVariations::begin()
 
   m_counter = new Counter("ZeroLeptonSystVariationsCounter",40); 
 
-  CP::SystematicCode::enableFailure();
-  CP::CorrectionCode::enableFailure();
-  const CP::SystematicRegistry& registry = CP::SystematicRegistry::getInstance();
-  const CP::SystematicSet& recommendedSystematics = registry.recommendedSystematics();
-
-  // this is the nominal set
-  m_systList.push_back(CP::SystematicSet());
-  for(CP::SystematicSet::const_iterator sysItr = recommendedSystematics.begin();
-      sysItr != recommendedSystematics.end(); ++sysItr){
-
-    //out() << "Found syst in global registry: " << sysItr->basename() << std::endl;
-    // select systematic based on the name
-    if ( m_SystPrefix.size()>0 && sysItr->basename().substr(0,m_SystPrefix.size()) != m_SystPrefix ) continue;
-    if (*sysItr == CP::SystematicVariation (sysItr->basename(), CP::SystematicVariation::CONTINUOUS)){
-      // for continuous systematics just evaluate +/-1 sigma
-      m_systList.push_back(CP::SystematicSet());
-      m_systList.back().insert(CP::SystematicVariation (sysItr->basename(), 1));
-      m_systList.push_back(CP::SystematicSet());
-      m_systList.back().insert(CP::SystematicVariation (sysItr->basename(), -1));
-    }else{
-      // otherwise just add it flat
-      m_systList.push_back(CP::SystematicSet());
-      m_systList.back().insert(*sysItr);
-    }
-  }
-
   std::for_each(m_processors.begin(),m_processors.end(),
 		std::mem_fun(&Processor::begin));
 }
 
 ZeroLeptonSystVariations::~ZeroLeptonSystVariations()
 {
-  if ( m_counter ) delete m_counter;    for ( std::list<Processor*>::iterator it = m_processors.begin();
+  if ( m_counter ) delete m_counter;
+  for ( std::list<Processor*>::iterator it = m_processors.begin();
 	it != m_processors.end();
 	++it ) {
     delete *it;
@@ -96,9 +68,13 @@ bool ZeroLeptonSystVariations::processEvent(xAOD::TEvent& event)
   m_counter->increment(1.,incr++,"NbOfEvents");
   m_counter->increment(weight,incr++,"runNumber");
 
+  std::vector<CP::SystematicSet>* sys_variations = 0;
+  if ( ! store->retrieve(sys_variations,"sys_variations_kinematics").isSuccess() ) {
+    throw std::runtime_error("Could not retrieve sys_variations_kinematics");
+  }
 
-  for ( std::vector<CP::SystematicSet>::const_iterator iSyst = m_systList.begin(); iSyst != m_systList.end(); ++iSyst){
-    *currentSyst = *iSyst;
+  for ( const auto& iSyst : *sys_variations){
+    *currentSyst = iSyst;
     //out() << " processing systematics " << currentSyst->name() << std::endl;
     for(std::list<cafe::Processor*>::iterator it = m_processors.begin();
 	it != m_processors.end();

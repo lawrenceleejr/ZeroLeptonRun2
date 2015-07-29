@@ -73,7 +73,7 @@ def updateMap(processMap,xsecDB,key,nb_of_events,weight):
     pass
     return processMap
 
-def getMCInfo(config,isSignal=False):
+def getMCInfo(config):
     myMap={}
     xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile)
 
@@ -88,12 +88,16 @@ def getMCInfo(config,isSignal=False):
         # get dataset number from input file
         channel = int(file.split(".")[int(config.NB)])
         if len(lds) and not channel in lds: continue
-        
+
+        if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
+            print 'No cross section for sample',channel,'skip file',file
+            continue
+
         # get weight from histogram
         fname = file
         if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
         tfile=ROOT.TFile.Open(fname)
-        hist=tfile.Get(config.histname)
+        hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
         if hist!=None and hist.GetNbinsX()>=2:
             # if not channel in hsum:
             #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
@@ -105,11 +109,25 @@ def getMCInfo(config,isSignal=False):
                 nb_of_events=hist.GetBinContent(1)
                 weight=hist.GetBinContent(2)
                 updateMap(myMap,xsecDB,channel,nb_of_events,weight)
-            else:                    
-                for ybin in range(1,hist.GetNbinsY()+1):
-                    nb_of_events=hist.GetBinContent(1,ybin)
-                    weight=hist.GetBinContent(2,ybin)
-                    if nb_of_events>0 : updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events,weight)
+            else:
+                """
+                gets complicated with derivations: from JobBookeeping we
+                can extract the sum of weights for all events before skimming
+                but we don't know for which hardproc. All we can do is calculate
+                the average efficiency of the derivation over hardprocs and
+                rescale for that. Would be OK for simplified models but can
+                be really wrong if many very different processes are present.
+                """
+                hist2=tfile.Get('Counter_for_ZeroLeptonCounterSRAll')
+                sumwini = hist.GetBinContent(2)
+                sumwkept = 0.
+                for ybin in range(1,hist2.GetNbinsY()+1):
+                    sumwkept+=hist2.GetBinContent(2,ybin)
+                scale = sumwini/sumwkept
+                for ybin in range(1,hist2.GetNbinsY()+1):
+                    nb_of_events=hist2.GetBinContent(1,ybin)
+                    weight=hist2.GetBinContent(2,ybin)
+                    if nb_of_events>0 : updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events*scale,weight*scale)
             tfile.Close()
 
         else:
@@ -162,7 +180,7 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathca
         for key,info in sorted(myMap.items()):
             channel = key[0]
             hardproc = key[1]
-            line=str(channel)+" "+str(hardproc)+" "+str(xsecDB.rawxsect(channel,hardproc))+" "+str(xsecDB.kfactor(channel,hardproc))+" "+str(xsecDB.efficiency(channel,hardproc))+" "+str(xsecDB.rel_uncertainty(channel,hardproc))+" "+str(info[1])+" "+str(info[0])#not very optimal
+            line=str(channel)+" "+str(hardproc)+" "+str(xsecDB.rawxsect(channel,hardproc))+" "+str(xsecDB.kfactor(channel,hardproc))+" "+str(xsecDB.efficiency(channel,hardproc))+" "+str(xsecDB.rel_uncertainty(channel,hardproc))+" "+str(info[1])+" "+str(int(round(info[0])))#not very optimal
             #print line
             f.write(line+"\n")
 
@@ -184,8 +202,6 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathca
 def parseCmdLine(args):
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--histname", dest="histname", help="histogram name containing stat and suw weight information",
-                      default="Counter_JobBookeeping_JobBookeeping")
     parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_13TeV.txt")
     parser.add_option("--input", dest="inputfilename", help="List of input filenames", default="")
     parser.add_option("--output", dest="outputfilename", help="output filename", default="MCBackgroundDB.dat")

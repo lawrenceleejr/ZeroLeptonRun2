@@ -5,13 +5,14 @@ std::string NTVars::toString()
 { 
   return
  
-std::string("RunNumber/i:EventNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:metNOCHCORRCELL/F:metLHTOPO/F:metLHTOPONOCHCORRCELL/F"); 
+std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F"); 
 }
 
 void NTVars::Reset()
 {
   RunNumber = 0;
-  EventNumber= 0;
+  EventNumber = 0;
+  LumiBlockNumber = 0;
   veto = 0;
   weight = 1.f;
   pileupWeight = pileupWeightUp = pileupWeightDown = 1.f;
@@ -58,9 +59,6 @@ void NTVars::Reset()
   tauLooseN = 0;
   tauMt = 0.f;
   SherpaBugMET = 0.f;
-  metNOCHCORRCELL = 0.f;
-  metLHTOPO = 0.f;
-  metLHTOPONOCHCORRCELL = 0.f;
 
   // Clear vectors
   jetPt.clear();
@@ -73,7 +71,6 @@ void NTVars::Reset()
   jetTagB.clear();
   jetTagC.clear();
   jetSmearSystW.clear();
-  jetBCH_CORR_CELL.clear();
   jetFracSamplingMax.clear();
   jetFracSamplingMaxIndex.clear();
   
@@ -85,6 +82,8 @@ void NTVars::Reset()
   tauLooseSFStatDown.clear();
   tauLooseSFSystUp.clear();
   tauLooseSFSystDown.clear();
+
+  systWeights.clear();
 }
 
 NTVarsRead::NTVarsRead(): ntv()
@@ -99,7 +98,6 @@ NTVarsRead::NTVarsRead(): ntv()
   p_jetTagB = &ntv.jetTagB;
   p_jetTagC = &ntv.jetTagC;
   p_jetSmearSystW = &ntv.jetSmearSystW;
-  p_jetBCH_CORR_CELL = &ntv.jetBCH_CORR_CELL;
   p_jetFracSamplingMax = &ntv.jetFracSamplingMax;
   p_jetFracSamplingMaxIndex = &ntv.jetFracSamplingMaxIndex;
   
@@ -111,6 +109,8 @@ NTVarsRead::NTVarsRead(): ntv()
   p_tauLooseSFStatDown = &ntv.tauLooseSFStatDown;
   p_tauLooseSFSystUp   = &ntv.tauLooseSFSystUp;
   p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown; 
+
+  p_systWeights = &ntv.systWeights;
 }
 
 
@@ -129,7 +129,6 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   if ( addJetSmearSystW  ) {
     tree->GetBranch("jetSmearSystW")->SetAddress(&p_jetSmearSystW);
   }
-  tree->GetBranch("jetBCH_CORR_CELL")->SetAddress(&p_jetBCH_CORR_CELL);
   tree->GetBranch("jetFracSamplingMax")->SetAddress(&p_jetFracSamplingMax);
   tree->GetBranch("jetFracSamplingMaxIndex")->SetAddress(&p_jetFracSamplingMaxIndex);
 
@@ -141,6 +140,9 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   tree->GetBranch("tauLooseSFStatDown")->SetAddress(&p_tauLooseSFStatDown);
   tree->GetBranch("tauLooseSFSystUp")->SetAddress(&p_tauLooseSFSystUp);
   tree->GetBranch("tauLooseSFSystDown")->SetAddress(&p_tauLooseSFSystDown);
+
+  tree->GetBranch("systWeights")->SetAddress(&p_systWeights);
+
 }
 
 
@@ -244,12 +246,8 @@ void NTCRZVars::Reset()
 
 std::string NTExtraVars::toString()
 { 
-  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F:RJVars_SS_Mass");
-}
+  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F");
 
-std::string NTRJigsawVars::toString()
-{ 
-  return std::string("RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_SS_dPhiBetaR/F:RJVars_SS_dPhiVis/F:RJVars_SS_CosTheta/F:RJVars_SS_dPhiDecayAngle/F:RJVars_SS_VisShape/F:RJVars_SS_MDeltaR/F:RJVars_S1_Mass/F:RJVars_S1_CosTheta/F:RJVars_S2_Mass/F:RJVars_S2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_G_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_G_0_dPhiGC/F:RJVars_G_0_MassRatioGC/F:RJVars_G_0_Jet1_pT/F:RJVars_G_0_Jet2_pT/F:RJVars_G_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_G_1_dPhiGC/F:RJVars_G_1_MassRatioGC/F:RJVars_G_1_Jet1_pT/F:RJVars_G_1_Jet2_pT/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
 }
 
 void NTExtraVars::Reset()
@@ -272,9 +270,12 @@ void NTExtraVars::Reset()
   gamma_Rp1=0.f; 
   costhetaRp1=0.f; 
   Ap =0.f;
-
 }
 
+std::string NTRJigsawVars::toString()
+{ 
+  return std::string("RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_SS_dPhiBetaR/F:RJVars_SS_dPhiVis/F:RJVars_SS_CosTheta/F:RJVars_SS_dPhiDecayAngle/F:RJVars_SS_VisShape/F:RJVars_SS_MDeltaR/F:RJVars_S1_Mass/F:RJVars_S1_CosTheta/F:RJVars_S2_Mass/F:RJVars_S2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_G_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_G_0_dPhiGC/F:RJVars_G_0_MassRatioGC/F:RJVars_G_0_Jet1_pT/F:RJVars_G_0_Jet2_pT/F:RJVars_G_0_PInvHS/F:RJVars_G_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_G_1_dPhiGC/F:RJVars_G_1_MassRatioGC/F:RJVars_G_1_Jet1_pT/F:RJVars_G_1_Jet2_pT/F:RJVars_G_1_PInvHS/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
+}
 
 void NTRJigsawVars::Reset()
 { 
@@ -303,13 +304,15 @@ void NTRJigsawVars::Reset()
   RJVars_G_0_dPhiGC        =0.f;     
   RJVars_G_0_MassRatioGC   =0.f;   
   RJVars_G_0_Jet1_pT       =0.f; 
-  RJVars_G_0_Jet2_pT       =0.f;        
+  RJVars_G_0_Jet2_pT       =0.f; 
+  RJVars_G_0_PInvHS        =0.f;       
   RJVars_G_1_CosTheta      =0.f;       
   RJVars_C_1_CosTheta      =0.f;       
   RJVars_G_1_dPhiGC        =0.f;     
   RJVars_G_1_MassRatioGC   =0.f;      
   RJVars_G_1_Jet1_pT       =0.f; 
   RJVars_G_1_Jet2_pT       =0.f; 
+  RJVars_G_1_PInvHS        =0.f;       
   RJVars_QCD_dPhiR         =0.f;  
   RJVars_QCD_Rpt           =0.f;  
   RJVars_QCD_Rmsib         =0.f;  
@@ -375,7 +378,6 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("jetTagU",&(ntv.jetTagU));
   tree->Branch("jetTagB",&(ntv.jetTagB));
   tree->Branch("jetTagC",&(ntv.jetTagC));                
-  tree->Branch("jetBCH_CORR_CELL",&(ntv.jetBCH_CORR_CELL));
   tree->Branch("jetFracSamplingMax",&(ntv.jetFracSamplingMax));
   tree->Branch("jetFracSamplingMaxIndex",&(ntv.jetFracSamplingMaxIndex));
   if ( addJetSmearSystW ) {
@@ -390,6 +392,8 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("tauLooseSFStatDown",&(ntv.tauLooseSFStatDown));
   tree->Branch("tauLooseSFSystUp",&(ntv.tauLooseSFSystUp));
   tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
+
+  tree->Branch("systWeights",&(ntv.systWeights));
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
@@ -406,15 +410,6 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
 }
 
 
-// void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv){
-//   tree->Branch("NTRJigsawVars",&rjigsawntv, "RJVars_SS_Mass/F"  );
-// }
-
-
-
-
-
-
 void NTCRYVars::Reset()
 {
   phPt.clear();
@@ -423,6 +418,15 @@ void NTCRYVars::Reset()
   phSignal.clear();
   origmet = 0.f;
   origmetPhi = 0.f;
+  phTopoetcone20.clear();
+  phPtvarcone20.clear(); 
+  phPtcone20.clear();
+  phTopoetcone40.clear();
+  phPtvarcone40.clear();
+  phPtcone40.clear();
+  //phisEMTight.clear();
+  phLoose.clear();
+  phTight.clear();
 }
 
 
@@ -432,6 +436,15 @@ NTCRYVarsRead::NTCRYVarsRead(): ntv()
   p_phEta = &ntv.phEta;
   p_phPhi = &ntv.phPhi;
   p_phSignal = &ntv.phSignal;
+  p_phTopoetcone20 = &ntv.phTopoetcone20;
+  p_phPtvarcone20 = &ntv.phPtvarcone20;
+  p_phPtcone20 = &ntv.phPtcone20;
+  p_phTopoetcone40 = &ntv.phTopoetcone40;
+  p_phPtvarcone40 = &ntv.phPtvarcone40;
+  p_phPtcone40 = &ntv.phPtcone40;
+  //p_phisEMTight  = &ntv.phisEMTight;
+  p_phLoose = &ntv.phLoose;
+  p_phTight = &ntv.phTight;
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
@@ -441,6 +454,15 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   tree->Branch("phEta",&(cryntv.phEta));
   tree->Branch("phPhi",&(cryntv.phPhi));
   tree->Branch("phSignal",&(cryntv.phSignal));
+  tree->Branch("phTopoetcone20",&(cryntv.phTopoetcone20));
+  tree->Branch("phPtvarcone20",&(cryntv.phPtvarcone20));
+  tree->Branch("phPtcone20",&(cryntv.phPtcone20));
+  tree->Branch("phTopoetcone40",&(cryntv.phTopoetcone40));
+  tree->Branch("phPtvarcone40",&(cryntv.phPtvarcone40));
+  tree->Branch("phPtcone40",&(cryntv.phPtcone40));
+  //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
+  tree->Branch("phLoose",&(cryntv.phLoose));
+  tree->Branch("phTight",&(cryntv.phTight));
 }
 
 void NTCRYVarsRead::setAddresses(TTree* tree)
@@ -450,5 +472,14 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("phEta")->SetAddress(&p_phEta);
   tree->GetBranch("phPhi")->SetAddress(&p_phPhi);
   tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
+  tree->GetBranch("phTopoetcone20")->SetAddress(&p_phTopoetcone20);
+  tree->GetBranch("phPtvarcone20")->SetAddress(&p_phPtvarcone20);
+  tree->GetBranch("phPtcone20")->SetAddress(&p_phPtcone20);
+  tree->GetBranch("phTopoetcone40")->SetAddress(&p_phTopoetcone40);
+  tree->GetBranch("phPtvarcone40")->SetAddress(&p_phPtvarcone40);
+  tree->GetBranch("phPtcone40")->SetAddress(&p_phPtcone40);
+  //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
+  tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
+  tree->GetBranch("phTight")->SetAddress(&p_phTight);
 }
 

@@ -52,12 +52,16 @@ class ElectronProxy: public TLorentzVector
   inline bool isBaseline() const {return m_isBaseline;}
   inline bool isSignal() const {return m_isSignal;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
+  inline void getSF(float& sf) const {
+    sf         = m_sf;
+  }
   inline const xAOD::Electron* electron() const {return m_el;}
 
  private:
   bool m_isBaseline;
   bool m_isSignal;
   bool m_passOR;
+  float m_sf;
   const xAOD::Electron* m_el;
 
 public:
@@ -74,12 +78,16 @@ class PhotonProxy: public TLorentzVector
   inline bool isBaseline() const {return m_isBaseline;}
   inline bool isSignal() const {return m_isSignal;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
+  inline void getSF(float& sf) const {
+    sf         = m_sf;
+  }
   inline const xAOD::Photon* photon() const {return m_ph;}
 
  private:
   bool m_isBaseline;
   bool m_isSignal;
   bool m_passOR;
+  float m_sf;
   const xAOD::Photon* m_ph;
 
 public:
@@ -97,6 +105,9 @@ class MuonProxy: public TLorentzVector
   inline bool passOVerlapRemoval() const {return m_passOR;}
   inline bool isCosmic() const {return m_isCosmic;}
   inline bool isBad() const {return m_isBad;}
+  inline void getSF(float& sf) const {
+    sf         = m_sf;
+  }
   inline const xAOD::Muon* muon() const {return m_muon;}
 
  private:
@@ -105,6 +116,7 @@ class MuonProxy: public TLorentzVector
   bool m_passOR;
   bool m_isCosmic;
   bool m_isBad;
+  float m_sf;
   const xAOD::Muon* m_muon;
 
 public:

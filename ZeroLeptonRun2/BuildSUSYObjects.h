@@ -11,9 +11,11 @@ namespace CP{
 }
 namespace ST{
   class SUSYObjDef_xAOD;
+  class SystInfo;
 }
 
 #include <string>
+#include <vector>
 
 //---------------------------------------------------------------------
 // BuildSUSYObjects use the collections of physics objects in the event
@@ -39,7 +41,7 @@ private:
   bool m_IsData;
   bool m_IsAtlfast;
   bool m_UseSmearedJets;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   bool m_PhotonInOR;
 
   ToolHandle<TauAnalysisTools::ITauSelectionTool> m_tauSelTool;
@@ -54,6 +56,9 @@ private:
   int m_JESNuisanceParameterSet;
   std::string m_ECKey;
   std::string m_PCKey;
+
+  std::vector<ST::SystInfo> m_SystInfoList;
+  std::vector<std::string> m_SystMatch;
 
 public:
   ClassDef(BuildSUSYObjects,0);

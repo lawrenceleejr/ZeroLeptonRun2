@@ -70,7 +70,7 @@ def main():
     for pkgname in flpkgs:
         pkgname = pkgname.split(':')[0]
         if not os.path.isdir(pkgname): continue
-        localfiles += findFiles(pkgname,('.root','.txt','.xml','.env'))
+        localfiles += findFiles(pkgname,('.root','.txt','.xml','.env','tarball'))
 
     ## Loop over input datasets
     first = True
@@ -87,7 +87,7 @@ def main():
         isSignal = config.signal
         # check for known signal MC patterns
         if not isSignal:
-            for pattern in ['SM_SS', 'SM_GG', 'SM_SG', 'Gtt', 'Gluino_Stop_charm', 'Tt', 'compsusy', 'msugra', 'MSUGRA', '_0_10_P', 'NUHMG', 'bRPV']:
+            for pattern in ['SM_SS', 'SS_direct', 'SM_GG', 'GG_direct', 'GG_onestep', 'SM_SG', 'Gtt', 'Gluino_Stop_charm', 'Tt', 'compsusy', 'msugra', 'MSUGRA', '_0_10_P', 'NUHMG', 'bRPV']:
                 if pattern in inDS:
                     print 'override option to signal = True'
                     isSignal = True
@@ -140,10 +140,12 @@ def main():
 
         # which cafe config file should be used ?
         if config.configfile == "":
-            if "mc15" in inDS or "data15" in inDS:
+            if ("mc15" in inDS or "data15" in inDS) and not("TRUTH1" in inDS):
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton.config"
             elif "mc14" in inDS or "data12" in inDS:
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton_DC14.config"
+            elif "TRUTH1" in inDS:
+                cafeconfig = "ZeroLeptonRun2/config/zeroleptontruth.config"
             else:
                 print "Unexpected dataset name, could not figure out which cafe config file to use"
                 sys.exit(1)
@@ -182,13 +184,19 @@ def main():
             sys.exit(1)
 
         # test special derivation tags
-        tag = inDS.split(".")[-1]
-        if 'p1872' in tag:
-            scriptcmd += " Global.DerivationTag: p1872 "
-        if 'p2353' in tag:
-            scriptcmd += " Global.DerivationTag: p2353 "
-        else:
-            scriptcmd += " Global.DerivationTag: NA "
+        if not 'Global.DerivationTag' in config.runopts:
+            tag = inDS.split(".")[-1]
+            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377' ]
+            found = False
+            if not('TRUTH1' in inDS):
+                for t in knowntags:
+                    if t in tag:
+                        scriptcmd += " Global.DerivationTag: "+t
+                        found = True
+                        break
+                    pass
+                if not found:
+                    scriptcmd += " Global.DerivationTag: NA "
 
         # signal events
         if isSignal:

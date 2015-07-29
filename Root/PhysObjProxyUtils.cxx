@@ -13,21 +13,100 @@
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
 
+PhysObjProxyUtils::PhysObjProxyUtils(bool IsData): 
+  m_IsData(IsData),
+  LAB_alt(0),
+  S_alt(0),
+  V_alt(0),
+  I_alt(0),
+  INV_alt(0),
+  VIS_alt(0),
+  MinMass_alt(0),
+  Rapidity_alt(0),
+  LAB(0),
+  SS(0),
+  S1(0),
+  S2(0),
+  V1(0),
+  V2(0),
+  I1(0),
+  I2(0),
+  INV(0),
+  VIS(0),
+  MinMassJigsaw(0),
+  RapidityJigsaw(0),
+  ContraBoostJigsaw(0),
+  HemiJigsaw(0),
+  LAB_R(0),
+  GG_R(0),
+  Ga_R(0),
+  Gb_R(0),
+  Ca_R(0),
+  Cb_R(0),
+  V1a_R(0),
+  V2a_R(0),
+  Xa_R(0),
+  V1b_R(0),
+  V2b_R(0),
+  Xb_R(0),
+  INV_R(0),
+  VIS_R(0),
+  MinMassJigsaw_R(0),
+  RapidityJigsaw_R(0),
+  ContraBoostJigsaw_R(0),
+  HemiJigsaw_R(0),
+  CaHemiJigsaw_R(0),
+  CbHemiJigsaw_R(0)
+{
+}
 
-#include "RestFrames/RestFrame.hh"
-#include "RestFrames/RFrame.hh"
-#include "RestFrames/RLabFrame.hh"
-#include "RestFrames/RDecayFrame.hh"
-#include "RestFrames/RVisibleFrame.hh"
-#include "RestFrames/RInvisibleFrame.hh"
-#include "RestFrames/RSelfAssemblingFrame.hh"
-#include "RestFrames/InvisibleMassJigsaw.hh"
-#include "RestFrames/InvisibleRapidityJigsaw.hh"
-#include "RestFrames/ContraBoostInvariantJigsaw.hh"
-#include "RestFrames/MinimizeMassesCombinatoricJigsaw.hh"
-#include "RestFrames/InvisibleGroup.hh"
-#include "RestFrames/CombinatoricGroup.hh"
-#include "RestFrames/FramePlot.hh"
+PhysObjProxyUtils::~PhysObjProxyUtils() 
+{
+  if ( !LAB_alt) delete LAB_alt;
+  if ( !S_alt) delete S_alt;
+  if ( !V_alt) delete V_alt;
+  if ( !I_alt) delete I_alt;
+  if ( !INV_alt) delete INV_alt;
+  if ( !VIS_alt) delete VIS_alt;
+  if ( !MinMass_alt) delete MinMass_alt;
+  if ( !Rapidity_alt) delete Rapidity_alt;
+  if ( !LAB) delete LAB;
+  if ( !SS) delete SS;
+  if ( !S1) delete S1;
+  if ( !S2) delete S2;
+  if ( !V1) delete V1;
+  if ( !V2) delete V2;
+  if ( !I1) delete I1;
+  if ( !I2) delete I2;
+  if ( !INV) delete INV;
+  if ( !VIS) delete VIS;
+  if ( !MinMassJigsaw) delete MinMassJigsaw;
+  if ( !RapidityJigsaw) delete RapidityJigsaw;
+  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
+  if ( !HemiJigsaw) delete HemiJigsaw;
+
+  if ( !LAB_R) delete LAB_R;
+  if ( !GG_R) delete GG_R;
+  if ( !Ga_R) delete Ga_R;
+  if ( !Gb_R) delete Gb_R;
+  if ( !Ca_R) delete Ca_R;
+  if ( !Cb_R) delete Cb_R;
+  if ( !V1a_R) delete V1a_R;
+  if ( !V2a_R) delete V2a_R;
+  if ( !Xa_R) delete Xa_R;
+  if ( !V1b_R) delete V1b_R;
+  if ( !V2b_R) delete V2b_R;
+  if ( !Xb_R) delete Xb_R;
+  if ( !INV_R) delete INV_R;
+  if ( !VIS_R) delete VIS_R;
+  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
+  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
+  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
+  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
+  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
+  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+}
+
 
 void PhysObjProxyUtils::EnergyWeightedTime(const std::vector<JetProxy>& jets, 
 					   std::vector<float>& time) const
@@ -136,7 +215,56 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
 
 };
 
+
 void PhysObjProxyUtils::RJigsawInit(){
+
+
+  // cleanup previously computed variables
+  if ( !LAB_alt) delete LAB_alt;
+  if ( !S_alt) delete S_alt;
+  if ( !V_alt) delete V_alt;
+  if ( !I_alt) delete I_alt;
+  if ( !INV_alt) delete INV_alt;
+  if ( !VIS_alt) delete VIS_alt;
+  if ( !MinMass_alt) delete MinMass_alt;
+  if ( !Rapidity_alt) delete Rapidity_alt;
+  if ( !LAB) delete LAB;
+  if ( !SS) delete SS;
+  if ( !S1) delete S1;
+  if ( !S2) delete S2;
+  if ( !V1) delete V1;
+  if ( !V2) delete V2;
+  if ( !I1) delete I1;
+  if ( !I2) delete I2;
+  if ( !INV) delete INV;
+  if ( !VIS) delete VIS;
+  if ( !MinMassJigsaw) delete MinMassJigsaw;
+  if ( !RapidityJigsaw) delete RapidityJigsaw;
+  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
+  if ( !HemiJigsaw) delete HemiJigsaw;
+
+  if ( !LAB_R) delete LAB_R;
+  if ( !GG_R) delete GG_R;
+  if ( !Ga_R) delete Ga_R;
+  if ( !Gb_R) delete Gb_R;
+  if ( !Ca_R) delete Ca_R;
+  if ( !Cb_R) delete Cb_R;
+  if ( !V1a_R) delete V1a_R;
+  if ( !V2a_R) delete V2a_R;
+  if ( !Xa_R) delete Xa_R;
+  if ( !V1b_R) delete V1b_R;
+  if ( !V2b_R) delete V2b_R;
+  if ( !Xb_R) delete Xb_R;
+  if ( !INV_R) delete INV_R;
+  if ( !VIS_R) delete VIS_R;
+  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
+  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
+  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
+  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
+  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
+  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+
+
 
   LAB_alt = new RestFrames::RLabFrame("LAB","lab");
 
@@ -238,7 +366,8 @@ void PhysObjProxyUtils::RJigsawInit(){
   S2->AddChildFrame(V2);
   S2->AddChildFrame(I2);
 
-  std::cout << "Is consistent tree topology? " << LAB->InitializeTree() << std::endl; 
+  //std::cout << "Is consistent tree topology? " << LAB->InitializeTree() << std::endl; 
+  LAB->InitializeTree();
 
   INV->AddJigsaw(MinMassJigsaw);
 
@@ -255,7 +384,8 @@ void PhysObjProxyUtils::RJigsawInit(){
   HemiJigsaw->AddFrame(V1,0);
   HemiJigsaw->AddFrame(V2,1);
 
-  std::cout << "Is consistent analysis tree? : " << LAB->InitializeAnalysis() << std::endl; 
+  //std::cout << "Is consistent analysis tree? : " << LAB->InitializeAnalysis() << std::endl; 
+  LAB->InitializeAnalysis();
 
   //
   //
@@ -281,7 +411,8 @@ void PhysObjProxyUtils::RJigsawInit(){
   Cb_R->AddChildFrame(Xb_R);
 
 
-  if(!LAB_R->InitializeTree()) cout << "Problem with signal-like reconstruction tree" << endl; 
+  //if(!LAB_R->InitializeTree()) cout << "Problem with signal-like reconstruction tree" << endl; 
+  LAB_R->InitializeTree();
 
 
   INV_R->AddFrame(Xa_R);
@@ -319,7 +450,8 @@ void PhysObjProxyUtils::RJigsawInit(){
   CbHemiJigsaw_R->AddFrame(V2b_R,1);
   CbHemiJigsaw_R->AddFrame(Xb_R,1);
 
-  if(!LAB_R->InitializeAnalysis()) cout << "Problem with signal-tree jigsaws" << endl;
+  //if(!LAB_R->InitializeAnalysis()) cout << "Problem with signal-tree jigsaws" << endl;
+  LAB_R->InitializeAnalysis();
 
   return;
 
@@ -340,7 +472,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   vector<RestFrames::GroupElementID> jetID_R;                    // ID for tracking jets in tree
 
-  std::cout << "number of jets is " << jets.size() << std::endl;
+  //std::cout << "number of jets is " << jets.size() << std::endl;
 
   if(jets.size() < 2){
     RJigsawVariables = std::map<TString, float>();
@@ -471,8 +603,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
     jet1PT[i] = pTmax[0];
     jet2PT[i] = pTmax[1];
-    std::cout << "In SklimmerAnalysis: " << jet1PT[i] << " " << jet2PT[i] << std::endl;
-    std::cout << "In SklimmerAnalysis: " << NV[i] << std::endl;
+    //std::cout << "In SklimmerAnalysis: " << jet1PT[i] << " " << jet2PT[i] << std::endl;
+    //std::cout << "In SklimmerAnalysis: " << NV[i] << std::endl;
 
 
 
@@ -489,6 +621,16 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     RJigsawVariables[ Form("RJVars_G_%d_CosTheta",i)    ] = G[i]->GetCosDecayAngle();
     RJigsawVariables[ Form("RJVars_G_%d_Jet1_pT",i)     ] = jet1PT[i];
     RJigsawVariables[ Form("RJVars_G_%d_Jet2_pT",i)     ] = jet2PT[i];
+
+
+    TVector3 P1_G = VS[i]->GetFourVector(G[i]).Vect();
+    TVector3 P2_G = VC[i]->GetFourVector(G[i]).Vect();
+
+
+    float Pinv = (P1_G+P2_G).Mag();
+    float P1 = P1_G.Mag();
+    float P2 = P2_G.Mag();
+    RJigsawVariables[ Form("RJVars_G_%d_PInvHS",i) ] = 2*Pinv/(P1+P2+Pinv);
 
   }
 
@@ -524,8 +666,6 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   ////////////////////////////////////////////////////////////////////////////////
 
 
-
-
   ////////////////////////////////////////////////////////////////////////////////
   // QCD Variables
 
@@ -548,10 +688,10 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
 
   // QCD rejection variables from 'background tree'
-  double DepthBKG = S_alt->GetFrameDepth(I_alt);
-  int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
-  double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
-  double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
+  //double DepthBKG = S_alt->GetFrameDepth(I_alt);
+  //int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
+  //double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
+  //double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
   double RpsibM = Psib_dot_METhat / (Psib_dot_METhat + MET_TV3.Mag());
   double RmsibM = 1. / ( MB2/(Mpar2-Msib2) + 1.);
   Psib.Boost(-boostPsibM);
@@ -575,6 +715,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   return;
 
 }
+
+
 
 
 void PhysObjProxyUtils::RazorVariables(const std::vector<JetProxy>& jets, 
@@ -1176,8 +1318,8 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
 {
   // rjigsawntv.Reset();
 
-  std::cout << "In filling function----------------" << std::endl;
-  std::cout << RJigsawVariables["RJVars_G_0_CosTheta"] << " -----------------------" << std::endl;
+  //std::cout << "In filling function----------------" << std::endl;
+  //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"] << " -----------------------" << std::endl;
 
   rjigsawntv.RJVars_SS_Mass           = RJigsawVariables["RJVars_SS_Mass"] ;
   rjigsawntv.RJVars_SS_InvGamma       = RJigsawVariables["RJVars_SS_InvGamma"] ;
@@ -1204,12 +1346,14 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
   rjigsawntv.RJVars_G_0_MassRatioGC   = RJigsawVariables["RJVars_G_0_MassRatioGC"] ;
   rjigsawntv.RJVars_G_0_Jet1_pT       = RJigsawVariables["RJVars_G_0_Jet1_pT"] ;
   rjigsawntv.RJVars_G_0_Jet2_pT       = RJigsawVariables["RJVars_G_0_Jet2_pT"] ;
+  rjigsawntv.RJVars_G_0_PInvHS        = RJigsawVariables["RJVars_G_0_PInvHS"] ;
   rjigsawntv.RJVars_G_1_CosTheta      = RJigsawVariables["RJVars_G_1_CosTheta"] ;
   rjigsawntv.RJVars_C_1_CosTheta      = RJigsawVariables["RJVars_C_1_CosTheta"] ;
   rjigsawntv.RJVars_G_1_dPhiGC        = RJigsawVariables["RJVars_G_1_dPhiGC"] ;
   rjigsawntv.RJVars_G_1_MassRatioGC   = RJigsawVariables["RJVars_G_1_MassRatioGC"] ;
   rjigsawntv.RJVars_G_1_Jet1_pT       = RJigsawVariables["RJVars_G_1_Jet1_pT"] ;
   rjigsawntv.RJVars_G_1_Jet2_pT       = RJigsawVariables["RJVars_G_1_Jet2_pT"] ;
+  rjigsawntv.RJVars_G_1_PInvHS        = RJigsawVariables["RJVars_G_1_PInvHS"] ;
   rjigsawntv.RJVars_QCD_dPhiR         = RJigsawVariables["RJVars_QCD_dPhiR"] ;
   rjigsawntv.RJVars_QCD_Rpt           = RJigsawVariables["RJVars_QCD_Rpt"] ;
   rjigsawntv.RJVars_QCD_Rmsib         = RJigsawVariables["RJVars_QCD_Rmsib"] ;
@@ -1219,9 +1363,12 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
 }
 
 
+
+
 void PhysObjProxyUtils::FillNTVars(NTVars& ntv, 
 				   unsigned int RunNumber, 
 				   unsigned int EventNumber,
+				   unsigned int LumiBlockNumber,
 				   unsigned int veto, 
 				   float weight, 
 				   std::vector<float>& normWeight, 
@@ -1249,8 +1396,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   const std::vector<float>* flaggedtau, 
 				   float tauMt,
 				   float SherpaBugMET,
-				   float metLHTOPOx,
-				   float metLHTOPOy,
 				   bool isTruth,
 				   std::vector<TauProxy> baseline_taus,
 				   std::vector<TauProxy> signal_taus)
@@ -1259,6 +1404,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 
   ntv.RunNumber = RunNumber;
   ntv.EventNumber = EventNumber;
+  ntv.LumiBlockNumber = LumiBlockNumber;
   ntv.veto = veto;
   ntv.weight = weight;
   ntv.pileupWeight     = (pileupWeight.size() >= 1) ? pileupWeight.at(0) : 1.;
@@ -1314,10 +1460,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 
 
   ntv.Njet = 0; 
-  float metNOCHCORRCELLx = MissingEt*std::cos(METPhi);
-  float metNOCHCORRCELLy = MissingEt*std::sin(METPhi);
-  float metLHTOPONOCHCORRCELLx = metLHTOPOx;
-  float metLHTOPONOCHCORRCELLy = metLHTOPOy;
   TLorentzVector jet1TLV;
   TLorentzVector jet2TLV;
   for ( size_t jet0=0; jet0<good_jets.size(); jet0++) 
@@ -1330,28 +1472,23 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 
     float emf = 0.;
     float chf = 1.;
-    float jetbtag = -1.;  // MV1 not available on xAOD
+    double jetbtag = -999.;  // MV1 not available on xAOD
     if ( thisjet.jet() && !isTruth ) {
       thisjet.jet()->getAttribute(xAOD::JetAttribute::EMFrac,emf);
       std::vector<float> sumPtTrk;
       thisjet.jet()->getAttribute(xAOD::JetAttribute::SumPtTrkPt500,sumPtTrk); // FIXME or SumPtTrkPt1000 ??
       chf = (pt > 0.) ? sumPtTrk[0]/pt : 0;
+      thisjet.jet()->btagging()->MVx_discriminant("MV2c20", jetbtag);
     }
     int jetflav = 0;
-    float jettagU = -1.;
-    float jettagB = -1.;
-    float jettagC = -1.;
-    double  jet_BCH_CORR_CELL = 0.;
+    float jettagU = -999.;
+    float jettagB = -999.;
+    float jettagC = -999.;
     float jetFracSamplingMax = 0.;
     int jetFracSamplingMaxIndex = 0.;
     if ( thisjet.jet() ) {
-      thisjet.jet()->getAttribute(xAOD::JetAttribute::BchCorrCell,jet_BCH_CORR_CELL);
       thisjet.jet()->getAttribute(xAOD::JetAttribute::FracSamplingMax,jetFracSamplingMax);
       thisjet.jet()->getAttribute(xAOD::JetAttribute::FracSamplingMaxIndex,jetFracSamplingMaxIndex);
-      metNOCHCORRCELLx += thisjet.jet()->px()*jet_BCH_CORR_CELL;
-      metNOCHCORRCELLy += thisjet.jet()->py()*jet_BCH_CORR_CELL;
-      metLHTOPONOCHCORRCELLx += thisjet.jet()->px()*jet_BCH_CORR_CELL;
-      metLHTOPONOCHCORRCELLy += thisjet.jet()->py()*jet_BCH_CORR_CELL;
     }
 
     if (pt > 40000.) {
@@ -1364,7 +1501,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
       ntv.jetTagU.push_back(jettagU);
       ntv.jetTagB.push_back(jettagB);
       ntv.jetTagC.push_back(jettagC);
-      ntv.jetBCH_CORR_CELL.push_back(jet_BCH_CORR_CELL);
       ntv.jetFracSamplingMax.push_back(jetFracSamplingMax);
       ntv.jetFracSamplingMaxIndex.push_back(jetFracSamplingMaxIndex);
       ntv.Njet++;
@@ -1383,13 +1519,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
       break;
     }
   }
-  ntv.metNOCHCORRCELL = std::sqrt(metNOCHCORRCELLx*metNOCHCORRCELLx+
-				  metNOCHCORRCELLy*metNOCHCORRCELLy) * 0.001;
-  ntv.metLHTOPONOCHCORRCELL = std::sqrt(metLHTOPONOCHCORRCELLx*metLHTOPONOCHCORRCELLx+
-					metLHTOPONOCHCORRCELLy*metLHTOPONOCHCORRCELLy) * 0.001;
-  ntv.metLHTOPO = std::sqrt(metLHTOPOx*metLHTOPOx+
-			    metLHTOPOy*metLHTOPOy) * 0.001;
-  
   ntv.jetSmearSystW = jetSmearSystW;
 
   ntv.tauN = signal_taus.size();

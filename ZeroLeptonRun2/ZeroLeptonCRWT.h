@@ -39,7 +39,7 @@ private:
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
   bool m_isVR;
   bool m_isMuonChannel;
@@ -48,6 +48,7 @@ private:
   NTVars m_ntv;
   NTReclusteringVars m_RTntv;
   NTExtraVars m_extrantv;
+  NTRJigsawVars m_rjigsawntv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;
   NTCRWTVars m_crwtntv;

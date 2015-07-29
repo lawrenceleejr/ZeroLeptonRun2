@@ -17,7 +17,7 @@ class NTVars
   
   void Reset();
 
-  unsigned int RunNumber, EventNumber, veto;
+  unsigned int RunNumber, EventNumber, LumiBlockNumber, veto;
   float weight, pileupWeight, pileupWeightUp, pileupWeightDown, genWeight;
   float ttbarWeightHT, ttbarWeightPt2, ttbarAvgPt, WZweight;
   int Njet;
@@ -38,9 +38,6 @@ class NTVars
   int tauLooseN;
   float tauMt;
   float SherpaBugMET;
-  float metNOCHCORRCELL;
-  float metLHTOPO;
-  float metLHTOPONOCHCORRCELL;
 
   // WARNING: if you add another vector you need to update NTVarsRead below
 
@@ -56,7 +53,6 @@ class NTVars
   std::vector< float > jetTagB;
   std::vector< float > jetTagC;  
   std::vector< float > jetSmearSystW;
-  std::vector< float > jetBCH_CORR_CELL;
   std::vector< float > jetFracSamplingMax;
   std::vector< float > jetFracSamplingMaxIndex;
 
@@ -68,7 +64,8 @@ class NTVars
   std::vector< float > tauLooseSFStatDown;
   std::vector< float > tauLooseSFSystUp;
   std::vector< float > tauLooseSFSystDown;
-  
+
+  std::vector< float > systWeights;
 };
 
 // this is a helper class to read an ntuple with an NTVars, as it need the
@@ -98,7 +95,6 @@ private:
   std::vector< float >* p_jetTagB;
   std::vector< float >* p_jetTagC;
   std::vector< float >* p_jetSmearSystW;
-  std::vector< float >* p_jetBCH_CORR_CELL;
   std::vector< float >* p_jetFracSamplingMax;
   std::vector< float >* p_jetFracSamplingMaxIndex;
  
@@ -110,6 +106,8 @@ private:
   std::vector< float >* p_tauLooseSFStatDown;
   std::vector< float >* p_tauLooseSFSystUp;
   std::vector< float >* p_tauLooseSFSystDown;
+
+  std::vector< float >* p_systWeights;
 };
 
 
@@ -208,7 +206,15 @@ class NTCRYVars
   std::vector<float> phEta;
   std::vector<float> phPhi;
   std::vector<bool> phSignal;
-
+  std::vector<float> phTopoetcone20;
+  std::vector<float> phPtvarcone20;
+  std::vector<float> phPtcone20;
+  std::vector<float> phTopoetcone40;
+  std::vector<float> phPtvarcone40;
+  std::vector<float> phPtcone40;
+  //std::vector<int>   phisEMTight;
+  std::vector<bool> phLoose;
+  std::vector<bool> phTight;
 };
 
 class NTCRYVarsRead 
@@ -223,6 +229,15 @@ private:
   std::vector< float >* p_phEta;
   std::vector< float >* p_phPhi;
   std::vector< bool >*  p_phSignal;
+  std::vector< float >* p_phTopoetcone20;
+  std::vector< float >* p_phPtvarcone20;
+  std::vector< float >* p_phPtcone20;
+  std::vector< float >* p_phTopoetcone40;
+  std::vector< float >* p_phPtvarcone40;
+  std::vector< float >* p_phPtcone40;
+  //std::vector< int >*   p_phisEMTight;
+  std::vector< bool >*  p_phLoose;
+  std::vector< bool >*  p_phTight;
 };
 
 class NTPdfVars {
@@ -305,13 +320,15 @@ public:
   float RJVars_G_0_dPhiGC        ;     
   float RJVars_G_0_MassRatioGC   ;   
   float RJVars_G_0_Jet1_pT       ; 
-  float RJVars_G_0_Jet2_pT       ;        
+  float RJVars_G_0_Jet2_pT       ; 
+  float RJVars_G_0_PInvHS        ;        
   float RJVars_G_1_CosTheta      ;       
   float RJVars_C_1_CosTheta      ;       
   float RJVars_G_1_dPhiGC        ;     
   float RJVars_G_1_MassRatioGC   ;      
   float RJVars_G_1_Jet1_pT       ; 
   float RJVars_G_1_Jet2_pT       ; 
+  float RJVars_G_1_PInvHS        ; 
 
   //QCD Variables
   float RJVars_QCD_dPhiR         ;  
@@ -362,14 +379,11 @@ inline void bookNTExtraVars(TTree* tree, NTExtraVars& extrantv)
   tree->Branch("NTExtraVars",&extrantv,NTExtraVars::toString().c_str());
 }
 
+
 inline void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv)
 {
   tree->Branch("NTRJigsawVars",&rjigsawntv,NTRJigsawVars::toString().c_str());
-  // tree->Branch("NTRJigsawVars",&rjigsawntv,"RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_G_0_CosTheta/F") ;
 }
-
-// void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv);
-
 
 inline void bookNTTheoryVars(TTree* tree, NTTheoryVars& theoryntv)
 {

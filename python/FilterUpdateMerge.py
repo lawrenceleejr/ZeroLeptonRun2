@@ -43,7 +43,6 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
-<<<<<<< HEAD
                       action='store_true', default=True)
     parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
                       help="Also merge the CRWTVars block ?", 
@@ -54,15 +53,9 @@ def parseCmdLine():
     parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
                       help="Also merge the CRYVars block ?", 
                       action='store_true', default=True)
-=======
-                      action='store_true', default=False)
     parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
                       help="Also merge the RJigsawVars block ?", 
                       action='store_true', default=False)
-<<<<<<< HEAD
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
-=======
->>>>>>> 63a1e72b67bdc2885a719dc340720353bbc0a3d3
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
@@ -275,6 +268,10 @@ class Sample:
                 if not ds:
                     print 'Could not identify channel number for ',filename
                     sys.exit(1)
+                if not self.config.doData and not isSignal and xsecDB.rawxsect(ds) < 0.:
+                    print 'No cross-section for sample',ds,'skip file',filename
+                    continue
+
                 newtname=self.getNewTreeName(inTree, ds)
                 if outTreeDict.has_key(newtname):
                     outTreeDict[newtname][2].append(filename)
@@ -287,9 +284,9 @@ class Sample:
             inList = ROOT.FilterUpdateMergeFileList()
             for name in filelist:
                 inList.add(name)
-<<<<<<< HEAD
 
             doExtraVars = self.config.mergeExtraVars
+            doRJigsawVars = self.config.mergeRJigsawVars
             doCRWTVars = self.config.mergeCRWTVars
             doCRZVars = self.config.mergeCRZVars
             doCRYVars = self.config.mergeCRYVars
@@ -301,6 +298,8 @@ class Sample:
                 if not testt: continue
                 if doExtraVars and not testt.GetBranch('NTExtraVars'):
                     doExtraVars = False
+                if doRJigsawVars and not testt.GetBranch('NTRJigsawVars'):
+                    doRJigsawVars = False
                 if doCRWTVars and not testt.GetBranch('NTCRWTVars'):
                     doCRWTVars = False
                 if doCRZVars and not testt.GetBranch('NTCRZVars'):
@@ -308,17 +307,7 @@ class Sample:
                 if doCRYVars and not testt.GetBranch('NTCRYVars'):
                     doCRYVars = False
                 break
-            merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doCRWTVars, doCRZVars, doCRYVars)
-=======
-            # currently ExtraVars only implemented in SR not CR/VR
-            if inTreeName.startswith('CR') or inTreeName.startswith('VR'):
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False, False)
-            else:
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars, self.config.mergeExtraVars)
-<<<<<<< HEAD
->>>>>>> Works for some number of the variables right now. going to fill out other variables now
-=======
->>>>>>> 63a1e72b67bdc2885a719dc340720353bbc0a3d3
+            merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doRJigsawVars, doCRWTVars, doCRZVars, doCRYVars)
             newfile.cd()
             outTree.Write()
 
@@ -360,9 +349,13 @@ if __name__ == '__main__':
         AllSamples.append(Top)
         AllSamples.append(WMassiveCB)
         AllSamples.append(ZMassiveCB)
+        AllSamples.append(DB) 
         AllSamples.append(QCD)
         AllSamples.append(GAMMAMassiveCB)
 
+    #if config.doZLO==True:
+    #    ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
+    #    AllSamples.append(ZLO)
 
     if config.doData==True:
         # Run 1 streams

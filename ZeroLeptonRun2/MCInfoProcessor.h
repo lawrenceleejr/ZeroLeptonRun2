@@ -6,6 +6,7 @@ namespace SUSY{
   class CrossSectionDB;
 }
 #include <vector>
+#include <string>
 
 class MCInfoProcessor : public cafe::Processor {
 public:
@@ -16,6 +17,7 @@ private:
   void normWeights(xAOD::TEvent& event,std::vector<float>& normWeights,uint32_t mc_channel_number,unsigned int finalstate);
   unsigned int hardProcess(xAOD::TEvent& event) const;
 
+  std::string m_truthPKey;
   bool m_isSignal;
   SUSY::CrossSectionDB* m_mcDB;
 

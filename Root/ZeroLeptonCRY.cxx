@@ -29,7 +29,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
-    m_UseSystematics(false),
+    m_DoSystematics(false),
     m_period(INVALID),
     m_suffix(""),
     m_physobjsFiller(0),
@@ -46,7 +46,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
-  m_UseSystematics = config.get("UseSystematics",false);
+  m_DoSystematics = config.get("DoSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRY does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRY: invalid run period specified"));
@@ -69,7 +69,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
 
 ZeroLeptonCRY::~ZeroLeptonCRY()
 {
-  if ( !m_UseSystematics && m_counter ) delete m_counter;
+  if ( !m_DoSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
   if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
@@ -82,6 +82,7 @@ TTree* ZeroLeptonCRY::bookTree(const std::string& treename)
   bookNTVars(tree,m_ntv,false);
   bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
+  bookNTRJigsawVars(tree,m_rjigsawntv);
   bookNTCRYVars(tree,m_cryntv);
   return tree;
 }
@@ -102,7 +103,7 @@ void ZeroLeptonCRY::begin()
     sSR+="NT";
   }
 
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     m_counterRepository = CounterRepository("ZeroLeptonCounter"+m_stringRegion,m_IsSignal,getDirectory());
   }
   else {
@@ -117,15 +118,19 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 {
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  if ( m_UseSystematics ) {
+  std::string systag = "";
+  if ( m_DoSystematics ) {
     CP::SystematicSet* currentSyst = 0;
     if ( ! store->retrieve(currentSyst, "CurrentSystematicSet").isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
-    m_counter = m_counterRepository.counter(currentSyst->name());
-    if (currentSyst->name() == "" ) {
+    std::string sysname = currentSyst->name();
+    if (sysname != "" ) systag = "_"+sysname+"_";
+    m_counter = m_counterRepository.counter(sysname);
+    if (sysname == "" ) {
       m_tree = getTree(m_stringRegion+"NT");
     }
     else {
-      m_tree = getTree(m_stringRegion+"NT_"+currentSyst->name());
+      m_tree = getTree(m_stringRegion+"NT_"+sysname);
+      m_physobjsFiller->setSuffix(m_suffix+systag);
     }
   }
 
@@ -134,6 +139,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if ( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) throw std::runtime_error("Could not retrieve EventInfo");
   uint32_t RunNumber = eventInfo->runNumber();
   unsigned long long EventNumber = eventInfo->eventNumber();
+  uint32_t LumiBlockNumber = eventInfo->lumiBlock();
   uint32_t mc_channel_number = 0;
   if ( ! m_IsData ) mc_channel_number = eventInfo->mcChannelNumber();
 
@@ -203,8 +209,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // FIXME : to be implemented ... not in xAOD yet
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
-  // Trigger selection
-  // FIXME : no trigger information in xAOD yet 
+  // Trigger selection 
+  if(! m_IsTruth){
+    if( !((int)eventInfo->auxdata<char>("HLT_g120_loose")==1) && !((int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
+  }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
@@ -244,19 +252,71 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   const xAOD::PhotonContainer* phContainer = 0;
   float leadPhPt = 0.;
   xAOD::PhotonContainer::const_iterator leadPh ;
+  std::vector<bool> vtight ;
+  std::vector<bool> vloose ;
+  std::vector<float> vtopoetcone20;
+  std::vector<float> vptvarcone20;
+  std::vector<float> vptcone20;
+  std::vector<float> vtopoetcone40;
+  std::vector<float> vptvarcone40;
+  std::vector<float> vptcone40;
+
+  //std::vector<int> visEMTight;
+  std::vector<float> vpt;
+  std::vector<float> veta;
   if(! m_IsTruth){
     if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
       throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
-    }  
+    }
     for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
       allphotons.push_back(PhotonProxy(*phit));
+      // Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx
+      float topoetcone20=0;
+      float ptvarcone20=0;
+      float ptcone20=0;
+      float topoetcone40=0;
+      float ptvarcone40=0;
+      float ptcone40=0;
+
+      (*phit)->isolationValue(topoetcone20,xAOD::Iso::topoetcone20);
+      (*phit)->isolationValue(ptvarcone20,xAOD::Iso::ptvarcone20);
+      (*phit)->isolationValue(ptcone20,xAOD::Iso::ptcone20);
+      (*phit)->isolationValue(topoetcone40,xAOD::Iso::topoetcone40);
+      (*phit)->isolationValue(ptvarcone40,xAOD::Iso::ptvarcone40);
+      (*phit)->isolationValue(ptcone40,xAOD::Iso::ptcone40);
+
+      vptvarcone20.push_back(ptvarcone20);
+      vtopoetcone20.push_back(topoetcone20);
+      vptcone20.push_back(ptcone20);
+      vptvarcone40.push_back(ptvarcone40);
+      vtopoetcone40.push_back(topoetcone40);
+      vptcone40.push_back(ptcone40);
+      //
+      vpt.push_back((*phit)->pt());
+      veta.push_back((*phit)->eta());
+      //
+      // Photon quality
+      bool tight=false; // tight=1 passes the selection
+      if(!(*phit)->passSelection(tight,"Tight")){
+	std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+      }
+      bool loose=false;
+      if(!(*phit)->passSelection(loose,"Loose")){
+	std::cout<<"WARNING: Loose decision is not available"<<std::endl;
+      }
+      vloose.push_back(loose);
+      vtight.push_back(tight);
+      //
+      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonSelectorTools/trunk/ElectronPhotonSelectorTools/egammaPIDdefs.h
+      //unsigned int ph_isEMTight = (*phit)->auxdata<unsigned int>("isEMTight");
+      //visEMTight.push_back(ph_isEMTight);
+      //
       if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
-	leadPhPt = (*phit)->pt();
-	leadPh = phit;
+        leadPhPt = (*phit)->pt();
+        leadPh = phit;
       }
     }
   }
-
   //
   const xAOD::TruthParticleContainer* truthphotons = 0 ;
   xAOD::TruthParticleContainer::const_iterator leadPhtruth;
@@ -266,6 +326,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     }
     for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
       allphotons.push_back(PhotonProxy((*phittruth)->p4()));
+
       if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
 	leadPhPt = (*phittruth)->pt();
 	leadPhtruth = phittruth;
@@ -280,11 +341,16 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
   //out() <<std::endl;  
 
+  std::vector<TauProxy> baseline_taus, signal_taus;
+  if(! m_IsTruth){
+    m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
+  }
+
   // missing ET
   TVector2* missingET = 0;
   TVector2 missingETCorr;
   if(! m_IsTruth){
-    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix);
+    if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix+systag).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix+systag);
   }
   else {
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
@@ -333,6 +399,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
   m_counter->increment(weight,incr++,">=1 photon",trueTopo);
 
+  // Apply photon scale factor
+  float phSF = eventInfo->auxdecor<float>("phSF");
+  if ( phSF != 0.f ) weight *= phSF;
+
  
   // MissingET cut
   if (!(MissingEtCorr > m_cutVal.m_cutEtMiss)) return true;
@@ -378,6 +448,15 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   double mT2_noISR=-9;
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETCorr); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
+
+  m_proxyUtils.RJigsawInit();
+  
+  std::map<TString,float> RJigsawVariables;
+
+  m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+                                missingETCorr.X(),
+                                missingETCorr.Y(),
+                                RJigsawVariables);
 
 
   //Super Razor variables
@@ -428,56 +507,69 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     unsigned int cleaning = 0;
     unsigned int power2 = 1;
 
-    // bad jet veto
-    if ( !bad_jets.empty() ) cleaning += power2;
-    power2 *= 2;
-
-    // bad muon veto
-    for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
-      if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
-	   isolated_baseline_muons[i].isBad() ) {
-	cleaning += power2;
-	break;
+    if(!m_IsTruth){
+      
+      // bad jet veto
+      if ( !bad_jets.empty() ) cleaning += power2;
+      power2 *= 2;
+      
+      // bad muon veto
+      for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
+	if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
+	     isolated_baseline_muons[i].isBad() ) {
+	  cleaning += power2;
+	  break;
+	}
       }
-    }
-    power2 *= 2;
+      power2 *= 2;
+      
+      // Cosmic muon cut
+      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaning += power2;
+      power2 *= 2;
+      
+      // bad muons for MET cut: based on non isolated muons
+      if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) )  cleaning += power2;
+      power2 *= 2;
+      
+      // bad Tile cut
+      if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
+      power2 *= 2;
+      
+      // Negative-cell cleaning cut
+      if ( HasNegCell ) cleaning += power2;
+      power2 *= 2;
 
-    // Cosmic muon cut
-    if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaning += power2;
-    power2 *= 2;
-
-    // bad muons for MET cut: based on non isolated muons
-    if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) )  cleaning += power2;
-    power2 *= 2;
-
-    // bad Tile cut
-    if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
-    power2 *= 2;
-
-    // Negative-cell cleaning cut
-    if ( HasNegCell ) cleaning += power2;
-    power2 *= 2;
-
-
-    // leading jet timing
-    if (fabs(time[0]) > 5) cleaning += power2;
-    power2 *= 2;
-
-
-    if(! m_IsTruth){
+      // average timing of 2 leading jets
+      if (fabs(time[0]) > 5) cleaning += power2;
+      power2 *= 2;
+      
       bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       if (  m_period == p8tev && chfTileVeto ) cleaning += power2;
+      power2 *= 2;
       bool chfVeto = m_proxyUtils.chfVeto(good_jets);
       if ( chfVeto ) cleaning += power2;
+      power2 *= 2;
     }
-    power2 *= 4;
+    else power2 *= 512;
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0., 0., 0.,m_IsTruth);
+
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
+
+    if ( systag == "" ) {
+      std::vector<float>* p_systweights = 0;
+      if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
+      m_ntv.systWeights = *p_systweights;
+    }
 
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, gaminvRp1, shatR, mdeltaR, cosptR, gamma_R,dphi_BETA_R, dphi_leg1_leg2, costhetaR, dphi_BETA_Rp1_BETA_R, gamma_Rp1, costhetaRp1, Ap);
 
-    FillNTCRYVars(m_cryntv,allphotons,*missingET);
+    m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+
+    FillNTCRYVars(m_cryntv,allphotons,*missingET,vtight,vloose,vtopoetcone20,vptvarcone20,
+		  //visEMTight,
+		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
+		  vpt,veta);
       
     if(! m_IsTruth){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
@@ -490,7 +582,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
 void ZeroLeptonCRY::finish()
 {
-  if ( m_UseSystematics ) {
+  if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
   } 
   else {
@@ -500,7 +592,11 @@ void ZeroLeptonCRY::finish()
 
 void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
 				  const std::vector<PhotonProxy>& photons,
-				  TVector2& origmisset)
+				  TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose,
+				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,std::vector<float>& vptcone20,
+				  //std::vector<int>& visEMTight,
+				  std::vector<float>& vtopoetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,
+				  std::vector<float>& vpt,std::vector<float>& veta)
 {
   cryntv.Reset();
   for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
@@ -509,6 +605,21 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
       cryntv.phEta.push_back(phit->Eta());
       cryntv.phPhi.push_back(phit->Phi());
       cryntv.phSignal.push_back(phit->isSignal());
+      
+      for (size_t n=0;n<vloose.size();n++){
+	if(fabs(phit->Pt()-vpt.at(n))<0.001 && fabs(phit->Eta()-veta.at(n))<0.001){
+	  cryntv.phLoose.push_back(vloose.at(n));
+	  cryntv.phTight.push_back(vtight.at(n));
+	  cryntv.phTopoetcone20.push_back(vtopoetcone20.at(n));
+	  cryntv.phPtvarcone20.push_back(vptvarcone20.at(n));
+	  cryntv.phPtcone20.push_back(vptcone20.at(n));
+	  cryntv.phTopoetcone40.push_back(vtopoetcone40.at(n));
+          cryntv.phPtvarcone40.push_back(vptvarcone40.at(n));
+          cryntv.phPtcone40.push_back(vptcone40.at(n));
+
+	  //cryntv.phisEMTight.push_back(visEMTight.at(n));
+	}
+      }
     }
   }
   cryntv.origmet    = origmisset.Mod() * 0.001;

@@ -1,4 +1,7 @@
 
+***************  THIS VERSION IS INCOMPATIBLE WITH DC14 *******************
+
+
 setupATLAS # or equivalent on your machine
 rcSetup Base,2.1.33
 
@@ -13,6 +16,7 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/Zero
 ## additional packages needed
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-05 cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
+svn co https://github.com/lawrenceleejr/Ext_RestFrames/trunk Ext_RestFrames
 
 
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-05-00-31 SUSYTools
