@@ -1272,17 +1272,6 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
 					double MET_Track_phi,
 					double mT2,
 					double mT2_noISR,
-					double gaminvRp1,
-					double shatR,
-					double mdeltaR,
-					double cosptR,
-					double gamma_R,
-					double dphi_BETA_R,
-					double  dphi_leg1_leg2,
-					double  costhetaR,
-					double dphi_BETA_Rp1_BETA_R,
-					double gamma_Rp1,
-					double costhetaRp1,
 					double Ap)
 {
   extrantv.Reset();
@@ -1290,17 +1279,6 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
   extrantv.mettrack_phi = MET_Track_phi;
   extrantv.mT2=mT2 * 0.001;
   extrantv.mT2_noISR=mT2_noISR * 0.001;  
-  extrantv.gaminvRp1=gaminvRp1;
-  extrantv.shatR=shatR;
-  extrantv.mdeltaR=mdeltaR;
-  extrantv.cosptR=cosptR;
-  extrantv.gamma_R=gamma_R;
-  extrantv.dphi_BETA_R=dphi_BETA_R;
-  extrantv.dphi_leg1_leg2=dphi_leg1_leg2;
-  extrantv.costhetaR=costhetaR;
-  extrantv.dphi_BETA_Rp1_BETA_R=dphi_BETA_Rp1_BETA_R;
-  extrantv.gamma_Rp1=gamma_Rp1;
-  extrantv.costhetaRp1=costhetaRp1;
   extrantv.Ap=Ap;
 }
 

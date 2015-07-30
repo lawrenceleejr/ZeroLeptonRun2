@@ -267,21 +267,7 @@ public:
   float mettrack_phi;
   float mT2;
   float mT2_noISR;
-  float gaminvRp1 ;
-  float shatR ;
-  float mdeltaR ;
-  float cosptR ;
-  float gamma_R;
-  float dphi_BETA_R ; 
-  float dphi_leg1_leg2 ; 
-  float costhetaR ;
-  float dphi_BETA_Rp1_BETA_R;
-  float gamma_Rp1; 
-  float costhetaRp1;
   float Ap;
-
-  float RJVars_SS_Mass           ; 
-
 };
 
 class NTRJigsawVars {

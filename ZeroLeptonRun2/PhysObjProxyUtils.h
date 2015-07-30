@@ -138,21 +138,10 @@ class PhysObjProxyUtils
 		       double MET_Track_phi,
 		       double MT2,
 		       double MT2_noISR,
-		       double gaminvRp1,
-		       double shatR,
-		       double mdeltaR,
-		       double cosptR,
-		       double gamma_R,
-		       double dphi_BETA_R,
-		       double  dphi_leg1_leg2,
-		       double  costhetaR,
-		       double dphi_BETA_Rp1_BETA_R,
-		       double gamma_Rp1,
-		       double costhetaRp1,
 		       double Ap);
     
 
-	void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
+  void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
 
   class ReclJets {
       public:

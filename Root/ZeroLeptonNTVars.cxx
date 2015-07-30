@@ -246,7 +246,7 @@ void NTCRZVars::Reset()
 
 std::string NTExtraVars::toString()
 { 
-  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:gaminvRp1/F:shatR/F:mdeltaR/F:cosptR/F:gamma_R/F:dphi_BETA_R/F:dphi_leg1_leg2/F:costhetaR/F:dphi_BETA_Rp1_BETA_R/F:gamma_Rp1/F:costhetaRp1/F:Ap/F");
+  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:Ap/F");
 
 }
 
@@ -258,17 +258,6 @@ void NTExtraVars::Reset()
   mT2_noISR = 0.f;
   mT2=0.f;
   mT2_noISR=0.f;
-  gaminvRp1 =0.f;
-  shatR =0.f;
-  mdeltaR =0.f;
-  cosptR =0.f;
-  gamma_R=0.f;
-  dphi_BETA_R =0.f; 
-  dphi_leg1_leg2 =0.f; 
-  costhetaR =0.f;
-  dphi_BETA_Rp1_BETA_R=0.f;
-  gamma_Rp1=0.f; 
-  costhetaRp1=0.f; 
   Ap =0.f;
 }
 
