@@ -36,6 +36,7 @@ private:
   TTree* m_tree;
   std::string m_stringRegion;
   bool m_doSmallNtuple;
+  bool m_fillTRJigsawVars;
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;

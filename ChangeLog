@@ -1,3 +1,12 @@
+30-Jul-2015 Laurent Duflot
+	* SR, CRxx: add switch ON/OFF to fill RJigSaw variables
+
+
+29-Jul-2015 Laurent Duflot
+	* add data/PRW.mc15_13TeV.410000_r6765_r6282.root
+	* zerolepton.config: point to 25ns reference file
+	* PhysObjProxyUtils: fix memory leaks
+
 29-Jul-2015 Geraldine Conti
 	* launch_jobs_on_grid.py: use zeroleptontruth.config for TRUTH1,
 	protection against DerivationTag to be set for TRUTH1

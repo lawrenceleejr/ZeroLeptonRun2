@@ -31,6 +31,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_tree(0), 
     m_stringRegion("CRZ_SRAll"), 
     m_doSmallNtuple(true),
+    m_fillTRJigsawVars(false),
     m_IsData(false),
     m_IsSignal(false),
     m_IsTruth(false),
@@ -50,6 +51,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
@@ -97,7 +99,7 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
   bookNTExtraVars(tree,m_extrantv);
-  bookNTRJigsawVars(tree,m_rjigsawntv);
+   if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
   bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRZVars(tree,m_crzntv);
   return tree;
@@ -492,18 +494,15 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   double mT2=-9; 
   double mT2_noISR=-9; 
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
-
-
-
-  m_proxyUtils.RJigsawInit();
   
   std::map<TString,float> RJigsawVariables;
-
-  m_proxyUtils.CalculateRJigsawVariables(good_jets, 
-                                missingETPrime.X(),
-                                missingETPrime.Y(),
-                                RJigsawVariables);
-
+  if ( m_fillTRJigsawVars) {
+    m_proxyUtils.RJigsawInit();
+    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+					   missingETPrime.X(),
+					   missingETPrime.Y(),
+					   RJigsawVariables);
+  }
 
   //Super Razor variables
   double gaminvRp1 =-999;
@@ -607,7 +606,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, gaminvRp1, shatR, mdeltaR, cosptR, gamma_R,dphi_BETA_R, dphi_leg1_leg2, costhetaR, dphi_BETA_Rp1_BETA_R, gamma_Rp1, costhetaRp1, Ap);
 
-    m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+    if ( m_fillTRJigsawVars) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
       
 
     if( !m_IsTruth ){
