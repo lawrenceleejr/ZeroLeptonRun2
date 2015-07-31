@@ -3,6 +3,8 @@
 	affecting kinematics
 	* SR, CRxx: add switch ON/OFF to fill Reclustering variables
 	* PileUpRWProcessor: set default to no reweighting
+	* launch_jobs_on_grid.py: unset ROOT_TTREECACHE_SIZE to avoid huge
+	memory consumption.
 
 30-Jul-2015 Laurent Duflot
 	* SR, CRxx: add switch ON/OFF to fill RJigSaw variables
