@@ -31,6 +31,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_stringRegion("CRWT_SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(false),
+    m_fillReclusteringVars(false),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
@@ -101,7 +102,7 @@ TTree* ZeroLeptonCRWT::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
-  bookNTReclusteringVars(tree,m_RTntv);
+  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRWTVars(tree,m_crwtntv);
   bookNTExtraVars(tree,m_extrantv);
   if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
@@ -631,7 +632,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       m_ntv.systWeights = *p_systweights;
     }
 
-    if( !m_IsTruth ){
+    if( !m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
     }
 

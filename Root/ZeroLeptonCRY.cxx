@@ -27,6 +27,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_stringRegion("CRY_SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(false),
+    m_fillReclusteringVars(false),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
@@ -82,7 +83,7 @@ TTree* ZeroLeptonCRY::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
-  bookNTReclusteringVars(tree,m_RTntv);
+  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
   if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
   bookNTCRYVars(tree,m_cryntv);
@@ -573,7 +574,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
 		  vpt,veta);
       
-    if(! m_IsTruth){
+    if(! m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
     }
 

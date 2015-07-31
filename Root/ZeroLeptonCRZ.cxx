@@ -32,6 +32,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_stringRegion("CRZ_SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(false),
+    m_fillReclusteringVars(false),
     m_IsData(false),
     m_IsSignal(false),
     m_IsTruth(false),
@@ -99,8 +100,8 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
   bookNTExtraVars(tree,m_extrantv);
-   if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
-  bookNTReclusteringVars(tree,m_RTntv);
+  if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
+  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRZVars(tree,m_crzntv);
   return tree;
 }
@@ -609,7 +610,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     if ( m_fillTRJigsawVars) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
       
 
-    if( !m_IsTruth ){
+    if( !m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
     }
     

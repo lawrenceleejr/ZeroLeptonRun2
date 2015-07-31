@@ -1,8 +1,12 @@
+31-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects: record in TStore only shallow copies for systematics
+	affecting kinematics
+	* SR, CRxx: add switch ON/OFF to fill Reclustering variables
+
 30-Jul-2015 Laurent Duflot
 	* SR, CRxx: add switch ON/OFF to fill RJigSaw variables
 	* ZeroLeptonNTVars, PhysObjProxyUtils, SR, CRxx: remove old calculation
 	of razor variables
-
 
 29-Jul-2015 Laurent Duflot
 	* add data/PRW.mc15_13TeV.410000_r6765_r6282.root
