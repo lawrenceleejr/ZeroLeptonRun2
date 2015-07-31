@@ -17,7 +17,7 @@ PileUpRWProcessor::PileUpRWProcessor(const char *name)
     : cafe::Processor(name)
 {
   cafe::Config config(name);
-  m_noReweighting = config.get("noReweighting",false);
+  m_noReweighting = config.get("noReweighting",true);
   m_forcedRunNumber = config.get("forcedRunNumber",-1);
 
   std::vector<std::string> prwFiles = config.getVString("PileUpMCFileNames");
