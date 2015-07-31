@@ -284,6 +284,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       throw std::runtime_error("Could not apply systematics "+systSet.name());
     }
 
+    bool storeVariation = systSet.name()=="" || sys.affectsKinematics;
 
     //----------------------------------------   Jets
     xAOD::JetContainer* jets = 0;
@@ -291,11 +292,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if (! m_SUSYObjTool->GetJets(jets,jets_aux,false).isSuccess() ) {
       throw std::runtime_error("Could not retrieve Jets");
     }
-    if ( ! store->record(jets,"SUSYJets"+m_suffix+tag).isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYJets"+m_suffix+tag);
-    }
-    if ( ! store->record(jets_aux,"SUSYJets"+m_suffix+tag+"Aux.").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYJets"+m_suffix+tag+"Aux.");
+    if ( storeVariation ) {
+      if ( ! store->record(jets,"SUSYJets"+m_suffix+tag).isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYJets"+m_suffix+tag);
+      }
+      if ( ! store->record(jets_aux,"SUSYJets"+m_suffix+tag+"Aux.").isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYJets"+m_suffix+tag+"Aux.");
+      }
     }
 
     //----------------------------------------   Muons
@@ -304,11 +307,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if (! m_SUSYObjTool->GetMuons(muons,muons_aux,false).isSuccess() ) {
       throw std::runtime_error("Could not retrieve Muons");
     }
-    if ( ! store->record(muons,"SUSYMuons"+m_suffix+tag).isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYMuons"+m_suffix+tag);
-    }
-    if ( ! store->record(muons_aux,"SUSYMuons"+m_suffix+tag+"Aux.").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYMuons"+m_suffix+tag+"Aux.");
+    if ( storeVariation ) {
+      if ( ! store->record(muons,"SUSYMuons"+m_suffix+tag).isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYMuons"+m_suffix+tag);
+      }
+      if ( ! store->record(muons_aux,"SUSYMuons"+m_suffix+tag+"Aux.").isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYMuons"+m_suffix+tag+"Aux.");
+      }
     }
     //out() <<  "Muons"+m_suffix+tag+" muons " << std::endl;
     for ( const auto& mu : *muons ) {
@@ -340,11 +345,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if (! m_SUSYObjTool->GetElectrons(electrons,electrons_aux,false).isSuccess() ) {
       throw std::runtime_error("Could not retrieve Electrons");
     }
-    if ( ! store->record(electrons,"SUSYElectrons"+m_suffix+tag).isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYElectrons"+m_suffix+tag);
-    }
-    if ( ! store->record(electrons_aux,"SUSYElectrons"+m_suffix+tag+"Aux.").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYElectrons"+m_suffix+tag+"Aux.");
+    if ( storeVariation ) {
+      if ( ! store->record(electrons,"SUSYElectrons"+m_suffix+tag).isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYElectrons"+m_suffix+tag);
+      }
+      if ( ! store->record(electrons_aux,"SUSYElectrons"+m_suffix+tag+"Aux.").isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYElectrons"+m_suffix+tag+"Aux.");
+      }
     }
     //out() <<  "Electrons"+m_suffix+tag+" electrons " << std::endl;
     for ( const auto& el : *electrons ) {
@@ -367,11 +374,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if (! m_SUSYObjTool->GetPhotons(photons,photons_aux,false).isSuccess() ) {
       throw std::runtime_error("Could not retrieve Photons");
     }
-    if ( ! store->record(photons,"SUSYPhotons"+m_suffix+tag).isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYPhotons"+m_suffix+tag);
-    }
-    if ( ! store->record(photons_aux,"SUSYPhotons"+m_suffix+tag+"Aux.").isSuccess() ) {
-      throw std::runtime_error("Could not store SUSYPhotons"+m_suffix+tag+"Aux.");
+    if ( storeVariation ) {
+      if ( ! store->record(photons,"SUSYPhotons"+m_suffix+tag).isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYPhotons"+m_suffix+tag);
+      }
+      if ( ! store->record(photons_aux,"SUSYPhotons"+m_suffix+tag+"Aux.").isSuccess() ) {
+	throw std::runtime_error("Could not store SUSYPhotons"+m_suffix+tag+"Aux.");
+      }
     }
     //out() <<  "Photons"+m_suffix+tag+" photons " << std::endl;
     float phSF = 1;
@@ -431,11 +440,13 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     xAOD::MissingETContainer* rebuiltmetc = new xAOD::MissingETContainer();
     xAOD::MissingETAuxContainer* rebuiltmetcAux = new xAOD::MissingETAuxContainer();
     rebuiltmetc->setStore(rebuiltmetcAux);
-    if ( ! store->record(rebuiltmetc,"MET_ZL"+m_suffix+tag).isSuccess() ) {
-      throw std::runtime_error("Unable to store MissingETContainer with tag MET_ZL"+m_suffix+tag);
-    }
-    if ( ! store->record(rebuiltmetcAux,"MET_ZL"+m_suffix+tag+"Aux.").isSuccess() ) {
-      throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_ZL"+m_suffix+tag+"Aux");
+    if ( storeVariation ) {
+      if ( ! store->record(rebuiltmetc,"MET_ZL"+m_suffix+tag).isSuccess() ) {
+	throw std::runtime_error("Unable to store MissingETContainer with tag MET_ZL"+m_suffix+tag);
+      }
+      if ( ! store->record(rebuiltmetcAux,"MET_ZL"+m_suffix+tag+"Aux.").isSuccess() ) {
+	throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_ZL"+m_suffix+tag+"Aux");
+      }
     }
     
     if ( ! m_SUSYObjTool->GetMET(*rebuiltmetc,
@@ -462,6 +473,20 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     if ( sys.affectsWeights || systSet.name()=="" ) {
       event_weights->push_back(elSF*phSF*muSF);
       event_weights_names->push_back(systSet.name());
+    }
+
+    // delete shallow copies if not stored
+    if ( !storeVariation ) {
+      delete jets;
+      delete jets_aux;
+      delete muons;
+      delete muons_aux;
+      delete electrons;
+      delete electrons_aux;
+      delete photons;
+      delete photons_aux;
+      delete rebuiltmetc;
+      delete rebuiltmetcAux;
     }
 
   }
