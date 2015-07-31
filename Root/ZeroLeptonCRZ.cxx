@@ -32,7 +32,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_stringRegion("CRZ_SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(false),
-    m_fillReclusteringVars(false),
+    m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsSignal(false),
     m_IsTruth(false),

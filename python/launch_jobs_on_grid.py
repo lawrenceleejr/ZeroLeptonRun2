@@ -153,7 +153,7 @@ def main():
             cafeconfig = config.configfile
 
         outputs = "o.root" 
-        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles Output: o.root """ 
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; unset ROOT_TTREECACHE_SIZE; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles Output: o.root """ 
 
         # Real data ?
         if "data11" in inDS or "data12" in inDS or "data15" in inDS: 

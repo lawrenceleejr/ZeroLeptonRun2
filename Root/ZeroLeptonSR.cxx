@@ -24,7 +24,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_stringRegion("SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(false),
-    m_fillReclusteringVars(false),
+    m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
