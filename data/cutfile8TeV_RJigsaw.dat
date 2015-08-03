@@ -10,6 +10,9 @@ cutJetPt4=30000.
 cutJetPt5=30000.
 cutJetPtWRes=30000.
 
+
+cutRJigsawJetPt=30000.
+
 cutDeltaPhi=0.0
 cutDeltaPhi2=0.0
 

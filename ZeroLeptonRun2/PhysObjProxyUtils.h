@@ -16,20 +16,7 @@ class NTRJigsawVars;
 #include <map>
 #include "fastjet/PseudoJet.hh"
 
-#include "RestFrames/RestFrame.hh"
-#include "RestFrames/RFrame.hh"
-#include "RestFrames/RLabFrame.hh"
-#include "RestFrames/RDecayFrame.hh"
-#include "RestFrames/RVisibleFrame.hh"
-#include "RestFrames/RInvisibleFrame.hh"
-#include "RestFrames/RSelfAssemblingFrame.hh"
-#include "RestFrames/InvisibleMassJigsaw.hh"
-#include "RestFrames/InvisibleRapidityJigsaw.hh"
-#include "RestFrames/ContraBoostInvariantJigsaw.hh"
-#include "RestFrames/MinimizeMassesCombinatoricJigsaw.hh"
-#include "RestFrames/InvisibleGroup.hh"
-#include "RestFrames/CombinatoricGroup.hh"
-#include "RestFrames/FramePlot.hh"
+#include "RestFrames/RestFrames.hh"
 
 //-----------------------------------------------------------------------
 // A collection of utility function for variables based on Proxy objects
@@ -98,7 +85,8 @@ class PhysObjProxyUtils
   void CalculateRJigsawVariables(const std::vector<JetProxy>& jets, 
 			Double_t metx,
 			Double_t mety,
-			std::map<TString,float>& RJigsawVariables);
+			std::map<TString,float>& RJigsawVariables,
+			Double_t jetPtCut=0.);
 
   //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
 
@@ -138,21 +126,10 @@ class PhysObjProxyUtils
 		       double MET_Track_phi,
 		       double MT2,
 		       double MT2_noISR,
-		       double gaminvRp1,
-		       double shatR,
-		       double mdeltaR,
-		       double cosptR,
-		       double gamma_R,
-		       double dphi_BETA_R,
-		       double  dphi_leg1_leg2,
-		       double  costhetaR,
-		       double dphi_BETA_Rp1_BETA_R,
-		       double gamma_Rp1,
-		       double costhetaRp1,
 		       double Ap);
     
 
-	void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
+  void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
 
   class ReclJets {
       public:
@@ -192,50 +169,38 @@ class PhysObjProxyUtils
   TRandom3 m_random;
 
 
-  	// For RJigsaw Frame Objects
-	RestFrames::RLabFrame * LAB_alt; //!
-	RestFrames::RSelfAssemblingFrame * S_alt; //!
-	RestFrames::RVisibleFrame * V_alt; //!
-	RestFrames::RInvisibleFrame * I_alt; //!
-	RestFrames::InvisibleGroup * INV_alt; //!
-	RestFrames::CombinatoricGroup * VIS_alt; //!
-	RestFrames::InvisibleMassJigsaw * MinMass_alt; //!
-	RestFrames::InvisibleRapidityJigsaw * Rapidity_alt; //!
-	RestFrames::RLabFrame * LAB; //!
-	RestFrames::RDecayFrame * SS; //!
-	RestFrames::RSelfAssemblingFrame * S1; //!
-	RestFrames::RSelfAssemblingFrame * S2; //!
-	RestFrames::RVisibleFrame * V1; //!
-	RestFrames::RVisibleFrame * V2; //!
-	RestFrames::RInvisibleFrame * I1; //!
-	RestFrames::RInvisibleFrame * I2; //!
-	RestFrames::InvisibleGroup * INV; //!
-	RestFrames::CombinatoricGroup * VIS; //!
-	RestFrames::InvisibleMassJigsaw * MinMassJigsaw; //!
-	RestFrames::InvisibleRapidityJigsaw * RapidityJigsaw; //!
-	RestFrames::ContraBoostInvariantJigsaw * ContraBoostJigsaw; //!
-	RestFrames::MinimizeMassesCombinatoricJigsaw * HemiJigsaw; //!
+	// For RJigsaw Frame Objects
+  	// Background-like tree
+	RestFrames::LabRecoFrame * LAB_B; //!
+	RestFrames::SelfAssemblingRecoFrame * S_B; //!
+	RestFrames::VisibleRecoFrame * V_B; //!
+	RestFrames::InvisibleRecoFrame * I_B; //!
+	RestFrames::InvisibleGroup * INV_B; //!
+	RestFrames::CombinatoricGroup * VIS_B; //!
+	RestFrames::SetMassInvJigsaw * MinMass_B; //!
+	RestFrames::SetRapidityInvJigsaw * Rapidity_B; //!
 
-	RestFrames::RLabFrame * LAB_R; //!
-	RestFrames::RDecayFrame * GG_R; //!
-	RestFrames::RDecayFrame * Ga_R; //!
-	RestFrames::RDecayFrame * Gb_R; //!
-	RestFrames::RDecayFrame * Ca_R; //!
-	RestFrames::RDecayFrame * Cb_R; //!
-	RestFrames::RVisibleFrame * V1a_R; //!
-	RestFrames::RVisibleFrame * V2a_R; //!
-	RestFrames::RInvisibleFrame * Xa_R; //!
-	RestFrames::RVisibleFrame * V1b_R; //!
-	RestFrames::RVisibleFrame * V2b_R; //!
-	RestFrames::RInvisibleFrame * Xb_R; //!
+	// Signal-like tree
+	RestFrames::LabRecoFrame * LAB_R; //!
+	RestFrames::DecayRecoFrame * GG_R; //!
+	RestFrames::DecayRecoFrame * Ga_R; //!
+	RestFrames::DecayRecoFrame * Gb_R; //!
+	RestFrames::DecayRecoFrame * Ca_R; //!
+	RestFrames::DecayRecoFrame * Cb_R; //!
+	RestFrames::VisibleRecoFrame * V1a_R; //!
+	RestFrames::VisibleRecoFrame * V2a_R; //!
+	RestFrames::InvisibleRecoFrame * Xa_R; //!
+	RestFrames::VisibleRecoFrame * V1b_R; //!
+	RestFrames::VisibleRecoFrame * V2b_R; //!
+	RestFrames::InvisibleRecoFrame * Xb_R; //!
 	RestFrames::InvisibleGroup * INV_R; //!
 	RestFrames::CombinatoricGroup * VIS_R; //!
-	RestFrames::InvisibleMassJigsaw * MinMassJigsaw_R; //!
-	RestFrames::InvisibleRapidityJigsaw * RapidityJigsaw_R; //!
-	RestFrames::ContraBoostInvariantJigsaw * ContraBoostJigsaw_R; //!
-	RestFrames::MinimizeMassesCombinatoricJigsaw * HemiJigsaw_R; //!
-	RestFrames::MinimizeMassesCombinatoricJigsaw * CaHemiJigsaw_R; //!
-	RestFrames::MinimizeMassesCombinatoricJigsaw * CbHemiJigsaw_R; //!
+	RestFrames::SetMassInvJigsaw * MinMassJigsaw_R; //!
+	RestFrames::SetRapidityInvJigsaw * RapidityJigsaw_R; //!
+	RestFrames::ContraBoostInvJigsaw * ContraBoostJigsaw_R; //!
+	RestFrames::MinMassesCombJigsaw * HemiJigsaw_R; //!
+	RestFrames::MinMassesCombJigsaw * CaHemiJigsaw_R; //!
+	RestFrames::MinMassesCombJigsaw * CbHemiJigsaw_R; //!
 
 
 };

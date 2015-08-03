@@ -1,3 +1,32 @@
+03-Aug-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping, launch_jobs_on_grid.py: add p2384
+	* data/mc15_13TeV_p2375.ds: current list of p2375 mc15 samples ("official")
+
+03-Aug-2015 Laurent Duflot
+	* INSTALL: update instructions for cafe and Ext_Frames
+	* tagged as ZeroLeptonRun2-00-00-47
+
+01-Aug-2015 Laurent Duflot
+	* tagged as ZeroLeptonRun2-00-00-46
+
+31-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects: record in TStore only shallow copies for systematics
+	affecting kinematics
+	* SR, CRxx: add switch ON/OFF to fill Reclustering variables
+	* PileUpRWProcessor: set default to no reweighting
+	* launch_jobs_on_grid.py: unset ROOT_TTREECACHE_SIZE to avoid huge
+	memory consumption.
+
+30-Jul-2015 Laurent Duflot
+	* SR, CRxx: add switch ON/OFF to fill RJigSaw variables
+	* ZeroLeptonNTVars, PhysObjProxyUtils, SR, CRxx: remove old calculation
+	of razor variables
+
+29-Jul-2015 Laurent Duflot
+	* add data/PRW.mc15_13TeV.410000_r6765_r6282.root
+	* zerolepton.config: point to 25ns reference file
+	* PhysObjProxyUtils: fix memory leaks
+
 29-Jul-2015 Geraldine Conti
 	* launch_jobs_on_grid.py: use zeroleptontruth.config for TRUTH1,
 	protection against DerivationTag to be set for TRUTH1

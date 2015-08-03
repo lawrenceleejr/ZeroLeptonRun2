@@ -30,6 +30,8 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_tree(0), 
     m_stringRegion("CRWT_SRAll"), 
     m_doSmallNtuple(true),
+    m_fillTRJigsawVars(false),
+    m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
@@ -50,6 +52,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
@@ -99,10 +102,10 @@ TTree* ZeroLeptonCRWT::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
-  bookNTReclusteringVars(tree,m_RTntv);
+  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTCRWTVars(tree,m_crwtntv);
   bookNTExtraVars(tree,m_extrantv);
-  bookNTRJigsawVars(tree,m_rjigsawntv);
+  if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
   return tree;
 }
 
@@ -516,14 +519,15 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETPrime); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
-  m_proxyUtils.RJigsawInit();
-  
   std::map<TString,float> RJigsawVariables;
-
-  m_proxyUtils.CalculateRJigsawVariables(good_jets, 
-                                missingETPrime.X(),
-                                missingETPrime.Y(),
-                                RJigsawVariables);
+  if (  m_fillTRJigsawVars ) {
+    m_proxyUtils.RJigsawInit();
+    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+					   missingETPrime.X(),
+					   missingETPrime.Y(),
+					   RJigsawVariables,
+             			m_cutVal.m_cutRJigsawJetPt);
+  }
 
 
   //Super Razor variables
@@ -629,15 +633,15 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       m_ntv.systWeights = *p_systweights;
     }
 
-    if( !m_IsTruth ){
+    if( !m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
     }
 
     FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);
 
-    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);
+    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
 
-    m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+    if (  m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 
     m_tree->Fill();
   }

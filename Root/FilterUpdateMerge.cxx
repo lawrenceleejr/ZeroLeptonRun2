@@ -68,7 +68,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
-    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_SS_Mass);
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_PP_Mass);
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
     if ( doCRZVars ) tree->GetBranch("NTCRZVars")->SetAddress(&inCRZVars.lep1Pt);
     if ( doCRYVars) inCRYVars.setAddresses(tree);

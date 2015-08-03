@@ -23,6 +23,8 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_tree(0), 
     m_stringRegion("SRAll"), 
     m_doSmallNtuple(true),
+    m_fillTRJigsawVars(false),
+    m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
@@ -39,6 +41,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
   m_IsData = config.get("IsData",false);
   m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
@@ -76,9 +79,9 @@ TTree* ZeroLeptonSR::bookTree(const std::string& treename)
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
   tree->SetDirectory(getDirectory());
   bookNTVars(tree,m_ntv,false);
-  bookNTReclusteringVars(tree,m_RTntv);
+  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
-  bookNTRJigsawVars(tree,m_rjigsawntv);
+  if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
   return tree;
 }
 
@@ -384,23 +387,23 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
 
-  m_proxyUtils.RJigsawInit();
-  
   std::map<TString,float> RJigsawVariables;
+  if (  m_fillTRJigsawVars ) {
+    m_proxyUtils.RJigsawInit();
+    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+					   missingET->X(),
+					   missingET->Y(),
+					   RJigsawVariables,
+             			m_cutVal.m_cutRJigsawJetPt);
+    //if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
+    //else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
 
-  m_proxyUtils.CalculateRJigsawVariables(good_jets, 
-                                missingET->X(),
-                                missingET->Y(),
-                                RJigsawVariables);
 
+    //std::cout << "in SR function..."  << std::endl;
+    //std::cout << RJigsawVariables["RJVars_C_0_CosTheta"]  << std::endl;
+    //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"    ] << std::endl;
+  }
 
-  //if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
-  //else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
-
-
-  //std::cout << "in SR function..."  << std::endl;
-  //std::cout << RJigsawVariables["RJVars_C_0_CosTheta"]  << std::endl;
-  //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"    ] << std::endl;
 
   //Super Razor variables
   double gaminvRp1 =-999;
@@ -488,11 +491,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
       m_ntv.systWeights = *p_systweights;
     }
 
-    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,gaminvRp1 ,shatR ,mdeltaR ,cosptR ,gamma_R,dphi_BETA_R , dphi_leg1_leg2 , costhetaR ,dphi_BETA_Rp1_BETA_R,gamma_Rp1,costhetaRp1,Ap);
+    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,Ap);
 
-    m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+    if ( m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 
-    if(!m_IsTruth)
+    if(!m_IsTruth && m_fillReclusteringVars)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
     
     m_tree->Fill();

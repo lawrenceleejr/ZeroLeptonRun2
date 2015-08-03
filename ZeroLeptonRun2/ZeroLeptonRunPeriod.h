@@ -13,7 +13,7 @@ inline ZeroLeptonRunPeriod periodFromString(const std::string& period)
   return INVALID;
 }
 
-enum ZeroLeptonDerivationTag {NotADerivation, p1872, p2353, p2363, p2372, p2375, p2377, INVALID_Derivation};
+enum ZeroLeptonDerivationTag {NotADerivation, p1872, p2353, p2363, p2372, p2375, p2377, p2384, INVALID_Derivation};
 
 inline ZeroLeptonDerivationTag derivationTagFromString(const std::string& tag)
 {
@@ -24,6 +24,7 @@ inline ZeroLeptonDerivationTag derivationTagFromString(const std::string& tag)
   if ( tag == "p2372" ) return p2372;
   if ( tag == "p2375" ) return p2375;
   if ( tag == "p2377" ) return p2377;
+  if ( tag == "p2384" ) return p2384;
   return INVALID_Derivation;
 }
 
