@@ -1,4 +1,8 @@
 03-Aug-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping, launch_jobs_on_grid.py: add p2384
+	* data/mc15_13TeV_p2375.ds: current list of p2375 mc15 samples ("official")
+
+03-Aug-2015 Laurent Duflot
 	* INSTALL: update instructions for cafe and Ext_Frames
 	* tagged as ZeroLeptonRun2-00-00-47
 

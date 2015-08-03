@@ -186,7 +186,7 @@ def main():
         # test special derivation tags
         if not 'Global.DerivationTag' in config.runopts:
             tag = inDS.split(".")[-1]
-            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377' ]
+            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377', 'p2384' ]
             found = False
             if not('TRUTH1' in inDS):
                 for t in knowntags:
