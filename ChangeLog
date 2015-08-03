@@ -1,3 +1,7 @@
+03-Aug-2015 Yu Nakahama
+	* Added data/mc15_13TeV_signal_{50ns,25ns}_p2375.ds for mc15 signal samples (SS,GG_direct and GG_onestepCC)
+	* Updated makeSignalPointPickle.py for mc15
+	
 03-Aug-2015 Laurent Duflot
 	* ZeroLeptonRunPeriod.h, JobBookeeping, launch_jobs_on_grid.py: add p2384
 	* data/mc15_13TeV_p2375.ds: current list of p2375 mc15 samples ("official")
