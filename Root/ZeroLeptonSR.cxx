@@ -23,7 +23,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_tree(0), 
     m_stringRegion("SRAll"), 
     m_doSmallNtuple(true),
-    m_fillTRJigsawVars(false),
+    m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
@@ -41,7 +41,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
-  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
   m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
@@ -393,7 +393,8 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingET->X(),
 					   missingET->Y(),
-					   RJigsawVariables);
+					   RJigsawVariables,
+             			m_cutVal.m_cutRJigsawJetPt);
     //if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
     //else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
 

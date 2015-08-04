@@ -15,28 +15,14 @@
 
 PhysObjProxyUtils::PhysObjProxyUtils(bool IsData): 
   m_IsData(IsData),
-  LAB_alt(0),
-  S_alt(0),
-  V_alt(0),
-  I_alt(0),
-  INV_alt(0),
-  VIS_alt(0),
-  MinMass_alt(0),
-  Rapidity_alt(0),
-  LAB(0),
-  SS(0),
-  S1(0),
-  S2(0),
-  V1(0),
-  V2(0),
-  I1(0),
-  I2(0),
-  INV(0),
-  VIS(0),
-  MinMassJigsaw(0),
-  RapidityJigsaw(0),
-  ContraBoostJigsaw(0),
-  HemiJigsaw(0),
+  LAB_B(0),
+  S_B(0),
+  V_B(0),
+  I_B(0),
+  INV_B(0),
+  VIS_B(0),
+  MinMass_B(0),
+  Rapidity_B(0),
   LAB_R(0),
   GG_R(0),
   Ga_R(0),
@@ -62,29 +48,14 @@ PhysObjProxyUtils::PhysObjProxyUtils(bool IsData):
 
 PhysObjProxyUtils::~PhysObjProxyUtils() 
 {
-  if ( !LAB_alt) delete LAB_alt;
-  if ( !S_alt) delete S_alt;
-  if ( !V_alt) delete V_alt;
-  if ( !I_alt) delete I_alt;
-  if ( !INV_alt) delete INV_alt;
-  if ( !VIS_alt) delete VIS_alt;
-  if ( !MinMass_alt) delete MinMass_alt;
-  if ( !Rapidity_alt) delete Rapidity_alt;
-  if ( !LAB) delete LAB;
-  if ( !SS) delete SS;
-  if ( !S1) delete S1;
-  if ( !S2) delete S2;
-  if ( !V1) delete V1;
-  if ( !V2) delete V2;
-  if ( !I1) delete I1;
-  if ( !I2) delete I2;
-  if ( !INV) delete INV;
-  if ( !VIS) delete VIS;
-  if ( !MinMassJigsaw) delete MinMassJigsaw;
-  if ( !RapidityJigsaw) delete RapidityJigsaw;
-  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
-  if ( !HemiJigsaw) delete HemiJigsaw;
-
+  if ( !LAB_B) delete LAB_B;
+  if ( !S_B) delete S_B;
+  if ( !V_B) delete V_B;
+  if ( !I_B) delete I_B;
+  if ( !INV_B) delete INV_B;
+  if ( !VIS_B) delete VIS_B;
+  if ( !MinMass_B) delete MinMass_B;
+  if ( !Rapidity_B) delete Rapidity_B;
   if ( !LAB_R) delete LAB_R;
   if ( !GG_R) delete GG_R;
   if ( !Ga_R) delete Ga_R;
@@ -220,29 +191,14 @@ void PhysObjProxyUtils::RJigsawInit(){
 
 
   // cleanup previously computed variables
-  if ( !LAB_alt) delete LAB_alt;
-  if ( !S_alt) delete S_alt;
-  if ( !V_alt) delete V_alt;
-  if ( !I_alt) delete I_alt;
-  if ( !INV_alt) delete INV_alt;
-  if ( !VIS_alt) delete VIS_alt;
-  if ( !MinMass_alt) delete MinMass_alt;
-  if ( !Rapidity_alt) delete Rapidity_alt;
-  if ( !LAB) delete LAB;
-  if ( !SS) delete SS;
-  if ( !S1) delete S1;
-  if ( !S2) delete S2;
-  if ( !V1) delete V1;
-  if ( !V2) delete V2;
-  if ( !I1) delete I1;
-  if ( !I2) delete I2;
-  if ( !INV) delete INV;
-  if ( !VIS) delete VIS;
-  if ( !MinMassJigsaw) delete MinMassJigsaw;
-  if ( !RapidityJigsaw) delete RapidityJigsaw;
-  if ( !ContraBoostJigsaw) delete ContraBoostJigsaw;
-  if ( !HemiJigsaw) delete HemiJigsaw;
-
+  if ( !LAB_B) delete LAB_B;
+  if ( !S_B) delete S_B;
+  if ( !V_B) delete V_B;
+  if ( !I_B) delete I_B;
+  if ( !INV_B) delete INV_B;
+  if ( !VIS_B) delete VIS_B;
+  if ( !MinMass_B) delete MinMass_B;
+  if ( !Rapidity_B) delete Rapidity_B;
   if ( !LAB_R) delete LAB_R;
   if ( !GG_R) delete GG_R;
   if ( !Ga_R) delete Ga_R;
@@ -264,191 +220,117 @@ void PhysObjProxyUtils::RJigsawInit(){
   if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
   if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
 
+  LAB_B = new RestFrames::LabRecoFrame("LAB_B","LAB_B");
 
+  S_B = new RestFrames::SelfAssemblingRecoFrame("CM_B","CM_B");
+  V_B = new RestFrames::VisibleRecoFrame("V_B","Vis_B");
+  I_B = new RestFrames::InvisibleRecoFrame("I_B","Iinv_B");
+  INV_B = new RestFrames::InvisibleGroup ("INV_B","Invisible State Jigsaws");
+  VIS_B = new RestFrames::CombinatoricGroup("VIS_B","Visible Object Jigsaws");
 
-  LAB_alt = new RestFrames::RLabFrame("LAB","lab");
+  MinMass_B = new RestFrames::SetMassInvJigsaw("MINMASS_JIGSAW_B", "Invisible system mass Jigsaw");
+  Rapidity_B = new RestFrames::SetRapidityInvJigsaw("RAPIDITY_JIGSAW_B", "Invisible system rapidity Jigsaw");
 
-  S_alt = new RestFrames::RSelfAssemblingFrame("CM","CM");
-  V_alt = new RestFrames::RVisibleFrame("V_alt","Vis");
-  I_alt = new RestFrames::RInvisibleFrame("I_alt","Iinv");
-  INV_alt = new RestFrames::InvisibleGroup ("INV_alt","Invisible State Jigsaws");
-  VIS_alt = new RestFrames::CombinatoricGroup("VIS_alt","Visible Object Jigsaws");
-
-
-  MinMass_alt = new RestFrames::InvisibleMassJigsaw("MINMASS_JIGSAW_ALT", "Invisible system mass Jigsaw");
-  Rapidity_alt = new RestFrames::InvisibleRapidityJigsaw("RAPIDITY_JIGSAW_ALT", "Invisible system rapidity Jigsaw");
-
-
-  LAB = new RestFrames::RLabFrame("LAB","lab");
-  SS = new RestFrames::RDecayFrame("SS","SS");
-  S1 = new RestFrames::RSelfAssemblingFrame("S1","#tilde{S}_{a}");
-  S2 = new RestFrames::RSelfAssemblingFrame("S2","#tilde{S}_{b}");
-  V1 = new RestFrames::RVisibleFrame("V1","V_{a}");
-  V2 = new RestFrames::RVisibleFrame("V2","V_{b}");
-  I1 = new RestFrames::RInvisibleFrame("I1","I_{a}");
-  I2 = new RestFrames::RInvisibleFrame("I2","I_{b}");
-  INV = new RestFrames::InvisibleGroup("INV","Invisible State Jigsaws");
-  VIS = new RestFrames::CombinatoricGroup("VIS","Visible Object Jigsaws");
-
-  MinMassJigsaw = new RestFrames::InvisibleMassJigsaw("MINMASS_JIGSAW", "Invisible system mass Jigsaw");
-  RapidityJigsaw = new RestFrames::InvisibleRapidityJigsaw("RAPIDITY_JIGSAW", "Invisible system rapidity Jigsaw");
-  ContraBoostJigsaw = new RestFrames::ContraBoostInvariantJigsaw("CB_JIGSAW","Contraboost invariant Jigsaw");
-  HemiJigsaw = new RestFrames::MinimizeMassesCombinatoricJigsaw("HEM_JIGSAW","Minimize m _{V_{a,b}} Jigsaw");
-
-  LAB_R = new RestFrames::RLabFrame("LAB_R","LAB");
-  GG_R = new RestFrames::RDecayFrame("GG_R","#tilde{g}#tilde{g}");
-  Ga_R = new RestFrames::RDecayFrame("Ga_R","#tilde{g}_{a}");
-  Gb_R = new RestFrames::RDecayFrame("Gb_R","#tilde{g}_{b}");
-  Ca_R = new RestFrames::RDecayFrame("Ca_R","C_{a}");
-  Cb_R = new RestFrames::RDecayFrame("Cb_R","C_{b}");
-  V1a_R = new RestFrames::RVisibleFrame("V1a_R","j_{1a}");
-  V2a_R = new RestFrames::RVisibleFrame("V2a_R","j_{2a}");
-  Xa_R = new RestFrames::RInvisibleFrame("Xa_R","#tilde{#chi}_{a}");
-  V1b_R = new RestFrames::RVisibleFrame("V1b_R","j_{1b}");
-  V2b_R = new RestFrames::RVisibleFrame("V2b_R","j_{2b}");
-  Xb_R = new RestFrames::RInvisibleFrame("Xb_R","#tilde{#chi}_{b}");
+  LAB_R = new RestFrames::LabRecoFrame("LAB_R","LAB");
+  GG_R = new RestFrames::DecayRecoFrame("GG_R","#tilde{g}#tilde{g}");
+  Ga_R = new RestFrames::DecayRecoFrame("Ga_R","#tilde{g}_{a}");
+  Gb_R = new RestFrames::DecayRecoFrame("Gb_R","#tilde{g}_{b}");
+  Ca_R = new RestFrames::DecayRecoFrame("Ca_R","C_{a}");
+  Cb_R = new RestFrames::DecayRecoFrame("Cb_R","C_{b}");
+  V1a_R = new RestFrames::VisibleRecoFrame("V1a_R","j_{1a}");
+  V2a_R = new RestFrames::VisibleRecoFrame("V2a_R","j_{2a}");
+  Xa_R = new RestFrames::InvisibleRecoFrame("Xa_R","#tilde{#chi}_{a}");
+  V1b_R = new RestFrames::VisibleRecoFrame("V1b_R","j_{1b}");
+  V2b_R = new RestFrames::VisibleRecoFrame("V2b_R","j_{2b}");
+  Xb_R = new RestFrames::InvisibleRecoFrame("Xb_R","#tilde{#chi}_{b}");
   INV_R = new RestFrames::InvisibleGroup ("INV_R","WIMP Jigsaws");
   VIS_R = new RestFrames::CombinatoricGroup("VIS","Visible Object Jigsaws");
-  MinMassJigsaw_R = new RestFrames::InvisibleMassJigsaw("MINMASS_R", "Invisible system mass Jigsaw");
-  RapidityJigsaw_R = new RestFrames::InvisibleRapidityJigsaw("RAPIDITY_R", "Invisible system rapidity Jigsaw");
-  ContraBoostJigsaw_R = new RestFrames::ContraBoostInvariantJigsaw("CONTRA_R","Contraboost invariant Jigsaw");
-  HemiJigsaw_R = new RestFrames::MinimizeMassesCombinatoricJigsaw ("HEM_JIGSAW_R","Minimize m _{V_{a,b}} Jigsaw");
-  CaHemiJigsaw_R = new RestFrames::MinimizeMassesCombinatoricJigsaw("CbHEM_JIGSAW_R","Minimize m _{C_{a}} Jigsaw");
-  CbHemiJigsaw_R = new RestFrames::MinimizeMassesCombinatoricJigsaw("CaHEM_JIGSAW_R","Minimize m _{C_{b}} Jigsaw");
+  MinMassJigsaw_R = new RestFrames::SetMassInvJigsaw("MINMASS_R", "Invisible system mass Jigsaw");
+  RapidityJigsaw_R = new RestFrames::SetRapidityInvJigsaw("RAPIDITY_R", "Invisible system rapidity Jigsaw");
+  ContraBoostJigsaw_R = new RestFrames::ContraBoostInvJigsaw("CONTRA_R","Contraboost invariant Jigsaw");
+  HemiJigsaw_R = new RestFrames::MinMassesCombJigsaw ("HEM_JIGSAW_R","Minimize m _{V_{a,b}} Jigsaw");
+  CaHemiJigsaw_R = new RestFrames::MinMassesCombJigsaw("CbHEM_JIGSAW_R","Minimize m _{C_{a}} Jigsaw");
+  CbHemiJigsaw_R = new RestFrames::MinMassesCombJigsaw("CaHEM_JIGSAW_R","Minimize m _{C_{b}} Jigsaw");
 
+  INV_B->AddFrame(*I_B);
+  VIS_B->AddFrame(*V_B);
+  VIS_B->SetNElementsForFrame(*V_B,1,false);
 
-  INV_alt->AddFrame(I_alt);
-  VIS_alt->AddFrame(V_alt);
-  VIS_alt->SetNElementsForFrame(V_alt,1,false);
+  LAB_B->SetChildFrame(*S_B);
+  S_B->AddChildFrame(*V_B);
+  S_B->AddChildFrame(*I_B);
 
-  LAB_alt->SetChildFrame(S_alt);
-  S_alt->AddChildFrame(V_alt);
-  S_alt->AddChildFrame(I_alt);
-
-  LAB_alt->InitializeTree(); 
+  LAB_B->InitializeTree(); 
 
 // Will just set invisible mass to zero
-  INV_alt->AddJigsaw(MinMass_alt);
+  INV_B->AddJigsaw(*MinMass_B);
 
 // will set rapidity to zero
-  INV_alt->AddJigsaw(Rapidity_alt);
-  Rapidity_alt->AddVisibleFrame((LAB_alt->GetListVisibleFrames()));
+  INV_B->AddJigsaw(*Rapidity_B);
+  Rapidity_B->AddVisibleFrames( (LAB_B->GetListVisibleFrames()) );
 
-  LAB_alt->InitializeAnalysis(); 
-
-  //
-  //
-  ////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
-  // SQUARK TREE /////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////
-  //
-  //
-
-  // The invisible group is all of the weakly interacting particles
-  INV->AddFrame(I1);
-  INV->AddFrame(I2);
-
-  // the combinatoric group is the list of visible objects
-  // that go into our hemispheres 
-  VIS->AddFrame(V1);
-  VIS->SetNElementsForFrame(V1,1,false);
-  VIS->AddFrame(V2);
-  VIS->SetNElementsForFrame(V2,1,false);
-
-  LAB->SetChildFrame(SS);
-
-  SS->AddChildFrame(S1);
-  SS->AddChildFrame(S2);
-
-  S1->AddChildFrame(V1);
-  S1->AddChildFrame(I1);
-  S2->AddChildFrame(V2);
-  S2->AddChildFrame(I2);
-
-  //std::cout << "Is consistent tree topology? " << LAB->InitializeTree() << std::endl; 
-  LAB->InitializeTree();
-
-  INV->AddJigsaw(MinMassJigsaw);
-
-  INV->AddJigsaw(RapidityJigsaw);
-  RapidityJigsaw->AddVisibleFrame((LAB->GetListVisibleFrames()));
-
-  INV->AddJigsaw(ContraBoostJigsaw);
-  ContraBoostJigsaw->AddVisibleFrame((S1->GetListVisibleFrames()), 0);
-  ContraBoostJigsaw->AddVisibleFrame((S2->GetListVisibleFrames()), 1);
-  ContraBoostJigsaw->AddInvisibleFrame((S1->GetListInvisibleFrames()), 0);
-  ContraBoostJigsaw->AddInvisibleFrame((S2->GetListInvisibleFrames()), 1);
-
-  VIS->AddJigsaw(HemiJigsaw);
-  HemiJigsaw->AddFrame(V1,0);
-  HemiJigsaw->AddFrame(V2,1);
-
-  //std::cout << "Is consistent analysis tree? : " << LAB->InitializeAnalysis() << std::endl; 
-  LAB->InitializeAnalysis();
+  LAB_B->InitializeAnalysis(); 
 
   //
   //
   ////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
-  // GLUINO TREE /////////////////////////////////////////////////
+  // SPARTICLE TREE //////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////
   //
   //
-
 
   // Set up 'signal-like' analysis tree
-  LAB_R->SetChildFrame(GG_R);
-  GG_R->AddChildFrame(Ga_R);
-  GG_R->AddChildFrame(Gb_R);
-  Ga_R->AddChildFrame(V1a_R);
-  Ga_R->AddChildFrame(Ca_R);
-  Ca_R->AddChildFrame(V2a_R);
-  Ca_R->AddChildFrame(Xa_R);
-  Gb_R->AddChildFrame(V1b_R);
-  Gb_R->AddChildFrame(Cb_R);
-  Cb_R->AddChildFrame(V2b_R);
-  Cb_R->AddChildFrame(Xb_R);
+  LAB_R->SetChildFrame(*GG_R);
+  GG_R->AddChildFrame(*Ga_R);
+  GG_R->AddChildFrame(*Gb_R);
+  Ga_R->AddChildFrame(*V1a_R);
+  Ga_R->AddChildFrame(*Ca_R);
+  Ca_R->AddChildFrame(*V2a_R);
+  Ca_R->AddChildFrame(*Xa_R);
+  Gb_R->AddChildFrame(*V1b_R);
+  Gb_R->AddChildFrame(*Cb_R);
+  Cb_R->AddChildFrame(*V2b_R);
+  Cb_R->AddChildFrame(*Xb_R);
 
 
   //if(!LAB_R->InitializeTree()) cout << "Problem with signal-like reconstruction tree" << endl; 
   LAB_R->InitializeTree();
 
-
-  INV_R->AddFrame(Xa_R);
-  INV_R->AddFrame(Xb_R);
+  INV_R->AddFrame(*Xa_R);
+  INV_R->AddFrame(*Xb_R);
   // visible frames in first decay step must always have at least one element
-  VIS_R->AddFrame(V1a_R);
-  VIS_R->AddFrame(V1b_R);
-  VIS_R->SetNElementsForFrame(V1a_R,1,false);
-  VIS_R->SetNElementsForFrame(V1b_R,1,false);
+  VIS_R->AddFrame(*V1a_R);
+  VIS_R->AddFrame(*V1b_R);
+  VIS_R->SetNElementsForFrame(*V1a_R,1,false);
+  VIS_R->SetNElementsForFrame(*V1b_R,1,false);
   // visible frames in second decay step can have zero elements
-  VIS_R->AddFrame(V2a_R);
-  VIS_R->AddFrame(V2b_R);
-  VIS_R->SetNElementsForFrame(V2a_R,0,false);
-  VIS_R->SetNElementsForFrame(V2b_R,0,false);
+  VIS_R->AddFrame(*V2a_R);
+  VIS_R->AddFrame(*V2b_R);
+  VIS_R->SetNElementsForFrame(*V2a_R,0,false);
+  VIS_R->SetNElementsForFrame(*V2b_R,0,false);
 
-  INV_R->AddJigsaw(MinMassJigsaw_R);
-  INV_R->AddJigsaw(RapidityJigsaw_R);
-  RapidityJigsaw_R->AddVisibleFrame((LAB_R->GetListVisibleFrames()));
-  INV_R->AddJigsaw(ContraBoostJigsaw_R);
-  ContraBoostJigsaw_R->AddVisibleFrame((Ga_R->GetListVisibleFrames()), 0);
-  ContraBoostJigsaw_R->AddVisibleFrame((Gb_R->GetListVisibleFrames()), 1);
-  ContraBoostJigsaw_R->AddInvisibleFrame((Ga_R->GetListInvisibleFrames()), 0);
-  ContraBoostJigsaw_R->AddInvisibleFrame((Gb_R->GetListInvisibleFrames()), 1);
-  VIS_R->AddJigsaw(HemiJigsaw_R);
-  HemiJigsaw_R->AddFrame(V1a_R,0);
-  HemiJigsaw_R->AddFrame(V1b_R,1);
-  HemiJigsaw_R->AddFrame(V2a_R,0);
-  HemiJigsaw_R->AddFrame(V2b_R,1);
-  VIS_R->AddJigsaw(CaHemiJigsaw_R);
-  CaHemiJigsaw_R->AddFrame(V1a_R,0);
-  CaHemiJigsaw_R->AddFrame(V2a_R,1);
-  CaHemiJigsaw_R->AddFrame(Xa_R,1);
-  VIS_R->AddJigsaw(CbHemiJigsaw_R);
-  CbHemiJigsaw_R->AddFrame(V1b_R,0);
-  CbHemiJigsaw_R->AddFrame(V2b_R,1);
-  CbHemiJigsaw_R->AddFrame(Xb_R,1);
+  INV_R->AddJigsaw(*MinMassJigsaw_R);
+  INV_R->AddJigsaw(*RapidityJigsaw_R);
+  RapidityJigsaw_R->AddVisibleFrames((LAB_R->GetListVisibleFrames()));
+  INV_R->AddJigsaw(*ContraBoostJigsaw_R);
+  ContraBoostJigsaw_R->AddVisibleFrames((Ga_R->GetListVisibleFrames()), 0);
+  ContraBoostJigsaw_R->AddVisibleFrames((Gb_R->GetListVisibleFrames()), 1);
+  ContraBoostJigsaw_R->AddInvisibleFrames((Ga_R->GetListInvisibleFrames()), 0);
+  ContraBoostJigsaw_R->AddInvisibleFrames((Gb_R->GetListInvisibleFrames()), 1);
+  VIS_R->AddJigsaw(*HemiJigsaw_R);
+  HemiJigsaw_R->AddFrame(*V1a_R,0);
+  HemiJigsaw_R->AddFrame(*V1b_R,1);
+  HemiJigsaw_R->AddFrame(*V2a_R,0);
+  HemiJigsaw_R->AddFrame(*V2b_R,1);
+  VIS_R->AddJigsaw(*CaHemiJigsaw_R);
+  CaHemiJigsaw_R->AddFrame(*V1a_R,0);
+  CaHemiJigsaw_R->AddFrame(*V2a_R,1);
+  // CaHemiJigsaw_R->AddFrame(*Xa_R,1); //This and the next line removed because they allow for inv particle to be the only thing left in second order frame.
+  VIS_R->AddJigsaw(*CbHemiJigsaw_R);
+  CbHemiJigsaw_R->AddFrame(*V1b_R,0);
+  CbHemiJigsaw_R->AddFrame(*V2b_R,1);
+  // CbHemiJigsaw_R->AddFrame(*Xb_R,1);
 
   //if(!LAB_R->InitializeAnalysis()) cout << "Problem with signal-tree jigsaws" << endl;
   LAB_R->InitializeAnalysis();
@@ -461,23 +343,16 @@ void PhysObjProxyUtils::RJigsawInit(){
 void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& jets, 
   Double_t metx,
   Double_t mety,
-  std::map<TString,float>& RJigsawVariables){
+  std::map<TString,float>& RJigsawVariables,
+  Double_t jetPtCut){
 
-
-
-  LAB->ClearEvent();
   LAB_R->ClearEvent();
-  LAB_alt->ClearEvent();
+  LAB_B->ClearEvent();
 
 
-  vector<RestFrames::GroupElementID> jetID_R;                    // ID for tracking jets in tree
+  vector<RestFrames::RFKey> jetID_R;                    // ID for tracking jets in tree
 
   //std::cout << "number of jets is " << jets.size() << std::endl;
-
-  if(jets.size() < 2){
-    RJigsawVariables = std::map<TString, float>();
-    return;
-  } 
 
   // Still need to add jets to frames ///////////////
   std::vector<TLorentzVector> myjets;
@@ -493,13 +368,18 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   for(size_t ijet=0; ijet<jets.size(); ijet++) 
     {
-      VIS->AddLabFrameFourVector( myjets[ijet] );
+      if(myjets[ijet].Pt()<jetPtCut) continue;
       jetID_R.push_back( VIS_R->AddLabFrameFourVector( myjets[ijet] )  );
       TLorentzVector temp = myjets[ijet];
       temp.SetPtEtaPhiM(temp.Pt(),0.,temp.Phi(),temp.M());
-      VIS_alt->AddLabFrameFourVector( temp );
+      VIS_B->AddLabFrameFourVector( temp );
     }
 
+
+  if(jetID_R.size() < 2){
+    RJigsawVariables = std::map<TString, float>();
+    return;
+  } 
 
 
   TVector3 MET_TV3;
@@ -509,42 +389,35 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   MET_TV3.SetY(mety);
 
 
-  INV->SetLabFrameThreeVector(MET_TV3);
-  LAB->AnalyzeEvent();
+  INV_B->SetLabFrameThreeVector(MET_TV3);
+  LAB_B->AnalyzeEvent();
 
-  INV_alt->SetLabFrameThreeVector(MET_TV3);
-  LAB_alt->AnalyzeEvent();
-
-
-  // if(goodJets->size()>3){
   INV_R->SetLabFrameThreeVector(MET_TV3);
   LAB_R->AnalyzeEvent();
 
 
 
   ////////////////////////////////////////////////////////////////////////////////
-  // 1st order squark vars
+  // 1st order vars
 
 
-  RJigsawVariables[ "RJVars_SS_Mass"           ] = SS->GetMass();
-  RJigsawVariables[ "RJVars_SS_InvGamma"       ] = 1./SS->GetGammaInParentFrame();
-  RJigsawVariables[ "RJVars_SS_dPhiBetaR"      ] = SS->GetDeltaPhiBoostVisible();
-  RJigsawVariables[ "RJVars_SS_dPhiVis"        ] = SS->GetDeltaPhiVisible();
-  RJigsawVariables[ "RJVars_SS_CosTheta"       ] = SS->GetCosDecayAngle();
-  RJigsawVariables[ "RJVars_SS_dPhiDecayAngle" ] = SS->GetDeltaPhiDecayAngle();
-  RJigsawVariables[ "RJVars_SS_VisShape"       ] = SS->GetVisibleShape();
-  RJigsawVariables[ "RJVars_SS_MDeltaR"        ] = SS->GetVisibleShape() * SS->GetMass() ;
-  RJigsawVariables[ "RJVars_S1_Mass"           ] = S1->GetMass();
-  RJigsawVariables[ "RJVars_S1_CosTheta"       ] = S1->GetCosDecayAngle();
-  RJigsawVariables[ "RJVars_S2_Mass"           ] = S2->GetMass();
-  RJigsawVariables[ "RJVars_S2_CosTheta"       ] = S2->GetCosDecayAngle();
-  RJigsawVariables[ "RJVars_I1_Depth"          ] = S1->GetFrameDepth(I1);
-  RJigsawVariables[ "RJVars_I2_Depth"          ] = S2->GetFrameDepth(I2);
-  RJigsawVariables[ "RJVars_V1_N"              ] = VIS->GetNElementsInFrame(V1);
-  RJigsawVariables[ "RJVars_V2_N"              ] = VIS->GetNElementsInFrame(V2);
+  RJigsawVariables[ "RJVars_PP_Mass"           ] = GG_R->GetMass();
+  RJigsawVariables[ "RJVars_PP_InvGamma"       ] = 1./GG_R->GetGammaInParentFrame();
+  RJigsawVariables[ "RJVars_PP_dPhiBetaR"      ] = GG_R->GetDeltaPhiBoostVisible();
+  RJigsawVariables[ "RJVars_PP_dPhiVis"        ] = GG_R->GetDeltaPhiVisible();
+  RJigsawVariables[ "RJVars_PP_CosTheta"       ] = GG_R->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_PP_dPhiDecayAngle" ] = GG_R->GetDeltaPhiDecayAngle();
+  RJigsawVariables[ "RJVars_PP_VisShape"       ] = GG_R->GetVisibleShape();
+  RJigsawVariables[ "RJVars_PP_MDeltaR"        ] = GG_R->GetVisibleShape() * GG_R->GetMass() ;
+  RJigsawVariables[ "RJVars_P1_Mass"           ] = Ga_R->GetMass();
+  RJigsawVariables[ "RJVars_P1_CosTheta"       ] = Ga_R->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_P2_Mass"           ] = Gb_R->GetMass();
+  RJigsawVariables[ "RJVars_P2_CosTheta"       ] = Gb_R->GetCosDecayAngle();
+  RJigsawVariables[ "RJVars_I1_Depth"          ] = Ga_R->GetFrameDepth(*Xa_R);
+  RJigsawVariables[ "RJVars_I2_Depth"          ] = Gb_R->GetFrameDepth(*Xb_R);
 
   // end
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -553,11 +426,11 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   ////////////////////////////////////////////////////////////////////////////////
   // 2nd order "gluino-like" vars
 
-  RestFrames::RDecayFrame* G[2];
-  RestFrames::RDecayFrame* C[2];
-  RestFrames::RVisibleFrame* VS[2];
-  RestFrames::RVisibleFrame* VC[2];
-  RestFrames::RInvisibleFrame* X[2];
+  RestFrames::DecayRecoFrame* G[2];
+  RestFrames::DecayRecoFrame* C[2];
+  RestFrames::VisibleRecoFrame* VS[2];
+  RestFrames::VisibleRecoFrame* VC[2];
+  RestFrames::InvisibleRecoFrame* X[2];
   // Randomize the two hemispheres
   int flip = (m_random.Rndm() > 0.5);
   G[flip] = Ga_R;
@@ -579,18 +452,19 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   for(int i = 0; i < 2; i++){
 
-    NV[i] =  VIS_R->GetNElementsInFrame(VS[i]);
-    NV[i] += VIS_R->GetNElementsInFrame(VC[i]);
+    NV[i] =  VIS_R->GetNElementsInFrame(*VS[i]);
+    NV[i] += VIS_R->GetNElementsInFrame(*VC[i]);
 
     int N = jetID_R.size();
     // std::cout << "In SklimmerAnalysis:  N Jets " << N << std::endl;
 
     double pTmax[2]; pTmax[0] = -1.; pTmax[1] = -1.;
     for(int j = 0; j < N; j++){
-      const RestFrames::RestFrame* frame = VIS_R->GetFrame(jetID_R[j]);
+      const RestFrames::RestFrame& frame = VIS_R->GetFrame(jetID_R[j]);
+
       if(VS[i]->IsSame(frame) || VC[i]->IsSame(frame)){
         double pT = VIS_R->GetLabFrameFourVector(jetID_R[j]).Pt();
-        // std::cout << "In SklimmerAnalysis: ijet pT " << pT << std::endl;
+        //std::cout << "In SklimmerAnalysis: ijet pT " << pT << std::endl;
 
         if(pT > pTmax[0]){
           pTmax[1] = pTmax[0];
@@ -603,40 +477,47 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
     jet1PT[i] = pTmax[0];
     jet2PT[i] = pTmax[1];
-    //std::cout << "In SklimmerAnalysis: " << jet1PT[i] << " " << jet2PT[i] << std::endl;
-    //std::cout << "In SklimmerAnalysis: " << NV[i] << std::endl;
-
 
 
     if(NV[i] > 1){
       RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)     ] = C[i]->GetCosDecayAngle();
-      RJigsawVariables[Form("RJVars_G_%d_dPhiGC",i)       ] = G[i]->GetDeltaPhiDecayPlanes(C[i]);
-      RJigsawVariables[Form("RJVars_G_%d_MassRatioGC",i)  ] = (C[i]->GetMass()-X[i]->GetMass())/(G[i]->GetMass()-X[i]->GetMass());
+      RJigsawVariables[Form("RJVars_P_%d_dPhiGC",i)       ] = G[i]->GetDeltaPhiDecayPlanes(*C[i]);
+      RJigsawVariables[Form("RJVars_P_%d_MassRatioGC",i)  ] = (C[i]->GetMass()-X[i]->GetMass())/(G[i]->GetMass()-X[i]->GetMass());
     } else {
       RJigsawVariables[Form("RJVars_C_%d_CosTheta",i)     ] = -10.;
-      RJigsawVariables[Form("RJVars_G_%d_dPhiGC",i)       ] = -10.;
-      RJigsawVariables[Form("RJVars_G_%d_MassRatioGC",i)  ] = -10.;
+      RJigsawVariables[Form("RJVars_P_%d_dPhiGC",i)       ] = -10.;
+      RJigsawVariables[Form("RJVars_P_%d_MassRatioGC",i)  ] = -10.;
     }
 
-    RJigsawVariables[ Form("RJVars_G_%d_CosTheta",i)    ] = G[i]->GetCosDecayAngle();
-    RJigsawVariables[ Form("RJVars_G_%d_Jet1_pT",i)     ] = jet1PT[i];
-    RJigsawVariables[ Form("RJVars_G_%d_Jet2_pT",i)     ] = jet2PT[i];
+    RJigsawVariables[ Form("RJVars_P_%d_CosTheta",i)    ] = G[i]->GetCosDecayAngle();
+    RJigsawVariables[ Form("RJVars_P_%d_Jet1_pT",i)     ] = jet1PT[i];
+    RJigsawVariables[ Form("RJVars_P_%d_Jet2_pT",i)     ] = jet2PT[i];
+
+
+    TVector3 P1_G = VS[i]->GetFourVector(*G[i]).Vect();
+    TVector3 P2_G = VC[i]->GetFourVector(*G[i]).Vect();
+
+
+    float Pinv = (P1_G+P2_G).Mag();
+    float P1 = P1_G.Mag();
+    float P2 = P2_G.Mag();
+    RJigsawVariables[ Form("RJVars_P_%d_PInvHS",i) ] = 2*Pinv/(P1+P2+Pinv);
 
   }
 
 
+  RJigsawVariables[ "RJVars_V1_N" ] = NV[0];
+  RJigsawVariables[ "RJVars_V2_N" ] = NV[1];
 
-  // Some new Gluino variables....
 
-  TLorentzVector vV1 = G[0]->GetVisibleFourVector(G[0]);
-  TLorentzVector vV2 = G[1]->GetVisibleFourVector(G[1]);
+  TLorentzVector vV1 = G[0]->GetVisibleFourVector(*G[0]);
+  TLorentzVector vV2 = G[1]->GetVisibleFourVector(*G[1]);
   float MG = (vV1.M2()-vV2.M2())/(2.*(vV1.E()-vV2.E()));
 
-  float PG = G[0]->GetMomentum(GG_R);
+  float PG = G[0]->GetMomentum(*GG_R);
   float MGG = 2.*sqrt(PG*PG + MG*MG);
   float gaminvGG = 2.*MG/MGG;
-  //float gaminv = 1./SS->GetGammaInParentFrame();
-  float gaminv = SS->GetVisibleShape();
+  float gaminv = GG_R->GetVisibleShape();
   float beta = sqrt(1.- gaminv*gaminv);
   float betaGG = sqrt(1.- gaminvGG*gaminvGG);
 
@@ -652,10 +533,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   RJigsawVariables[ "RJVars_dphiVG"      ] = dphiVG;
 
 
-  // Gluino-level variables end
+  // Signal-like variables end
   ////////////////////////////////////////////////////////////////////////////////
-
-
 
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -664,14 +543,14 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   // dphiR and Rptshat (formerly cosPT)
   // for QCD rejection
-  double dphiR = SS->GetDeltaPhiBoostVisible();
-  double PTCM = SS->GetFourVector(LAB).Pt();
-  double Rptshat = PTCM / (PTCM + SS->GetMass()/4.);
+  double dphiR = GG_R->GetDeltaPhiBoostVisible();
+  double PTCM = GG_R->GetFourVector(*LAB_R).Pt();
+  double Rptshat = PTCM / (PTCM + GG_R->GetMass()/4.);
 
   // QCD rejection using the 'background tree'
   // MET 'sibling' in background tree auxillary calculations
-  TLorentzVector Psib = I_alt->GetSiblingFrame()->GetFourVector(LAB_alt);
-  TLorentzVector Pmet = I_alt->GetFourVector(LAB_alt);
+  TLorentzVector Psib = I_B->GetSiblingFrame().GetFourVector(*LAB_B);
+  TLorentzVector Pmet = I_B->GetFourVector(*LAB_B);
   double Psib_dot_METhat = max(0., Psib.Vect().Dot(MET_TV3.Unit()));
   double Mpar2 = Psib.E()*Psib.E()-Psib.Vect().Dot(MET_TV3.Unit())*Psib.Vect().Dot(MET_TV3.Unit());
   double Msib2 = Psib.M2();
@@ -680,9 +559,9 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
 
   // QCD rejection variables from 'background tree'
-  //double DepthBKG = S_alt->GetFrameDepth(I_alt);
-  //int Nsib = I_alt->GetSiblingFrame()->GetNDescendants();
-  //double cosBKG = I_alt->GetParentFrame()->GetCosDecayAngle();
+  //double DepthBKG = S_B->GetFrameDepth(I_B);
+  //int Nsib = I_B->GetSiblingFrame()->GetNDescendants();
+  //double cosBKG = I_B->GetParentFrame()->GetCosDecayAngle();
   //double dphiMsib = fabs(MET_TV3.DeltaPhi(Psib.Vect()));
   double RpsibM = Psib_dot_METhat / (Psib_dot_METhat + MET_TV3.Mag());
   double RmsibM = 1. / ( MB2/(Mpar2-Msib2) + 1.);
@@ -1289,20 +1168,20 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
   // rjigsawntv.Reset();
 
   //std::cout << "In filling function----------------" << std::endl;
-  //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"] << " -----------------------" << std::endl;
+  //std::cout << RJigsawVariables["RJVars_P_0_CosTheta"] << " -----------------------" << std::endl;
 
-  rjigsawntv.RJVars_SS_Mass           = RJigsawVariables["RJVars_SS_Mass"] ;
-  rjigsawntv.RJVars_SS_InvGamma       = RJigsawVariables["RJVars_SS_InvGamma"] ;
-  rjigsawntv.RJVars_SS_dPhiBetaR      = RJigsawVariables["RJVars_SS_dPhiBetaR"] ;
-  rjigsawntv.RJVars_SS_dPhiVis        = RJigsawVariables["RJVars_SS_dPhiVis"] ;
-  rjigsawntv.RJVars_SS_CosTheta       = RJigsawVariables["RJVars_SS_CosTheta"] ;
-  rjigsawntv.RJVars_SS_dPhiDecayAngle = RJigsawVariables["RJVars_SS_dPhiDecayAngle"] ;
-  rjigsawntv.RJVars_SS_VisShape       = RJigsawVariables["RJVars_SS_VisShape"] ;
-  rjigsawntv.RJVars_SS_MDeltaR        = RJigsawVariables["RJVars_SS_MDeltaR"] ;
-  rjigsawntv.RJVars_S1_Mass           = RJigsawVariables["RJVars_S1_Mass"] ;
-  rjigsawntv.RJVars_S1_CosTheta       = RJigsawVariables["RJVars_S1_CosTheta"] ;
-  rjigsawntv.RJVars_S2_Mass           = RJigsawVariables["RJVars_S2_Mass"] ;
-  rjigsawntv.RJVars_S2_CosTheta       = RJigsawVariables["RJVars_S2_CosTheta"] ;
+  rjigsawntv.RJVars_PP_Mass           = RJigsawVariables["RJVars_PP_Mass"] ;
+  rjigsawntv.RJVars_PP_InvGamma       = RJigsawVariables["RJVars_PP_InvGamma"] ;
+  rjigsawntv.RJVars_PP_dPhiBetaR      = RJigsawVariables["RJVars_PP_dPhiBetaR"] ;
+  rjigsawntv.RJVars_PP_dPhiVis        = RJigsawVariables["RJVars_PP_dPhiVis"] ;
+  rjigsawntv.RJVars_PP_CosTheta       = RJigsawVariables["RJVars_PP_CosTheta"] ;
+  rjigsawntv.RJVars_PP_dPhiDecayAngle = RJigsawVariables["RJVars_PP_dPhiDecayAngle"] ;
+  rjigsawntv.RJVars_PP_VisShape       = RJigsawVariables["RJVars_PP_VisShape"] ;
+  rjigsawntv.RJVars_PP_MDeltaR        = RJigsawVariables["RJVars_PP_MDeltaR"] ;
+  rjigsawntv.RJVars_P1_Mass           = RJigsawVariables["RJVars_P1_Mass"] ;
+  rjigsawntv.RJVars_P1_CosTheta       = RJigsawVariables["RJVars_P1_CosTheta"] ;
+  rjigsawntv.RJVars_P2_Mass           = RJigsawVariables["RJVars_P2_Mass"] ;
+  rjigsawntv.RJVars_P2_CosTheta       = RJigsawVariables["RJVars_P2_CosTheta"] ;
   rjigsawntv.RJVars_I1_Depth          = RJigsawVariables["RJVars_I1_Depth"] ;
   rjigsawntv.RJVars_I2_Depth          = RJigsawVariables["RJVars_I2_Depth"] ;
   rjigsawntv.RJVars_V1_N              = RJigsawVariables["RJVars_V1_N"] ;
@@ -1310,18 +1189,20 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
   rjigsawntv.RJVars_MG                = RJigsawVariables["RJVars_MG"] ;
   rjigsawntv.RJVars_DeltaBetaGG       = RJigsawVariables["RJVars_DeltaBetaGG"] ;
   rjigsawntv.RJVars_dphiVG            = RJigsawVariables["RJVars_dphiVG"] ;
-  rjigsawntv.RJVars_G_0_CosTheta      = RJigsawVariables["RJVars_G_0_CosTheta"] ;
+  rjigsawntv.RJVars_P_0_CosTheta      = RJigsawVariables["RJVars_P_0_CosTheta"] ;
   rjigsawntv.RJVars_C_0_CosTheta      = RJigsawVariables["RJVars_C_0_CosTheta"] ;
-  rjigsawntv.RJVars_G_0_dPhiGC        = RJigsawVariables["RJVars_G_0_dPhiGC"] ;
-  rjigsawntv.RJVars_G_0_MassRatioGC   = RJigsawVariables["RJVars_G_0_MassRatioGC"] ;
-  rjigsawntv.RJVars_G_0_Jet1_pT       = RJigsawVariables["RJVars_G_0_Jet1_pT"] ;
-  rjigsawntv.RJVars_G_0_Jet2_pT       = RJigsawVariables["RJVars_G_0_Jet2_pT"] ;
-  rjigsawntv.RJVars_G_1_CosTheta      = RJigsawVariables["RJVars_G_1_CosTheta"] ;
+  rjigsawntv.RJVars_P_0_dPhiGC        = RJigsawVariables["RJVars_P_0_dPhiGC"] ;
+  rjigsawntv.RJVars_P_0_MassRatioGC   = RJigsawVariables["RJVars_P_0_MassRatioGC"] ;
+  rjigsawntv.RJVars_P_0_Jet1_pT       = RJigsawVariables["RJVars_P_0_Jet1_pT"] ;
+  rjigsawntv.RJVars_P_0_Jet2_pT       = RJigsawVariables["RJVars_P_0_Jet2_pT"] ;
+  rjigsawntv.RJVars_P_0_PInvHS        = RJigsawVariables["RJVars_P_0_PInvHS"] ;
+  rjigsawntv.RJVars_P_1_CosTheta      = RJigsawVariables["RJVars_P_1_CosTheta"] ;
   rjigsawntv.RJVars_C_1_CosTheta      = RJigsawVariables["RJVars_C_1_CosTheta"] ;
-  rjigsawntv.RJVars_G_1_dPhiGC        = RJigsawVariables["RJVars_G_1_dPhiGC"] ;
-  rjigsawntv.RJVars_G_1_MassRatioGC   = RJigsawVariables["RJVars_G_1_MassRatioGC"] ;
-  rjigsawntv.RJVars_G_1_Jet1_pT       = RJigsawVariables["RJVars_G_1_Jet1_pT"] ;
-  rjigsawntv.RJVars_G_1_Jet2_pT       = RJigsawVariables["RJVars_G_1_Jet2_pT"] ;
+  rjigsawntv.RJVars_P_1_dPhiGC        = RJigsawVariables["RJVars_P_1_dPhiGC"] ;
+  rjigsawntv.RJVars_P_1_MassRatioGC   = RJigsawVariables["RJVars_P_1_MassRatioGC"] ;
+  rjigsawntv.RJVars_P_1_Jet1_pT       = RJigsawVariables["RJVars_P_1_Jet1_pT"] ;
+  rjigsawntv.RJVars_P_1_Jet2_pT       = RJigsawVariables["RJVars_P_1_Jet2_pT"] ;
+  rjigsawntv.RJVars_P_1_PInvHS        = RJigsawVariables["RJVars_P_1_PInvHS"] ;
   rjigsawntv.RJVars_QCD_dPhiR         = RJigsawVariables["RJVars_QCD_dPhiR"] ;
   rjigsawntv.RJVars_QCD_Rpt           = RJigsawVariables["RJVars_QCD_Rpt"] ;
   rjigsawntv.RJVars_QCD_Rmsib         = RJigsawVariables["RJVars_QCD_Rmsib"] ;

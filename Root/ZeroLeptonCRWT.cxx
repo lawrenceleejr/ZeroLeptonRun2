@@ -30,7 +30,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_tree(0), 
     m_stringRegion("CRWT_SRAll"), 
     m_doSmallNtuple(true),
-    m_fillTRJigsawVars(false),
+    m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
@@ -52,7 +52,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
-  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
@@ -525,7 +525,8 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingETPrime.X(),
 					   missingETPrime.Y(),
-					   RJigsawVariables);
+					   RJigsawVariables,
+             			m_cutVal.m_cutRJigsawJetPt);
   }
 
 
