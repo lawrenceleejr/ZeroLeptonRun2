@@ -103,6 +103,8 @@ void BuildSUSYObjects::initSUSYTools()
   }
   //m_SUSYObjTool->setProperty("IsoWP","Gradient").ignore();
 
+
+
   // set our own tau selection
   TauAnalysisTools::TauSelectionTool* tauSelTool;
   TauAnalysisTools::TauEfficiencyCorrectionsTool* tauEffTool;
@@ -154,7 +156,6 @@ void BuildSUSYObjects::initSUSYTools()
   if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
   if ( !m_SUSYObjTool->initialize().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef !");
-
 
   if ( m_DoSystematics ) {
     std::vector<ST::SystInfo> sysInfos = m_SUSYObjTool->getSystInfoList();
@@ -208,6 +209,9 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   if ( !m_SUSYObjTool ) {
     initSUSYTools();
   }
+  // for muon trigger SF
+  if ( ! m_SUSYObjTool->setRunNumber(267639).isSuccess() ) throw std::runtime_error("Could not set reference run number in SUSYTools !");
+
 
   // active storage to put the physics object collections
   xAOD::TStore* store = xAOD::TActiveStore::store();
@@ -335,8 +339,6 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	    <<std::endl;
       */
     }
-    float muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
-    eventInfo->auxdecor<float>("muSF") = muSF ; 
 
 
      //----------------------------------------   Electrons
@@ -364,8 +366,6 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	    <<std::endl;
       */
     }
-    float elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*electrons);
-    eventInfo->auxdecor<float>("elSF") = elSF ; 
 
 
      //----------------------------------------   Photons
@@ -417,8 +417,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     //out() <<  "SUSYJets"+m_suffix+tag+" jets " << std::endl;
     for ( const auto& jet : *jets ) {
       if ( !m_UseSmearedJets ) { 
+	m_SUSYObjTool->IsBadJet(*jet, -1e+99); // no JVT cut
 	m_SUSYObjTool->IsSignalJet(*jet, 20000.,10., -1e+99); // no JVT cut
-	m_SUSYObjTool->IsBadJet(*jet, 1e+99); // no JVT cut (sic)	
       }
       if ( m_period == p8tev ) {
 	//FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
@@ -435,6 +435,15 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	    <<std::endl;
       */
     }
+
+    // GetTotalMuonSF also test for OR
+    float muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,false,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+    eventInfo->auxdecor<float>("muSF") = muSF ; 
+
+    // idem for GetTotalElectronSF
+    float elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*electrons);
+    eventInfo->auxdecor<float>("elSF") = elSF ; 
+
 
 
     xAOD::MissingETContainer* rebuiltmetc = new xAOD::MissingETContainer();
