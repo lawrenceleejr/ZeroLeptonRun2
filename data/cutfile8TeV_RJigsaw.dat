@@ -1,18 +1,20 @@
 # Signal Region Definition 
-cutEtMiss=50000.
-cutEtMiss1Jet=100000.
+cutEtMiss=10000.
+cutEtMiss1Jet=10000.
 
-cutJetPt0=60000.
-cutJetPt1=40000.
-cutJetPt2=40000.
-cutJetPt3=40000.
-cutJetPt4=40000.
-cutJetPt5=40000.
-cutJetPtWRes=40000.
+cutJetPt0=30000.
+cutJetPt1=30000.
+cutJetPt2=30000.
+cutJetPt3=30000.
+cutJetPt4=30000.
+cutJetPt5=30000.
+cutJetPtWRes=30000.
+
+
 cutRJigsawJetPt=30000.
 
-cutDeltaPhi=0.4
-cutDeltaPhi2=0.2
+cutDeltaPhi=0.0
+cutDeltaPhi2=0.0
 
 
 cutMapSR2jLoose=true
@@ -102,7 +104,7 @@ cutMeffSR2jWuu=1800
 cutMeffSR3jWur=1100
 
 #CR QCD
-cutDeltaPhiQCD=0.2
+cutDeltaPhiQCD=0.0
 
 #CRY
 cutPhotonPtCRY=25000.

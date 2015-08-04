@@ -14,6 +14,8 @@ ZeroLeptonCutVal::ZeroLeptonCutVal()
   m_cutJetPt3 = -1.;
   m_cutJetPt4 = -1.;
   m_cutJetPt5 = -1.;
+
+  m_cutRJigsawJetPt = -1.;
   
   for ( size_t i = 0; i < 8; i++ )
   {
@@ -55,6 +57,9 @@ void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
   m_cutJetPt4=params.find<double>("cutJetPt4",40000);
   m_cutJetPt5=params.find<double>("cutJetPt5",40000);
   m_cutJetPtWRes=params.find<double>("cutJetPtWRes",40000);
+
+  m_cutRJigsawJetPt=params.find<double>("cutRJigsawJetPt",30000);
+
 
   m_cutDeltaPhi=params.find<double>("cutDeltaPhi",0.2);
   m_cutDeltaPhi2=params.find<double>("cutDeltaPhi2",0.4);

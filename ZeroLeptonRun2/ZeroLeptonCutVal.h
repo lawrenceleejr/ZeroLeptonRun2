@@ -22,6 +22,8 @@ class ZeroLeptonCutVal
   double m_cutJetPt4;
   double m_cutJetPt5;
   double m_cutJetPtWRes;
+
+  double m_cutRJigsawJetPt;
   
   float m_cutMETsig[8][4];
   float m_cutMEToverMeff[8][4];
