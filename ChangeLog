@@ -1,3 +1,9 @@
+04-Aug-2015 Laurent Duflot (from Larry Lee)
+	* INSTALL, PhysObjProxyUtils, SR+CRxx: adapt to new Ext_RestFrames
+	* ZeroLeptonCutVal, cutfile8TeV_RJigsaw.dat: add jet pT cut for RJigSaw
+	* ZeroLeptonNTVars, FilterUpdateMerge: update naming of RJigSaw variables
+	* config/zerolepton_RJigsaw.config: config file for RJigSaw studies
+
 04-Aug-2015 Laurent Duflot
 	* tagged as ZeroLeptonRun2-00-00-48
 
