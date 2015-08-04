@@ -1,3 +1,11 @@
+04-Aug-2015 Laurent Duflot
+	* upgrade to SUSYTools-00-06-17-03 (Photon iso changed to Cone40,
+	IsBadJet now only vetoes above 50GeV except if jvtcut)
+	* BuildSUSYObject: adapt to new GetTotalMuonSF interface (runnumber 267639),
+	test e/mu SF after OR.
+	* BuildSUSYObject: move to TST term for MET
+	* ZeroLeptonUtil, SR+CRxx: remove negative energy cell code
+
 04-Aug-2015 Laurent Duflot (from Larry Lee)
 	* INSTALL, PhysObjProxyUtils, SR+CRxx: adapt to new Ext_RestFrames
 	* ZeroLeptonCutVal, cutfile8TeV_RJigsaw.dat: add jet pT cut for RJigSaw
@@ -16,7 +24,7 @@
 	* data/mc15_13TeV_p2375.ds: current list of p2375 mc15 samples ("official")
 
 03-Aug-2015 Laurent Duflot
-	* INSTALL: update instructions for cafe and Ext_Frames
+	* INSTALL: update instructions for cafe and Ext_RestFrames
 	* tagged as ZeroLeptonRun2-00-00-47
 
 01-Aug-2015 Laurent Duflot

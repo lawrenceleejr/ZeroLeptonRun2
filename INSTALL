@@ -1,9 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-#rcSetup Base,2.3.15
-#rcSetup SUSY,2.3.15a
-rcSetup Base,2.3.18
-#rcSetup SUSY,2.3.18b
+rcSetup Base,2.3.21
 
 ## the code for ZeroLeptonRun2 is at
 ## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
@@ -18,10 +15,11 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.4.1; cd -;
 
 
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-15 SUSYTools
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-17-03 SUSYTools
 
 ### from SUSYTools/doc/README
 rc checkout SUSYTools/doc/packages.txt
+ln -sf CDIFiles/13TeV/2015-PreRecomm-13TeV-MC12-CDI_July15-v1.root .
 
 
 # compile
