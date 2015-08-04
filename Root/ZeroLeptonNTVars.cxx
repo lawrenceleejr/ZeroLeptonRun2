@@ -263,24 +263,24 @@ void NTExtraVars::Reset()
 
 std::string NTRJigsawVars::toString()
 { 
-  return std::string("RJVars_SS_Mass/F:RJVars_SS_InvGamma/F:RJVars_SS_dPhiBetaR/F:RJVars_SS_dPhiVis/F:RJVars_SS_CosTheta/F:RJVars_SS_dPhiDecayAngle/F:RJVars_SS_VisShape/F:RJVars_SS_MDeltaR/F:RJVars_S1_Mass/F:RJVars_S1_CosTheta/F:RJVars_S2_Mass/F:RJVars_S2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_G_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_G_0_dPhiGC/F:RJVars_G_0_MassRatioGC/F:RJVars_G_0_Jet1_pT/F:RJVars_G_0_Jet2_pT/F:RJVars_G_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_G_1_dPhiGC/F:RJVars_G_1_MassRatioGC/F:RJVars_G_1_Jet1_pT/F:RJVars_G_1_Jet2_pT/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
+  return std::string("RJVars_PP_Mass/F:RJVars_PP_InvGamma/F:RJVars_PP_dPhiBetaR/F:RJVars_PP_dPhiVis/F:RJVars_PP_CosTheta/F:RJVars_PP_dPhiDecayAngle/F:RJVars_PP_VisShape/F:RJVars_PP_MDeltaR/F:RJVars_P1_Mass/F:RJVars_P1_CosTheta/F:RJVars_P2_Mass/F:RJVars_P2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_P_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_P_0_dPhiGC/F:RJVars_P_0_MassRatioGC/F:RJVars_P_0_Jet1_pT/F:RJVars_P_0_Jet2_pT/F:RJVars_P_0_PInvHS/F:RJVars_P_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_P_1_dPhiGC/F:RJVars_P_1_MassRatioGC/F:RJVars_P_1_Jet1_pT/F:RJVars_P_1_Jet2_pT/F:RJVars_P_1_PInvHS/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
 }
 
 void NTRJigsawVars::Reset()
 { 
 
-  RJVars_SS_Mass           =0.f; 
-  RJVars_SS_InvGamma       =0.f; 
-  RJVars_SS_dPhiBetaR      =0.f; 
-  RJVars_SS_dPhiVis        =0.f; 
-  RJVars_SS_CosTheta       =0.f; 
-  RJVars_SS_dPhiDecayAngle =0.f; 
-  RJVars_SS_VisShape       =0.f; 
-  RJVars_SS_MDeltaR        =0.f; 
-  RJVars_S1_Mass           =0.f; 
-  RJVars_S1_CosTheta       =0.f; 
-  RJVars_S2_Mass           =0.f; 
-  RJVars_S2_CosTheta       =0.f; 
+  RJVars_PP_Mass           =0.f; 
+  RJVars_PP_InvGamma       =0.f; 
+  RJVars_PP_dPhiBetaR      =0.f; 
+  RJVars_PP_dPhiVis        =0.f; 
+  RJVars_PP_CosTheta       =0.f; 
+  RJVars_PP_dPhiDecayAngle =0.f; 
+  RJVars_PP_VisShape       =0.f; 
+  RJVars_PP_MDeltaR        =0.f; 
+  RJVars_P1_Mass           =0.f; 
+  RJVars_P1_CosTheta       =0.f; 
+  RJVars_P2_Mass           =0.f; 
+  RJVars_P2_CosTheta       =0.f; 
   RJVars_I1_Depth          =0.f; 
   RJVars_I2_Depth          =0.f; 
   RJVars_V1_N              =0.f; 
@@ -288,18 +288,20 @@ void NTRJigsawVars::Reset()
   RJVars_MG                =0.f;       
   RJVars_DeltaBetaGG       =0.f;       
   RJVars_dphiVG            =0.f;       
-  RJVars_G_0_CosTheta      =0.f;       
+  RJVars_P_0_CosTheta      =0.f;       
   RJVars_C_0_CosTheta      =0.f;       
-  RJVars_G_0_dPhiGC        =0.f;     
-  RJVars_G_0_MassRatioGC   =0.f;   
-  RJVars_G_0_Jet1_pT       =0.f; 
-  RJVars_G_0_Jet2_pT       =0.f;        
-  RJVars_G_1_CosTheta      =0.f;       
+  RJVars_P_0_dPhiGC        =0.f;     
+  RJVars_P_0_MassRatioGC   =0.f;   
+  RJVars_P_0_Jet1_pT       =0.f; 
+  RJVars_P_0_Jet2_pT       =0.f; 
+  RJVars_P_0_PInvHS        =0.f;       
+  RJVars_P_1_CosTheta      =0.f;       
   RJVars_C_1_CosTheta      =0.f;       
-  RJVars_G_1_dPhiGC        =0.f;     
-  RJVars_G_1_MassRatioGC   =0.f;      
-  RJVars_G_1_Jet1_pT       =0.f; 
-  RJVars_G_1_Jet2_pT       =0.f; 
+  RJVars_P_1_dPhiGC        =0.f;     
+  RJVars_P_1_MassRatioGC   =0.f;      
+  RJVars_P_1_Jet1_pT       =0.f; 
+  RJVars_P_1_Jet2_pT       =0.f; 
+  RJVars_P_1_PInvHS        =0.f;       
   RJVars_QCD_dPhiR         =0.f;  
   RJVars_QCD_Rpt           =0.f;  
   RJVars_QCD_Rmsib         =0.f;  

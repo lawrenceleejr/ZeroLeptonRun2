@@ -280,18 +280,18 @@ public:
    
   void Reset();
 
-  float RJVars_SS_Mass           ; 
-  float RJVars_SS_InvGamma       ; 
-  float RJVars_SS_dPhiBetaR      ; 
-  float RJVars_SS_dPhiVis        ; 
-  float RJVars_SS_CosTheta       ; 
-  float RJVars_SS_dPhiDecayAngle ; 
-  float RJVars_SS_VisShape       ; 
-  float RJVars_SS_MDeltaR        ; 
-  float RJVars_S1_Mass           ; 
-  float RJVars_S1_CosTheta       ; 
-  float RJVars_S2_Mass           ; 
-  float RJVars_S2_CosTheta       ; 
+  float RJVars_PP_Mass           ; 
+  float RJVars_PP_InvGamma       ; 
+  float RJVars_PP_dPhiBetaR      ; 
+  float RJVars_PP_dPhiVis        ; 
+  float RJVars_PP_CosTheta       ; 
+  float RJVars_PP_dPhiDecayAngle ; 
+  float RJVars_PP_VisShape       ; 
+  float RJVars_PP_MDeltaR        ; 
+  float RJVars_P1_Mass           ; 
+  float RJVars_P1_CosTheta       ; 
+  float RJVars_P2_Mass           ; 
+  float RJVars_P2_CosTheta       ; 
   float RJVars_I1_Depth          ; 
   float RJVars_I2_Depth          ; 
   float RJVars_V1_N              ; 
@@ -301,18 +301,20 @@ public:
   float RJVars_MG      ;       
   float RJVars_DeltaBetaGG      ;       
   float RJVars_dphiVG      ;       
-  float RJVars_G_0_CosTheta      ;       
+  float RJVars_P_0_CosTheta      ;       
   float RJVars_C_0_CosTheta      ;       
-  float RJVars_G_0_dPhiGC        ;     
-  float RJVars_G_0_MassRatioGC   ;   
-  float RJVars_G_0_Jet1_pT       ; 
-  float RJVars_G_0_Jet2_pT       ;        
-  float RJVars_G_1_CosTheta      ;       
+  float RJVars_P_0_dPhiGC        ;     
+  float RJVars_P_0_MassRatioGC   ;   
+  float RJVars_P_0_Jet1_pT       ; 
+  float RJVars_P_0_Jet2_pT       ; 
+  float RJVars_P_0_PInvHS        ;        
+  float RJVars_P_1_CosTheta      ;       
   float RJVars_C_1_CosTheta      ;       
-  float RJVars_G_1_dPhiGC        ;     
-  float RJVars_G_1_MassRatioGC   ;      
-  float RJVars_G_1_Jet1_pT       ; 
-  float RJVars_G_1_Jet2_pT       ; 
+  float RJVars_P_1_dPhiGC        ;     
+  float RJVars_P_1_MassRatioGC   ;      
+  float RJVars_P_1_Jet1_pT       ; 
+  float RJVars_P_1_Jet2_pT       ; 
+  float RJVars_P_1_PInvHS        ; 
 
   //QCD Variables
   float RJVars_QCD_dPhiR         ;  
