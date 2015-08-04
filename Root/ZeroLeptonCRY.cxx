@@ -392,12 +392,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
-  // Negative-cell cleaning cut
-  bool HasNegCell = 0;
-  if(! m_IsTruth){
-    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
-
   // at least one photon
   if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
   m_counter->increment(weight,incr++,">=1 photon",trueTopo);
@@ -539,8 +533,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
       power2 *= 2;
       
-      // Negative-cell cleaning cut
-      if ( HasNegCell ) cleaning += power2;
+      // Negative-cell cleaning cut (no longer used)
       power2 *= 2;
 
       // average timing of 2 leading jets

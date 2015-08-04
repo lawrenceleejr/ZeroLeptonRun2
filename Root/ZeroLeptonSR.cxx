@@ -279,12 +279,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
-  // Negative-cell cleaning cut
-  bool HasNegCell = false ; 
-  if(! m_IsTruth && systag == ""){
-    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
-
   // 0 lepton
   if( !m_IsTruth ){
     if ( !isolated_baseline_electrons.empty() ) return true;
@@ -466,8 +460,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
     power2 *= 2;
 
-    // Negative-cell cleaning cut
-    if ( HasNegCell ) cleaning += power2;
+    // Negative-cell cleaning cut (no longer used)
     power2 *= 2;
 
     // average timing of 2 leading jets

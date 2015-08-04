@@ -185,10 +185,7 @@ bool ZeroLeptonDataDrivenQCD::processEvent(xAOD::TEvent& event)
   if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) return true;
   m_counter->increment(weight,incr++,"Bad Tile Veto");
 
-  // Negative-cell cleaning cut
-  bool HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
-  //out() << " NegCell " << HasNegCell << std::endl;
-  if ( HasNegCell ) return true;
+  // no longer used
   m_counter->increment(weight,incr++,"Negative-cell cleaning");
 
   // 0 lepton

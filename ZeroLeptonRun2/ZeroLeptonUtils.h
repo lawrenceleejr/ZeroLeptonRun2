@@ -21,8 +21,6 @@ class ZeroLeptonUtils
  public:
   ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag, const std::string& metKey = "MET_ZL");
 
-  bool NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const;
-
   void trackMET(xAOD::TEvent& event, double& met, double& phi) const;
 
   // copied from SUSYObjDef_xAOD since it is not static there

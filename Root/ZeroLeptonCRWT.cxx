@@ -420,13 +420,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   }
   double MissingEtPrime = missingETPrime.Mod();
   
-  // Negative-cell cleaning cut
-  bool HasNegCell = 0;
-  if(! m_IsTruth && systag == "" ){
-    m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
-  //out() << " NegCell " << HasNegCell << std::endl;
-
   // MT cut 
   double mt = std::sqrt( 2.*leptonTLV.Pt()*MissingEt * 
 			 (1.-(leptonTLV.Px()*missingET->Px() + leptonTLV.Py()*missingET->Py())/(leptonTLV.Pt()*MissingEt)) );
@@ -607,8 +600,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       if ( !m_IsTruth && m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
       power2 *= 2;
       
-      // Negative-cell cleaning cut
-      if ( HasNegCell ) cleaning += power2;
+      // Negative-cell cleaning cut (no longer used)
       power2 *= 2;
 
       // average timing of 2 leading jets
