@@ -101,8 +101,6 @@ void BuildSUSYObjects::initSUSYTools()
     m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix").ignore();
     m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix").ignore();
   }
-  //m_SUSYObjTool->setProperty("IsoWP","Gradient").ignore();
-
 
 
   // set our own tau selection
@@ -464,7 +462,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 				 muons,
 				 photons,
 				 0,
-				 false,
+				 true,
 				 false,
 				 0).isSuccess() 
 	 ) throw std::runtime_error("Error in GetMET");
