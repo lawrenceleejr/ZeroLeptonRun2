@@ -3,6 +3,7 @@
 	* PhysObjProxyUtils: fix typo in delete conditions leading to memory leaks
 	* zerolepton.config: single switch for filling RJigsawVars block
 	* ZeroLeptonNTVars: switch caching off for output trees, set flush/save size explicitely to control memory footprint
+	* BuildSUSYObject: do not try to extract e/mu scale factor for data
 
 
 04-Aug-2015 Laurent Duflot
