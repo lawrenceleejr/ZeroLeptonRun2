@@ -48,34 +48,34 @@ PhysObjProxyUtils::PhysObjProxyUtils(bool IsData):
 
 PhysObjProxyUtils::~PhysObjProxyUtils() 
 {
-  if ( !LAB_B) delete LAB_B;
-  if ( !S_B) delete S_B;
-  if ( !V_B) delete V_B;
-  if ( !I_B) delete I_B;
-  if ( !INV_B) delete INV_B;
-  if ( !VIS_B) delete VIS_B;
-  if ( !MinMass_B) delete MinMass_B;
-  if ( !Rapidity_B) delete Rapidity_B;
-  if ( !LAB_R) delete LAB_R;
-  if ( !GG_R) delete GG_R;
-  if ( !Ga_R) delete Ga_R;
-  if ( !Gb_R) delete Gb_R;
-  if ( !Ca_R) delete Ca_R;
-  if ( !Cb_R) delete Cb_R;
-  if ( !V1a_R) delete V1a_R;
-  if ( !V2a_R) delete V2a_R;
-  if ( !Xa_R) delete Xa_R;
-  if ( !V1b_R) delete V1b_R;
-  if ( !V2b_R) delete V2b_R;
-  if ( !Xb_R) delete Xb_R;
-  if ( !INV_R) delete INV_R;
-  if ( !VIS_R) delete VIS_R;
-  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
-  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
-  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
-  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
-  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
-  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+  if ( LAB_B != 0 ) delete LAB_B;
+  if ( S_B != 0 ) delete S_B;
+  if ( V_B != 0 ) delete V_B;
+  if ( I_B != 0 ) delete I_B;
+  if ( INV_B != 0 ) delete INV_B;
+  if ( VIS_B != 0 ) delete VIS_B;
+  if ( MinMass_B != 0 ) delete MinMass_B;
+  if ( Rapidity_B != 0 ) delete Rapidity_B;
+  if ( LAB_R != 0 ) delete LAB_R;
+  if ( GG_R != 0 ) delete GG_R;
+  if ( Ga_R != 0 ) delete Ga_R;
+  if ( Gb_R != 0 ) delete Gb_R;
+  if ( Ca_R != 0 ) delete Ca_R;
+  if ( Cb_R != 0 ) delete Cb_R;
+  if ( V1a_R != 0 ) delete V1a_R;
+  if ( V2a_R != 0 ) delete V2a_R;
+  if ( Xa_R != 0 ) delete Xa_R;
+  if ( V1b_R != 0 ) delete V1b_R;
+  if ( V2b_R != 0 ) delete V2b_R;
+  if ( Xb_R != 0 ) delete Xb_R;
+  if ( INV_R != 0 ) delete INV_R;
+  if ( VIS_R != 0 ) delete VIS_R;
+  if ( MinMassJigsaw_R != 0 ) delete MinMassJigsaw_R;
+  if ( RapidityJigsaw_R != 0 ) delete RapidityJigsaw_R;
+  if ( ContraBoostJigsaw_R != 0 ) delete ContraBoostJigsaw_R;
+  if ( HemiJigsaw_R != 0 ) delete HemiJigsaw_R;
+  if ( CaHemiJigsaw_R != 0 ) delete CaHemiJigsaw_R;
+  if ( CbHemiJigsaw_R != 0 ) delete CbHemiJigsaw_R;
 }
 
 
@@ -191,34 +191,34 @@ void PhysObjProxyUtils::RJigsawInit(){
 
 
   // cleanup previously computed variables
-  if ( !LAB_B) delete LAB_B;
-  if ( !S_B) delete S_B;
-  if ( !V_B) delete V_B;
-  if ( !I_B) delete I_B;
-  if ( !INV_B) delete INV_B;
-  if ( !VIS_B) delete VIS_B;
-  if ( !MinMass_B) delete MinMass_B;
-  if ( !Rapidity_B) delete Rapidity_B;
-  if ( !LAB_R) delete LAB_R;
-  if ( !GG_R) delete GG_R;
-  if ( !Ga_R) delete Ga_R;
-  if ( !Gb_R) delete Gb_R;
-  if ( !Ca_R) delete Ca_R;
-  if ( !Cb_R) delete Cb_R;
-  if ( !V1a_R) delete V1a_R;
-  if ( !V2a_R) delete V2a_R;
-  if ( !Xa_R) delete Xa_R;
-  if ( !V1b_R) delete V1b_R;
-  if ( !V2b_R) delete V2b_R;
-  if ( !Xb_R) delete Xb_R;
-  if ( !INV_R) delete INV_R;
-  if ( !VIS_R) delete VIS_R;
-  if ( !MinMassJigsaw_R) delete MinMassJigsaw_R;
-  if ( !RapidityJigsaw_R) delete RapidityJigsaw_R;
-  if ( !ContraBoostJigsaw_R) delete ContraBoostJigsaw_R;
-  if ( !HemiJigsaw_R) delete HemiJigsaw_R;
-  if ( !CaHemiJigsaw_R) delete CaHemiJigsaw_R;
-  if ( !CbHemiJigsaw_R) delete CbHemiJigsaw_R;
+  if ( LAB_B != 0 ) delete LAB_B;
+  if ( S_B != 0 ) delete S_B;
+  if ( V_B != 0 ) delete V_B;
+  if ( I_B != 0 ) delete I_B;
+  if ( INV_B != 0 ) delete INV_B;
+  if ( VIS_B != 0 ) delete VIS_B;
+  if ( MinMass_B != 0 ) delete MinMass_B;
+  if ( Rapidity_B != 0 ) delete Rapidity_B;
+  if ( LAB_R != 0 ) delete LAB_R;
+  if ( GG_R != 0 ) delete GG_R;
+  if ( Ga_R != 0 ) delete Ga_R;
+  if ( Gb_R != 0 ) delete Gb_R;
+  if ( Ca_R != 0 ) delete Ca_R;
+  if ( Cb_R != 0 ) delete Cb_R;
+  if ( V1a_R != 0 ) delete V1a_R;
+  if ( V2a_R != 0 ) delete V2a_R;
+  if ( Xa_R != 0 ) delete Xa_R;
+  if ( V1b_R != 0 ) delete V1b_R;
+  if ( V2b_R != 0 ) delete V2b_R;
+  if ( Xb_R != 0 ) delete Xb_R;
+  if ( INV_R != 0 ) delete INV_R;
+  if ( VIS_R != 0 ) delete VIS_R;
+  if ( MinMassJigsaw_R != 0 ) delete MinMassJigsaw_R;
+  if ( RapidityJigsaw_R != 0 ) delete RapidityJigsaw_R;
+  if ( ContraBoostJigsaw_R != 0 ) delete ContraBoostJigsaw_R;
+  if ( HemiJigsaw_R != 0 ) delete HemiJigsaw_R;
+  if ( CaHemiJigsaw_R != 0 ) delete CaHemiJigsaw_R;
+  if ( CbHemiJigsaw_R != 0 ) delete CbHemiJigsaw_R;
 
   LAB_B = new RestFrames::LabRecoFrame("LAB_B","LAB_B");
 
