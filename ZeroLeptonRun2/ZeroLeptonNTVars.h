@@ -356,6 +356,14 @@ public:
   float jet1Alpha,jet2Alpha,jet3Alpha,jet4Alpha,jet5Alpha,jet1minPtDistinction,jet2minPtDistinction,jet3minPtDistinction,jet4minPtDistinction,jet5minPtDistinction,jet1minDeltaDistinction,jet2minDeltaDistinction,jet3minDeltaDistinction,jet4minDeltaDistinction,jet5minDeltaDistinction,jet1minEtaGap,jet2minEtaGap,jet3minEtaGap,jet4minEtaGap,jet5minEtaGap,jet1maxEtaOtherJets,jet2maxEtaOtherJets,jet3maxEtaOtherJets,jet4maxEtaOtherJets,jet5maxEtaOtherJets,jet1DPhiMET,jet2DPhiMET,jet3DPhiMET,jet4DPhiMET,jet5DPhiMET;
 };
 
+inline void treePolicies(TTree* tree)
+{
+  tree->SetAutoSave(-10000000);
+  tree->SetAutoFlush(-10000000);
+  tree->SetCacheSize(0);
+  //tree->SetCacheSize(5000000);
+}
+
 void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW);
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv);
@@ -363,36 +371,40 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv);
 inline void bookNTExtraVars(TTree* tree, NTExtraVars& extrantv)
 {
   tree->Branch("NTExtraVars",&extrantv,NTExtraVars::toString().c_str());
+  treePolicies(tree);
 }
 
 
 inline void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv)
 {
   tree->Branch("NTRJigsawVars",&rjigsawntv,NTRJigsawVars::toString().c_str());
+  treePolicies(tree);
 }
 
 inline void bookNTTheoryVars(TTree* tree, NTTheoryVars& theoryntv)
 {
   tree->Branch("NTTheoryVars",&theoryntv,NTTheoryVars::toString().c_str());
+  treePolicies(tree);
 }
 
 inline void bookNTISRVars(TTree* tree, NTISRVars& isrntv)
 {
   tree->Branch("NTISRVars",&isrntv,NTISRVars::toString().c_str());
+  treePolicies(tree);
 }
 
 inline void bookNTCRWTVars(TTree* tree, NTCRWTVars& crwtntv)
 {
   tree->Branch("NTCRWTVars",&crwtntv,NTCRWTVars::toString().c_str());
+  treePolicies(tree);
 }
 
 inline void bookNTCRZVars(TTree* tree, NTCRZVars& crzntv)
 {
   tree->Branch("NTCRZVars",&crzntv,NTCRZVars::toString().c_str());
+  treePolicies(tree);
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv);
-
-
 
 #endif

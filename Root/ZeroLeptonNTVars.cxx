@@ -383,6 +383,7 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
 
   tree->Branch("systWeights",&(ntv.systWeights));
+  treePolicies(tree);
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
@@ -395,7 +396,7 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   tree->Branch("RTjetEta",&(RTntv.RTjetEta));
   tree->Branch("RTjetPhi",&(RTntv.RTjetPhi));
   tree->Branch("RTjetM",&(RTntv.RTjetM));
-
+  treePolicies(tree);
 }
 
 
@@ -452,6 +453,7 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
   tree->Branch("phLoose",&(cryntv.phLoose));
   tree->Branch("phTight",&(cryntv.phTight));
+  treePolicies(tree);
 }
 
 void NTCRYVarsRead::setAddresses(TTree* tree)

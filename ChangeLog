@@ -1,3 +1,10 @@
+06-Aug-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: make CDFiles available on the grid
+	* PhysObjProxyUtils: fix typo in delete conditions leading to memory leaks
+	* zerolepton.config: single switch for filling RJigsawVars block
+	* ZeroLeptonNTVars: switch caching off for output trees, set flush/save size explicitely to control memory footprint
+
+
 04-Aug-2015 Laurent Duflot
 	* upgrade to SUSYTools-00-06-17-03 (Photon iso changed to Cone40,
 	IsBadJet now only vetoes above 50GeV except if jvtcut)
