@@ -436,7 +436,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
     // GetTotalMuonSF also test for OR
     float muSF = 1.f;
-    if ( !m_IsData ) muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,false,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
+    if ( !m_IsData ) muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
     eventInfo->auxdecor<float>("muSF") = muSF ; 
 
     // idem for GetTotalElectronSF

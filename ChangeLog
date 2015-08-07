@@ -1,8 +1,20 @@
 07-Aug-2015 Laurent Duflot
+	* upgrade to SUSYTools-00-06-19
+	new Btagging recommandations and working point
+	new muon isaolation scale factors
+	muon default acceptance up to 2.5 instead of 2.4
+	some cross-section /  kfactor updates
+	* BuildSUSYObject: switch on muon isolation scale factors
+	* INSTALL: update instruction for new SUSYTools
+	* launch_jobs_on_grid.py: update to new files in CDIFiles
+
+
+07-Aug-2015 Laurent Duflot
 	* BuildSUSYObject: do not try to extract photon scale factor for data
+	Committed revision 688047
 
 06-Aug-2015 Laurent Duflot
-	* launch_jobs_on_grid.py: make CDFiles available on the grid
+	* launch_jobs_on_grid.py: make CDIFiles available on the grid
 	* PhysObjProxyUtils: fix typo in delete conditions leading to memory leaks
 	* zerolepton.config: single switch for filling RJigsawVars block
 	* ZeroLeptonNTVars: switch caching off for output trees, set flush/save size explicitely to control memory footprint
