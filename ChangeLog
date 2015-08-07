@@ -7,6 +7,7 @@
 	* BuildSUSYObject: switch on muon isolation scale factors
 	* INSTALL: update instruction for new SUSYTools
 	* launch_jobs_on_grid.py: update to new files in CDIFiles
+	* SR and CRxx: move RJigsawInit() to the the begin() method.
 
 
 07-Aug-2015 Laurent Duflot

@@ -109,6 +109,8 @@ void ZeroLeptonSR::begin()
     if(m_doSmallNtuple) m_tree = bookTree(sSR);
   }
 
+  if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
+
 }
 
 
@@ -383,19 +385,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
-    m_proxyUtils.RJigsawInit();
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingET->X(),
 					   missingET->Y(),
 					   RJigsawVariables,
              			m_cutVal.m_cutRJigsawJetPt);
-    //if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
-    //else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
-
-
-    //std::cout << "in SR function..."  << std::endl;
-    //std::cout << RJigsawVariables["RJVars_C_0_CosTheta"]  << std::endl;
-    //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"    ] << std::endl;
   }
 
 

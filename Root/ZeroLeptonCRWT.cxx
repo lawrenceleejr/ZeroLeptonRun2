@@ -133,6 +133,8 @@ void ZeroLeptonCRWT::begin()
     if(m_doSmallNtuple) m_tree = bookTree(sSR);
   }
 
+  if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
+
 }
 
 
@@ -514,7 +516,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
-    m_proxyUtils.RJigsawInit();
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingETPrime.X(),
 					   missingETPrime.Y(),
