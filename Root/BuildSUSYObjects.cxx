@@ -384,7 +384,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     float phSF = 1;
     for ( const auto& ph : *photons ) {
       m_SUSYObjTool->IsSignalPhoton(*ph);
-      if ( ph->auxdata<char>("signal") != 0 ) {
+      if ( !m_IsData && ph->auxdata<char>("signal") != 0 ) {
 	float sf = m_SUSYObjTool->GetSignalPhotonSF(*ph);
 	ph->auxdecor<float>("sf") = sf;
 	phSF *= sf;
