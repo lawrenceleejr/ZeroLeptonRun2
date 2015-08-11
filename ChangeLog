@@ -1,3 +1,10 @@
+11-Aug-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py: update diboson list
+	* buildRSEFileList: build pickle file with datasets on storage element
+	* getMCInfo.py, FilterUpdateMerge.py: allow to use pickle file as file
+	input list
+	* README: update with merging using files on storage element
+
 07-Aug-2015 Laurent Duflot
 	* upgrade to SUSYTools-00-06-19
 	new Btagging recommandations and working point

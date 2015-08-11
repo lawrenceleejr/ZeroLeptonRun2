@@ -69,6 +69,10 @@ ntuples. The tool will extract the number of events processed and the
 total sum of MC weights from the Counter and write an extended 
 cross-section file that includes these informations.
 
+
+   4.1/ From mini-tuples on disk
+   -----------------------------
+
 For example, one can list all downloaded small tuples in a file input.list
 (the file path should allow to extract the dataset IDs) an do
 
@@ -77,6 +81,22 @@ ZeroLeptonRun2/python/getMCInfo.py --input input.list
 this will create MCBackgroundDB.dat (and .tex) in the local directory.
 You need to have the code compiled as it uses C++ code from SUSYTools.
 
+
+   4.2/ From mini-tuples on (local) grid storage element
+   -----------------------------------------------------
+
+Alternatively, one may have subscribed the small ntuple datasets to a local
+grid storage element. In this case a simple list of the file URLs does not 
+allow to extract the dataset ID. A pickle file containing the datasets and 
+files need to be built. This tools uses rucio so it is in general better to 
+execute it from a fresh session.
+
+ZeroLeptonRun2/python/buildRSEFileList --rse grid_storage  dids
+
+or put the dataset names in a file and use --didfile. The resulting files.pkl
+can be used with the getMCInfo.py commands (don't change the pkl extension):
+
+ZeroLeptonRun2/python/getMCInfo.py --prefix mc15_13TeV --input files.pkl --xsecfile SUSYTools/data/susy_crosssections_13TeV.txt
 
 
 
@@ -92,8 +112,11 @@ Where the --dbName option points to an updated cross-section database built
 with the previous step (needed as the previous steps adds the number of events
 processed and corresponding sum weights.
 
-The file path of input files for MC should allow to retreive the dataset ID,
- so this is currently not possible for files in rucio.
+The file path of input files for MC should allow to retreive the dataset ID, 
+as for mini-tuple datasets downloaded on disk. Alternaltively, one can also 
+point to a pickle file produced as explained in 4.2 if the dataset are on a
+local grid storage element (keep the '.pkl' file extension).
+
 
 You need to have the code compiled as it uses C++ code.
 

@@ -1,403 +1,273 @@
-#!/bin/env python
-
-import sys, os, copy
+#!/usr/bin/env python
+"""
+############################################################
+#
+# Create an extended version of susy_crosssections.txt
+# including information on MC statistics and sum of weights
+#
+#FIXME: Should define a way to use files on the grid storage
+#       for which the file path does not allow to infer the
+#       dataset ID
+############################################################
+"""
 
 import ROOT
+import sys, os, commands, re, shutil, subprocess, copy
+from math import *
+ROOT.gROOT.SetBatch(True)
+
+#####################################################
 
 
-def parseCmdLine():
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option("--input_sig", dest="inputfile_signal", 
-                      help="List of input filenames for signal stored in a text file (ls <myfolder>/*output.root* > mylist.txt)", 
-                      default="tree_signal.list")
-    parser.add_option("--input_data", dest="inputfile_data", 
-                      help="List of input filenames for data", 
-                      default="tree_data.list")
-    parser.add_option("--input_mc", dest="inputfile_mc", 
-                      help="List of input filenames for mc", 
-                      default="tree_mc.list")
-    parser.add_option("--input_qcd", dest="inputfile_qcd", 
-                      help="List of input filenames for qcd", 
-                      default="tree_qcd.list")
-    parser.add_option("--doSignal", dest="doSignal", 
-                      help="do Signal (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--doQCD", dest="doQCD", 
-                      help="do QCD (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--doData", dest="doData", 
-                      help="do Data (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--doBackground", dest="doBackground", 
-                      help="do Background (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--doNormWeight", dest="doNormWeight", 
-                      help="(Re)Compute normWeight variable (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--dbName", dest="dbName", 
-                      help="Weights database (default=%default)", 
-                      default="ZeroLeptonRun2/data/MCBackgroundDB.dat")
-    parser.add_option("--filter", dest="filter",
-                      help="Select events as done in UpdateTree::SelectEvent ? (default=%default)", 
-                      action='store_true', default=False)
-    parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
-                      help="Also merge the ExtraVars block ?", 
-                      action='store_true', default=True)
-    parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
-                      help="Also merge the CRWTVars block ?", 
-                      action='store_true', default=True)
-    parser.add_option("--mergeCRZVars", dest="mergeCRZVars",
-                      help="Also merge the CRZVars block ?", 
-                      action='store_true', default=True)
-    parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
-                      help="Also merge the CRYVars block ?", 
-                      action='store_true', default=True)
-    parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
-                      help="Also merge the RJigsawVars block ?", 
-                      action='store_true', default=False)
-    parser.add_option("--verbose", dest="verbose", type='int', 
-                      help="Verbose level (0=minimum, default=%default)", default=0)
-    parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
-                      help="Prefix to identify mc production",) 
+#####################################################
+#
+#####################################################
 
-    (config, args) = parser.parse_args()
-    return config
+def getListFiles(indir):
+    """Get list of folders and files for an input directory."""
+    if not os.path.isdir(indir): return
+    fout = open('files.list','w')
+    for subdir in os.listdir(indir):
+        if os.path.isdir(indir+'/'+subdir):
+            for fname in os.listdir(indir+'/'+subdir):
+                if os.path.isfile(indir+'/'+subdir+'/'+fname) and '.root' in fname:
+                    fout.write(indir+'/'+subdir+'/'+fname+'\n')
+        elif os.path.isfile(indir+'/'+subdir) and '.root' in subdir:
+            fout.write(indir+'/'+subdir+'\n')
+    fout.close()
+    return
+
+def getMCSampleList(strlds):
+    """Get list of specific dataset numbers to check via --lds field."""
+    lds = []
+    if strlds == "": return lds
+    for strds in strlds.split(','):
+        if hasattr(MCSampleList,strds):
+            print "getMCSampleList:",strds,'found in MCSampleList'
+            lds += copy.deepcopy(getattr(MCSampleList,strds))
+        elif strds.isdigit():
+            lds.append(int(strds))
+    print "getMCSampleList: list of dataset numbers found",lds
+    return lds
+
+def updateMap(processMap,xsecDB,key,nb_of_events,weight):
+    if key in processMap.keys():
+        processMap[key][0]+=nb_of_events
+        processMap[key][1]+=weight
+    else:
+        xsec = -1.
+        if isinstance(key,tuple):
+            xsec = xsecDB.xsectTimesEff(key[0],key[1])
+        else:
+            xsec = xsecDB.xsectTimesEff(key)
+
+        if xsec < 0:
+            print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+            print 'No cross-section found for sample ID '+str(key),"!!!!!!!!!!!!!!!"
+            print key,xsec
+            print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+            xsec=0
+        # get number of events that the job saw
+        processMap[key]=[nb_of_events,weight,xsec]
+        pass
+    pass
+    return processMap
+
+
+def processFile(config,fname,channel,xsecDB,myMap):
+    if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
+    tfile=ROOT.TFile.Open(fname)
+    hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
+    if hist!=None and hist.GetNbinsX()>=2:
+        # if not channel in hsum:
+        #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
+        # else:
+        #     hsum[channel].Add(hist)
+        nb_of_events=0
+        weight=0
+        if config.isSignal==False:
+            nb_of_events=hist.GetBinContent(1)
+            weight=hist.GetBinContent(2)
+            updateMap(myMap,xsecDB,channel,nb_of_events,weight)
+        else:
+            """
+            gets complicated with derivations: from JobBookeeping we
+            can extract the sum of weights for all events before skimming
+            but we don't know for which hardproc. All we can do is calculate
+            the average efficiency of the derivation over hardprocs and
+            rescale for that. Would be OK for simplified models but can
+            be really wrong if many very different processes are present.
+            """
+            hist2=tfile.Get('Counter_for_ZeroLeptonCounterSRAll')
+            sumwini = hist.GetBinContent(2)
+            sumwkept = 0.
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                sumwkept+=hist2.GetBinContent(2,ybin)
+                pass
+            scale = sumwini/sumwkept
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                nb_of_events=hist2.GetBinContent(1,ybin)
+                weight=hist2.GetBinContent(2,ybin)
+                if nb_of_events>0:
+                    updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events*scale,weight*scale)
+                    pass
+                pass
+            pass
+        pass
+    else:
+        print "WARNING: file ignored ", fname 
+        pass
+    tfile.Close()
+
+def extractChannel(name):
+    for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
+        if prefix in name:
+            return int(name.split(prefix)[1].split('.')[0])
+    return None
+
+
+def getMCInfo(config):
+    myMap={}
+    xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile)
+
+    lds = getMCSampleList(config.lds)
+    hsum = {}
+
+    if config.inputfilename.endswith('.pkl'):
+        import pickle
+        if not os.path.isfile(config.inputfilename):
+            print "can't read file",config.inputfilename
+            sys.exit()
+            pass
+        picklefile = open(config.inputfilename,'rb')
+        myfiles = pickle.load(picklefile)
+        picklefile.close()
+
+        for (did,flist) in myfiles.iteritems():
+            channel = extractChannel(did)
+            for fname in flist:
+                processFile(config,fname,channel,xsecDB,myMap)
+    else:
+        for fname in open(config.inputfilename,'read'):    
+            fname.strip()
+            if len(fname) == 0: continue
+            if fname.startswith('#'): continue
+            fname = fname.strip()
+
+            # get dataset number from input file
+            channel = int(fname.split(".")[int(config.NB)])
+            if len(lds) and not channel in lds: continue
+
+            if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
+                print 'No cross section for sample',channel,'skip file',fname
+                continue
+
+            # get weight from histogram
+            processFile(config,fname,channel,xsecDB,myMap)
+
+
+    f=open(config.outputfilename,'w')
+    ftex=open(config.outputfilename.split('.')[0]+'.tex','w')
+    if config.isSignal==False:
+        f.write("id/I:name/C:xsec/F:kfac/F:eff/F:relunc/F:sumw/F:stat/F\n")
+        ftex.write(r"""\begin{table}
+\scriptsize
+\begin{center}
+\begin{tabular}{|l|l|r|r|r|r|r|}
+\hline
+Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & k-factor & $N_{gen}$ & $\Sigma w$ & $\mathcal{L}_{int}\ [\mathrm{fb}^{-1}]$ \\
+\hline
+""")
+        for channel,info in sorted(myMap.items()):
+            line=str(channel)+" "+str(xsecDB.name(channel))+" "+str(xsecDB.rawxsect(channel))+" "+str(xsecDB.kfactor(channel))+" "+str(xsecDB.efficiency(channel))+" "+str(xsecDB.rel_uncertainty(channel))+" "+str(info[1])+" "+str(info[0])#not very optimal
+            #print line
+            f.write(line+"\n")
+            if  channel == 110070 or channel == 110071 :
+                # Powheg weighted events, sum(weight) = xsec independent of
+                # number of generated events so use number of generated events
+                # as an approximation of the statistics
+                lint = info[0] / (xsecDB.rawxsect(channel) * xsecDB.efficiency(channel) * xsecDB.kfactor(channel) * 1000.)
+            else:
+                lint = info[1] / (xsecDB.rawxsect(channel) * xsecDB.efficiency(channel) * xsecDB.kfactor(channel) * 1000.)
+            ftex.write("%d & %s & %.3g & %3.2f & %d & %.4g & %.3g \\\\\n" % (channel,xsecDB.name(channel).replace('_','\_'),xsecDB.rawxsect(channel) * xsecDB.efficiency(channel),xsecDB.kfactor(channel),info[0],info[1],lint))
+            #print channel," 0 ",info[1]
+            pass
+        ftex.write(r"""\hline
+\end{tabular}
+\end{center}
+\caption{Summary of samples used in the analysis. $\sigma \times \epsilon$ corresponds to the cross-section provided by the Monte Carlo generator times the possible truth level filter efficiency. k-factor is used to normalize the generator cross-section to the best known cross-section for a process. $\Sigma w$ includes the generator level weights and the pileup reweighting effect. $\mathcal{L}_{int}$ is the generated equivalent integrated luminosity.\label{tab:crosssection_%s}}
+\end{table}
+""" % config.outputfilename.split('.')[0])
+    else:
+        f.write("id/I:hardproc/I:xsec/F:kfac/F:eff/F:relunc/F:sumw/F:stat/F\n")
+        ftex.write(r"""\begin{table}
+\scriptsize
+\begin{center}
+\begin{tabular}{|l|l|l|r|r|r|r|}
+\hline
+Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathcal{L}_{int}\ [\mathrm{fb}^{-1}]$ \\
+\hline
+""")
+        for key,info in sorted(myMap.items()):
+            channel = key[0]
+            hardproc = key[1]
+            line=str(channel)+" "+str(hardproc)+" "+str(xsecDB.rawxsect(channel,hardproc))+" "+str(xsecDB.kfactor(channel,hardproc))+" "+str(xsecDB.efficiency(channel,hardproc))+" "+str(xsecDB.rel_uncertainty(channel,hardproc))+" "+str(info[1])+" "+str(int(round(info[0])))#not very optimal
+            #print line
+            f.write(line+"\n")
+
+            lint = info[1] / (xsecDB.rawxsect(channel,hardproc) * xsecDB.efficiency(channel,hardproc) * xsecDB.kfactor(channel,hardproc) * 1000.)
+            ftex.write("%d & %s & %.3g & %d & %.5g \\\\\n" % (channel,xsecDB.name(channel).replace('_','\_'),xsecDB.rawxsect(channel,hardproc) * xsecDB.efficiency(channel,hardproc),info[0],lint))
+        ftex.write(r"""\hline
+\end{tabular}
+\end{center}
+\caption{Summary of signal samples used in the analysis. $\sigma \times \epsilon$ corresponds to the NLO cross-section times the possible truth level filter efficiency. $\mathcal{L}_{int}$ is the generated equivalent integrated luminosity.\label{tab:crosssection_%s}}
+\end{table}
+""" % config.outputfilename.split('.')[0])
+
+    f.close()
+    ftex.close()
+
+    return myMap
 
 #------------------------------------------------------------------------
+def parseCmdLine(args):
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_13TeV.txt")
+    parser.add_option("--input", dest="inputfilename", help="List of input filenames", default="")
+    parser.add_option("--output", dest="outputfilename", help="output filename", default="MCBackgroundDB.dat")
+    parser.add_option("--no", dest="NB", help="position of mc_channel_id in the string (splitted by the character '.')", default=3)
+    parser.add_option("--lds", dest="lds", help="List of dataset numbers like 105200, lW, lTop", default="")
+    parser.add_option("--indir", dest="indir", help="Input directory (can be used instead of --input)", default="")
+    parser.add_option("--isSignal", dest="isSignal", help="isSignal",action='store_true', default=False)
+    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc15_13TeV") 
+    (config, args) = parser.parse_args(args)
+    return config
 
-class Sample:
-    def __init__(self, name, myarg, inputfile, config, 
-                 Extraname="", treename="", nokfactor=False):
-        self.name = name
-        self.config = config
-        self.files=[]
-        if treename=="":
-            self.treename=self.name
-        else:            
-            self.treename=treename
-        self.extraName=Extraname
-        self.signaldb=None
-        self.nokfactor=nokfactor
-        try:
-            for file in open(inputfile,'read'):
-                file.strip()
-                file = file[:-1] # get rid of the \n
-                if len(file) == 0: continue
-                for id in myarg:
-                    if not str(id) in file: continue
-                    fname = file
-                    if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
-                    if self.emptyFile(fname):
-                        print 'Empty file, ignored',fname
-                    else:
-                        self.files.append(fname)
-        except:
-            print "can't read file",treename,inputfile
-
-    def emptyFile(self,fname):
-        """ file must have at least 1D/2D counter histograms """
-        ftemp = ROOT.TFile.Open(fname)
-        if not ftemp or ftemp.IsZombie():
-            print 'Could not open input file ',fname
-            return True
-        keys=ftemp.GetListOfKeys()
-        for k in keys:
-            kname=k.GetName()
-            if not kname.startswith('Counter_'): continue
-            obj=ftemp.Get(kname)
-            if obj.IsA().InheritsFrom(ROOT.TH1D.Class()) or obj.IsA().InheritsFrom(ROOT.TH2D.Class()): 
-                ftemp.Close()
-                return False
-        ftemp.Close()
-        return True
-
-    def getList(self):
-        return self.files
-
-    def getNewTreeName(self,kname,ds=None):
-        """Rename tree removing NT and also SRAll for control regions."""
-        if type(self.treename) == dict and ds in self.treename:
-            newname=self.treename[ds]+"_"+kname
-        else:
-            newname=self.treename+"_"+kname
-        newname=newname.replace("NT","")
-        if newname.find("TopMcAtNlo")>=0: newname=newname.replace("McAtNlo","")+"_McAtNlo"
-        if newname.find("TopPowheg")>=0: newname=newname.replace("Powheg","")+"_Powheg"
-        if newname.find("WAlpgen")>=0: newname=newname.replace("Alpgen","")+"_Alpgen"
-        if newname.find("WSherpa")>=0: newname=newname.replace("Sherpa","")+"_Sherpa"
-        #if newname.find("ZAlpgen")>=0: newname=newname.replace("Alpgen","")+"_Alpgen"        
-        if newname.find("CR")>=0 or newname.find("VR")>=0:
-            newname=newname.replace("_SRAll","_")
-        else:
-            newname=newname.replace("SRAll","SRAll_")
-        if newname[-1]=="_": newname=newname[:-1]
-        newname=newname.replace("__","_")
-        return newname
-
-    def getListOfTrees(self,fname):
-        """Find list of trees."""
-        try:
-            ftemp = ROOT.TFile.Open(fname)
-        except:
-            "ERROR can't open",fname
-            return
-        keys=ftemp.GetListOfKeys()
-        mykeys=[]
-        for k in keys:
-            kname=k.GetName()            
-            obj=ftemp.Get(kname)
-            if not obj.IsA().InheritsFrom( ROOT.TTree.Class() ): continue
-            mykeys.append(kname)
-        ftemp.Close()
-        return copy.deepcopy(mykeys)
-
-    def extractChannelFromFilename(self,filename):
-        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
-            if prefix in filename:
-                return int(filename.split(prefix)[1].split('.')[0])
-        return None
-
-    def normWeight(self,filename,xsecDB,isSignal):
-        if isSignal: return 1.
-        if self.config.doData: return 1.
-
-        ds = self.extractChannelFromFilename(filename)
-        if not ds:
-            print 'Could not identify channel number for ',filename
-            sys.exit(1)
-            
-        xsec = xsecDB.xsectTimesEff(ds)
-        sumW = 0.
-        if ds >= 147910 and ds <= 147917:
-            sumW = xsecDB.process(ds).stat()
-        else:
-            sumW = xsecDB.sumweight(ds)
-
-        if sumW != 0: return xsec/sumW
-        return 0.
-
-
-    def MergeCounters(self,outFile,inFiles,xsecDB,isSignal):
-        """Merge histrograms corresponding to counters"""
-        if len(inFiles) == 0: return
-
-        # get the list of histograms from the first file
-        scale = 1.
-        if self.config.doNormWeight: scale = self.normWeight(inFiles[0],xsecDB,isSignal)
-        ftemp = ROOT.TFile.Open(inFiles[0])
-        if not ftemp or ftemp.IsZombie():
-            print 'Could not open input file ',inFiles[0]
-            sys.exit(1)
-        keys=ftemp.GetListOfKeys()
-        hkeys=[]
-        outhists = {}
-        for k in keys:
-            kname=k.GetName()
-            if not kname.startswith('Counter_'): continue
-            obj=ftemp.Get(kname)
-            if not obj.IsA().InheritsFrom(ROOT.TH1D.Class()) and  not obj.IsA().InheritsFrom(ROOT.TH2D.Class()): continue
-            hkeys.append(kname)
-            outobj = obj.Clone()
-            outobj.SetDirectory(outFile)
-            outobj.Scale(scale)
-            outhists[kname] = outobj
-        ftemp.Close()
-        del ftemp
-        inFiles = inFiles[1:]
-
-        # merge with histograms from other files
-        for fname in inFiles:
-            ftemp = ROOT.TFile.Open(fname)
-            if not ftemp or ftemp.IsZombie():
-                print 'Could not open input file ',fname
-                sys.exit(1)
-            scale = 1.
-            if self.config.doNormWeight: scale = self.normWeight(fname,xsecDB,isSignal)
-            for k in hkeys:
-                h = ftemp.Get(k)
-                if not h:
-                    print 'Could not extract histogram',k,'in file',fname
-                    sys.exit(1)
-                outhists[k].Add(h,scale)
-                pass
-            ftemp.Close()
-            del ftemp
-        outFile.cd()
-        for h in outhists.itervalues():
-            if not isSignal:
-                # number of events and sum weight no longer have meanings for merged and normalized counters
-                h.SetBinContent(1,0.)
-                h.SetBinContent(2,0.)
-            h.Write()
-        pass
-
-    def ModifyAndMerge(self,mergename="",dbName="ZeroLeptonRun2/data/MCBackgroundDB.dat",isSignal=False,update=False):
-        """Merge all input files and rename trees with modifications in NTVars."""
-        if len(self.files) == 0: return
-        # list of trees in the input files
-        treenames = self.getListOfTrees(self.files[0])
-
-        # create C++ merger
-        xsecDB = ROOT.SUSY.CrossSectionDB(dbName, True)
-        merger = ROOT.FilterUpdateMerge(xsecDB)
-
-        # open output file
-        if mergename=="": 
-            mergename=self.name+self.extraName+".root"
-        if update:
-            newfile = ROOT.TFile.Open(mergename,"UPDATE")
-        else:
-            newfile = ROOT.TFile.Open(mergename,"RECREATE")
-
-        self.MergeCounters(newfile, self.files,xsecDB,isSignal)
-
-        # Build a list of output trees and files that should be merged into it
-        # Needed for signal grid as we have one tree name per mc channel
-        # while for background MC and signal we merge all files
-
-        # key = output tree name  value = (TTree, input-tree-name, list-of-files)
-        outTreeDict = {} 
-        for inTree in treenames:
-            for filename in self.files:
-                ds = None
-                if self.config.doQCD or self.config.doData: 
-                    ds = 1
-                else:
-                    ds = self.extractChannelFromFilename(filename)
-                if not ds:
-                    print 'Could not identify channel number for ',filename
-                    sys.exit(1)
-                if not self.config.doData and not isSignal and xsecDB.rawxsect(ds) < 0.:
-                    print 'No cross-section for sample',ds,'skip file',filename
-                    continue
-
-                newtname=self.getNewTreeName(inTree, ds)
-                if outTreeDict.has_key(newtname):
-                    outTreeDict[newtname][2].append(filename)
-                else:
-                    outTree = ROOT.TTree(newtname,'0-lepton small ntuple')
-                    outTreeDict[newtname] = (outTree, inTree, [filename])
-
-        # now do the real merging
-        for outTreeName, (outTree, inTreeName, filelist) in outTreeDict.iteritems():
-            inList = ROOT.FilterUpdateMergeFileList()
-            for name in filelist:
-                inList.add(name)
-
-            doExtraVars = self.config.mergeExtraVars
-            doRJigsawVars = self.config.mergeRJigsawVars
-            doCRWTVars = self.config.mergeCRWTVars
-            doCRZVars = self.config.mergeCRZVars
-            doCRYVars = self.config.mergeCRYVars
-            # check that the first file in the list has the requested block
-            for name in filelist:
-                testf = ROOT.TFile.Open(name)
-                if not testf or testf.IsZombie(): continue
-                testt = testf.Get(inTreeName)
-                if not testt: continue
-                if doExtraVars and not testt.GetBranch('NTExtraVars'):
-                    doExtraVars = False
-                if doRJigsawVars and not testt.GetBranch('NTRJigsawVars'):
-                    doRJigsawVars = False
-                if doCRWTVars and not testt.GetBranch('NTCRWTVars'):
-                    doCRWTVars = False
-                if doCRZVars and not testt.GetBranch('NTCRZVars'):
-                    doCRZVars = False
-                if doCRYVars and not testt.GetBranch('NTCRYVars'):
-                    doCRYVars = False
-                break
-            merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doRJigsawVars, doCRWTVars, doCRZVars, doCRYVars)
-            newfile.cd()
-            outTree.Write()
-
-        newfile.Close()
-
-        return
 
 if __name__ == '__main__':
-    config = parseCmdLine()
-    #config = parseCmdLine(sys.argv[1:])
+    config = parseCmdLine(sys.argv[1:])
 
-    # Load RootCore libs
+    ## Load RootCore libs
     ROOT.gROOT.ProcessLine(".x $ROOTCOREDIR/scripts/load_packages.C")
     print 'Packages loaded'
 
+    if config.inputfilename == "" and config.indir != "":
+        getListFiles(config.indir)
+        config.inputfilename = 'files.list'
+
     # List of dataset used in analysis
-    if config.prefix == 'mc12_8TeV' or  config.prefix == 'mc14_8TeV':
-        from mc12_8TeV_MCSampleList import *
+    if config.prefix == 'mc12_8TeV':
+        import mc12_8TeV_MCSampleList as MCSampleList
     elif config.prefix == 'mc14_13TeV':
-        from mc14_13TeV_MCSampleList import *
+        import mc14_13TeV_MCSampleList as MCSampleList
     elif config.prefix == 'mc15_13TeV':
-        from mc15_13TeV_MCSampleList import *
+        import mc15_13TeV_MCSampleList as MCSampleList
     elif config.prefix == 'mc15_week1':
-        from mc15_13TeV_week1_MCSampleList import *
+        import mc15_13TeV_week1_MCSampleList as MCSampleList
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)
 
 
-    AllSamples=[]
-    if config.doBackground==True:
-        Top = Sample('Top',lTop,config.inputfile_mc,config,treename="Top")
-        WMassiveCB = Sample('WMassiveCB',lWjets,config.inputfile_mc,config,treename="W")
-        ZMassiveCB = Sample('ZMassiveCB',lZjets,config.inputfile_mc,config,treename="Z")
-        DB = Sample('DibosonMassiveCB',lDiBoson,config.inputfile_mc,config,treename="Diboson")
-        QCD = Sample('QCD',lQCDMC,config.inputfile_mc,config)
-        GAMMAMassiveCB = Sample('GAMMAMassiveCB',lYjets,config.inputfile_mc,config,treename="GAMMA")
-
-        AllSamples.append(Top)
-        AllSamples.append(WMassiveCB)
-        AllSamples.append(ZMassiveCB)
-        AllSamples.append(DB) 
-        AllSamples.append(QCD)
-        AllSamples.append(GAMMAMassiveCB)
-
-    #if config.doZLO==True:
-    #    ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
-    #    AllSamples.append(ZLO)
-
-    if config.doData==True:
-        # Run 1 streams
-        DataJetTauEtmiss = Sample('Data',['JetTauEtmiss'],config.inputfile_data,config,Extraname="JetTauEtmiss")
-        DataMuon = Sample('Data',['Muon'],config.inputfile_data,config,Extraname="Muon")
-        DataEgamma = Sample('Data',['Egamma'],config.inputfile_data,config,Extraname="Egamma")
-        # Run 2 stream
-        DataMain = Sample('Data',['Main'],config.inputfile_data,config,Extraname="Main")
-        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma,DataMain]
-        
-    if config.doQCD==True:
-        QCDdd1 = Sample('QCDdd',['JetTauEtmiss'],config.inputfile_qcd,config)
-        AllSamples += [QCDdd1]
-
-    # do merging
-    for s in AllSamples:
-        s.ModifyAndMerge(dbName=config.dbName)
-        
-
-    
-    if config.doSignal==True:
-        import pickle
-        if not os.path.isfile('signalPointPickle.pkl'):
-            print 'pickled signal grids not found, exiting...'
-            sys.exit()
-
-        picklefile = open('signalPointPickle.pkl','rb')
-        pointdict = pickle.load(picklefile)
-        picklefile.close()
-
-        for grid,mapgrid in pointdict.items():
-            myarg = []
-            mytprefix = {}
-            for key,info in mapgrid.items():
-                name=grid+"_"+str(info[0])
-                if(len(info)>=2):name+="_"+str(info[1])
-                if(len(info)>=3):name+="_"+str(info[2])
-                print name," ",key
-                if type(key) == int:
-                    myarg.append("."+str(key)+".")
-                else:
-                    myarg.append(str(key))
-                mytprefix[key] = name
-            signal = Sample(grid,myarg,config.inputfile_signal,config,treename=mytprefix)
-            signal.ModifyAndMerge(mergename=grid+".root",dbName=config.dbName,isSignal=True,update=False)
+    myMap=getMCInfo(config)
