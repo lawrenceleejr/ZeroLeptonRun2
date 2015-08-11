@@ -26,15 +26,13 @@ lttbarX  = [] # MadGraph5+Pythia
 lTop     = lttbar + lsinglet + lttbarX
 
 # diboson samples
-lDiBoson =  range(361063,361072+1)  # Sherpa ZZ+WZ (leptons)
-lDiBoson += range(361081,361087+1) # Sherpa semileptonic
-lTriBoson = [361073]+range(361075,361076,361080+1)  # 
-
+lDiBoson =  range(361063,361087+1)
+lTriBoson = []
 
 lZgamma  = [301908,301909] # Sherpa nunugamma 35<pt<140
 lWgamma  = [301893,301894,301902] # Sherpa  several missing samples
 lVgamma  = lZgamma + lWgamma
-lDiBoson = lDiBoson + lVgamma + lTriBoson
+lDiBoson = lDiBoson + lVgamma + 
 
 lQCDMC   = range(361020,361032+1) # Pythia8 dijet JZxW
 
