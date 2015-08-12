@@ -156,7 +156,6 @@ double PhysObjProxyUtils::Meff(const std::vector<JetProxy>& jets, size_t njets, 
 void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, double & Sp, double & ST, double & Ap)
 {
   
-  int njet = jets.size(); //you can set Number of jets for calculation
   Sp=-1;
   ST=-1;
   Ap=-1;
@@ -164,26 +163,23 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
   vector<TLorentzVector> v_tlv;
  
   //prepare vector<TLorentzVector> of jets to use
-  for(size_t ijet=0; ijet<jets.size(); ijet++) 
-    {
-      
-      //      if(jets[ijet].Pt()<ptcut)break;
-      TLorentzVector jet;
-      jet.SetPtEtaPhiM(jets[ijet].Pt(),
-		       jets[ijet].Eta(),
+  for(size_t ijet=0; ijet<jets.size(); ijet++)  {      
+    if ( jets[ijet].Pt() < 40000. ) continue;
+    TLorentzVector jet;
+    jet.SetPtEtaPhiM(jets[ijet].Pt(),
+		     jets[ijet].Eta(),
 		       jets[ijet].Phi(),
-		       jets[ijet].M());
-      v_tlv.push_back(jet);
-    }
+		     jets[ijet].M());
+    v_tlv.push_back(jet);
+  }
   
-    if(v_tlv.size() < (size_t)njet || v_tlv.size()==0)return ;
+  int njet = v_tlv.size();
+  if(v_tlv.size() < (size_t)njet || v_tlv.size()==0)return ;
 
 
-    Sphericity sp; //construct
-    sp.SetTLV(v_tlv, njet);
-    sp.GetSphericity(Sp, ST, Ap);
-
-
+  Sphericity sp; //construct
+  sp.SetTLV(v_tlv, njet);
+  sp.GetSphericity(Sp, ST, Ap);
 };
 
 

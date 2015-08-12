@@ -2,6 +2,7 @@
 	* zerolepton.config: comment out second PRW file (25ns) as both files
 	seem to be combined in the tool for 50ns reweighting.
 	* FilterUpdateMerge.py: set batch mode.
+	* PhysObjProxyUtils: calculate sphericity/aplanarity for jets>40GeV
 
 
 11-Aug-2015 Laurent Duflot
