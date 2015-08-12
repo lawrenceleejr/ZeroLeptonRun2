@@ -249,6 +249,7 @@ if __name__ == '__main__':
     config = parseCmdLine(sys.argv[1:])
 
     ## Load RootCore libs
+    ROOT.gROOT.SetBatch()
     ROOT.gROOT.ProcessLine(".x $ROOTCOREDIR/scripts/load_packages.C")
     print 'Packages loaded'
 

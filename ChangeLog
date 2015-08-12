@@ -1,3 +1,9 @@
+12-Aug-2015 Laurent Duflot
+	* zerolepton.config: comment out second PRW file (25ns) as both files
+	seem to be combined in the tool for 50ns reweighting.
+	* FilterUpdateMerge.py: set batch mode.
+
+
 11-Aug-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py: update diboson list
 	* buildRSEFileList: build pickle file with datasets on storage element
