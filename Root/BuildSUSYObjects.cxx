@@ -415,8 +415,15 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     //out() <<  "SUSYJets"+m_suffix+tag+" jets " << std::endl;
     for ( const auto& jet : *jets ) {
       if ( !m_UseSmearedJets ) { 
-	m_SUSYObjTool->IsBadJet(*jet, -1e+99); // no JVT cut
-	m_SUSYObjTool->IsSignalJet(*jet, 20000.,10., -1e+99); // no JVT cut
+	m_SUSYObjTool->IsBadJet(*jet); // no JVT cut
+	// currently does not add any decoration
+	bool issignal = m_SUSYObjTool->IsSignalJet(*jet);
+	if ( issignal ) {
+	  jet->auxdecor<char>("signal") = 1;
+	}
+	else {
+	  jet->auxdecor<char>("signal") = 0;
+	}
       }
       if ( m_period == p8tev ) {
 	//FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
@@ -465,7 +472,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 				 photons,
 				 0,
 				 true,
-				 false,
+				 true,
 				 0).isSuccess() 
 	 ) throw std::runtime_error("Error in GetMET");
     TVector2* MissingET = new TVector2(0.,0.);
