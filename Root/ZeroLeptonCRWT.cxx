@@ -417,7 +417,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     missingETPrime = missingETPrime + TVector2(leptonTLV.Px(),leptonTLV.Py());
   }
   else {
-    good_jets.push_back(JetProxy(leptonTLV,true,true,true,false));
+    good_jets.push_back(JetProxy(leptonTLV,true,true,true,true,false));
     std::sort(good_jets.begin(),good_jets.end(),PtOrder<JetProxy>);
   }
   double MissingEtPrime = missingETPrime.Mod();

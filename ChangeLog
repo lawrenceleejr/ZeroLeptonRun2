@@ -3,6 +3,9 @@
 	informations to allow building a DB of initial harproc counts
 	(needed for proper normalisation of multi process samples)
 	* zson.config: example config file for a job producing json hardproc file.
+	* BuidSUSYObjects: switch to default SUSYTools for JVT (jet and MET)
+	* PhysObjProxies: add isSignal() method to JetProxy
+	* ZeroLeptionCRWT: adapt to interface change in JetProxy
 
 12-Aug-2015 Laurent Duflot
 	* zerolepton.config: comment out second PRW file (25ns) as both files
