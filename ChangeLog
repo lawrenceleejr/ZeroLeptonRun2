@@ -1,3 +1,9 @@
+14-Aug-2015 Laurent Duflot
+	* MCInfoProcessor: add option to produce a JSON file with hardproc
+	informations to allow building a DB of initial harproc counts
+	(needed for proper normalisation of multi process samples)
+	* zson.config: example config file for a job producing json hardproc file.
+
 12-Aug-2015 Laurent Duflot
 	* zerolepton.config: comment out second PRW file (25ns) as both files
 	seem to be combined in the tool for 50ns reweighting.
