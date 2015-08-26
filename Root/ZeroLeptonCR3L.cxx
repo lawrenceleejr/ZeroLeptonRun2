@@ -1,5 +1,5 @@
 
-#include "ZeroLeptonRun2/ZeroLeptonCRZ.h"
+#include "ZeroLeptonRun2/ZeroLeptonCR3L.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PtOrder.h"
 
@@ -27,21 +27,22 @@
 #include <stdexcept>
 #include <algorithm>
 
-ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
+ZeroLeptonCR3L::ZeroLeptonCR3L(const char *name)
   : cafe::Processor(name), 
     m_tree(0), 
-    m_stringRegion("CRZ_SRAll"), 
+    m_stringRegion("CR3L_SRAll"), 
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsSignal(false),
     m_IsTruth(false),
-    m_doRecl(false),
     m_DoSystematics(false),
     m_period(INVALID),
+    m_isVR(false),
     m_isMuonChannel(false),
     m_isElectronChannel(false),
+    m_doRecl(false),
     m_suffix(""),
     m_suffixRecl(""),
     m_physobjsFiller(0),
@@ -57,15 +58,15 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   cafe::Config config(name);
   m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
-  m_suffixRecl = config.get("suffixRecl","");
-  m_doRecl = config.get("doRecl",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_doRecl = config.get("doRecl",false);
+  m_suffixRecl = config.get("suffixRecl","");
   m_IsTruth = config.get("IsTruth",false);
   m_DoSystematics = config.get("DoSystematics",false);
 
   m_period = periodFromString(config.get("Period","p13tev"));
-  if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRZ does not support the 7tev run period"));
-  if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRZ: invalid run period specified"));
+  if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCR3L does not support the 7tev run period"));
+  if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCR3L: invalid run period specified"));
 
   if ( m_IsData && m_period == p8tev ) {
     m_isMuonChannel = config.get("IsMuonChannel",false);
@@ -79,11 +80,15 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
 
+  m_isVR = config.get("IsVR",false);
+  if ( m_isVR ) m_stringRegion = "VR3L_SRAll";
+
   std::string cutfile = config.get("cutfile","None");
-  if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonCRZ: invalid cut file specified"));
+  if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonCR3L: invalid cut file specified"));
   m_cutVal.ReadCutValues(cutfile);
 
   m_suffix = config.get("suffix","");
+  m_suffixRecl = config.get("suffixRecl","");
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
@@ -91,14 +96,14 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
-ZeroLeptonCRZ::~ZeroLeptonCRZ()
+ZeroLeptonCR3L::~ZeroLeptonCR3L()
 {
   if ( !m_DoSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
   if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
 
-TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
+TTree* ZeroLeptonCR3L::bookTree(const std::string& treename)
 {
   const char* name(treename.c_str());
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
@@ -106,12 +111,12 @@ TTree* ZeroLeptonCRZ::bookTree(const std::string& treename)
   bookNTVars(tree,m_ntv,false);
   bookNTExtraVars(tree,m_extrantv);
   if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
-  if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
-  bookNTCRZVars(tree,m_crzntv);
+  if ( m_fillReclusteringVars) bookNTReclusteringVars(tree,m_RTntv);
+  bookNTCR3LVars(tree,m_cr3lntv);
   return tree;
 }
 
-TTree* ZeroLeptonCRZ::getTree(const std::string& treename)
+TTree* ZeroLeptonCR3L::getTree(const std::string& treename)
 {
   std::map<std::string,TTree*>::const_iterator pos = m_treeRepository.find(treename);
   if ( pos == m_treeRepository.end() ) {
@@ -120,7 +125,7 @@ TTree* ZeroLeptonCRZ::getTree(const std::string& treename)
   return pos->second;
 }
 
-void ZeroLeptonCRZ::begin()
+void ZeroLeptonCR3L::begin()
 {
   std::string sSR = m_stringRegion;
   if(m_doSmallNtuple) { 
@@ -137,11 +142,10 @@ void ZeroLeptonCRZ::begin()
 
   if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
 
-
 }
 
 
-bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
+bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
 {
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
@@ -252,13 +256,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
-  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl;
-  std::vector<float> vD2;
+  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
   if(! m_IsTruth){
     m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
-    if(m_doRecl){
-      m_physobjsFiller->FillJetReclProxies(good_jets_recl,vD2);
-    }
   }
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
@@ -276,15 +276,19 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
   }
   // keep only signal electrons with Pt>25GeV
+  int nel=0;
+  int neltruth=0;
   for ( std::vector<ElectronProxy>::iterator it = isolated_signal_electrons.begin();
-	it != isolated_signal_electrons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_electrons.erase(it);
+  	it != isolated_signal_electrons.end(); ) {
+    if ( it->Pt() < 25000. && nel<1 ) it = isolated_signal_electrons.erase(it);
     else it++;
+    nel++;
   }
   for ( std::vector<ElectronTruthProxy>::iterator itt = isolated_signal_electrons_truth.begin();
         itt != isolated_signal_electrons_truth.end(); ) {
-    if ( itt->Pt() < 25000. ) itt = isolated_signal_electrons_truth.erase(itt);
+    if ( itt->Pt() < 25000. && neltruth<1 ) itt = isolated_signal_electrons_truth.erase(itt);
     else itt++;
+    neltruth++;
   }
   // FIXME : trigger matching
   std::vector<ElectronProxy> trigmatched_electrons = isolated_signal_electrons;
@@ -299,15 +303,19 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
   }
   // keep only signal muons with Pt>25GeV
+  int nmu=0;
+  int nmutruth=0;
   for ( std::vector<MuonProxy>::iterator it = isolated_signal_muons.begin();
 	it != isolated_signal_muons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_muons.erase(it);
+    if ( it->Pt() < 25000. && nmu<1 ) it = isolated_signal_muons.erase(it);
     else it++;
+    nmu++;
   }
   for ( std::vector<MuonTruthProxy>::iterator itt = isolated_signal_muons_truth.begin();
         itt != isolated_signal_muons_truth.end(); ) {
-    if ( itt->Pt() < 25000. ) itt = isolated_signal_muons_truth.erase(itt);
+    if ( itt->Pt() < 25000. && nmutruth<1 ) itt = isolated_signal_muons_truth.erase(itt);
     else itt++;
+    nmutruth++;
   }
   // FIXME : trigger matching
   std::vector<MuonProxy> trigmatched_muons = isolated_signal_muons;
@@ -355,54 +363,331 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   std::vector<TLorentzVector> leptonTLVs;
   std::vector<int> leptonCharges;
+  
+  int nW=1000;
+
   if ( m_isMuonChannel && 
-       ((!m_IsTruth && isolated_signal_muons.size()==2) || (m_IsTruth && isolated_signal_muons_truth.size()==2)) &&
-       ((!m_IsTruth && isolated_baseline_electrons.size()==0) || (m_IsTruth && isolated_baseline_electrons_truth.size()==0)) ) {
+       ( (!m_isVR && !m_IsTruth && (isolated_signal_muons.size()==3 || (isolated_signal_muons.size()==2 && isolated_signal_electrons.size()==1)) ) 
+	 || ( m_isVR && !m_IsTruth && isolated_signal_muons.size()==2 && isolated_signal_electrons.size()==0 && (baseline_muons.size()==3 || baseline_electrons.size()==1) )
+	 || (!m_isVR && m_IsTruth && (isolated_signal_muons_truth.size()==3 || (isolated_signal_muons_truth.size()==2 && isolated_signal_electrons_truth.size()==1)) )
+	 || ( m_isVR && m_IsTruth &&  isolated_signal_muons_truth.size()==2 && isolated_signal_electrons_truth.size()==0 && (baseline_muons_truth.size()==3 || baseline_electrons_truth.size()==1) ))){
+    
     if(!m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[0]))));
       leptonCharges.push_back((int)(isolated_signal_muons[0].muon()->charge())*13);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[1]))));
       leptonCharges.push_back((int)(isolated_signal_muons[1].muon()->charge())*13);
-    }
     
+      if(isolated_signal_muons.size()==3){
+	leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[2]))));
+	leptonCharges.push_back((int)(isolated_signal_muons[2].muon()->charge())*13);
+      } // 3 signal muons
+      if(isolated_signal_muons.size()==2){
+	if(!m_isVR){
+	  leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0]))));
+	  leptonCharges.push_back((int)(isolated_signal_electrons[0].electron()->charge())*11);
+	} // not validation region
+	if( m_isVR){
+	  if(baseline_muons.size()==3){
+	    for(int i=0;i<3;i++){
+	      if(baseline_muons[i].Pt()==isolated_signal_muons[0].Pt() || baseline_muons[i].Pt()==isolated_signal_muons[1].Pt())
+		continue;
+	      leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_muons[i]))));
+	      leptonCharges.push_back((int)(baseline_muons[i].muon()->charge())*13);
+	      nW = i ; 
+	    }
+	  } // 3 baseline m
+	  if(baseline_electrons.size()==1){
+	    leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_electrons[0]))));
+	    leptonCharges.push_back((int)(baseline_electrons[0].electron()->charge())*11);
+	  } // 1 baseline e
+	} // validation region
+      } // 2 signal muons
+    } // not truth
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[0]))));
       leptonCharges.push_back((int)(isolated_signal_muons_truth[0].muontruth()->charge())*13);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[1]))));
       leptonCharges.push_back((int)(isolated_signal_muons_truth[1].muontruth()->charge())*13);
-    } 
-    
+
+      if(isolated_signal_muons_truth.size()==3){
+	leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[2]))));
+	leptonCharges.push_back((int)(isolated_signal_muons_truth[2].muontruth()->charge())*13);
+      } // 3 signal muons
+      if(isolated_signal_muons_truth.size()==2){
+	if(!m_isVR){
+	  leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[0]))));
+	  leptonCharges.push_back((int)(isolated_signal_electrons_truth[0].eltruth()->charge())*11);
+	} // not validation region
+	if( m_isVR){
+	  if(baseline_muons_truth.size()==3){
+            for(int i=0;i<3;i++){
+              if(baseline_muons_truth[i].Pt()==isolated_signal_muons_truth[0].Pt() || baseline_muons_truth[i].Pt()==isolated_signal_muons_truth[1].Pt())
+                continue;
+              leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_muons_truth[i]))));
+              leptonCharges.push_back((int)(baseline_muons_truth[i].muontruth()->charge())*13);
+	      nW=i;
+            }
+          } // 3 baseline mu
+          if(baseline_electrons_truth.size()==1){
+            leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_electrons_truth[0]))));
+            leptonCharges.push_back((int)(baseline_electrons_truth[0].eltruth()->charge())*11);
+          } // 1 baseline e
+
+	} // validation region
+      } // 2 signal muons
+    } // m_IsTruth 
   } 
-  else if (  m_isElectronChannel && 
-             ((!m_IsTruth && isolated_signal_electrons.size()==2) || (m_IsTruth && isolated_signal_electrons_truth.size()==2)) && 
-	     ((!m_IsTruth && isolated_baseline_muons.size()==0) || (m_IsTruth && isolated_baseline_muons_truth.size()==0)) ) {
+
+  // ELECTRONS 
+
+  if ( m_isElectronChannel && 
+       (  (!m_isVR && !m_IsTruth && (isolated_signal_electrons.size()==3 || (isolated_signal_electrons.size()==2 && isolated_signal_muons.size()==1)) )  
+	  || ( m_isVR && !m_IsTruth && isolated_signal_electrons.size()==2 && isolated_signal_muons.size()==0 && (baseline_electrons.size()==3 || baseline_muons.size()==1) )
+	  || (!m_isVR && m_IsTruth && (isolated_signal_electrons_truth.size()==3 || (isolated_signal_electrons_truth.size()==2 && isolated_signal_muons_truth.size()==1)) )
+	  || ( m_isVR && m_IsTruth &&  isolated_signal_electrons_truth.size()==2 && isolated_signal_muons_truth.size()==0 && (baseline_electrons_truth.size()==3 || baseline_muons_truth.size()==1) ))){
+
     if(!m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0]))));
       leptonCharges.push_back((int)(isolated_signal_electrons[0].electron()->charge())*11);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[1]))));
       leptonCharges.push_back((int)(isolated_signal_electrons[1].electron()->charge())*11);
-    }
-    
+
+      if(isolated_signal_electrons.size()==3){
+        leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[2]))));
+        leptonCharges.push_back((int)(isolated_signal_electrons[2].electron()->charge())*11);
+      } // 3 signal e
+      if(isolated_signal_electrons.size()==2){
+        if(!m_isVR){
+          leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[0]))));
+          leptonCharges.push_back((int)(isolated_signal_muons[0].muon()->charge())*13);
+        } // not validation region
+        if( m_isVR){
+          if(baseline_electrons.size()==3){
+            for(int i=0;i<3;i++){
+              if(baseline_electrons[i].Pt()==isolated_signal_electrons[0].Pt() || baseline_electrons[i].Pt()==isolated_signal_electrons[1].Pt())
+                continue;
+              leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_electrons[i]))));
+              leptonCharges.push_back((int)(baseline_electrons[i].electron()->charge())*11);
+	      nW=i;
+            }
+          } // 3 baseline e
+          if(baseline_muons.size()==1){
+            leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_muons[0]))));
+            leptonCharges.push_back((int)(baseline_muons[0].muon()->charge())*13);
+          } // 1 baseline m
+	} // validation
+      } // 2 signal e
+    } // not truth
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[0]))));
       leptonCharges.push_back((int)(isolated_signal_electrons_truth[0].eltruth()->charge())*11);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[1]))));
       leptonCharges.push_back((int)(isolated_signal_electrons_truth[1].eltruth()->charge())*11);
-    }
-    
-  }
+
+      if(isolated_signal_electrons_truth.size()==3){
+        leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[2]))));
+        leptonCharges.push_back((int)(isolated_signal_electrons_truth[2].eltruth()->charge())*11);
+      } // 3 signal electrons
+      if(isolated_signal_electrons_truth.size()==2){
+        if(!m_isVR){
+          leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[0]))));
+          leptonCharges.push_back((int)(isolated_signal_muons_truth[0].muontruth()->charge())*13);
+        }// not validation region
+        if( m_isVR){
+          if(baseline_electrons_truth.size()==3){
+            for(int i=0;i<3;i++){
+              if(baseline_electrons_truth[i].Pt()==isolated_signal_electrons_truth[0].Pt() || baseline_electrons_truth[i].Pt()==isolated_signal_electrons_truth[1].Pt())
+                continue;
+              leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_electrons_truth[i]))));
+              leptonCharges.push_back((int)(baseline_electrons_truth[i].eltruth()->charge())*11);
+	      nW=i;
+            }
+          } // 3 baseline electrons
+          if(baseline_muons_truth.size()==1){
+            leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(baseline_muons_truth[0]))));
+            leptonCharges.push_back((int)(baseline_muons_truth[0].muontruth()->charge())*13);
+          } // 1 baseline muon
+	} // validation region
+      } // 2 signal e
+    } // isTruth
+  } // Electrons
+
+
   if ( leptonTLVs.empty() ) return true;
-  TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
-  if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
 
-  m_counter->increment(weight,incr++,"2 OS Signal Leptons",trueTopo);
+  int lepfromW = 0 ; 
+  TLorentzVector dileptonTLV ;
+  // CASE WITH THREE IDENTICAL LEPTONS - not needed for VR, as we have only two OS signal leptons
+  if( !m_isVR && ((!m_IsTruth && (isolated_signal_electrons.size()==3 || isolated_signal_muons.size()==3)) 
+		  || (m_IsTruth && (isolated_signal_electrons_truth.size()==3 || isolated_signal_muons_truth.size()==3)))){
 
+    // Remove e+e+e+ and e-e-e- events, not consistent with Z(ee) boson!
+    if(fabs(leptonCharges[0]+leptonCharges[1]+leptonCharges[2])==3) return true;
+    
+    double mass1=0;
+    double mass2=0;
+    double mass3=0;
+    double massZ = 91187.6;
+    
+    if(leptonCharges[0]*leptonCharges[1]<0){
+      mass1 = (leptonTLVs[0]+leptonTLVs[1]).M();
+    }
+    if(leptonCharges[0]*leptonCharges[2]<0){
+      mass2 = (leptonTLVs[0]+leptonTLVs[2]).M();
+    }
+    if(leptonCharges[1]*leptonCharges[2]<0){
+      mass3 = (leptonTLVs[1]+leptonTLVs[2]).M();
+    }
+
+    double diff1 = abs(massZ-mass1);
+    double diff2 = abs(massZ-mass2);
+    double diff3 = abs(massZ-mass3);
+    
+    if(diff1<diff2 && diff1<diff3){
+      dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
+      lepfromW = 3 ; 
+      if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
+    }
+    if(diff2<diff1 && diff2<diff3){
+      dileptonTLV = leptonTLVs[0]+leptonTLVs[2];
+      lepfromW = 2 ; 
+      if ( leptonCharges[0]*leptonCharges[2] > 0 ) return true;
+    }
+    if(diff3<diff1 && diff3<diff2){
+      dileptonTLV = leptonTLVs[1]+leptonTLVs[2];
+      lepfromW = 1 ; 
+      if ( leptonCharges[1]*leptonCharges[2] > 0 ) return true;
+    }
+  }
+  else{
+    dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
+    lepfromW = 3 ; 
+    if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
+  }
+
+  m_counter->increment(weight,incr++,"2 OSSF Signal Leptons",trueTopo);
+
+  if(leptonCharges.size()!=3) return true;
+  m_counter->increment(weight,incr++,"3 Signal Leptons",trueTopo);
+
+  // Lepton isolation #################################
+
+  std::vector<float> vtopoetcone20 ;
+  std::vector<float> vptvarcone30 ;
+  std::vector<float> vptvarcone20 ;
+
+  float e1=0;
+  float p1=0;
+  float p2=0;
+
+  if(!m_IsTruth){
+    if(m_isElectronChannel && isolated_signal_electrons.size()>=2){
+      e1 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
+      vtopoetcone20.push_back(e1);
+      e1 = (isolated_signal_electrons[1].electron())->isolation(xAOD::Iso::topoetcone20);
+      vtopoetcone20.push_back(e1);
+      
+      p1 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
+      vptvarcone20.push_back(p1);
+      p1 = (isolated_signal_electrons[1].electron())->isolation(xAOD::Iso::ptvarcone20);
+      vptvarcone20.push_back(p1);
+      
+      p2 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
+      vptvarcone30.push_back(p2);
+      p2 = (isolated_signal_electrons[1].electron())->isolation(xAOD::Iso::ptvarcone30);
+      vptvarcone30.push_back(p2);
+      
+      if(isolated_signal_electrons.size()==3 && !m_isVR){
+	e1 = (isolated_signal_electrons[2].electron())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (isolated_signal_electrons[2].electron())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (isolated_signal_electrons[2].electron())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+      if(isolated_signal_electrons.size()==2 && isolated_signal_muons.size()==1 && !m_isVR){
+	e1 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+      if(baseline_electrons.size()==3 && m_isVR){
+        e1 = (baseline_electrons[nW].electron())->isolation(xAOD::Iso::topoetcone20);
+        vtopoetcone20.push_back(e1);
+        p1 = (baseline_electrons[nW].electron())->isolation(xAOD::Iso::ptvarcone20);
+        vptvarcone20.push_back(p1);
+        p2 = (baseline_electrons[nW].electron())->isolation(xAOD::Iso::ptvarcone30);
+        vptvarcone30.push_back(p2);
+      }
+      if(baseline_muons.size()==1 && m_isVR){
+	e1 = (baseline_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+        p1 = (baseline_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
+        vptvarcone20.push_back(p1);
+        p2 = (baseline_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
+        vptvarcone30.push_back(p2);
+      }      
+    } // electron
+
+    if(m_isMuonChannel && isolated_signal_muons.size()>=2){ 
+      e1 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
+      vtopoetcone20.push_back(e1);
+      e1 = (isolated_signal_muons[1].muon())->isolation(xAOD::Iso::topoetcone20);
+      vtopoetcone20.push_back(e1);
+      
+      p1 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
+      vptvarcone20.push_back(p1);
+      p1 = (isolated_signal_muons[1].muon())->isolation(xAOD::Iso::ptvarcone20);
+      vptvarcone20.push_back(p1);
+      
+      p2 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
+      vptvarcone30.push_back(p2);
+      p2 = (isolated_signal_muons[1].muon())->isolation(xAOD::Iso::ptvarcone30);
+      vptvarcone30.push_back(p2);
+      
+      if(isolated_signal_muons.size()==3 && !m_isVR){
+	e1 = (isolated_signal_muons[2].muon())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (isolated_signal_muons[2].muon())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (isolated_signal_muons[2].muon())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+      if(isolated_signal_muons.size()==2 && isolated_signal_electrons.size()==1 && !m_isVR){
+	e1 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+      if(baseline_muons.size()==3 && m_isVR){
+	e1 = (baseline_muons[nW].muon())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (baseline_muons[nW].muon())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (baseline_muons[nW].muon())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+      if(baseline_electrons.size()==1 && m_isVR){
+	e1 = (baseline_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
+	vtopoetcone20.push_back(e1);
+	p1 = (baseline_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
+	vptvarcone20.push_back(p1);
+	p2 = (baseline_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
+	vptvarcone30.push_back(p2);
+      }
+    } // muon
+  } // not truth
+    
   // Apply Lepton scale factors
   float muSF = eventInfo->auxdecor<float>("muSF");
   if ( muSF != 0.f ) weight *= muSF;
   float elSF = eventInfo->auxdecor<float>("elSF");
   if ( elSF != 0.f ) weight *= elSF;
-
 
   // leading lepton is signal lepton and trigger matched
   /*
@@ -428,9 +713,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;
-  missingETPrime = missingETPrime +
-    TVector2(leptonTLVs[0].Px(),leptonTLVs[0].Py())  + 
-    TVector2(leptonTLVs[1].Px(),leptonTLVs[1].Py());
+  if(lepfromW!=1) missingETPrime = missingETPrime + TVector2(leptonTLVs[0].Px(),leptonTLVs[0].Py()) ;
+  if(lepfromW!=2) missingETPrime = missingETPrime + TVector2(leptonTLVs[1].Px(),leptonTLVs[1].Py()) ;  
+  if(lepfromW!=3) missingETPrime = missingETPrime + TVector2(leptonTLVs[2].Px(),leptonTLVs[2].Py()) ;  
   double MissingEtPrime = missingETPrime.Mod();
   
 
@@ -438,7 +723,6 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   // FIXME do something special with isbadMETmuon when there are signal muons
   //if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) return true;
   //m_counter->increment(weight,incr++,"IsBadMETMuon",trueTopo);
-
 
   if (good_jets.size()<1) return true;  
   m_counter->increment(weight,incr++,"At least one jet",trueTopo);
@@ -457,7 +741,6 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   // leave counter to keep same cutflow
   m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
-
 
   // Calculate variables for ntuple -----------------------------------------
   double phi_met = TMath::ATan2(missingETPrime.Y(),missingETPrime.X());
@@ -495,18 +778,19 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   float WZweight = 1.;
 
 
-
   double mT2=-9; 
   double mT2_noISR=-9; 
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
-  
+
+
+
   std::map<TString,float> RJigsawVariables;
-  if ( m_fillTRJigsawVars) {
+  if (  m_fillTRJigsawVars ) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingETPrime.X(),
 					   missingETPrime.Y(),
 					   RJigsawVariables,
-             			m_cutVal.m_cutRJigsawJetPt);
+					   m_cutVal.m_cutRJigsawJetPt);
   }
 
   //Super Razor variables
@@ -547,7 +831,6 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
-
 
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
@@ -608,23 +891,31 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
       m_ntv.systWeights = *p_systweights;
     }
 
-    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
+    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap); 
 
-    if ( m_fillTRJigsawVars) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+    if (  m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
       
 
-    if( !m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
-    }
-    
-    FillCRZVars(m_crzntv, leptonTLVs, *missingET, leptonCharges);
+    std::vector<float> vReclJetMass ;
+    std::vector<float> vReclJetPt;
+    std::vector<float> vReclJetEta;
+    std::vector<float> vReclJetPhi;
+    std::vector<bool> visWtight ;
+    std::vector<bool> visWmedium ;
+    std::vector<bool> visZtight ;
+    std::vector<bool> visZmedium ;
+    std::vector<float> vD2;
 
+    if( !m_IsTruth && m_fillReclusteringVars){
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);//,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
+    }
+    FillCR3LVars(m_cr3lntv, leptonTLVs, *missingET, leptonCharges, lepfromW, InvMassLepPair, vptvarcone20, vptvarcone30, vtopoetcone20, m_IsTruth);
     m_tree->Fill();
   }
   return true;
 }
 
-void ZeroLeptonCRZ::finish()
+void ZeroLeptonCR3L::finish()
 {
   if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
@@ -634,29 +925,55 @@ void ZeroLeptonCRZ::finish()
   }
 }
 
-void ZeroLeptonCRZ::FillCRZVars(NTCRZVars& crzvars, std::vector<TLorentzVector>& leptons, const TVector2& metv, std::vector<int> lepsigns)
+void ZeroLeptonCR3L::FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& leptons, const TVector2& metv, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool m_IsTruth)
 {
-  crzvars.Reset();
-  crzvars.lep1sign = lepsigns.at(0);
-  crzvars.lep1Pt  = (leptons.at(0)).Pt() * 0.001;
-  crzvars.lep1Eta = (leptons.at(0)).Eta();
-  crzvars.lep1Phi = (leptons.at(0)).Phi();
-
-  crzvars.lep2sign = lepsigns.at(1);
-  crzvars.lep2Pt  = (leptons.at(1)).Pt() * 0.001;
-  crzvars.lep2Eta = (leptons.at(1)).Eta();
-  crzvars.lep2Phi = (leptons.at(1)).Phi();
-
+  cr3lvars.Reset();
+  cr3lvars.lep1sign = lepsigns.at(0);
+  cr3lvars.lep1Pt  = (leptons.at(0)).Pt() * 0.001;
+  cr3lvars.lep1Eta = (leptons.at(0)).Eta();
+  cr3lvars.lep1Phi = (leptons.at(0)).Phi();
+  if(!m_IsTruth){
+    cr3lvars.lep1ptvarcone20 = vptvarcone20.at(0);
+    cr3lvars.lep1ptvarcone30 = vptvarcone30.at(0);
+    cr3lvars.lep1topoetcone20    = vetcone20.at(0);
+  }
+  cr3lvars.lep2sign = lepsigns.at(1);
+  cr3lvars.lep2Pt  = (leptons.at(1)).Pt() * 0.001;
+  cr3lvars.lep2Eta = (leptons.at(1)).Eta();
+  cr3lvars.lep2Phi = (leptons.at(1)).Phi();
+  if(!m_IsTruth){
+    cr3lvars.lep2ptvarcone20 = vptvarcone20.at(1);
+    cr3lvars.lep2ptvarcone30 = vptvarcone30.at(1);
+    cr3lvars.lep2topoetcone20    = vetcone20.at(1);
+  }
+  cr3lvars.lep3sign = lepsigns.at(2);
+  cr3lvars.lep3Pt  = (leptons.at(2)).Pt() * 0.001;
+  cr3lvars.lep3Eta = (leptons.at(2)).Eta();
+  cr3lvars.lep3Phi = (leptons.at(2)).Phi();
+  if(!m_IsTruth){
+    cr3lvars.lep3ptvarcone20 = vptvarcone20.at(2);
+    cr3lvars.lep3ptvarcone30 = vptvarcone30.at(2);
+    cr3lvars.lep3topoetcone20    = vetcone20.at(2);
+  }
+  cr3lvars.lepfromW = lepfromW ; 
 
   //double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
-  crzvars.mll = (leptons.at(0)+leptons.at(1)).M() * 0.001;
+  cr3lvars.mll = InvMassLepPair ; //(leptons.at(0)+leptons.at(1)).M() * 0.001;
 
   double zpx = leptons.at(0).Px()+leptons.at(1).Py();
   double zpy = leptons.at(0).Py()+leptons.at(1).Py();
-  crzvars.Zpt = std::sqrt(zpx*zpx+zpy*zpy) * 0.001;
+  cr3lvars.Zpt = std::sqrt(zpx*zpx+zpy*zpy) * 0.001;
+
+  double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
+  cr3lvars.mt = std::sqrt(2.*leptons.at(2).Pt() * met * (1. - (leptons.at(2).Px()*metv.Px() + leptons.at(2).Py()*metv.Py())/(leptons.at(2).Pt()*met))) * 0.001;
+
+  double wpx = leptons.at(2).Px()+metv.Px();
+  double wpy = leptons.at(2).Py()+metv.Py();
+  cr3lvars.Wpt = std::sqrt(wpx*wpx+wpy*wpy) * 0.001;
+
 }
 
 
 
-ClassImp(ZeroLeptonCRZ);
+ClassImp(ZeroLeptonCR3L);
 

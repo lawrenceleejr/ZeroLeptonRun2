@@ -191,6 +191,34 @@ class NTCRWTVars
   //float lep1jetJVF;
 };
 
+
+class NTCR3LVars
+{
+ public:
+  NTCR3LVars() { Reset(); }
+
+  static std::string toString();
+
+  void Reset();
+
+  float lep1Pt, lep2Pt, lep3Pt;
+  float lep1Eta, lep2Eta, lep3Eta;
+  float lep1Phi, lep2Phi, lep3Phi;
+  int lep1sign, lep2sign, lep3sign;
+  float mll, Zpt;
+  float leptonWeight, leptonWeightUp, leptonWeightDown;
+  float triggerWeight, triggerWeightUp, triggerWeightDown;
+  float fakemet,fakemetPhi;
+  float lep1ptvarcone20, lep2ptvarcone20, lep3ptvarcone20;
+  float lep1ptvarcone30, lep2ptvarcone30, lep3ptvarcone30;
+  float lep1topoetcone20, lep2topoetcone20, lep3topoetcone20;
+  float lep1DRjet, lep2DRjet, lep3DRjet;
+  float lep1jetJVF, lep2jetJVF, lep3jetJVF;
+  float mt, Wpt;
+  int lepfromW;
+};
+
+
 class NTCRYVars
 {
  public:
@@ -408,6 +436,12 @@ inline void bookNTCRWTVars(TTree* tree, NTCRWTVars& crwtntv)
 inline void bookNTCRZVars(TTree* tree, NTCRZVars& crzntv)
 {
   tree->Branch("NTCRZVars",&crzntv,NTCRZVars::toString().c_str());
+  treePolicies(tree);
+}
+
+inline void bookNTCR3LVars(TTree* tree, NTCR3LVars& cr3lntv)
+{
+  tree->Branch("NTCR3LVars",&cr3lntv,NTCR3LVars::toString().c_str());
   treePolicies(tree);
 }
 

@@ -1,8 +1,20 @@
 26-Aug-2015 Geraldine Conti
-	* Code for new reclustering added 
+	* Added CR3L code :
+
+26-Aug-2015 Geraldine Conti
+	* Code for new reclustering added:
+	* INSTALL : added line for new package xAODJetReclustering
+	* PhysObjProxyFiller.cxx/h : initialization of the reclustering
+	tool,added function FillJetReclProxies to fill recl. jets
+	* ZeroLeptonCRWT.cxx/h, ZeroLeptonCRY.cxx/h, ZeroLeptonCRZ.cxx/h
+	ZeroLeptonDataDrivenQCD.cxx, ZeroLeptonSR.cxx/h : added bool m_doRecl,
+	std::string m_suffixRecl (needed to give different names in the recljet
+	collections) in PhysObjProxyFiller
+	* Makefile.RootCore : added dependence to new package
 
 26-Aug-2015 Geraldine Conti
 	* Added phTruthType, phTruthOrigin, phisEMvalue needed for ABCD method
+	in ZeroLeptonCRY.cxx/h and ZeroLeptonNTVars.cxx/h
 
 14-Aug-2015 Laurent Duflot
 	* MCInfoProcessor: add option to produce a JSON file with hardproc
