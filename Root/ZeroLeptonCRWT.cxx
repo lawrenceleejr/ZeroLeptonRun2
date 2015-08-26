@@ -448,6 +448,27 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if ( !oneLepton ) return true;
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
 
+  // lepton isolation 
+
+  float topoetcone20 = 0 ;
+  float ptvarcone30 = 0 ;
+  float ptvarcone20 = 0 ;
+
+  if(!m_IsTruth){
+    if(m_isElectronChannel && isolated_signal_electrons.size()==1){
+      topoetcone20 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
+      ptvarcone30  = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
+      ptvarcone20     = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
+    }
+
+    if(m_isMuonChannel && isolated_signal_muons.size()==1){
+      topoetcone20 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
+      ptvarcone30 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
+      ptvarcone20     = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
+    }
+  }
+
+
   // Apply Lepton scale factors
   float muSF = eventInfo->auxdecor<float>("muSF");
   if ( muSF != 0.f ) weight *= muSF;
@@ -673,7 +694,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
 
-    FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);
+    FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge,ptvarcone20,ptvarcone30,topoetcone20);
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
 
@@ -695,16 +716,26 @@ void ZeroLeptonCRWT::finish()
 }
 
 
-void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& metv, int lepsign)
+void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& metv, int lepsign,
+				  float ptvarcone20, float ptvarcone30, float topoetcone20)
 {
   crwtvars.Reset();
   crwtvars.lep1sign = lepsign;
   crwtvars.lep1Pt  = lepton.Pt() * 0.001;
   crwtvars.lep1Eta = lepton.Eta();
   crwtvars.lep1Phi = lepton.Phi();
+  crwtvars.lep1ptvarcone20 = ptvarcone20 ;
+  crwtvars.lep1ptvarcone30 = ptvarcone30 ;
+  crwtvars.lep1topoetcone20 = topoetcone20 ;
 
   double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
   crwtvars.mt = std::sqrt(2.*lepton.Pt() * met * (1. - (lepton.Px()*metv.Px() + lepton.Py()*metv.Py())/(lepton.Pt()*met))) * 0.001;
+
+  TLorentzVector metTLV;
+  metTLV.SetPxPyPzE(metv.Px(),metv.Py(),0,met);
+  crwtvars.dphilMET = lepton.DeltaPhi(metTLV);
+
+  crwtvars.Weta = (lepton+metTLV).Eta() ;
 
   double wpx = lepton.Px()+metv.Px();
   double wpy = lepton.Py()+metv.Py();

@@ -202,6 +202,9 @@ class NTCRWTVars
   float lep1Pt, lep1Eta, lep1Phi;
   int lep1sign;
   float mt, Wpt;
+  float dphilMET;
+  float Weta;
+  float lep1ptvarcone20, lep1ptvarcone30, lep1topoetcone20;
   //float leptonWeight, leptonWeightUp, leptonWeightDown;
   //float triggerWeight, triggerWeightUp, triggerWeightDown;
   //float lep1Iso;

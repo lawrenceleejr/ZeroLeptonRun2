@@ -30,7 +30,8 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& met, int lepsign);
+  void FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& met, int lepsign,
+		    float lepptvarcone20, float lepptvarcone30, float leptopoetcone20);
 
 
   TTree* m_tree;

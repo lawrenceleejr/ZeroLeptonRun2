@@ -221,7 +221,7 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
 
 std::string NTCRWTVars::toString()
 { 
-  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F"); 
+  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:dphilMET/F:Weta/F:lep1ptvarcone20/F:lep1ptvarcone30/F:lep1topoetcone20/F"); 
   //return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:lep1Iso/F:lep1DRjet/F:lep1jetJVF/F"); 
 }
 
@@ -231,6 +231,11 @@ void NTCRWTVars::Reset()
   lep1sign = 0;
   mt = 0.f;
   Wpt = 0.f;
+  dphilMET = 0.f;
+  Weta = 0.f;
+  lep1ptvarcone20 = 0.f;
+  lep1ptvarcone30 = 0.f;
+  lep1topoetcone20 = 0.f;
   //leptonWeight     = 1.f;
   //leptonWeightUp   = 1.f;  
   //leptonWeightDown = 1.f;
