@@ -215,6 +215,9 @@ class NTCRYVars
   //std::vector<int>   phisEMTight;
   std::vector<bool> phLoose;
   std::vector<bool> phTight;
+  std::vector<int>  phTruthType;
+  std::vector<int>  phTruthOrigin;
+  std::vector<int>  phisEMvalue;
 };
 
 class NTCRYVarsRead 
@@ -238,6 +241,9 @@ private:
   //std::vector< int >*   p_phisEMTight;
   std::vector< bool >*  p_phLoose;
   std::vector< bool >*  p_phTight;
+  std::vector< int  >*  p_phTruthType;
+  std::vector< int  >*  p_phTruthOrigin;
+  std::vector< int  >*  p_phisEMvalue;
 };
 
 class NTPdfVars {

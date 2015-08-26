@@ -12,7 +12,11 @@
 #include "ZeroLeptonRun2/PhysObjProxyUtils.h"
 #include "ZeroLeptonRun2/Counter.h"
 
+#include "AsgTools/AsgMetadataTool.h"
+#include "AsgTools/ToolHandle.h"
+
 class TTree;
+class IAsgPhotonIsEMSelector;
 
 #include <string>
 #include <map>
@@ -31,7 +35,7 @@ private:
   TTree* getTree(const std::string& name);
   void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose, std::vector<float>& vetcone20, std::vector<float>& vptvarcone20, 
 		     std::vector<float>& vptcone20,std::vector<float>& vetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,//std::vector<int>& visEMTight,
-		     std::vector<float>& vpt, std::vector<float>& veta);
+		     std::vector<float>& vpt, std::vector<float>& veta, std::vector<int>& vtruthtype, std::vector<int>& vtruthorigin, std::vector<int>& visEMtight);
 
   TTree* m_tree;
   std::string m_stringRegion;
@@ -59,6 +63,8 @@ private:
 
   Counter* m_counter;
   CounterRepository m_counterRepository;
+
+  ToolHandle<IAsgPhotonIsEMSelector>     m_photonSelIsEM;
 
   // TODO : an unordered_map would be faster
   std::map<std::string,TTree*> m_treeRepository;

@@ -417,6 +417,9 @@ void NTCRYVars::Reset()
   //phisEMTight.clear();
   phLoose.clear();
   phTight.clear();
+  phTruthType.clear();
+  phTruthOrigin.clear();
+  phisEMvalue.clear();
 }
 
 
@@ -435,6 +438,9 @@ NTCRYVarsRead::NTCRYVarsRead(): ntv()
   //p_phisEMTight  = &ntv.phisEMTight;
   p_phLoose = &ntv.phLoose;
   p_phTight = &ntv.phTight;
+  p_phTruthType = &ntv.phTruthType;
+  p_phTruthOrigin = &ntv.phTruthOrigin;
+  p_phisEMvalue = &ntv.phisEMvalue;
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
@@ -453,6 +459,9 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
   tree->Branch("phLoose",&(cryntv.phLoose));
   tree->Branch("phTight",&(cryntv.phTight));
+  tree->Branch("phTruthType",&(cryntv.phTruthType));
+  tree->Branch("phTruthOrigin",&(cryntv.phTruthOrigin));
+  tree->Branch("phisEMvalue",&(cryntv.phisEMvalue));
   treePolicies(tree);
 }
 
@@ -472,5 +481,8 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
   tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
   tree->GetBranch("phTight")->SetAddress(&p_phTight);
+  tree->GetBranch("phTruthType")->SetAddress(&p_phTruthType);
+  tree->GetBranch("phTruthOrigin")->SetAddress(&p_phTruthOrigin);
+  tree->GetBranch("phisEMvalue")->SetAddress(&p_phisEMvalue);
 }
 
