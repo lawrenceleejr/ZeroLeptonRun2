@@ -51,6 +51,7 @@ private:
   std::string m_jetkey; 
   std::string m_taukey; 
   std::string m_suffix;
+  std::string m_suffixRecl;
   ZeroLeptonRunPeriod m_period;
   ZeroLeptonDerivationTag m_derivationTag;
   int m_JESNuisanceParameterSet;

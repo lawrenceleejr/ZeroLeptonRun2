@@ -42,6 +42,7 @@ private:
   bool m_doSmallNtuple;
   bool m_fillTRJigsawVars;
   bool m_fillReclusteringVars;
+  bool m_doRecl;
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;
@@ -55,6 +56,7 @@ private:
   NTCRYVars m_cryntv;
 
   std::string m_suffix;
+  std::string m_suffixRecl;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;

@@ -1,6 +1,7 @@
 #include "ZeroLeptonRun2/ZeroLeptonSR.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 
+#include "ZeroLeptonRun2/BosonTagging.h"
 
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
@@ -28,6 +29,8 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
+    m_suffixRecl(""),
+    m_doRecl(false),
     m_DoSystematics(false),
     m_period(INVALID),
     m_suffix(""),
@@ -45,6 +48,8 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   m_IsData = config.get("IsData",false);
   m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_suffixRecl = config.get("suffixRecl","");
+  m_doRecl = config.get("doRecl",false);
   m_DoSystematics = config.get("DoSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
@@ -59,7 +64,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
 
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
@@ -216,9 +221,13 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
-  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
+  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl;
+  std::vector<float> vD2;
   if(! m_IsTruth){
     m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+    if(m_doRecl){
+      m_physobjsFiller->FillJetReclProxies(good_jets_recl,vD2);
+    }
   }
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
@@ -434,7 +443,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
-    if ( ! m_IsData ) runnum = mc_channel_number;
+    if ( ! m_IsData && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
@@ -472,7 +481,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
 
-    if ( systag == "" ) {
+    if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
       if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
       m_ntv.systWeights = *p_systweights;
