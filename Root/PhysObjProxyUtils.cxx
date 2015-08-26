@@ -1388,7 +1388,12 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 
 
 void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv, 
-				   const std::vector<JetProxy>& good_jets)
+					       const std::vector<JetProxy>& good_jets,
+					       std::vector<float> vReclJetMass, std::vector<float> vReclJetPt,
+                                               std::vector<float> vReclJetEta, std::vector<float> vReclJetPhi,
+                                               std::vector<float> vD2,std::vector<bool> visWmedium,
+                                               std::vector<bool> visWtight, std::vector<bool> visZmedium,
+                                               std::vector<bool> visZtight)
 {
   RTntv.Reset(); 
   
@@ -1414,6 +1419,18 @@ void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv,
   }
   RTntv.NWcandidates= NWcandidates;
   
+  // NEW RECLUSTERING
+
+  RTntv.nJetsRecl  = vReclJetMass.size();
+  RTntv.ReclJetMass = vReclJetMass;
+  RTntv.ReclJetPt = vReclJetPt;
+  RTntv.ReclJetPhi = vReclJetPhi;
+  RTntv.ReclJetEta = vReclJetEta; 
+  RTntv.D2 = vD2;
+  RTntv.isWmedium = visWmedium;
+  RTntv.isWtight = visWtight;
+  RTntv.isZmedium = visZmedium;
+  RTntv.isZtight = visZtight;
 }
 
 PhysObjProxyUtils::ReclJets PhysObjProxyUtils::Recluster(const std::vector<JetProxy>& small_jets, double PTcut, double fcut, double jetRad){

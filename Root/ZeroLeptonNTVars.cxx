@@ -148,13 +148,14 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
 
 std::string NTReclusteringVars::toString()
 { 
-  return std::string("NWcandidates/i:test/i"); 
+  return std::string("NWcandidates/i:test/i:nJetsRecl/I"); 
 }
 
 void NTReclusteringVars::Reset()
 { 
   NWcandidates = 0;
   test = 0;
+  nJetsRecl = 0;
   
   // Clear vectors
   RTjets10SubJetIndeces.clear();
@@ -162,7 +163,16 @@ void NTReclusteringVars::Reset()
   RTjetEta.clear();
   RTjetPhi.clear();
   RTjetM.clear();
-  
+  ReclJetMass.clear();
+  ReclJetPt.clear();
+  ReclJetEta.clear();
+  ReclJetPhi.clear();
+  D2.clear();
+  isWmedium.clear();
+  isWtight.clear();
+  isZmedium.clear();
+  isZtight.clear();
+
 }
 
 NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
@@ -174,6 +184,15 @@ NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
   p_RTjetEta  = &RTntv.RTjetEta;
   p_RTjetPhi  = &RTntv.RTjetPhi;
   p_RTjetM    = &RTntv.RTjetM;
+  p_ReclJetMass = &RTntv.ReclJetMass;
+  p_ReclJetPt   = &RTntv.ReclJetPt;
+  p_ReclJetEta  = &RTntv.ReclJetEta;
+  p_ReclJetPhi  = &RTntv.ReclJetPhi;
+  p_D2          = &RTntv.D2;
+  p_isWmedium   = &RTntv.isWmedium;
+  p_isWtight    = &RTntv.isWtight;
+  p_isZmedium   = &RTntv.isZmedium;
+  p_isZtight    = &RTntv.isZtight;
 
 }
 
@@ -188,6 +207,16 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("RTjetEta")->SetAddress(&p_RTjetEta);
   tree->GetBranch("RTjetPhi")->SetAddress(&p_RTjetPhi);
   tree->GetBranch("RTjetM")->SetAddress(&p_RTjetM);
+  tree->GetBranch("ReclJetMass")->SetAddress(&p_ReclJetMass);
+  tree->GetBranch("ReclJetPt")->SetAddress(&p_ReclJetPt);
+  tree->GetBranch("ReclJetEta")->SetAddress(&p_ReclJetEta);
+  tree->GetBranch("ReclJetPhi")->SetAddress(&p_ReclJetPhi);
+  tree->GetBranch("D2")->SetAddress(&p_D2);
+  tree->GetBranch("isWmedium")->SetAddress(&p_isWmedium);
+  tree->GetBranch("isWtight")->SetAddress(&p_isWtight);
+  tree->GetBranch("isZmedium")->SetAddress(&p_isZmedium);
+  tree->GetBranch("isZtight")->SetAddress(&p_isZtight);
+
 }
 
 std::string NTCRWTVars::toString()
@@ -428,6 +457,15 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   tree->Branch("RTjetEta",&(RTntv.RTjetEta));
   tree->Branch("RTjetPhi",&(RTntv.RTjetPhi));
   tree->Branch("RTjetM",&(RTntv.RTjetM));
+  tree->Branch("ReclJetMass",&(RTntv.ReclJetMass));
+  tree->Branch("ReclJetPt",&(RTntv.ReclJetPt));
+  tree->Branch("ReclJetEta",&(RTntv.ReclJetEta));
+  tree->Branch("ReclJetPhi",&(RTntv.ReclJetPhi));
+  tree->Branch("D2",&(RTntv.D2));
+  tree->Branch("isWmedium",&(RTntv.isWmedium));
+  tree->Branch("isWtight",&(RTntv.isWtight));
+  tree->Branch("isZmedium",&(RTntv.isZmedium));
+  tree->Branch("isZtight",&(RTntv.isZtight));
   treePolicies(tree);
 }
 

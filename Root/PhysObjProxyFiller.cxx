@@ -76,7 +76,6 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
                                             std::vector<float>& vD2) const
 {
   
-  
   good_jets_recl.clear();
   vD2.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
@@ -84,7 +83,7 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
   if ( !store->retrieve(jets, "SUSYJets"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not retrieve JetContainer with key SUSYJets"+m_suffix);
   }
-  
+
   // NEEDED FOR RECLUSTERING
   xAOD::JetContainer* jetsNEW = new xAOD::JetContainer();
   xAOD::AuxContainerBase* jetsNEWAux = new xAOD::AuxContainerBase();
@@ -103,7 +102,7 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
   }
   if ( ! store->record(jetsNEW,"SUSYJetsNEW"+m_suffixRecl).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsNEW"+m_suffixRecl) ;
   if ( ! store->record(jetsNEWAux,"SUSYJetsNEWAux"+m_suffixRecl).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsNEWAux"+m_suffixRecl) ;
-  
+
   const xAOD::JetContainer* jetsrecl = 0;
   if(m_doRecl){
     m_jetReclusteringTool->execute();
@@ -119,9 +118,10 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
     int nrecl = 0;
     std::vector<JetProxy> good_jets_recl_temp;
     std::vector<float> vD2_temp;
+
     for ( xAOD::JetContainer::const_iterator itrecl = jetsrecl->begin();
           itrecl != jetsrecl->end(); ++itrecl ){
-      
+
       good_jets_recl.push_back(JetProxy(*itrecl));
       good_jets_recl_temp.push_back(JetProxy(*itrecl));
       
@@ -129,6 +129,7 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
       const xAOD::Jet* subjet(nullptr);
       int nsubjet = 0 ;
       std::vector<TLorentzVector> vtlvsubjet;
+
       for(auto constit: (*itrecl)->getConstituents()){
         subjet = static_cast<const xAOD::Jet*>(constit->rawConstituent());
         TLorentzVector tlvsubjet;

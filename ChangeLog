@@ -1,4 +1,16 @@
 26-Aug-2015 Geraldine Conti
+	* Added reclustering and boson tagging variables in the ReclTree
+	* ZeroLeptonCR3L.cxx, ZeroLeptonCRY.cxx, ZeroLeptonCRZ.cxx,
+	ZeroLeptonCRWT.cxx, ZeroLeptonSR.cxx : changed FillNTReclusteringVars
+	function and added boson tagging calculations in CRWT, CRZ and SR
+	* Added ReclJetMass,ReclJetPt,ReclJetEta,ReclJetPhi,D2,isWmedium,
+	isWtight,isZmedium,isZtight in FillNTReclusteringVars in
+	PhysObjProxyUtils.cxx/h
+	* Variables added in ZeroLeptonNTVars.cxx/h
+	* zerolepton.config : added global variable doRecl (still commented
+	out, because there is still a bug to fix)
+
+26-Aug-2015 Geraldine Conti
 	* Added CR3L code :
 	* ZeroLeptonCR3L.cxx/h added
 	* zerolepton.config, zeroleptontruth.config : added cr3l, vr3l

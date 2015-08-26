@@ -119,7 +119,12 @@ class PhysObjProxyUtils
 		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>());
 
   void FillNTReclusteringVars(NTReclusteringVars& RTntv, 
-		  const std::vector<JetProxy>& good_jets);
+			      const std::vector<JetProxy>& good_jets,
+                              std::vector<float> vReclJetMass, std::vector<float> vReclJetPt,
+                              std::vector<float> vReclJetEta, std::vector<float> vReclJetPhi,
+                              std::vector<float> vD2,std::vector<bool> visWmedium,
+                              std::vector<bool> visWtight, std::vector<bool> visZmedium,
+                              std::vector<bool> visZtight);
   
   void FillNTExtraVars(NTExtraVars& extrantv,
 		       double MET_Track, 

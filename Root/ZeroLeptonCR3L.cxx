@@ -907,7 +907,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
     std::vector<float> vD2;
 
     if( !m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);//,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
     FillCR3LVars(m_cr3lntv, leptonTLVs, *missingET, leptonCharges, lepfromW, InvMassLepPair, vptvarcone20, vptvarcone30, vtopoetcone20, m_IsTruth);
     m_tree->Fill();

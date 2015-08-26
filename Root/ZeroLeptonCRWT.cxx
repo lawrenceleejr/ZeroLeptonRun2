@@ -318,6 +318,42 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
   }
 
+  // Boson Tagging
+
+  std::vector<float> vReclJetMass ;
+  std::vector<float> vReclJetPt;
+  std::vector<float> vReclJetEta;
+  std::vector<float> vReclJetPhi;
+  std::vector<bool> visWtight ;
+  std::vector<bool> visWmedium ;
+  std::vector<bool> visZtight ;
+  std::vector<bool> visZmedium ;
+
+  if(m_doRecl){
+    for ( size_t j0=0; j0<good_jets_recl.size(); j0++){
+      vReclJetMass.push_back(good_jets_recl[j0].M());
+      vReclJetPt.push_back(good_jets_recl[j0].Pt());
+      vReclJetEta.push_back(good_jets_recl[j0].Eta());
+      vReclJetPhi.push_back(good_jets_recl[j0].Phi());
+
+      float jetpt = good_jets_recl[j0].Pt();
+      float jetm  = good_jets_recl[j0].M();
+      float jetD2 = vD2.at(j0);
+
+      BosonTagging BT;
+
+      bool isWmedium = BT.ReturnTag(1,jetpt,jetm,jetD2);
+      bool isWtight  = BT.ReturnTag(2,jetpt,jetm,jetD2);
+      bool isZmedium = BT.ReturnTag(3,jetpt,jetm,jetD2);
+      bool isZtight  = BT.ReturnTag(4,jetpt,jetm,jetD2);
+
+      visWmedium.push_back(isWmedium);
+      visWtight.push_back(isWtight);
+      visZmedium.push_back(isZmedium);
+      visZtight.push_back(isZtight);
+    }
+  }
+
   // missing ET
   TVector2* missingET = 0;
   if(! m_IsTruth){
@@ -634,7 +670,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     }
 
     if( !m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
 
     FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);

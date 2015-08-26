@@ -623,8 +623,18 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
 		  vpt,veta,vtruthType,vtruthOrigin,visEMvalue);
       
+    std::vector<float> vReclJetMass ;
+    std::vector<float> vReclJetPt;
+    std::vector<float> vReclJetEta;
+    std::vector<float> vReclJetPhi;
+    std::vector<bool> visWtight ;
+    std::vector<bool> visWmedium ;
+    std::vector<bool> visZtight ;
+    std::vector<bool> visZmedium ;
+    std::vector<float> vD2;
+
     if(! m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
 
     m_tree->Fill();

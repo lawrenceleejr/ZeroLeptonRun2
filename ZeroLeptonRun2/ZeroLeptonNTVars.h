@@ -122,6 +122,7 @@ class NTReclusteringVars
 
   unsigned int NWcandidates;
   int test;
+  int nJetsRecl;
   
   // WARNING: if you add another vector you need to update NTVarsRead below
 
@@ -131,7 +132,15 @@ class NTReclusteringVars
   std::vector< float > RTjetPt;
   std::vector< float > RTjetEta;
   std::vector< float > RTjetPhi;
-
+  std::vector<float> ReclJetMass;
+  std::vector<float> ReclJetPt;
+  std::vector<float> ReclJetEta;
+  std::vector<float> ReclJetPhi;
+  std::vector<float> D2;
+  std::vector<bool> isWmedium;
+  std::vector<bool> isWtight;
+  std::vector<bool> isZmedium;
+  std::vector<bool> isZtight;
 };
 
 class NTReclusteringVarsRead 
@@ -148,7 +157,16 @@ private:
   std::vector< float >* p_RTjetPt;
   std::vector< float >* p_RTjetEta;
   std::vector< float >* p_RTjetPhi;
-   
+  std::vector< float >* p_ReclJetMass;
+  std::vector< float >* p_ReclJetPt;
+  std::vector< float >* p_ReclJetEta;
+  std::vector< float >* p_ReclJetPhi;
+  std::vector< float >* p_D2;
+  std::vector< bool >* p_isWmedium;
+  std::vector< bool >* p_isWtight;
+  std::vector< bool >* p_isZmedium;
+  std::vector< bool >* p_isZtight;
+
 };
 
 class NTCRZVars
