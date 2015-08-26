@@ -1,5 +1,9 @@
 26-Aug-2015 Geraldine Conti
 	* Added CR3L code :
+	* ZeroLeptonCR3L.cxx/h added
+	* zerolepton.config, zeroleptontruth.config : added cr3l, vr3l
+	* LinkDef.h : added CR3L
+	* ZeroLeptonNTVars.cxx/h : added variables for CL3L
 
 26-Aug-2015 Geraldine Conti
 	* Code for new reclustering added:
@@ -11,6 +15,7 @@
 	std::string m_suffixRecl (needed to give different names in the recljet
 	collections) in PhysObjProxyFiller
 	* Makefile.RootCore : added dependence to new package
+	* BosonTagging.cxx/h
 
 26-Aug-2015 Geraldine Conti
 	* Added phTruthType, phTruthOrigin, phisEMvalue needed for ABCD method
