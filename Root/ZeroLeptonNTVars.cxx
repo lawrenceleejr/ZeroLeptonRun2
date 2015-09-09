@@ -279,7 +279,7 @@ void NTCRZVars::Reset()
 
 std::string NTCR3LVars::toString()
 {
-  return std::string("lep1Pt/F:lep2Pt/F:lep3Pt/F:lep1Eta/F:lep2Eta/F:lep3Eta/F:lep1Phi/F:lep2Phi/F:lep3Phi/F:lep1sign/I:lep2sign/I:lep3sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1ptvarcone20/F:lep2ptvarcone20/F:lep3ptvarcone20/F:lep1ptvarcone30/F:lep2ptvarcone30/F:lep3ptvarcone30/F:lep1topoetcone20/F:lep2topoetcone20/F:lep3topoetcone20/F:lep1DRjet/F:lep2DRjet/F:lep3DRjet/F:lep1jetJVF/F:lep2jetJVF/F:lep3jetJVF/F:mt/F:Wpt/F:lepfromW/I");
+  return std::string("lep1Pt/F:lep2Pt/F:lep3Pt/F:lep1Eta/F:lep2Eta/F:lep3Eta/F:lep1Phi/F:lep2Phi/F:lep3Phi/F:lep1sign/I:lep2sign/I:lep3sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1ptvarcone20/F:lep2ptvarcone20/F:lep3ptvarcone20/F:lep1ptvarcone30/F:lep2ptvarcone30/F:lep3ptvarcone30/F:lep1topoetcone20/F:lep2topoetcone20/F:lep3topoetcone20/F:lep1DRjet/F:lep2DRjet/F:lep3DRjet/F:lep1jetJVF/F:lep2jetJVF/F:lep3jetJVF/F:mt/F:Wpt/F:lepfromW/I:lepptfromW/F");
 }
 
 void NTCR3LVars::Reset()
@@ -291,6 +291,7 @@ void NTCR3LVars::Reset()
   lep3Pt = lep3Eta = lep3Phi = 0.f;
   lep3sign = 0;
   lepfromW = 0;
+  lepptfromW = 0 ; 
   mll = 0.f;
   Zpt = 0.f;
   mt = 0.f;

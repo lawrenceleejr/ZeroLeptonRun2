@@ -517,6 +517,8 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   if ( leptonTLVs.empty() ) return true;
 
   int lepfromW = 0 ; 
+  float lepptfromW = 0 ; 
+
   TLorentzVector dileptonTLV ;
   // CASE WITH THREE IDENTICAL LEPTONS - not needed for VR, as we have only two OS signal leptons
   if( !m_isVR && ((!m_IsTruth && (isolated_signal_electrons.size()==3 || isolated_signal_muons.size()==3)) 
@@ -547,22 +549,26 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
     if(diff1<diff2 && diff1<diff3){
       dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
       lepfromW = 3 ; 
+      lepptfromW = leptonTLVs[2].Pt();
       if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
     }
     if(diff2<diff1 && diff2<diff3){
       dileptonTLV = leptonTLVs[0]+leptonTLVs[2];
       lepfromW = 2 ; 
+      lepptfromW = leptonTLVs[1].Pt();
       if ( leptonCharges[0]*leptonCharges[2] > 0 ) return true;
     }
     if(diff3<diff1 && diff3<diff2){
       dileptonTLV = leptonTLVs[1]+leptonTLVs[2];
       lepfromW = 1 ; 
+      lepptfromW = leptonTLVs[0].Pt();
       if ( leptonCharges[1]*leptonCharges[2] > 0 ) return true;
     }
   }
   else{
     dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
     lepfromW = 3 ; 
+    lepptfromW = leptonTLVs[2].Pt();
     if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
   }
 
@@ -909,7 +915,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
     if( !m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
-    FillCR3LVars(m_cr3lntv, leptonTLVs, *missingET, leptonCharges, lepfromW, InvMassLepPair, vptvarcone20, vptvarcone30, vtopoetcone20, m_IsTruth);
+    FillCR3LVars(m_cr3lntv, leptonTLVs, *missingET, leptonCharges, lepfromW, InvMassLepPair, vptvarcone20, vptvarcone30, vtopoetcone20, m_IsTruth, lepptfromW);
     m_tree->Fill();
   }
   return true;
@@ -925,7 +931,7 @@ void ZeroLeptonCR3L::finish()
   }
 }
 
-void ZeroLeptonCR3L::FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& leptons, const TVector2& metv, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool m_IsTruth)
+void ZeroLeptonCR3L::FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& leptons, const TVector2& metv, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool m_IsTruth, float lepptfromW)
 {
   cr3lvars.Reset();
   cr3lvars.lep1sign = lepsigns.at(0);
@@ -956,6 +962,7 @@ void ZeroLeptonCR3L::FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVect
     cr3lvars.lep3topoetcone20    = vetcone20.at(2);
   }
   cr3lvars.lepfromW = lepfromW ; 
+  cr3lvars.lepptfromW = lepptfromW ; 
 
   //double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
   cr3lvars.mll = InvMassLepPair ; //(leptons.at(0)+leptons.at(1)).M() * 0.001;

@@ -30,7 +30,7 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& lepton, const TVector2& met, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool isTruth);
+  void FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& lepton, const TVector2& met, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool isTruth, float lepptfromW);
 
 
   TTree* m_tree;

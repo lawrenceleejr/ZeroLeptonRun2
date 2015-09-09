@@ -237,6 +237,7 @@ class NTCR3LVars
   float lep1jetJVF, lep2jetJVF, lep3jetJVF;
   float mt, Wpt;
   int lepfromW;
+  float lepptfromW;
 };
 
 
