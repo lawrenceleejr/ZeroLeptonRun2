@@ -1,3 +1,6 @@
+11-Sep-2015 Laurent Duflot
+	* makeDatasetList.py: update rtags for 50ns and 25ns MC
+
 09-Sep-2015 Geraldine Conti
 	* Added variable for lepton pT coming from W in CR3L
 
