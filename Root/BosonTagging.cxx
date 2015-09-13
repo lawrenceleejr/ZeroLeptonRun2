@@ -24,45 +24,45 @@ bool BosonTagging::ReturnTag(int mycase, float jetpT, float jetM, float jetD2){
   std::vector<float> mass_params;
   // W boson
   if(mycase==1 || mycase==2){
-    mass_params.push_back(73.0577);
-    mass_params.push_back(0.0131854);
+    mass_params.push_back(83.1993);
+    mass_params.push_back(2.50437e-04);
   }
   // Z boson
   if(mycase==3 || mycase==4){
-    mass_params.push_back(84.2200);
-    mass_params.push_back(0.0116900);
+    mass_params.push_back(93.4007);
+    mass_params.push_back(6.90957e-04);
   }
   std::vector<float> d2_params;
   
   // W D2 param - MEDIUM
   if(mycase==1){
-    d2_params.push_back(1.1036);
-    d2_params.push_back(0.000185103);
-    d2_params.push_back(2.7553e-07);
-    d2_params.push_back(0);
-    d2_params.push_back(0);
+    d2_params.push_back(1.00068);
+    d2_params.push_back(-0.00038526);
+    d2_params.push_back(2.43073e-06);
+    d2_params.push_back(-2.11884e-09);
+    d2_params.push_back(6.23008e-13);
   }
   // W D2 param - TIGHT
   if(mycase==2){
-    d2_params.push_back(0.67947);
-    d2_params.push_back(0.000592321);
-    d2_params.push_back(-8.09529e-08);
+    d2_params.push_back(0.572982);
+    d2_params.push_back(0.000752905);
+    d2_params.push_back(-1.74137e-07);
     d2_params.push_back(0);
     d2_params.push_back(0);
   }
   // Z D2 param - MEDIUM
   if(mycase==3){
-    d2_params.push_back(1.00952);
-    d2_params.push_back(0.000322370);
-    d2_params.push_back(1.68332e-07);
-    d2_params.push_back(0);
-    d2_params.push_back(0);
+    d2_params.push_back(1.26233);
+    d2_params.push_back(-0.00175091);
+    d2_params.push_back(4.53697e-06);
+    d2_params.push_back(-3.48375e-09);
+    d2_params.push_back(9.30225e-13);
   }
   // Z D2 param - TIGHT 
   if(mycase==4){
-    d2_params.push_back(0.514401);
-    d2_params.push_back(0.000851661);
-    d2_params.push_back(-2.0976e-07);
+    d2_params.push_back(0.547383);
+    d2_params.push_back(0.000724421);
+    d2_params.push_back(-1.63528e-07);
     d2_params.push_back(0);
     d2_params.push_back(0);
   }
