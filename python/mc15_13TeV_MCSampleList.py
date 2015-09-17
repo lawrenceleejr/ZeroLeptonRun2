@@ -32,7 +32,7 @@ lTriBoson = []
 lZgamma  = [301908,301909] # Sherpa nunugamma 35<pt<140
 lWgamma  = [301893,301894,301902] # Sherpa  several missing samples
 lVgamma  = lZgamma + lWgamma
-lDiBoson = lDiBoson + lVgamma + 
+lDiBoson = lDiBoson  + lTriBoson + lVgamma
 
 lQCDMC   = range(361020,361032+1) # Pythia8 dijet JZxW
 
