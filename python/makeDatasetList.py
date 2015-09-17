@@ -28,8 +28,8 @@ badtags = ['_r5720_','_r5721_'] + ['_r5803_','_r5804_','_r5862_']
 # mc15 reco tag lists
 mc15_rtags = {}
 mc15_rtags['week1']  = ['r6633', 'r6853' ]
-mc15_rtags['50ns']  = [ 'r6630', 'r6655', 'r6647', 'r6793', 'r6828', 'r6767', 'r6802', 'r6828', 'r6892' ]
-mc15_rtags['25ns']  = [ 'r6725', 'r6765', 'r6771', 'r6869', 'r7049' ]
+mc15_rtags['50ns']  = [ 'r6630', 'r6655', 'r6647', 'r6793', 'r6828', 'r6767', 'r6802', 'r6828', 'r6892']
+mc15_rtags['25ns']  = [ 'r6725', 'r6765', 'r6771', 'r6869', 'r6895', 'r7049' ]
 
 
 def genParamsFromParents(client,datasetName,datasetNumber):

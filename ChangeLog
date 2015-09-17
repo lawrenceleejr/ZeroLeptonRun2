@@ -1,6 +1,9 @@
 17-Sep-2015 Laurent Duflot
 	* FilterUpdateMerge.py: wrong file was copied over on last update!
 	allow to use pickle file as file input list
+	* makeDatasetList.py: add r6895 to 25ns tags (not on wiki...)
+	* mc15_13TeV_MCSampleList.py: fix code typo
+	* data: remove mc14 samples, add mc15_13TeV_25ns_SM_xAOD.ds
 
 13-Sep-2015 Geraldine Conti
 	* Updated the boson tagging numbers to latest recommendation
