@@ -1,3 +1,6 @@
+18-Sep-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx, launch_jobs_on_grid.py: add p2419
+
 17-Sep-2015 Laurent Duflot
 	* FilterUpdateMerge.py: wrong file was copied over on last update!
 	allow to use pickle file as file input list
