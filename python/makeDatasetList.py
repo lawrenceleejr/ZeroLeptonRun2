@@ -13,7 +13,7 @@ except:
 
 
 # List of susy signals
-lsignals = ['Herwigpp_UEEE3_CTEQ6L1_MSUGRA','Herwigpp_UEEE4_CTEQ6L1_Gtt','SM_SS','SM_GG','SM_SG','pMSSM_qL_to_h']
+lsignals = ['Herwigpp_UEEE4_CTEQ6L1_Gtt','GG_direct_','SS_direct_','GG_onestep','SS_onestep','pMSSM_qL_to_h']
 
 # List of keywords used to remove non-used datasets
 filters = ['Pythia_GGM','PG11','DGemt','DGnoL','_Wprime','_Zprime','PythiaB','_3Leptons','LeptonPhotonFilter','ADDGraviton','Sherpa_CT10_SingleTop','BlackMaxPythia8','Charybdis2Pythia8','QBHPythia8','_WimpPair_','_ZH125_','_ggH125_','_VBFH125_','_WH125_','ParticleGenerator_']
@@ -29,7 +29,8 @@ badtags = ['_r5720_','_r5721_'] + ['_r5803_','_r5804_','_r5862_']
 mc15_rtags = {}
 mc15_rtags['week1']  = ['r6633', 'r6853' ]
 mc15_rtags['50ns']  = [ 'r6630', 'r6655', 'r6647', 'r6793', 'r6828', 'r6767', 'r6802', 'r6828', 'r6892']
-mc15_rtags['25ns']  = [ 'r6725', 'r6765', 'r6771', 'r6869', 'r6895', 'r7049' ]
+mc15_rtags['25ns']  = [ 'a768', 'a777', 'r6725', 'r6765', 'r6771', 'r6869', 'r6895', 'r7049' ]
+
 
 
 def genParamsFromParents(client,datasetName,datasetNumber):
@@ -61,10 +62,6 @@ def badDataset(datasetName,generatorString,version):
     # any of the veto'ed tags
     for t in badtags:
         if t in version: return True
-    # for now veto AtlFast II
-    tags = string.split(version,'_')
-    for t in tags:
-        if t.startswith('a'): return True
     return False
 
 def parseCmdLine(args):
