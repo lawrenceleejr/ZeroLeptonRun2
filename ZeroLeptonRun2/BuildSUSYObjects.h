@@ -39,6 +39,7 @@ private:
 
   ST::SUSYObjDef_xAOD* m_SUSYObjTool;
   bool m_IsData;
+  bool m_Is25ns;
   bool m_IsAtlfast;
   bool m_UseSmearedJets;
   bool m_DoSystematics;

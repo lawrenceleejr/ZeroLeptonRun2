@@ -1,5 +1,11 @@
+22-Sep-2015 Laurent Duflot
+	* INSTALL, BuildSUSYObjects, config files: update to SUSYTools-00-06-22 (SUSY,2.3.23)
+	*
+
+
 21-Sep-2015 Laurent Duflot
 	* zerolepton.config: change JES NP set to 1 (to actually use a very reduced set)
+	* revision: 695952
 
 18-Sep-2015 Laurent Duflot
 	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx, launch_jobs_on_grid.py: add p2419
