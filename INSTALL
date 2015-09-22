@@ -1,6 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-rcSetup SUSY,2.3.23
+rcSetup SUSY,2.3.24a
 
 ## the code for ZeroLeptonRun2 is at
 ## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
@@ -15,6 +15,7 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.4.1; cd -;
 git clone https://github.com/kratsg/xAODJetReclustering.git
 
+rc checkout $ROOTCOREDIR/../SUSYTools/doc/packages.txt
 
 # compile
 rc find_packages

@@ -6,6 +6,8 @@
 #include "AsgTools/ToolHandle.h"
 #include "TauAnalysisTools/TauSelectionTool.h"
 #include "TauAnalysisTools/TauEfficiencyCorrectionsTool.h"
+#include "TauAnalysisTools/TauTruthMatchingTool.h"
+
 namespace CP{
 	class SystematicSet;
 }
@@ -47,6 +49,7 @@ private:
 
   ToolHandle<TauAnalysisTools::ITauSelectionTool> m_tauSelTool;
   ToolHandle<TauAnalysisTools::ITauEfficiencyCorrectionsTool> m_tauEffTool;
+  ToolHandle<TauAnalysisTools::ITauTruthMatchingTool> m_tauTruthMatchTool;
   std::vector<CP::SystematicSet> m_tauEffSystSetList;
 
   std::string m_jetkey; 

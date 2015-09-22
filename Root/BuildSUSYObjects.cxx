@@ -105,6 +105,16 @@ void BuildSUSYObjects::initSUSYTools()
 
 
   // set our own tau selection
+
+  // truth tau matching is needed for FillTau
+  // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/TauID/TauAnalysisTools/trunk/doc/README-TauTruthMatchingTool.rst
+  if (  !m_IsData && m_tauTruthMatchTool.empty() ) {
+    TauAnalysisTools::TauTruthMatchingTool* tauTruthMatchTool = new TauAnalysisTools::TauTruthMatchingTool("TauTruthMatchingTool");
+    tauTruthMatchTool->setProperty("WriteTruthTaus",true);
+    tauTruthMatchTool->initialize().ignore();
+    m_tauTruthMatchTool = tauTruthMatchTool;
+  }
+
   TauAnalysisTools::TauSelectionTool* tauSelTool;
   TauAnalysisTools::TauEfficiencyCorrectionsTool* tauEffTool;
   tauSelTool = new TauAnalysisTools::TauSelectionTool( m_PhotonInOR ? "TauSelectionTool_GAMMA" : "TauSelectionTool");
@@ -238,8 +248,9 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   susytaus = xAOD::shallowCopyContainer(*taus);
   xAOD::TauJetContainer::iterator tau_itr = susytaus.first->begin();
   xAOD::TauJetContainer::iterator tau_end = susytaus.first->end();
+  if ( !m_IsData ) m_tauTruthMatchTool->initializeEvent();
   for( ; tau_itr != tau_end; ++tau_itr ) {
-    
+    if ( !m_IsData ) m_tauTruthMatchTool->getTruth( **tau_itr);
     if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
     if( (*tau_itr)->auxdecor<char>("baseline")==1 ){
       for ( const auto& syst : m_tauEffSystSetList ){
@@ -406,10 +417,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
     // Overlap removal
     if ( m_PhotonInOR ) {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons, false, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
     }
     else {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, false, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
     }
 
     // signal and btag jet now depend on OR, so loop again on jets

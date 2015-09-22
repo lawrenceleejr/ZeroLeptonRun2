@@ -1,7 +1,10 @@
 22-Sep-2015 Laurent Duflot
-	* INSTALL, BuildSUSYObjects, config files: update to SUSYTools-00-06-22 (SUSY,2.3.23)
-	*
+	* BuildSUSYObjects: add tau truth matching
+	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-23-03 (SUSY,2.3.24a)
 
+22-Sep-2015 Laurent Duflot
+	* INSTALL, BuildSUSYObjects, config files: update to SUSYTools-00-06-22 (SUSY,2.3.23)
+	* revision 696100
 
 21-Sep-2015 Laurent Duflot
 	* zerolepton.config: change JES NP set to 1 (to actually use a very reduced set)
