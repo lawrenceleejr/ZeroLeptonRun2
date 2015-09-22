@@ -102,7 +102,7 @@ void BuildSUSYObjects::initSUSYTools()
     m_SUSYObjTool->setProperty("METInputCont","MET_RefFinalFix").ignore();
     m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix").ignore();
   }
-
+  if ( m_PhotonInOR ) { m_SUSYObjTool->setProperty("DoPhotonOR",true); }
 
   // set our own tau selection
 
@@ -417,10 +417,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 
     // Overlap removal
     if ( m_PhotonInOR ) {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons, false, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
     }
     else {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, false, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
     }
 
     // signal and btag jet now depend on OR, so loop again on jets

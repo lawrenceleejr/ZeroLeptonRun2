@@ -1,6 +1,12 @@
 22-Sep-2015 Laurent Duflot
+	* BuildSUSYObjects: change overlap removal
+	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-24-01 (SUSY,2.3.26)
+
+
+22-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: add tau truth matching
 	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-23-03 (SUSY,2.3.24a)
+	* revision 696188
 
 22-Sep-2015 Laurent Duflot
 	* INSTALL, BuildSUSYObjects, config files: update to SUSYTools-00-06-22 (SUSY,2.3.23)
