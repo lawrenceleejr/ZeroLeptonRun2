@@ -1,7 +1,11 @@
 22-Sep-2015 Laurent Duflot
+	* INSTALL : update to SUSY,2.3.28, reference release for Oct FAR
+	* tag as ZeroLeptonRun2-00-00-50
+
+22-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: change overlap removal
 	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-24-01 (SUSY,2.3.26)
-
+	* revision 696196
 
 22-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: add tau truth matching
