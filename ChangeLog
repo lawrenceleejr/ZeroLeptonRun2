@@ -1,3 +1,7 @@
+23-Sep-2015 Laurent Duflot
+	* BuildSUSYObjects: change isolation WP for photons to Cone20
+	* PhysObjProxyUtils, PhysObjProxyFiller, ZeroLeptonCutVal, cutfile8TeV.dat: change jet pT cut from 40/60 GeV to 50 GeV
+
 22-Sep-2015 Laurent Duflot
 	* INSTALL : update to SUSY,2.3.28, reference release for Oct FAR
 	* tag as ZeroLeptonRun2-00-00-50

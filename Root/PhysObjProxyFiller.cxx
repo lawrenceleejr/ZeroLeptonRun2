@@ -58,7 +58,7 @@ void PhysObjProxyFiller::FillJetProxies(std::vector<JetProxy>& good_jets,
 	good_jets.push_back(JetProxy(*it));
         if ( (*it)->auxdecor<char>("bjet") == 1
              && std::abs((*it)->eta()) < 2.5
-             && (*it)->pt() >= 40000.) b_jets.push_back(JetProxy(*it));
+             && (*it)->pt() >= 50000.) b_jets.push_back(JetProxy(*it));
       }
     }
     else {

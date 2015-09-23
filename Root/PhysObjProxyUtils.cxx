@@ -115,7 +115,7 @@ double PhysObjProxyUtils::SmallestdPhi(const std::vector<JetProxy>& jets, double
   double dphi1 = std::acos(std::cos(jets[0].Phi() - met_phi));
   double dphi2 = std::acos(std::cos(jets[1].Phi() - met_phi));
   double dphi3 = 999.;
-  if ( jets.size() > 2 && jets[2].Pt() > 40000. ) { 
+  if ( jets.size() > 2 && jets[2].Pt() > 50000. ) { 
     dphi3= std::acos(std::cos(jets[2].Phi() - met_phi));
   }
   double min1 = std::min(dphi1,dphi2);
@@ -131,7 +131,7 @@ double PhysObjProxyUtils::SmallestRemainingdPhi(const std::vector<JetProxy>& jet
 	  itjet != jets.end(); ++itjet )
     {      
       jetcount++;
-      if ( jetcount>3 && itjet->Pt()>40000 ) {
+      if ( jetcount>3 && itjet->Pt()>50000 ) {
 	remainingDPhi = std::acos(std::cos(itjet->Phi() - met_phi));
 	dphiMin = std::min(remainingDPhi,dphiMin);
       }
@@ -164,7 +164,7 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
  
   //prepare vector<TLorentzVector> of jets to use
   for(size_t ijet=0; ijet<jets.size(); ijet++)  {      
-    if ( jets[ijet].Pt() < 40000. ) continue;
+    if ( jets[ijet].Pt() < 50000. ) continue;
     TLorentzVector jet;
     jet.SetPtEtaPhiM(jets[ijet].Pt(),
 		     jets[ijet].Eta(),
@@ -1091,7 +1091,7 @@ bool PhysObjProxyUtils::badTileVeto(const std::vector<JetProxy>& jets, const TVe
 	itjet != jets.end(); itjet++ ) {     
     if ( ! (*itjet).jet() ) continue;
     double jet_pt = (*itjet).Pt();
-    if(jet_pt<40000.) continue;
+    if(jet_pt<50000.) continue;
     double jet_phi = (*itjet).Phi();
     double  jet_BCH_CORR_JET = 0.;
     (*itjet).jet()->getAttribute(xAOD::JetAttribute::BchCorrJet,jet_BCH_CORR_JET);
@@ -1336,7 +1336,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
       thisjet.jet()->getAttribute(xAOD::JetAttribute::FracSamplingMaxIndex,jetFracSamplingMaxIndex);
     }
 
-    if (pt > 40000.) {
+    if (pt > 50000.) {
       ntv.jetPt.push_back(pt * 0.001);
       ntv.jetEta.push_back(eta);
       ntv.jetPhi.push_back(phi);
@@ -1400,7 +1400,7 @@ void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv,
   //Reclustering:
   PhysObjProxyUtils::ReclJets myRT;
   const float fCut=0.1;  //trimming cut 
-  myRT=Recluster(good_jets, 40000., fCut, 1.0);
+  myRT=Recluster(good_jets, 50000., fCut, 1.0);
   RTntv.RTjets10SubJetIndeces = myRT.recl_jets_subInds;
 
   std::vector<float> pts =  myRT.recl_jets_Pt;

@@ -103,6 +103,7 @@ void BuildSUSYObjects::initSUSYTools()
     m_SUSYObjTool->setProperty("METInputMap","METMap_RefFinalFix").ignore();
   }
   if ( m_PhotonInOR ) { m_SUSYObjTool->setProperty("DoPhotonOR",true); }
+  m_SUSYObjTool->setProperty("PhotonIsoWP","Cone20").ignore();
 
   // set our own tau selection
 

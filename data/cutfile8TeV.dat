@@ -2,12 +2,12 @@
 cutEtMiss=50000.
 cutEtMiss1Jet=100000.
 
-cutJetPt0=60000.
-cutJetPt1=40000.
-cutJetPt2=40000.
-cutJetPt3=40000.
-cutJetPt4=40000.
-cutJetPt5=40000.
+cutJetPt0=50000.
+cutJetPt1=50000.
+cutJetPt2=50000.
+cutJetPt3=50000.
+cutJetPt4=50000.
+cutJetPt5=50000.
 cutJetPtWRes=40000.
 cutRJigsawJetPt=30000.
 

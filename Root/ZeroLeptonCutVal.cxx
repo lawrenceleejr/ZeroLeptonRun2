@@ -51,11 +51,11 @@ void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
   m_cutEtMissTruthTest=params.find<double>("cutEtMissTruthTest",160000);
   m_cutEtMiss1Jet=params.find<double>("cutEtMiss1Jet",300000);
   m_cutJetPt0=params.find<double>("cutJetPt0",130000);
-  m_cutJetPt1=params.find<double>("cutJetPt1",60000);
-  m_cutJetPt2=params.find<double>("cutJetPt2",60000);
-  m_cutJetPt3=params.find<double>("cutJetPt3",60000);
-  m_cutJetPt4=params.find<double>("cutJetPt4",40000);
-  m_cutJetPt5=params.find<double>("cutJetPt5",40000);
+  m_cutJetPt1=params.find<double>("cutJetPt1",50000);
+  m_cutJetPt2=params.find<double>("cutJetPt2",50000);
+  m_cutJetPt3=params.find<double>("cutJetPt3",50000);
+  m_cutJetPt4=params.find<double>("cutJetPt4",50000);
+  m_cutJetPt5=params.find<double>("cutJetPt5",50000);
   m_cutJetPtWRes=params.find<double>("cutJetPtWRes",40000);
 
   m_cutRJigsawJetPt=params.find<double>("cutRJigsawJetPt",30000);
