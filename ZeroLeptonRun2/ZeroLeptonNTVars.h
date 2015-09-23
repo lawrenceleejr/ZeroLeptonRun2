@@ -38,6 +38,7 @@ class NTVars
   int tauLooseN;
   float tauMt;
   float SherpaBugMET;
+  float dPhiBadTile;
 
   // WARNING: if you add another vector you need to update NTVarsRead below
 

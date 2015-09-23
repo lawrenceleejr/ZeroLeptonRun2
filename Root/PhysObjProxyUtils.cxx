@@ -1084,6 +1084,24 @@ bool PhysObjProxyUtils::isbadMETmuon(const std::vector<MuonProxy>& muons,
 }
 
 
+float PhysObjProxyUtils::dPhiBadTile(const std::vector<JetProxy>& jets, const TVector2& MissingET) const
+{
+  float MET_phi = MissingET.Phi();
+  float minDPhi = 999.;
+  for ( auto jet : jets ){
+    float phi = jet.Phi();
+    float eta = jet.Eta();
+    if ( (phi>0.8 && phi<1.0 && eta>0. && eta<0.9 ) ||
+	 (phi>1.9 && phi<2.1 && eta>-1.6 && eta<-0.9 ) ) {
+      // jet points to a dead tile
+      float dphi = std::acos(std::cos(phi-MET_phi));
+      if ( phi < minDPhi ) minDPhi = dphi;
+    }
+  }
+  return minDPhi;
+}
+
+
 bool PhysObjProxyUtils::badTileVeto(const std::vector<JetProxy>& jets, const TVector2& MissingET) const
 {
   bool isDeadTile=false;   
@@ -1241,6 +1259,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   const std::vector<float>* flaggedtau, 
 				   float tauMt,
 				   float SherpaBugMET,
+				   float dPhiBadTile,
 				   bool isTruth,
 				   std::vector<TauProxy> baseline_taus,
 				   std::vector<TauProxy> signal_taus)
@@ -1291,6 +1310,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.timing=timing;
 
   ntv.SherpaBugMET = SherpaBugMET * 0.001;
+  ntv.dPhiBadTile = dPhiBadTile;
 
   // pdgid of incoming partons
   // FIXME

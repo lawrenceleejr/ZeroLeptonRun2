@@ -30,6 +30,7 @@ class PhysObjProxyUtils
   void EnergyWeightedTime(const std::vector<JetProxy>& jets, std::vector<float>& time) const;
 
   bool badTileVeto(const std::vector<JetProxy>& jets, const TVector2& MissingET) const;
+  float dPhiBadTile(const std::vector<JetProxy>& jets, const TVector2& MissingET) const;
 
   bool chfVeto(const std::vector<JetProxy>& jets) const;
   bool chfTileVeto(const std::vector<JetProxy>& jets) const;
@@ -114,6 +115,7 @@ class PhysObjProxyUtils
 		  const std::vector<float>& jetSmearSystW,
 		  const std::vector<float>* flaggedtau = NULL, 
 		  float tauMt = 0.f, float SherpaBugMET = 0.f,
+		  float dPhiBadTile= 999.f,
 		  bool istruth = false,
 		  std::vector<TauProxy> baseline_taus = std::vector<TauProxy>(),
 		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>());
