@@ -4,6 +4,7 @@
 	* ZeroLeptonCRZ: lower second lepton pT cut to 10GeV
 	* ZeroLeptonCRWT: option to use MET trigger and lepton of 10GeV
 	* zerolepton.config: add CRWT/VRWT with MET trigger
+	* zerolepton.config: only JET and MET systematics
 
 23-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: change isolation WP for photons to Cone20
