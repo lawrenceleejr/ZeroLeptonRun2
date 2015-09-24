@@ -253,7 +253,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   for( ; tau_itr != tau_end; ++tau_itr ) {
     if ( !m_IsData ) m_tauTruthMatchTool->getTruth( **tau_itr);
     if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
-    if( (*tau_itr)->auxdecor<char>("baseline")==1 ){
+    if(  !m_IsData && (*tau_itr)->auxdecor<char>("baseline")==1 ){
       for ( const auto& syst : m_tauEffSystSetList ){
 	// one by one apply systematic variation 
 	if (m_tauEffTool->applySystematicVariation(syst) != CP::SystematicCode::Ok){

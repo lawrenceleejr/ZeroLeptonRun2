@@ -1,3 +1,6 @@
+24-Sep-2015 Laurent Duflot
+	* BuildSUSYObjects: do not run tau efficiency corrections on data
+
 23-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: change isolation WP for photons to Cone20
 	* PhysObjProxyUtils, PhysObjProxyFiller, ZeroLeptonCutVal, cutfile8TeV.dat: change jet pT cut from 40/60 GeV to 50 GeV
