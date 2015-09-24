@@ -1066,9 +1066,9 @@ bool PhysObjProxyUtils::CosmicMuon(const std::vector<MuonProxy>& muons) const
   return false;
 }
 
-float METMuonRatio(const std::vector<MuonProxy>& muons,
-		   float MET, const TVector2& MissingET, 
-		   unsigned int skip) const
+float PhysObjProxyUtils::METMuonRatio(const std::vector<MuonProxy>& muons,
+				      float MET, const TVector2& MissingET, 
+				      unsigned int skip) const
 {
   return 0.f;
 }
