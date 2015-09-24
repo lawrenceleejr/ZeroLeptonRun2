@@ -2,6 +2,8 @@
 	* BuildSUSYObjects: do not run tau efficiency corrections on data
 	* BuildSUSYObjects: find signal e/mu down to 10GeV instead of 25GeV
 	* ZeroLeptonCRZ: lower second lepton pT cut to 10GeV
+	* ZeroLeptonCRWT: option to use MET trigger and lepton of 10GeV
+	* zerolepton.config: add CRWT/VRWT with MET trigger
 
 23-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: change isolation WP for photons to Cone20

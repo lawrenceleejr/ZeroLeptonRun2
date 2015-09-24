@@ -43,6 +43,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_isVR(false),
     m_isMuonChannel(false),
     m_isElectronChannel(false),
+    m_LowPtLepton(false),
     m_suffix(""),
     m_physobjsFiller(0),
     m_physobjsFillerTruth(0),
@@ -76,11 +77,17 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_isElectronChannel = true;
   }
 
+  m_LowPtLepton = config.get("LowPtLepton",false);
+  if ( m_LowPtLepton ) m_stringRegion = "CRWTLPT_SRAll";
+
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
 
   m_isVR = config.get("IsVR",false);
-  if ( m_isVR ) m_stringRegion = "VRWT_SRAll";
+  if ( m_isVR ) {
+    m_stringRegion = "VRWT_SRAll";
+    if ( m_LowPtLepton ) m_stringRegion = "VRWTLPT_SRAll";
+  }
 
   std::string cutfile = config.get("cutfile","None");
   if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonCRWT: invalid cut file specified"));
@@ -240,27 +247,18 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection 
-  // example of how to access trigger pass/not pass
-  /*
-  out() << " HLT_j80_xe80 " << (int)eventInfo->auxdata<char>("HLT_j80_xe80") <<
-    " L1_XE50 " << (int)eventInfo->auxdata<char>("L1_XE50") <<
-    " HLT_mu20_iloose_L1MU15 " << (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15") <<
-    " HLT_mu26_imedium " << (int)eventInfo->auxdata<char>("HLT_mu26_imedium") <<
-    " HLT_e24_lhmedium_iloose_L1EM18VH " << (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH") <<
-    " HLT_e28_tight_iloose " << (int)eventInfo->auxdata<char>("HLT_e28_tight_iloose") <<
-    std::endl;
-  */
-
-
 
   bool passEltrigger=false;
   bool passMutrigger=false;
   if(! m_IsTruth){
-    if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH")==1 || (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) passEltrigger = true;
-    if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || (int)eventInfo->auxdata<char>("HLT_mu50")==1) passMutrigger = true;
-    //if((int)eventInfo->auxdata<char>("HLT_e17_lhloose_L1EM15")==1 || (int)eventInfo->auxdata<char>("HLT_e17_loose_L1EM15")==1) passEltrigger = true;
-    //if((int)eventInfo->auxdata<char>("HLT_mu14_iloose")==1 || (int)eventInfo->auxdata<char>("HLT_mu18")==1) passMutrigger = true; 
-    if( !(passEltrigger || passMutrigger) ) return true; 
+    if ( m_LowPtLepton ) {
+      if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+    }
+    else {
+      if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH")==1 || (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) passEltrigger = true;
+      if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || (int)eventInfo->auxdata<char>("HLT_mu50")==1) passMutrigger = true;
+      if( !(passEltrigger || passMutrigger) ) return true; 
+    }
   }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
@@ -277,6 +275,9 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   std::vector<float> btag_weight(7,1.); // not implemented in SUSYTools
   std::vector<float> ctag_weight(7,1.); // not implemented in SUSYTools
 
+  double leptonPtCut = 25000.;
+  if ( m_LowPtLepton ) leptonPtCut = 10000.;
+
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
   if(! m_IsTruth){
@@ -286,10 +287,10 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if(m_IsTruth){
     m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
   }
-  // keep only signal electrons with Pt>25GeV
+  // keep only signal electrons with Pt>25GeV for lepton triggers
   for ( std::vector<ElectronProxy>::iterator it = isolated_signal_electrons.begin();
 	it != isolated_signal_electrons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_electrons.erase(it);
+    if ( it->Pt() < leptonPtCut ) it = isolated_signal_electrons.erase(it);
     else it++;
   }
   // FIXME : trigger matching
@@ -307,7 +308,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   // keep only signal muons with Pt>25GeV
   for ( std::vector<MuonProxy>::iterator it = isolated_signal_muons.begin();
 	it != isolated_signal_muons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_muons.erase(it);
+    if ( it->Pt() < leptonPtCut ) it = isolated_signal_muons.erase(it);
     else it++;
   }
   // FIXME : trigger matching

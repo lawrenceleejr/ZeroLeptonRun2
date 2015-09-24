@@ -48,6 +48,7 @@ private:
   bool m_isVR;
   bool m_isMuonChannel;
   bool m_isElectronChannel;
+  bool m_LowPtLepton;
 
   NTVars m_ntv;
   NTReclusteringVars m_RTntv;
