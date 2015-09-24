@@ -94,6 +94,10 @@ class PhysObjProxyUtils
   bool CosmicMuon(const std::vector<MuonProxy>& muons) const;
 
 
+  float METMuonRatio(const std::vector<MuonProxy>& muons,
+		     float MET, const TVector2& MissingET, 
+		     unsigned int skip) const;
+
   bool isbadMETmuon(const std::vector<MuonProxy>& muons,
 		    float MET, const TVector2& MissingET) const;
 
