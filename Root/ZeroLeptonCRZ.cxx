@@ -42,6 +42,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_period(INVALID),
     m_isMuonChannel(false),
     m_isElectronChannel(false),
+    m_PtLepton2(10000.),
     m_suffix(""),
     m_suffixRecl(""),
     m_physobjsFiller(0),
@@ -75,6 +76,8 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_isMuonChannel = true;
     m_isElectronChannel = true;
   }
+
+  m_PtLepton2 = config.get("PtLepton2",10000.);
 
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
   if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
@@ -276,14 +279,15 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     m_physobjsFillerTruth->FillElectronProxies(baseline_electrons_truth, isolated_baseline_electrons_truth, isolated_signal_electrons_truth);
   }
   // keep only signal electrons with Pt>25GeV
+  static const float minLeptonPt = 10000.;
   for ( std::vector<ElectronProxy>::iterator it = isolated_signal_electrons.begin();
 	it != isolated_signal_electrons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_electrons.erase(it);
+    if ( it->Pt() < minLeptonPt ) it = isolated_signal_electrons.erase(it);
     else it++;
   }
   for ( std::vector<ElectronTruthProxy>::iterator itt = isolated_signal_electrons_truth.begin();
         itt != isolated_signal_electrons_truth.end(); ) {
-    if ( itt->Pt() < 25000. ) itt = isolated_signal_electrons_truth.erase(itt);
+    if ( itt->Pt() < minLeptonPt ) itt = isolated_signal_electrons_truth.erase(itt);
     else itt++;
   }
   // FIXME : trigger matching
@@ -301,12 +305,12 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   // keep only signal muons with Pt>25GeV
   for ( std::vector<MuonProxy>::iterator it = isolated_signal_muons.begin();
 	it != isolated_signal_muons.end(); ) {
-    if ( it->Pt() < 25000. ) it = isolated_signal_muons.erase(it);
+    if ( it->Pt() < minLeptonPt ) it = isolated_signal_muons.erase(it);
     else it++;
   }
   for ( std::vector<MuonTruthProxy>::iterator itt = isolated_signal_muons_truth.begin();
         itt != isolated_signal_muons_truth.end(); ) {
-    if ( itt->Pt() < 25000. ) itt = isolated_signal_muons_truth.erase(itt);
+    if ( itt->Pt() < minLeptonPt ) itt = isolated_signal_muons_truth.erase(itt);
     else itt++;
   }
   // FIXME : trigger matching
@@ -428,6 +432,8 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     
   }
   if ( leptonTLVs.empty() ) return true;
+  if ( leptonTLVs[0].Pt() < 25000. ) return true;
+  if ( leptonTLVs[1].Pt() < m_PtLepton2 ) return true;
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
 

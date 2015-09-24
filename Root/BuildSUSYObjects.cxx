@@ -338,7 +338,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	   mu->muonType() != xAOD::Muon::SegmentTagged ) {
 	mu->auxdecor<char>("baseline") = 0;
       }
-      m_SUSYObjTool->IsSignalMuon(*mu);
+      m_SUSYObjTool->IsSignalMuon(*mu,10000.);
       m_SUSYObjTool->IsCosmicMuon(*mu);
       m_SUSYObjTool->IsBadMuon(*mu);
       /*
@@ -368,7 +368,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     }
     //out() <<  "Electrons"+m_suffix+tag+" electrons " << std::endl;
     for ( const auto& el : *electrons ) {
-      m_SUSYObjTool->IsSignalElectron(*el);
+      m_SUSYObjTool->IsSignalElectron(*el,10000.);
       /*
       out() << " Electron " << el->pt() << " " << el->eta()
 	    << " " << el->phi() 

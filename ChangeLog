@@ -1,5 +1,7 @@
 24-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: do not run tau efficiency corrections on data
+	* BuildSUSYObjects: find signal e/mu down to 10GeV instead of 25GeV
+	* ZeroLeptonCRZ: lower second lepton pT cut to 10GeV
 
 23-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: change isolation WP for photons to Cone20

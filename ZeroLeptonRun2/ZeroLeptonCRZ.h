@@ -46,6 +46,7 @@ private:
   ZeroLeptonRunPeriod m_period;
   bool m_isMuonChannel;
   bool m_isElectronChannel;
+  float m_PtLepton2;
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
