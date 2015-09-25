@@ -1,3 +1,6 @@
+54-Sep-2015 Laurent Duflot
+	* data/data15_13TeV_p2419.ds: add current list of p2419 data samples
+
 24-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: do not run tau efficiency corrections on data
 	* BuildSUSYObjects: find signal e/mu down to 10GeV instead of 25GeV
