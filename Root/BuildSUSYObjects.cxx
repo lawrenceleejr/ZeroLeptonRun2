@@ -80,6 +80,15 @@ BuildSUSYObjects::~BuildSUSYObjects()
   //if ( m_SUSYObjTool ) delete m_SUSYObjTool;
 }
 
+void  BuildSUSYObjects::inputFileOpened(TFile *file)
+{
+  // SUSYTools initialisation must be delayed until we have a TEvent associated
+  // with a file due to xAODConfigTool 
+  if ( !m_SUSYObjTool ) {
+    initSUSYTools();
+  }
+}
+
 void BuildSUSYObjects::initSUSYTools()
 {
   // SUSYObjDef_xAOD needs a TEvent to be defined, moved from constructor to begin()
@@ -163,7 +172,7 @@ void BuildSUSYObjects::initSUSYTools()
   m_tauEffSystSetList = systSetList;
 
 
-  if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
+  //if ( !m_SUSYObjTool->SUSYToolsInit().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef ! ]SUSYToolsInit()]");
 
   if ( !m_SUSYObjTool->initialize().isSuccess() ) throw std::runtime_error("Could not initialise SUSYOBjDef !");
 
@@ -214,11 +223,6 @@ void BuildSUSYObjects::initSUSYTools()
 bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 {
 
-  // SUSYTools initialisation must be delayed until we have a TEvent associated
-  // with a file due to xAODConfigTool 
-  if ( !m_SUSYObjTool ) {
-    initSUSYTools();
-  }
   // for muon trigger SF
   if ( ! m_SUSYObjTool->setRunNumber(267639).isSuccess() ) throw std::runtime_error("Could not set reference run number in SUSYTools !");
 

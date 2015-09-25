@@ -16,6 +16,8 @@ namespace ST{
   class SystInfo;
 }
 
+class TFile;
+
 #include <string>
 #include <vector>
 
@@ -34,6 +36,7 @@ public:
   BuildSUSYObjects(const char *name);
   ~BuildSUSYObjects();
   bool processEvent(xAOD::TEvent& event);
+  void inputFileOpened(TFile *file);
 
 private:
   void initSUSYTools();

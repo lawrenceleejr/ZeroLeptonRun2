@@ -1,5 +1,7 @@
-54-Sep-2015 Laurent Duflot
+25-Sep-2015 Laurent Duflot
 	* data/data15_13TeV_p2419.ds: add current list of p2419 data samples
+	* JobBookeeper, BuildSUSYObjects: remove extra TEvent to read metadata
+	as this caused Trigger to be initialised only at the second event.
 
 24-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: do not run tau efficiency corrections on data

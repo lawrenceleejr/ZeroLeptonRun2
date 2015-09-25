@@ -73,17 +73,13 @@ void JobBookeeping::inputFileOpened(TFile *file)
 
     // extract information from CutBookkeeperContainer in Metadata
     // https://twiki.cern.ch/twiki/bin/view/AtlasProtected/AnalysisMetadata
-    TTree *MetaData = dynamic_cast<TTree*>(file->Get("MetaData"));
-    if ( !MetaData ) {throw std::logic_error("JobBookeeping: running on derivation but no MetaData tree !");}
-    if ( MetaData->GetBranch("StreamAOD") )  {throw std::logic_error("JobBookeeping: this does no appear to be a derivation file !");}
-    MetaData->LoadTree(0);
-
-    xAOD::TEvent event( MetaData,xAOD::TEvent::kBranchAccess);
+    xAOD::TEvent* event = dynamic_cast< xAOD::TEvent* >(xAOD::TActiveEvent::event());
+    if ( !event ) {throw std::logic_error("JobBookeeping: could not get active Tevent !");}
     const xAOD::CutBookkeeperContainer* incompleteCBC = 0;
-    if ( !event.retrieveMetaInput(incompleteCBC, "IncompleteCutBookkeepers").isSuccess()) {throw std::logic_error("JobBookeeping: could not retrieve CutBookkeeperContainer with tag IncompleteCutBookkeepers");}
+    if ( !event->retrieveMetaInput(incompleteCBC, "IncompleteCutBookkeepers").isSuccess()) {throw std::logic_error("JobBookeeping: could not retrieve CutBookkeeperContainer with tag IncompleteCutBookkeepers");}
     if ( incompleteCBC->size() != 0 ) {throw std::logic_error("JobBookeeping: IncompleteCutBookkeepers not empty");}
     const xAOD::CutBookkeeperContainer* completeCBC = 0;
-    if ( !event.retrieveMetaInput(completeCBC, "CutBookkeepers").isSuccess()){throw std::logic_error("JobBookeeping: could not retrieve CutBookkeeperContainer with tag CutBookkeepers");}
+    if ( !event->retrieveMetaInput(completeCBC, "CutBookkeepers").isSuccess()){throw std::logic_error("JobBookeeping: could not retrieve CutBookkeeperContainer with tag CutBookkeepers");}
     // Find the smallest cycle number, the original first processing step/cycle
     int minCycle = 10000;
     for ( auto cbk : *completeCBC ) {
