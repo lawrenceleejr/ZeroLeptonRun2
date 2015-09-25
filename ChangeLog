@@ -2,6 +2,8 @@
 	* data/data15_13TeV_p2419.ds: add current list of p2419 data samples
 	* JobBookeeper, BuildSUSYObjects: remove extra TEvent to read metadata
 	as this caused Trigger to be initialised only at the second event.
+	* data/mc15_13TeV_25ns_SM_p2419.ds, data/mc15_13TeV_signal_25ns_p2419.ds: add current list of p2419 MC samples
+	* tag as ZeroLeptonRun2-00-00-51
 
 24-Sep-2015 Laurent Duflot
 	* BuildSUSYObjects: do not run tau efficiency corrections on data
