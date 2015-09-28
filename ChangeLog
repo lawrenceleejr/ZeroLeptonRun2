@@ -1,3 +1,6 @@
+28-Sep-2015 Geraldine Conti
+	* included CR3L in the config file
+	
 25-Sep-2015 Laurent Duflot
 	* data/data15_13TeV_p2419.ds: add current list of p2419 data samples
 	* JobBookeeper, BuildSUSYObjects: remove extra TEvent to read metadata
