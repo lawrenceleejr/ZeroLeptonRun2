@@ -38,6 +38,7 @@ private:
 
   std::string m_jetkey; 
   std::string m_suffix;
+  std::string m_suffixRecl;
 public:
   ClassDef(BuildTruthObjects,0);
 };

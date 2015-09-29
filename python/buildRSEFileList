@@ -1,0 +1,125 @@
+#!/bin/env python
+
+import sys,os
+import argparse
+
+from rucio.client import Client
+from rucio.common.exception import (DataIdentifierAlreadyExists, Duplicate, FileAlreadyExists, AccessDenied, ResourceTemporaryUnavailable,
+                                    DataIdentifierNotFound, InvalidObject, RSENotFound, InvalidRSEExpression, DuplicateContent, RSEProtocolNotSupported,
+                                    RuleNotFound, CannotAuthenticate, MissingDependency, RSEOperationNotSupported, UnsupportedOperation)
+
+
+
+def get_client(args):
+    """
+    Returns a new client object.
+    """
+    if args.auth_strategy == 'userpass':
+        creds = {'username': args.username, 'password': args.password}
+    else:
+        creds = None
+
+    try:
+        client = Client(rucio_host=args.host, auth_host=args.auth_host,
+                        account=args.account,
+                        auth_type=args.auth_strategy, creds=creds,
+                        ca_cert=args.ca_certificate, timeout=args.timeout)
+    except CannotAuthenticate, error:
+        logger.error(error)
+        if not args.auth_strategy:
+            if 'RUCIO_AUTH_TYPE' in os.environ:
+                auth_type = os.environ['RUCIO_AUTH_TYPE']
+            else:
+                try:
+                    auth_type = config_get('client', 'auth_type')
+                except (NoOptionError, NoSectionError):
+                    logger.error('Cannot get AUTH_TYPE')
+                    sys.exit(FAILURE)
+        if auth_type == 'x509_proxy':
+            logger.error('Please verify that your proxy is still valid and renew it if needed.')
+        sys.exit(FAILURE)
+    return client
+
+
+def extract_scope(did):
+    # Try to extract the scope from the DSN
+    if did.find(':') > -1:
+        scope, name = did.split(':')[0], did.split(':')[1]
+        if name.endswith('/'):
+            name = name[:-1]
+        return scope, name
+    else:
+        scope = did.split('.')[0]
+        if did.startswith('user') or did.startswith('group'):
+            scope = ".".join(did.split('.')[0:2])
+        if did.endswith('/'):
+            did = did[:-1]
+        return scope, did
+
+def list_file_replicas(args):
+    """
+    """
+    client = get_client(args)
+    protocols = protocols = args.protocols.split(',')
+
+    dids = []
+    myfiles = {}
+    for did in args.dids:
+        scope, name = extract_scope(did)	
+    	replicas = client.list_replicas([{'scope': scope, 'name': name}], schemes=protocols, all_states=args.all_states)
+	myfiles[str(did)] = []
+        for replica in replicas:
+            if args.selected_rse in replica['rses']:
+                for pfn in replica['rses'][args.selected_rse]:
+                    myfiles[str(did)].append(str(pfn))
+    return myfiles
+
+
+
+class Struct:
+      def __init__(self,**fields): self.__dict__=fields
+
+if __name__ == '__main__':
+
+    usage = """
+usage: %(prog)s <command> [options] [args]
+
+Commands:
+
+    help <command>  Output help for one of the commands below
+"""
+    oparser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]), add_help=True)
+    oparser.add_argument(dest='dids', nargs='*', default=None, action='store', help='List of space separated data identifiers')
+    oparser.add_argument('--didfile',dest='didfile', default=None, action='store', help='File with list of data identifiers', required=False)
+    oparser.add_argument('--rse', dest='selected_rse', default='GRIF-LAL_LOCALGROUPDISK', action='store', help='Target RSE', required=False)
+    oparser.add_argument('--protocols', dest='protocols', default='root', action='store', help='List of comma separated protocols', required=False)
+    args = oparser.parse_args(sys.argv[1:])
+
+    if not args.dids and not args.didfile:
+        print 'Please use one of --dids or --didfile'
+        sys.exit(0)
+
+    if args.dids and args.didfile:
+        print 'Please use either --dids or --didfile'
+        sys.exit(0)
+
+    if args.didfile:
+        args.dids = []
+        for line in open(str(args.didfile)):
+            line = line.strip()
+            if line.startswith('#') or len(line)==0: continue
+            args.dids.append(line.split()[0])
+
+    template = Struct(account=None, auth_host=None, auth_strategy=None, ca_certificate=None, certificate=None, host=None, password=None, timeout=None, username=None, verbose=False, which='')
+
+    fargs = template
+    fargs.dids=args.dids
+    fargs.protocols=args.protocols
+    fargs.selected_rse=args.selected_rse
+    fargs.all_states=False
+    myfiles = list_file_replicas(fargs)
+
+    import pickle
+    outfile = open('files.pkl','wb')
+    pickle.dump(myfiles,outfile)
+    outfile.close()

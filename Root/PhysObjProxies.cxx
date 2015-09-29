@@ -10,6 +10,7 @@
 JetProxy::JetProxy():
   TLorentzVector(),
   m_isBaseline(false),
+  m_isSignal(false),
   m_isBad(true),
   m_passOR(true),
   m_isBJet(false),
@@ -17,9 +18,10 @@ JetProxy::JetProxy():
 {
 }
 
-JetProxy::JetProxy(const TLorentzVector& in, bool isBaseline, bool isBad, bool passOR, bool isBJet):
+JetProxy::JetProxy(const TLorentzVector& in, bool isBaseline, bool isSignal, bool isBad, bool passOR, bool isBJet):
   TLorentzVector(in),
   m_isBaseline(isBaseline),
+  m_isSignal(isSignal),
   m_isBad(isBad),
   m_passOR(passOR),
   m_isBJet(isBJet),
@@ -31,6 +33,7 @@ JetProxy::JetProxy(const xAOD::Jet* jet):
   TLorentzVector(jet->p4())
 {
   m_isBaseline = jet->auxdecor<char>("baseline")==1;
+  m_isSignal   = jet->auxdecor<char>("signal")==1;
   m_isBad      = jet->auxdecor<char>("bad")==1;
   m_passOR     = jet->auxdecor<char>("passOR")==1;
   m_isBJet     = jet->auxdecor<char>("bjet")==1;
