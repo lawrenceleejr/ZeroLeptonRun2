@@ -1,3 +1,430 @@
+22-Sep-2015 Laurent Duflot
+	* INSTALL : update to SUSY,2.3.28, reference release for Oct FAR
+	* tag as ZeroLeptonRun2-00-00-50
+
+22-Sep-2015 Laurent Duflot
+	* BuildSUSYObjects: change overlap removal
+	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-24-01 (SUSY,2.3.26)
+	* revision 696196
+
+22-Sep-2015 Laurent Duflot
+	* BuildSUSYObjects: add tau truth matching
+	* INSTALL, BuildSUSYObjects: update to SUSYTools-00-06-23-03 (SUSY,2.3.24a)
+	* revision 696188
+
+22-Sep-2015 Laurent Duflot
+	* INSTALL, BuildSUSYObjects, config files: update to SUSYTools-00-06-22 (SUSY,2.3.23)
+	* revision 696100
+
+21-Sep-2015 Laurent Duflot
+	* zerolepton.config: change JES NP set to 1 (to actually use a very reduced set)
+	* revision: 695952
+
+18-Sep-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx, launch_jobs_on_grid.py: add p2419
+	* data/mc15_13TeV_signal_25ns_xAOD.ds : 25ns xAOD signal samples
+	* makeDatasetList.py: update for signal samples, including AtlFastII
+
+17-Sep-2015 Laurent Duflot
+	* FilterUpdateMerge.py: wrong file was copied over on last update!
+	allow to use pickle file as file input list
+	* makeDatasetList.py: add r6895 to 25ns tags (not on wiki...)
+	* mc15_13TeV_MCSampleList.py: fix code typo
+	* data: remove mc14 samples, add mc15_13TeV_25ns_SM_xAOD.ds
+
+13-Sep-2015 Geraldine Conti
+	* Updated the boson tagging numbers to latest recommendation
+
+11-Sep-2015 Laurent Duflot
+	* makeDatasetList.py: update rtags for 50ns and 25ns MC
+
+09-Sep-2015 Geraldine Conti
+	* Added variable for lepton pT coming from W in CR3L
+
+03-Sep-2015 Laurent Duflot
+	* tag as -49
+
+26-Aug-2015 Geraldine
+	* Added lepton isolation variables in CRWT
+
+26-Aug-2015 Geraldine Conti
+	* Added reclustering and boson tagging variables in the ReclTree
+	* ZeroLeptonCR3L.cxx, ZeroLeptonCRY.cxx, ZeroLeptonCRZ.cxx,
+	ZeroLeptonCRWT.cxx, ZeroLeptonSR.cxx : changed FillNTReclusteringVars
+	function and added boson tagging calculations in CRWT, CRZ and SR
+	* Added ReclJetMass,ReclJetPt,ReclJetEta,ReclJetPhi,D2,isWmedium,
+	isWtight,isZmedium,isZtight in FillNTReclusteringVars in
+	PhysObjProxyUtils.cxx/h
+	* Variables added in ZeroLeptonNTVars.cxx/h
+	* zerolepton.config : added global variable doRecl (still commented
+	out, because there is still a bug to fix)
+
+26-Aug-2015 Geraldine Conti
+	* Added CR3L code :
+	* ZeroLeptonCR3L.cxx/h added
+	* zerolepton.config, zeroleptontruth.config : added cr3l, vr3l
+	* LinkDef.h : added CR3L
+	* ZeroLeptonNTVars.cxx/h : added variables for CL3L
+
+26-Aug-2015 Geraldine Conti
+	* Code for new reclustering added:
+	* INSTALL : added line for new package xAODJetReclustering
+	* PhysObjProxyFiller.cxx/h : initialization of the reclustering
+	tool,added function FillJetReclProxies to fill recl. jets
+	* ZeroLeptonCRWT.cxx/h, ZeroLeptonCRY.cxx/h, ZeroLeptonCRZ.cxx/h
+	ZeroLeptonDataDrivenQCD.cxx, ZeroLeptonSR.cxx/h : added bool m_doRecl,
+	std::string m_suffixRecl (needed to give different names in the recljet
+	collections) in PhysObjProxyFiller
+	* Makefile.RootCore : added dependence to new package
+	* BosonTagging.cxx/h
+
+26-Aug-2015 Geraldine Conti
+	* Added phTruthType, phTruthOrigin, phisEMvalue needed for ABCD method
+	in ZeroLeptonCRY.cxx/h and ZeroLeptonNTVars.cxx/h
+
+14-Aug-2015 Laurent Duflot
+	* MCInfoProcessor: add option to produce a JSON file with hardproc
+	informations to allow building a DB of initial harproc counts
+	(needed for proper normalisation of multi process samples)
+	* zson.config: example config file for a job producing json hardproc file.
+	* BuidSUSYObjects: switch to default SUSYTools for JVT (jet and MET)
+	* PhysObjProxies: add isSignal() method to JetProxy
+	* ZeroLeptionCRWT: adapt to interface change in JetProxy
+
+12-Aug-2015 Laurent Duflot
+	* zerolepton.config: comment out second PRW file (25ns) as both files
+	seem to be combined in the tool for 50ns reweighting.
+	* FilterUpdateMerge.py: set batch mode.
+	* PhysObjProxyUtils: calculate sphericity/aplanarity for jets>40GeV
+
+
+11-Aug-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py: update diboson list
+	* buildRSEFileList: build pickle file with datasets on storage element
+	* getMCInfo.py, FilterUpdateMerge.py: allow to use pickle file as file
+	input list
+	* README: update with merging using files on storage element
+
+07-Aug-2015 Laurent Duflot
+	* upgrade to SUSYTools-00-06-19
+	new Btagging recommandations and working point
+	new muon isaolation scale factors
+	muon default acceptance up to 2.5 instead of 2.4
+	some cross-section /  kfactor updates
+	* BuildSUSYObject: switch on muon isolation scale factors
+	* INSTALL: update instruction for new SUSYTools
+	* launch_jobs_on_grid.py: update to new files in CDIFiles
+	* SR and CRxx: move RJigsawInit() to the the begin() method.
+
+
+07-Aug-2015 Laurent Duflot
+	* BuildSUSYObject: do not try to extract photon scale factor for data
+	Committed revision 688047
+
+06-Aug-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: make CDIFiles available on the grid
+	* PhysObjProxyUtils: fix typo in delete conditions leading to memory leaks
+	* zerolepton.config: single switch for filling RJigsawVars block
+	* ZeroLeptonNTVars: switch caching off for output trees, set flush/save size explicitely to control memory footprint
+	* BuildSUSYObject: do not try to extract e/mu scale factor for data
+
+
+04-Aug-2015 Laurent Duflot
+	* upgrade to SUSYTools-00-06-17-03 (Photon iso changed to Cone40,
+	IsBadJet now only vetoes above 50GeV except if jvtcut)
+	* BuildSUSYObject: adapt to new GetTotalMuonSF interface (runnumber 267639),
+	test e/mu SF after OR.
+	* BuildSUSYObject: move to TST term for MET
+	* ZeroLeptonUtil, SR+CRxx: remove negative energy cell code
+
+04-Aug-2015 Laurent Duflot (from Larry Lee)
+	* INSTALL, PhysObjProxyUtils, SR+CRxx: adapt to new Ext_RestFrames
+	* ZeroLeptonCutVal, cutfile8TeV_RJigsaw.dat: add jet pT cut for RJigSaw
+	* ZeroLeptonNTVars, FilterUpdateMerge: update naming of RJigSaw variables
+	* config/zerolepton_RJigsaw.config: config file for RJigSaw studies
+
+04-Aug-2015 Laurent Duflot
+	* tagged as ZeroLeptonRun2-00-00-48
+
+03-Aug-2015 Yu Nakahama
+	* Added data/mc15_13TeV_signal_{50ns,25ns}_p2375.ds for mc15 signal samples (SS,GG_direct and GG_onestepCC)
+	* Updated makeSignalPointPickle.py for mc15
+
+03-Aug-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping, launch_jobs_on_grid.py: add p2384
+	* data/mc15_13TeV_p2375.ds: current list of p2375 mc15 samples ("official")
+
+03-Aug-2015 Laurent Duflot
+	* INSTALL: update instructions for cafe and Ext_RestFrames
+	* tagged as ZeroLeptonRun2-00-00-47
+
+01-Aug-2015 Laurent Duflot
+	* tagged as ZeroLeptonRun2-00-00-46
+
+31-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects: record in TStore only shallow copies for systematics
+	affecting kinematics
+	* SR, CRxx: add switch ON/OFF to fill Reclustering variables
+	* PileUpRWProcessor: set default to no reweighting
+	* launch_jobs_on_grid.py: unset ROOT_TTREECACHE_SIZE to avoid huge
+	memory consumption.
+
+30-Jul-2015 Laurent Duflot
+	* SR, CRxx: add switch ON/OFF to fill RJigSaw variables
+	* ZeroLeptonNTVars, PhysObjProxyUtils, SR, CRxx: remove old calculation
+	of razor variables
+
+29-Jul-2015 Laurent Duflot
+	* add data/PRW.mc15_13TeV.410000_r6765_r6282.root
+	* zerolepton.config: point to 25ns reference file
+	* PhysObjProxyUtils: fix memory leaks
+
+29-Jul-2015 Geraldine Conti
+	* launch_jobs_on_grid.py: use zeroleptontruth.config for TRUTH1,
+	protection against DerivationTag to be set for TRUTH1
+	* FilterUpdateMerge.py : added DB sample in AllSamples
+	* makeDatasetList.py : fix for TRUTH1 samples (effic=1)
+
+28-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects, ZeroLeptonCRx: propagate e/mu/photon SF
+
+27-Jul-2015 Laurent Duflot
+	* BuildSUSYObjects: rewrite using SUSYTools functions and include loop
+	on systematics (from ZeroLeptonSystVariations)
+	* ZeroLeptonSystVariations: remove creation of loop on systematics, now
+	in BuildSUSYObjects, just loop over systematics published by BuildSUSYObjects
+	* ZeroLeptonSR and CRs: adapt to changes above
+	* zerolepton.config: support for systematics in BuildSUSYObjects
+	* zerolepton_with_systematics.config: remove
+	* ZerloLeptonNTVars: add "systWeights" events weights from systematics
+
+
+27-Jul-2015 Laurent Duflot
+	* ZeroLeptonCRY: fix 'cleaning' variable (last bit not filled)
+	* ZeroLeptoCRWT, ZeroLeptonCRZ: set bit number avec if (truth)
+	* BuildSUSYObjects.cxx: need to call explicitely IsBadJet after
+	SUSYTools-00-01-14
+	* tagged as ZeroLeptonRun2-00-00-45
+
+23-Jul-2015 Laurent Duflot
+	* ZeroLeptonSR, ZeroLeptonCRZ, ZeroLeptonCRWT: code cleanup
+	* PhysObjProxyUtils, ZeroLeptonCRY, BuildTruthObjects, FilterUpdateMerge: code cleanup
+
+
+22-Jul-2015 Laurent Duflot
+	* FilterUpdateMerge.py, getMCInfo.py: add protections for signal samples
+	* getMCInfo.py: better treatment of signal samples with derivation
+	(still not 100% correct for complex sample with multiple processes)
+
+20-Jul-2015 Laurent Duflot
+	* python: add scripts to validate production: running on all files,
+	look for duplicate events
+	* INSTALL: new version of cafe
+
+18-Jul-2015 Laurent Duflot
+	* FilterUpdateMerge.py, getMCInfo.py: skip samples with no cross-section available
+
+
+16-Jul-2015 Laurent Duflot
+	* JobBookeeping, config files: don't do the derivation bookeeping
+	for data as there is a bug in data processing
+
+15-Jul-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: automatically recognize all supported
+	derivations from sample name
+	* ZeroLeptonCRZ.cxx : fix for two isolated signal leptons
+	* makeDatasetList.py: make sure the default dataType matches only SUSY1 and not SUSY10
+	* mc15_13TeV_MCSampleList.py: add PowhegPythia8 W and Z samples as alternative samples
+	* data/*forEPS*: update list of samples for EPS
+	* tagged as ZeroLeptonRun2-00-00-44
+
+15-Jul-2015 Geraldine Conti
+	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : apply lepSF to total weight
+	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : changed HLT_mu40 to HLT_mu50
+	* ZeroLeptonCRY.cxx : added lines for photon SF (still commented out - needs fixing)
+	* ZeroLeptonCRZ.cxx : ask for two isolated signal leptons in CRZ
+
+
+14-Jul-2015 Laurent Duflot
+	* PileUpRWProcessor, config file, data/: update pileup reweighting
+	to apply PRW to 50ns mc15
+
+
+14-Jul-2015 Geraldine Conti
+	* PhysObjProxyFiller.cxx: added b-jet requirements (pT>40, |eta|<2.5)
+	* ZeroLeptonCRWT.cxx and ZeroLeptonCRZ.cxx : add leptonID in lep1sign/lep2sign variables
+	* Added lepton SF as decoration to the muon/electron
+
+
+14-Jul-2015 Marija Vranjes Milosavljevic
+	* adding p2372 MC list used for EPS results
+	* added alternative lWjetsAlt and lZjetsAlt to the mc15_13TeV_MCSampleList.py
+	* reduced cuts in cutfile8TeV.dat for latest production (to be changed back after the EPS rush)
+	M       python/mc15_13TeV_MCSampleList.py
+	M       data/cutfile8TeV.dat
+	M       data/mc15_13TeV_forEPS_p2372.ds
+
+10-Jul-2015 Geraldine Conti
+	* update to SUSYTools-00-06-15
+	* BuildSUSYObjects.cxx : isTrigPassed -> IsTrigPassed
+	* ZeroLeptonSystVariations.cxx : commented out #include "PATInterfaces/SystematicList.h"
+	* Trigger : updated for CRWT and CRZ (following Yu's recommendations)
+
+09-Jul-2015 Geraldine Conti
+	* commented out trigger for truth code
+	* added lines needed to run on truth signal in truth config file
+	* fixed trigger of photons
+
+
+09-Jul-2015 Marija Vranjes Milosavljevic
+	* ZeroLeptonSR.cxx, ZeroLeptonCRWT.cxx, ZeroLeptonCRY.cxx, ZeroLeptonCRZ.cxx, BuildSUSYObjects.cxx: adding trigger
+	selections for EPS note
+	* adding ZeroLeptonRun2/data/mc15_13TeV_forEPS.ds with MC datasets list for EPS
+
+
+08-Jul-2015 Laurent Duflot
+	* README: fix typo in 'cleaning' bits for SR and add first
+	recommandations for cleaning cuts
+
+
+08-Jul-2015 Geraldine Conti
+	* FilterUpdateMerge.py : add option for LO Z+Jets
+	* makeDatasetList.py   : fixed filter efficiencies to 1 for these samples
+	* makeDatasetList.py   : added suffix in .txt file name
+	* mc15_13TeV_MCSampleList.py : added LO Z+jets samples as alternate samples
+	* Cleaning of some photon isolation variables
+
+07-Jul-2015 Laurent Duflot
+	* makeDatasetList.py: when approx_GenFiltEff is not found for a dataset
+	look in its parents. Same for the cross-section.
+	* makeDatasetList.py: add --onlyComplete to keep only complete datasets
+	* mc15_13TeV_MCSampleList.py: correct typo, sample 361082 was missing
+
+06-Jul-2015 Laurent Duflot
+	* makeDatasetList.py: list mc_channel_nb with no dataset found
+
+06-Jul-2015 Geraldine Conti
+	*add variables for photon isolation and quality
+
+03-Jul-2015 Laurent Duflot
+	* add baseline mc15 xAOD sample lists
+	* makeDatasetList.py: add option --whichMC15 to automatically loop over the various
+	r-tags for each mc15 week1/50ns/25ns production.
+	* BuildSUSYObjects: have different tool names for CRY and others, move IsSignalJet and isBJet
+	tests after overlap removal
+
+01-Jul-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx: add derivation tags p2372, p2375 and p2377
+
+30-Jun-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py, mc15_13TeV_week1_MCSampleList.py: update list of baseline samples
+	* ZeroLeptonCRxx: fill tau variables
+
+29-Jun-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py: update list of baseline samples, still a few missing "core" samples
+
+28-Jun-2015 Laurent Duflot
+	* BuildSUSYObjects: comment destructor due to crash in SUSYObjDef_xAOD
+	destructor
+	* update to SUSYTools-00-06-13: no change in ttbar cutflow
+	* tagged as ZeroLeptonRun2-00-00-41
+
+26-Jun-2015 Laurent Duflot
+	* update to SUSYTools-00-06-12: ~10% more signal leptons in CRWT
+	* BuildSUSYObjects, PhysObjProxyFiller: adapt to SUSYTools changes
+	* there are no compatible DC14 SUSYTools tag
+	* tagged as ZeroLeptonRun2-00-00-40
+
+25-Jun-2015 Laurent Duflot
+	* ZeroLeptonCRWT, ZeroLeptonCRZ, ZeroLeptonCRY: add RJigsaw block
+	* BuildSUSYObjects: update list of triggers
+	* update to SUSYTools-00-06-10
+	* tagged as ZeroLeptonRun2-00-00-39
+
+25-Jun-2015 Laurent Duflot
+	* ZeroLeptonCRWT, ZeroLeptonCRZ: for Run 2 data, set both
+	isMuonChannel and isElectronChannel to true since trigger cannot
+	be decided from stream
+
+24-Jun-2015 Laurent Duflot
+	* BuildSUSYObjects: fix jet btagging bug (cut value was for a previous
+	tagger)
+	* PhysObjProxyUtils.cxx: fill jetBTag variable with the MV2c20
+	discriminant value
+
+23-Jun-2015 Laurent Duflot
+	* README: update file for example command
+	* launch_jobs_on_grid.py: include Ext_RestFrames tarball
+
+22-Jun-2015 Laurent Duflot
+	* ZeroLeptonNtVars, PhysObjProxyUtils, SR and CR: add lumi block number,
+	remove BCH_CORR_CELL and experimental met definitions:
+	metNOCHCORRCELL, metLHTOPO, metLHTOPONOCHCORRCELL
+	*  ZeroLeptonNtVars, PhysObjProxyUtils, FilterUpdateMerge, ZeroLeptonSR:
+	add RJigsaw variables
+
+12-Jun-2015 Laurent Duflot
+	* MCInfoProcessor, config files: change TruthParticleContainer key for mc15
+	* launch_jobs_on_grid.py: bug fix for derivation detection. Signal
+	patterns for mc15.
+
+11-Jun-2015 Geraldine Conti
+	* Commented out the cleaning cuts for the truth analysis in CRY, CRWT ad CRZ
+
+10-Jun-2015 Laurent Duflot
+	* JobBookKeeping, config files: use metadata information for derivations
+	* BuildSUSYObjects: add trigger bits (list to be revised)
+
+09-Jun-2015 Laurent Duflot
+	* FilterUpdateMerge.py: update for Run 2 stream; few protections added
+	* launch_jobs_on_grid.py: add --noGRL option, add p2363 support,
+	further reduction of the output dataset length
+	* FilterUpdateMerge.cxx: add mc15 JZxW samples
+	* FilterUpdateMerge.py, getMCInfo.py, makeDatasetList.py, mc15_13TeV_week1_MCSampleList.py: add support for mc15
+	"week1" samples
+
+08-Jun-2015 Laurent Duflot
+	* launch_jobs_on_grid.py: add p2363
+
+08-Jun-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod, ZeroLeptonSR: add p2363
+	* rel20: switch to SUSYTools-00-06-09
+	* tagged as ZeroLeptonRun2-00-00-38
+
+05-Jun-2015 Laurent Duflot
+	* PhysObjProxyUtils + CR: change energies to GeV in the *mini-tuple*
+	(the rest of the code still use MeV !) razor variables unchanged.
+	* ZeroLeptonRunPeriod, SR: change p2352 (skim) to p2353 (no skim)
+	* README, config files, python scripts: make mc15/data15 the default
+	* tagged as ZeroLeptonRun2-00-00-37
+
+05-Jun-2015 Laurent Duflot
+	* ZeroLeptonNTVars, PhysObjProxyUtils: add tau pT, eta, phi
+	* PhysObjProxies, BuildSUSYObjects: add isBad to muons
+	* SR+CR : remove cleaning cuts and fill 'cleaning' variable with decision
+	* tagged as ZeroLeptonRun2-00-00-36
+
+04-Jun-2015 Laurent Duflot
+	* ZeroLeptonNTVars, PhysObjProxies, PhysObjProxyFiller,
+	PhysObjProxyUtils, BuildSUSYObjects, ZeroLeptonSR, LinkDef.h: add taus
+	* SR, CR, PhysObjProxies, PhysObjProxyUtils: code cleanup
+
+03-Jun-2015 Laurent Duflot
+	* GRLProcessor: add a passAll option
+	* ZeroLeptonSR: no MET_HadTopo for p2352
+	* ZeroLeptonRunPeriod: add p2352
+
+29-May-2015 Laurent Duflot
+	* getMCInfo.py, FilterUpdateMerge.py: add mc15_13TeV
+
+28-May-2015 Laurent Duflot
+	* FilterUpdateMerge: merge also the CRWT, CRZ and CRY blocks
+
+28-May-2015 Laurent Duflot
+	* makeDatasetList.py: add mc15_13TeV
+	* mc15_13TeV_MCSampleList.py: updated list of samples
+	* tagged as ZeroLeptonRun2-00-00-35
+
 27-May-2015 Laurent Duflot
 	* ZeroLeptonUtils, SR & CR: use recomputed MET e.g. for neg E cell veto
 	* BuildSUSYObjects, ZeroLeptonDataDrivenQCD: rename recomputed MET

@@ -3,7 +3,6 @@
 import sys, os, copy
 
 import ROOT
-#from mc12_8TeV_MCSampleList import *
 
 
 def parseCmdLine():
@@ -44,10 +43,22 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
+                      help="Also merge the CRWTVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRZVars", dest="mergeCRZVars",
+                      help="Also merge the CRZVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
+                      help="Also merge the CRYVars block ?", 
+                      action='store_true', default=True)
+    parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
+                      help="Also merge the RJigsawVars block ?", 
                       action='store_true', default=False)
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
-    parser.add_option("--prefix", dest="prefix", default="mc14_13TeV",
+    parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
                       help="Prefix to identify mc production",) 
 
     (config, args) = parser.parse_args()
@@ -60,7 +71,6 @@ class Sample:
                  Extraname="", treename="", nokfactor=False):
         self.name = name
         self.config = config
-        self.files=[]
         if treename=="":
             self.treename=self.name
         else:            
@@ -68,21 +78,44 @@ class Sample:
         self.extraName=Extraname
         self.signaldb=None
         self.nokfactor=nokfactor
-        try:
-            for file in open(inputfile,'read'):
-                file.strip()
-                file = file[:-1] # get rid of the \n
-                if len(file) == 0: continue
+
+        # if the input is a pickle file, it is supposed to contain a dictionary
+        # of file lists indexed by the dataset name. In this case the channel
+        # number should be extracted from the dataset name and not the files
+        # name since in general file URL in rucio do not contain the channel nb
+        if inputfile.endswith('.pkl'):
+            self.files={}
+            import pickle
+            if not os.path.isfile(inputfile):
+                print "can't read file",treename,inputfile
+                sys.exit()
+            picklefile = open(inputfile,'rb')
+            myfiles = pickle.load(picklefile)
+            picklefile.close()
+
+            for (did,pfns) in myfiles.iteritems():
                 for id in myarg:
-                    if not str(id) in file: continue
-                    fname = file
-                    if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
-                    if self.emptyFile(fname):
-                        print 'Empty file, ignored',fname
-                    else:
-                        self.files.append(fname)
-        except:
-            print "can't read file",treename,inputfile
+                    if not str(id) in did: continue
+                    self.files[did] = pfns
+            pass
+        else:
+            self.files=[]
+            try:
+                for file in open(inputfile,'read'):
+                    file.strip()
+                    file = file[:-1] # get rid of the \n
+                    if len(file) == 0: continue
+                    for id in myarg:
+                        if not str(id) in file: continue
+                        fname = file
+                        if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
+                        if self.emptyFile(fname):
+                            print 'Empty file, ignored',fname
+                        else:
+                            self.files.append(fname)
+            except:
+                print "can't read file",treename,inputfile
+            pass
 
     def emptyFile(self,fname):
         """ file must have at least 1D/2D counter histograms """
@@ -142,13 +175,14 @@ class Sample:
         return copy.deepcopy(mykeys)
 
     def extractChannelFromFilename(self,filename):
-        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.', 'mc14_13TeV.'):
+        for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
             if prefix in filename:
                 return int(filename.split(prefix)[1].split('.')[0])
         return None
 
     def normWeight(self,filename,xsecDB,isSignal):
         if isSignal: return 1.
+        if self.config.doData: return 1.
 
         ds = self.extractChannelFromFilename(filename)
         if not ds:
@@ -166,15 +200,27 @@ class Sample:
         return 0.
 
 
-    def MergeCounters(self,outFile,inFiles,xsecDB,isSignal):
+    def MergeCounters(self,outFile,InFiles,xsecDB,isSignal):
         """Merge histrograms corresponding to counters"""
-        if len(inFiles) == 0: return
+        if len(InFiles) == 0: return
+        inFiles = copy.deepcopy(InFiles)
+
+        inFileIsDict = False
+        if type(inFiles) == dict: inFileIsDict = True
+
+        if inFileIsDict:
+            refname = inFiles.keys()[0]
+            firstfile = inFiles[refname][0]
+        else:
+            firstfile = inFiles[0]
+            refname = firstfile
 
         # get the list of histograms from the first file
-        scale = self.normWeight(inFiles[0],xsecDB,isSignal)
-        ftemp = ROOT.TFile.Open(inFiles[0])
+        scale = 1.
+        if self.config.doNormWeight: scale = self.normWeight(refname,xsecDB,isSignal)
+        ftemp = ROOT.TFile.Open(firstfile)
         if not ftemp or ftemp.IsZombie():
-            print 'Could not open input file ',inFiles[0]
+            print 'Could not open input file ',firstfile
             sys.exit(1)
         keys=ftemp.GetListOfKeys()
         hkeys=[]
@@ -191,24 +237,54 @@ class Sample:
             outhists[kname] = outobj
         ftemp.Close()
         del ftemp
-        inFiles = inFiles[1:]
+        if inFileIsDict:
+            inFiles[refname] = inFiles[refname][1:]
+        else:
+            inFiles = inFiles[1:]
 
         # merge with histograms from other files
-        for fname in inFiles:
-            ftemp = ROOT.TFile.Open(fname)
-            if not ftemp or ftemp.IsZombie():
-                print 'Could not open input file ',fname
-                sys.exit(1)
-            scale = self.normWeight(fname,xsecDB,isSignal)
-            for k in hkeys:
-                h = ftemp.Get(k)
-                if not h:
-                    print 'Could not extract histogram',k,'in file',fname
-                    sys.exit(1)
-                outhists[k].Add(h,scale)
+        if inFileIsDict:
+            for (did, flist ) in inFiles.iteritems():
+                scale = 1.
+                if self.config.doNormWeight: scale = self.normWeight(did,xsecDB,isSignal)
+                for fname in flist:
+                    ftemp = ROOT.TFile.Open(fname)
+                    if not ftemp or ftemp.IsZombie():
+                        print 'Could not open input file ',fname
+                        sys.exit(1)
+                        pass
+                    for k in hkeys:
+                        h = ftemp.Get(k)
+                        if not h:
+                            print 'Could not extract histogram',k,'in file',fname
+                            sys.exit(1)
+                            pass
+                        outhists[k].Add(h,scale)
+                        pass
+                    ftemp.Close()
                 pass
-            ftemp.Close()
-            del ftemp
+            pass
+        else:
+            for fname in inFiles:
+                ftemp = ROOT.TFile.Open(fname)
+                if not ftemp or ftemp.IsZombie():
+                    print 'Could not open input file ',fname
+                    sys.exit(1)
+                    pass
+                scale = 1.
+                if self.config.doNormWeight: scale = self.normWeight(fname,xsecDB,isSignal)
+                for k in hkeys:
+                    h = ftemp.Get(k)
+                    if not h:
+                        print 'Could not extract histogram',k,'in file',fname
+                        sys.exit(1)
+                        pass
+                    outhists[k].Add(h,scale)
+                    pass
+                ftemp.Close()
+                del ftemp
+            pass
+
         outFile.cd()
         for h in outhists.itervalues():
             if not isSignal:
@@ -221,8 +297,18 @@ class Sample:
     def ModifyAndMerge(self,mergename="",dbName="ZeroLeptonRun2/data/MCBackgroundDB.dat",isSignal=False,update=False):
         """Merge all input files and rename trees with modifications in NTVars."""
         if len(self.files) == 0: return
+        filesIsDict = False
+        if type(self.files) == dict: filesIsDict = True
+
+        # list of all files
+        if filesIsDict:
+            allfiles = []
+            for flist in self.files.itervalues(): allfiles += flist
+        else:
+            allfiles = self.files
+
         # list of trees in the input files
-        treenames = self.getListOfTrees(self.files[0])
+        treenames = self.getListOfTrees(allfiles[0])
 
         # create C++ merger
         xsecDB = ROOT.SUSY.CrossSectionDB(dbName, True)
@@ -236,7 +322,8 @@ class Sample:
         else:
             newfile = ROOT.TFile.Open(mergename,"RECREATE")
 
-        self.MergeCounters(newfile, self.files,xsecDB,isSignal)
+        # merge counters
+        self.MergeCounters(newfile, self.files, xsecDB, isSignal)
 
         # Build a list of output trees and files that should be merged into it
         # Needed for signal grid as we have one tree name per mc channel
@@ -245,32 +332,90 @@ class Sample:
         # key = output tree name  value = (TTree, input-tree-name, list-of-files)
         outTreeDict = {} 
         for inTree in treenames:
-            for filename in self.files:
-                ds = None
-                if self.config.doQCD or self.config.doData: 
-                    ds = 1
-                else:
-                    ds = self.extractChannelFromFilename(filename)
-                if not ds:
-                    print 'Could not identify channel number for ',filename
-                    sys.exit(1)
-                newtname=self.getNewTreeName(inTree, ds)
-                if outTreeDict.has_key(newtname):
-                    outTreeDict[newtname][2].append(filename)
-                else:
-                    outTree = ROOT.TTree(newtname,'0-lepton small ntuple')
-                    outTreeDict[newtname] = (outTree, inTree, [filename])
+            if filesIsDict:
+                # we read a dictionary of (did, list-of-files), extract 
+                # mc channel from dataset name
+                for (did,filelist) in self.files.iteritems():
+                    ds = None
+                    if self.config.doQCD or self.config.doData: 
+                        ds = 1
+                    else:
+                        ds = self.extractChannelFromFilename(did)
+                        pass
+
+                    if not ds:
+                        print 'Could not identify channel number for ',did
+                        sys.exit(1)
+                        pass
+
+                    if not self.config.doData and not isSignal and xsecDB.rawxsect(ds) < 0.:
+                        print 'No cross-section for sample',ds,'skip file',did
+                        continue
+
+                    newtname=self.getNewTreeName(inTree, ds)
+                    if outTreeDict.has_key(newtname):
+                        for f in filelist: outTreeDict[newtname][2].append(f)
+                    else:
+                        outTree = ROOT.TTree(newtname,'0-lepton small ntuple')
+                        outTreeDict[newtname] = (outTree, inTree, filelist)
+
+                    pass
+            else:
+                # we read files from a list, extract channel number from
+                # filename
+                for filename in self.files:
+                    ds = None
+                    if self.config.doQCD or self.config.doData: 
+                        ds = 1
+                    else:
+                        ds = self.extractChannelFromFilename(filename)
+                        pass
+
+                    if not ds:
+                        print 'Could not identify channel number for ',filename
+                        sys.exit(1)
+                        pass
+
+                    if not self.config.doData and not isSignal and xsecDB.rawxsect(ds) < 0.:
+                        print 'No cross-section for sample',ds,'skip file',filename
+                        continue
+
+                    newtname=self.getNewTreeName(inTree, ds)
+                    if outTreeDict.has_key(newtname):
+                        outTreeDict[newtname][2].append(filename)
+                    else:
+                        outTree = ROOT.TTree(newtname,'0-lepton small ntuple')
+                        outTreeDict[newtname] = (outTree, inTree, [filename])
 
         # now do the real merging
         for outTreeName, (outTree, inTreeName, filelist) in outTreeDict.iteritems():
             inList = ROOT.FilterUpdateMergeFileList()
             for name in filelist:
                 inList.add(name)
-            # currently ExtraVars only implemented in SR not CR/VR
-            if inTreeName.startswith('CR') or inTreeName.startswith('VR'):
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, False)
-            else:
-                merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, self.config.mergeExtraVars)
+
+            doExtraVars = self.config.mergeExtraVars
+            doRJigsawVars = self.config.mergeRJigsawVars
+            doCRWTVars = self.config.mergeCRWTVars
+            doCRZVars = self.config.mergeCRZVars
+            doCRYVars = self.config.mergeCRYVars
+            # check that the first file in the list has the requested block
+            for name in filelist:
+                testf = ROOT.TFile.Open(name)
+                if not testf or testf.IsZombie(): continue
+                testt = testf.Get(inTreeName)
+                if not testt: continue
+                if doExtraVars and not testt.GetBranch('NTExtraVars'):
+                    doExtraVars = False
+                if doRJigsawVars and not testt.GetBranch('NTRJigsawVars'):
+                    doRJigsawVars = False
+                if doCRWTVars and not testt.GetBranch('NTCRWTVars'):
+                    doCRWTVars = False
+                if doCRZVars and not testt.GetBranch('NTCRZVars'):
+                    doCRZVars = False
+                if doCRYVars and not testt.GetBranch('NTCRYVars'):
+                    doCRYVars = False
+                break
+            merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doRJigsawVars, doCRWTVars, doCRZVars, doCRYVars)
             newfile.cd()
             outTree.Write()
 
@@ -283,6 +428,7 @@ if __name__ == '__main__':
     #config = parseCmdLine(sys.argv[1:])
 
     # Load RootCore libs
+    ROOT.gROOT.SetBatch()
     ROOT.gROOT.ProcessLine(".x $ROOTCOREDIR/scripts/load_packages.C")
     print 'Packages loaded'
 
@@ -291,6 +437,10 @@ if __name__ == '__main__':
         from mc12_8TeV_MCSampleList import *
     elif config.prefix == 'mc14_13TeV':
         from mc14_13TeV_MCSampleList import *
+    elif config.prefix == 'mc15_13TeV':
+        from mc15_13TeV_MCSampleList import *
+    elif config.prefix == 'mc15_week1':
+        from mc15_13TeV_week1_MCSampleList import *
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)
@@ -308,15 +458,22 @@ if __name__ == '__main__':
         AllSamples.append(Top)
         AllSamples.append(WMassiveCB)
         AllSamples.append(ZMassiveCB)
+        AllSamples.append(DB) 
         AllSamples.append(QCD)
         AllSamples.append(GAMMAMassiveCB)
 
+    #if config.doZLO==True:
+    #    ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
+    #    AllSamples.append(ZLO)
 
     if config.doData==True:
+        # Run 1 streams
         DataJetTauEtmiss = Sample('Data',['JetTauEtmiss'],config.inputfile_data,config,Extraname="JetTauEtmiss")
         DataMuon = Sample('Data',['Muon'],config.inputfile_data,config,Extraname="Muon")
         DataEgamma = Sample('Data',['Egamma'],config.inputfile_data,config,Extraname="Egamma")
-        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma]
+        # Run 2 stream
+        DataMain = Sample('Data',['Main'],config.inputfile_data,config,Extraname="Main")
+        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma,DataMain]
         
     if config.doQCD==True:
         QCDdd1 = Sample('QCDdd',['JetTauEtmiss'],config.inputfile_qcd,config)

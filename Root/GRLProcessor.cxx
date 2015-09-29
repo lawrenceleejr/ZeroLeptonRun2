@@ -13,18 +13,21 @@
 #include <string>
 
 GRLProcessor::GRLProcessor(const char *name)
-  : cafe::Processor(name), m_GRLtool(0)
+  : cafe::Processor(name), m_GRLtool(0), m_passAll(false)
 {
   cafe::Config config(name);
   std::string GRLXMLFile = config.get("GRLFile","");
-  bool verbose = config.get("verbose",false);
-  m_GRLtool = new GoodRunsListSelectionTool("cafeGRL");
-  std::vector<std::string> GRLXMLs;
-  GRLXMLs.push_back(GRLXMLFile);
-  m_GRLtool->setProperty("GoodRunsListVec",GRLXMLs).ignore();
-  m_GRLtool->setProperty("VerboseDetStatus",verbose).ignore();
-  m_GRLtool->initialize().ignore();
-  if ( verbose ) m_GRLtool->getGRLCollection()->Summary();
+  m_passAll = config.get("passAll",false);
+  if ( ! m_passAll) {
+    bool verbose = config.get("verbose",false);
+    m_GRLtool = new GoodRunsListSelectionTool("cafeGRL");
+    std::vector<std::string> GRLXMLs;
+    GRLXMLs.push_back(GRLXMLFile);
+    m_GRLtool->setProperty("GoodRunsListVec",GRLXMLs).ignore();
+    m_GRLtool->setProperty("VerboseDetStatus",verbose).ignore();
+    m_GRLtool->initialize().ignore();
+    if ( verbose ) m_GRLtool->getGRLCollection()->Summary();
+  }
 }
 GRLProcessor::~GRLProcessor()
 {
@@ -37,7 +40,7 @@ bool GRLProcessor::processEvent(xAOD::TEvent& event)
   if( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) return true;
 
   bool* passGRL = new bool(true);
-  *passGRL = m_GRLtool->passRunLB(*eventInfo);
+  if ( !m_passAll) *passGRL = m_GRLtool->passRunLB(*eventInfo);
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
   RETURN_CHECK("GRLProcessor::processEvent",store->record<bool>(passGRL,"passGRL"));

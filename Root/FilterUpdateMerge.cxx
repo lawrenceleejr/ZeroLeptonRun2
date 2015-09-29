@@ -12,6 +12,7 @@
 FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB): 
   m_xsecDB(xsecDB),
   addExtraVars(false),
+  addRJigsawVars(false),
   addCRZVars(false),
   addCRWTVars(false),
   addCRYVars(false),
@@ -25,7 +26,9 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
 void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
 				 const std::vector<std::string>& inFiles, 
 				 bool isSignal, bool doXSecNormalisation, 
-				 bool doFiltering, bool doExtraVars)
+				 bool doFiltering, bool doExtraVars, 
+				 bool doRJigsawVars, bool doCRWTVars, 
+				 bool doCRZVars, bool doCRYVars)
 {
   // book output tuple variables
   NTVars outVars;
@@ -37,6 +40,18 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   NTExtraVars inExtraVars, outExtraVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
 
+  NTRJigsawVars inRJigsawVars, outRJigsawVars;
+  if ( doRJigsawVars ) bookNTRJigsawVars(outTree,outRJigsawVars);
+
+  NTCRWTVars inCRWTVars, outCRWTVars;
+  if ( doCRWTVars ) bookNTCRWTVars(outTree,outCRWTVars);
+
+  NTCRZVars inCRZVars, outCRZVars;
+  if ( doCRZVars ) bookNTCRZVars(outTree,outCRZVars);
+
+  NTCRYVars outCRYVars;
+  if ( doCRYVars ) bookNTCRYVars(outTree,outCRYVars);
+
   // read, update, filter, copy
   unsigned int previousRun = 0;
   float rel_uncertainty = 0.;
@@ -44,6 +59,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   float xsec = 0.;
   NTVarsRead inVars;
   NTReclusteringVarsRead inRTVars;
+  NTCRYVarsRead inCRYVars;
   for ( std::size_t i = 0; i < inFiles.size(); ++i ){
     TFile* f = TFile::Open(inFiles[i].c_str());
     if ( !f || f->IsZombie() ) throw std::runtime_error("Could not open "+inFiles[i]);
@@ -52,13 +68,21 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_PP_Mass);
+    if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
+    if ( doCRZVars ) tree->GetBranch("NTCRZVars")->SetAddress(&inCRZVars.lep1Pt);
+    if ( doCRYVars) inCRYVars.setAddresses(tree);
 
     // loop over entries
-    for ( size_t j = 0; j < tree->GetEntries(); ++j ) {
+    for ( size_t j = 0; j < static_cast<size_t>(tree->GetEntries()); ++j ) {
       tree->GetEntry(j);
       outVars = inVars.ntv;
       outRTVars = inRTVars.RTntv;
+      outCRYVars = inCRYVars.ntv;
       if ( doExtraVars) outExtraVars = inExtraVars;
+      if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
+      if ( doCRWTVars) outCRWTVars = inCRWTVars;
+      if ( doCRZVars) outCRZVars = inCRZVars;
 
       if ( doFiltering  && !acceptEvent(inVars.ntv) ) continue;
 
@@ -73,7 +97,8 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
 	  if ( inVars.ntv.RunNumber != previousRun ) {
 	    rel_uncertainty = m_xsecDB->rel_uncertainty(inVars.ntv.RunNumber);
 	    xsec = m_xsecDB->xsectTimesEff(inVars.ntv.RunNumber);
-	    if ( inVars.ntv.RunNumber >= 147910 and inVars.ntv.RunNumber <= 147917 ) {
+	    if ( ( inVars.ntv.RunNumber >= 147910 and inVars.ntv.RunNumber <= 147917 ) ||
+		 ( inVars.ntv.RunNumber >= 361020 and inVars.ntv.RunNumber <= 361032 )   )  {
 	      std::cout << " JZxW sample, normalize with # of evts instead of sum weights " << std::endl;
 	      sumW = m_xsecDB->process(inVars.ntv.RunNumber).stat();
 	    }

@@ -73,49 +73,98 @@ def updateMap(processMap,xsecDB,key,nb_of_events,weight):
     pass
     return processMap
 
-def getMCInfo(config,isSignal=False):
+
+def processFile(config,fname,channel,xsecDB,myMap):
+    if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
+    tfile=ROOT.TFile.Open(fname)
+    hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
+    if hist!=None and hist.GetNbinsX()>=2:
+        # if not channel in hsum:
+        #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
+        # else:
+        #     hsum[channel].Add(hist)
+        nb_of_events=0
+        weight=0
+        if config.isSignal==False:
+            nb_of_events=hist.GetBinContent(1)
+            weight=hist.GetBinContent(2)
+            updateMap(myMap,xsecDB,channel,nb_of_events,weight)
+        else:
+            """
+            gets complicated with derivations: from JobBookeeping we
+            can extract the sum of weights for all events before skimming
+            but we don't know for which hardproc. All we can do is calculate
+            the average efficiency of the derivation over hardprocs and
+            rescale for that. Would be OK for simplified models but can
+            be really wrong if many very different processes are present.
+            """
+            hist2=tfile.Get('Counter_for_ZeroLeptonCounterSRAll')
+            sumwini = hist.GetBinContent(2)
+            sumwkept = 0.
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                sumwkept+=hist2.GetBinContent(2,ybin)
+                pass
+            scale = sumwini/sumwkept
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                nb_of_events=hist2.GetBinContent(1,ybin)
+                weight=hist2.GetBinContent(2,ybin)
+                if nb_of_events>0:
+                    updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events*scale,weight*scale)
+                    pass
+                pass
+            pass
+        pass
+    else:
+        print "WARNING: file ignored ", fname 
+        pass
+    tfile.Close()
+
+def extractChannel(name):
+    for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
+        if prefix in name:
+            return int(name.split(prefix)[1].split('.')[0])
+    return None
+
+
+def getMCInfo(config):
     myMap={}
     xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile)
 
     lds = getMCSampleList(config.lds)
     hsum = {}
-    for file in open(config.inputfilename,'read'):    
-        file.strip()
-        if len(file) == 0: continue
-        if file.startswith('#'): continue
-        file = file.strip()
 
-        # get dataset number from input file
-        channel = int(file.split(".")[int(config.NB)])
-        if len(lds) and not channel in lds: continue
-        
-        # get weight from histogram
-        fname = file
-        if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
-        tfile=ROOT.TFile.Open(fname)
-        hist=tfile.Get(config.histname)
-        if hist!=None and hist.GetNbinsX()>=2:
-            # if not channel in hsum:
-            #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
-            # else:
-            #     hsum[channel].Add(hist)
-            nb_of_events=0
-            weight=0
-            if config.isSignal==False:
-                nb_of_events=hist.GetBinContent(1)
-                weight=hist.GetBinContent(2)
-                updateMap(myMap,xsecDB,channel,nb_of_events,weight)
-            else:                    
-                for ybin in range(1,hist.GetNbinsY()+1):
-                    nb_of_events=hist.GetBinContent(1,ybin)
-                    weight=hist.GetBinContent(2,ybin)
-                    if nb_of_events>0 : updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events,weight)
-            tfile.Close()
-
-        else:
-            print "WARNING: file ignored ", file 
+    if config.inputfilename.endswith('.pkl'):
+        import pickle
+        if not os.path.isfile(config.inputfilename):
+            print "can't read file",config.inputfilename
+            sys.exit()
             pass
-        pass
+        picklefile = open(config.inputfilename,'rb')
+        myfiles = pickle.load(picklefile)
+        picklefile.close()
+
+        for (did,flist) in myfiles.iteritems():
+            channel = extractChannel(did)
+            for fname in flist:
+                processFile(config,fname,channel,xsecDB,myMap)
+    else:
+        for fname in open(config.inputfilename,'read'):    
+            fname.strip()
+            if len(fname) == 0: continue
+            if fname.startswith('#'): continue
+            fname = fname.strip()
+
+            # get dataset number from input file
+            channel = int(fname.split(".")[int(config.NB)])
+            if len(lds) and not channel in lds: continue
+
+            if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
+                print 'No cross section for sample',channel,'skip file',fname
+                continue
+
+            # get weight from histogram
+            processFile(config,fname,channel,xsecDB,myMap)
+
 
     f=open(config.outputfilename,'w')
     ftex=open(config.outputfilename.split('.')[0]+'.tex','w')
@@ -162,7 +211,7 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathca
         for key,info in sorted(myMap.items()):
             channel = key[0]
             hardproc = key[1]
-            line=str(channel)+" "+str(hardproc)+" "+str(xsecDB.rawxsect(channel,hardproc))+" "+str(xsecDB.kfactor(channel,hardproc))+" "+str(xsecDB.efficiency(channel,hardproc))+" "+str(xsecDB.rel_uncertainty(channel,hardproc))+" "+str(info[1])+" "+str(info[0])#not very optimal
+            line=str(channel)+" "+str(hardproc)+" "+str(xsecDB.rawxsect(channel,hardproc))+" "+str(xsecDB.kfactor(channel,hardproc))+" "+str(xsecDB.efficiency(channel,hardproc))+" "+str(xsecDB.rel_uncertainty(channel,hardproc))+" "+str(info[1])+" "+str(int(round(info[0])))#not very optimal
             #print line
             f.write(line+"\n")
 
@@ -184,8 +233,6 @@ Dataset ID & Dataset name & $\sigma \times \epsilon$ [pb] & $N_{gen}$ & $\mathca
 def parseCmdLine(args):
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option("--histname", dest="histname", help="histogram name containing stat and suw weight information",
-                      default="Counter_JobBookeeping_JobBookeeping")
     parser.add_option("--xsecfile", dest="xsecfile", help="cross section file", default="SUSYTools/data/susy_crosssections_13TeV.txt")
     parser.add_option("--input", dest="inputfilename", help="List of input filenames", default="")
     parser.add_option("--output", dest="outputfilename", help="output filename", default="MCBackgroundDB.dat")
@@ -193,7 +240,7 @@ def parseCmdLine(args):
     parser.add_option("--lds", dest="lds", help="List of dataset numbers like 105200, lW, lTop", default="")
     parser.add_option("--indir", dest="indir", help="Input directory (can be used instead of --input)", default="")
     parser.add_option("--isSignal", dest="isSignal", help="isSignal",action='store_true', default=False)
-    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc14_13TeV") 
+    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc15_13TeV") 
     (config, args) = parser.parse_args(args)
     return config
 
@@ -214,6 +261,10 @@ if __name__ == '__main__':
         import mc12_8TeV_MCSampleList as MCSampleList
     elif config.prefix == 'mc14_13TeV':
         import mc14_13TeV_MCSampleList as MCSampleList
+    elif config.prefix == 'mc15_13TeV':
+        import mc15_13TeV_MCSampleList as MCSampleList
+    elif config.prefix == 'mc15_week1':
+        import mc15_13TeV_week1_MCSampleList as MCSampleList
     else:
         print 'Unsupported mc production type',config.prefix
         sys.exit(1)

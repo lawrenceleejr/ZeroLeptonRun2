@@ -32,19 +32,24 @@ private:
   TTree* m_tree;
   std::string m_stringRegion;
   bool m_doSmallNtuple;
+  bool m_fillTRJigsawVars;
+  bool m_fillReclusteringVars;
+  bool m_doRecl;
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
+  NTRJigsawVars m_rjigsawntv;
   NTReclusteringVars m_RTntv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;
 
   std::string m_suffix;
+  std::string m_suffixRecl;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;

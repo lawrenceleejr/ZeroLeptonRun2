@@ -11,15 +11,27 @@
 
 #include <vector>
 #include <stdexcept>
+#include <fstream>
 
 MCInfoProcessor::MCInfoProcessor(const char *name): 
-  cafe::Processor(name), m_isSignal(false), m_mcDB(0)
+  cafe::Processor(name),
+  m_truthPKey(),
+  m_isSignal(false),
+  m_mcDB(0),
+  m_buildDB(false),
+  m_runNumber(0),
+  m_channelNumber(0),
+  m_eventCounter(0),
+  m_hardproc()
 {
   cafe::Config config(name);
   m_isSignal = config.get("IsSignal",false);
+  m_truthPKey = config.get("TruthParticleContainerKey","xxxx");
   std::string mcDBFile = config.get("MCDBFile","SUSYTools/data/mc12_8TeV/");
   bool mcDBextended = config.get("MCDBExtended",false);
   m_mcDB = new SUSY::CrossSectionDB(mcDBFile,mcDBextended);
+
+  m_buildDB = config.get("BuildDB",false);
 }
 
 
@@ -31,7 +43,7 @@ bool MCInfoProcessor::processEvent(xAOD::TEvent& event)
 
   const xAOD::EventInfo* eventInfo = 0;
   if ( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) throw std::runtime_error("Could not retrieve EventInfo");
-  //uint32_t mc_channel_number = eventInfo->mcChannelNumber();
+  uint32_t mc_channel_number = eventInfo->mcChannelNumber();
 
   unsigned int* finalstate = new unsigned int;
   *finalstate = 0;
@@ -46,13 +58,29 @@ bool MCInfoProcessor::processEvent(xAOD::TEvent& event)
     throw std::runtime_error("Could not store HarProcess");
   }
 
+  if ( m_buildDB ) {
+    if ( m_eventCounter == 0 ){
+      m_runNumber = eventInfo->runNumber();
+      m_channelNumber = mc_channel_number;
+    }
+    else {
+      // sanity checks
+      if ( m_runNumber != eventInfo->runNumber() ) throw std::logic_error("HardProcDBBuider cannot run on multiple samples");
+      if ( m_channelNumber != mc_channel_number ) throw std::logic_error("HardProcDBBuider cannot run on multiple samples");
+    }
+    m_eventCounter++;
+    if ( m_hardproc.find(*finalstate) == m_hardproc.end() ) m_hardproc[*finalstate] = 0;
+    m_hardproc[*finalstate] ++;
+  }
+
+
   return true;
 }
 
 unsigned int MCInfoProcessor::hardProcess(xAOD::TEvent& event) const
 {
   const xAOD::TruthParticleContainer* mcparticles = 0;
-  if ( ! event.retrieve(mcparticles, "TruthParticle").isSuccess() ) throw std::runtime_error("MCInfoProcessor::hardProcess :: Could not retrieve TruthParticleContainer with key TruthParticle");
+  if ( ! event.retrieve(mcparticles, m_truthPKey).isSuccess() ) throw std::runtime_error("MCInfoProcessor::hardProcess :: Could not retrieve TruthParticleContainer with key "+m_truthPKey);
   const xAOD::TruthParticle*  firstSUSY = 0;
   const xAOD::TruthParticle*  secondSUSY = 0;
   for ( xAOD::TruthParticleContainer::const_iterator it = mcparticles->begin();
@@ -64,6 +92,7 @@ unsigned int MCInfoProcessor::hardProcess(xAOD::TEvent& event) const
 	(id>2000010 && id<2000017) || // sleptonR
 	(id>1000020 && id<1000040)    // gauginos
 	) {
+      //std::cout << " SUSY particle found " << id << " " <<  ( (*it)->hasProdVtx() ? (*it)->prodVtx()->incomingParticle(0)->absPdgId() : 0 ) << std::endl;
       if ( ((*it)->hasProdVtx() && (*it)->prodVtx()->incomingParticle(0)->absPdgId() < 1000000 )   // SUSY with SM parents
 	   || !(*it)->hasProdVtx() // ugly but happens in Herwig++
 	   ) {
@@ -123,6 +152,32 @@ void MCInfoProcessor::normWeights(xAOD::TEvent& event,
   }
 }
 
+void MCInfoProcessor::finish()
+{
+  if ( m_buildDB ) {
+    std::ofstream  jsonOut("harproc.json");
+    jsonOut << "{" << std::endl;
+    jsonOut << " \"runNumber\": " << m_runNumber << ","  << std::endl;
+    jsonOut << " \"channelNumber\": " << m_channelNumber << ","  << std::endl;
+    jsonOut << " \"hardProcCounters\": [" << std::endl;
+    bool first = true;
+    for ( auto& item : m_hardproc ) {
+      if ( first ) {
+	first = false;
+      }
+      else {
+	jsonOut << ",";
+      }
+      jsonOut << "    {" << std::endl;
+      jsonOut << "      \"finaleState\": " << item.first << ","  <<std::endl;
+      jsonOut << "      \"count\": " << item.second <<std::endl;
+      jsonOut << "    }";
+    }
+    jsonOut << std::endl << "  ]" << std::endl;
+    jsonOut << "}" << std::endl;
+    jsonOut.close();
+  }
+}
 
 
 ClassImp(MCInfoProcessor);

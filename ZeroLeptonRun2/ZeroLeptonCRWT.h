@@ -30,16 +30,20 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& met, int lepsign);
+  void FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& met, int lepsign,
+		    float lepptvarcone20, float lepptvarcone30, float leptopoetcone20);
 
 
   TTree* m_tree;
   std::string m_stringRegion;
   bool m_doSmallNtuple;
+  bool m_fillTRJigsawVars;
+  bool m_fillReclusteringVars;
+  bool m_doRecl;
   bool m_IsData;
   bool m_IsTruth;
   bool m_IsSignal;
-  bool m_UseSystematics;
+  bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
   bool m_isVR;
   bool m_isMuonChannel;
@@ -48,11 +52,13 @@ private:
   NTVars m_ntv;
   NTReclusteringVars m_RTntv;
   NTExtraVars m_extrantv;
+  NTRJigsawVars m_rjigsawntv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;
   NTCRWTVars m_crwtntv;
 
   std::string m_suffix;
+  std::string m_suffixRecl;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;

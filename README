@@ -9,11 +9,18 @@ The cafe config file is in ZeroLeptonRun2/config/zerolepton.config, you can
 copy it and modify it but for testing it is easier to just overwrite some 
 configurations from the command line like:
 
-cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: root://eosatlas.cern.ch//eos/atlas/user/l/lduflot/atlasreadable/datafiles/mc14_13TeV.110401.PowhegPythia_P2012_ttbar_nonallhad.merge.DAOD_SUSY1.e2928_s1982_s2008_r5787_r5853_p1872/DAOD_SUSY1.05248705._000028.pool.root.1
+for mc15 / data 15 :
 
-This run a simple job with no systematics. A preliminary implementation of
-systematics that adds a tree for every systematics uses the 
-zerolepton_with_syst.config  config file.
+cafe ZeroLeptonRun2/config/zerolepton.config Events: 100 Input: //eos/atlas/atlasdatadisk/rucio/mc15_13TeV/6d/97/DAOD_SUSY1.05556029._000058.pool.root.1
+
+This run a simple job with no systematics. For systematics, turn 
+
+Global.DoSystematics: TRUE
+
+and adjust the systematics to run by changing the wilcard patterns (space
+separated) in Global.SystematicsSelection:
+
+
 
 To run the truth code, an example is given below : 
 
@@ -29,7 +36,7 @@ ZeroLeptonRun2/python/makeDatasetList.py --help
 For example, 
 ZeroLeptonRun2/python/makeDatasetList.py --baseline
 
-will make the list of mc14_13TeV corresponding to the baseline samples.
+will make the list of mc15_13TeV corresponding to the baseline samples.
 
 
 
@@ -62,6 +69,10 @@ ntuples. The tool will extract the number of events processed and the
 total sum of MC weights from the Counter and write an extended 
 cross-section file that includes these informations.
 
+
+   4.1/ From mini-tuples on disk
+   -----------------------------
+
 For example, one can list all downloaded small tuples in a file input.list
 (the file path should allow to extract the dataset IDs) an do
 
@@ -70,6 +81,22 @@ ZeroLeptonRun2/python/getMCInfo.py --input input.list
 this will create MCBackgroundDB.dat (and .tex) in the local directory.
 You need to have the code compiled as it uses C++ code from SUSYTools.
 
+
+   4.2/ From mini-tuples on (local) grid storage element
+   -----------------------------------------------------
+
+Alternatively, one may have subscribed the small ntuple datasets to a local
+grid storage element. In this case a simple list of the file URLs does not 
+allow to extract the dataset ID. A pickle file containing the datasets and 
+files need to be built. This tools uses rucio so it is in general better to 
+execute it from a fresh session.
+
+ZeroLeptonRun2/python/buildRSEFileList --rse grid_storage  dids
+
+or put the dataset names in a file and use --didfile. The resulting files.pkl
+can be used with the getMCInfo.py commands (don't change the pkl extension):
+
+ZeroLeptonRun2/python/getMCInfo.py --prefix mc15_13TeV --input files.pkl --xsecfile SUSYTools/data/susy_crosssections_13TeV.txt
 
 
 
@@ -85,7 +112,62 @@ Where the --dbName option points to an updated cross-section database built
 with the previous step (needed as the previous steps adds the number of events
 processed and corresponding sum weights.
 
-The file path of input files for MC should allow to retreive the dataset ID,
- so this is currently not possible for files in rucio.
+The file path of input files for MC should allow to retreive the dataset ID, 
+as for mini-tuple datasets downloaded on disk. Alternaltively, one can also 
+point to a pickle file produced as explained in 4.2 if the dataset are on a
+local grid storage element (keep the '.pkl' file extension).
+
 
 You need to have the code compiled as it uses C++ code.
+
+
+
+6/ Cleaning cuts:
+================
+
+Starting version ZeroLeptonRun2-00-00-36, the cleaning cuts have been removed
+(except detector status) and a flag is added in the "cleaning" word
+
+SR:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad MET muon
+bit 2 : set if   bad Tile veto
+bit 3 : set if   negative energy cell veto
+bit 4 : set if   leading jet timing (not used in Run 1)
+bit 5 : set if   chfTileVeto (8TeV)
+bit 6 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&3)==0'
+
+
+CRWT:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&15)==0'
+
+CRZ:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad Tile veto
+bit 4 : set if   negative energy cell veto
+bit 5 : set if   leading jet timing (not used in Run 1)
+bit 6 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&7)==0'
+
+CRY:
+bit 0 : set if   bad jet veto
+bit 1 : set if   bad muon
+bit 2 : set if   cosmic muon
+bit 3 : set if   bad MET muon
+bit 4 : set if   bad Tile veto
+bit 5 : set if   negative energy cell veto
+bit 6 : set if   leading jet timing (not used in Run 1)
+bit 7 : set if   chfTileVeto (8TeV)
+bit 8 : set if   chfVeto (not used in Run 1)
+suggested requirement:  '(cleaning&15)==0'
