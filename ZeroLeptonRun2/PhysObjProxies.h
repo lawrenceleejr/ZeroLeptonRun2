@@ -22,10 +22,11 @@ class JetProxy: public TLorentzVector
 {
  public:
   JetProxy();
-  JetProxy(const TLorentzVector& in, bool isBaseline, bool isBad, bool passOR, bool isBJet);
+  JetProxy(const TLorentzVector& in, bool isBaseline, bool isSignal, bool isBad, bool passOR, bool isBJet);
   JetProxy(const xAOD::Jet* jet);
 
   inline bool isBaseline() const {return m_isBaseline;}
+  inline bool isSignal() const {return m_isSignal;}
   inline bool isBad() const {return m_isBad;}
   inline bool isBJet() const {return m_isBJet;}
   inline bool passOVerlapRemoval() const {return m_passOR;}
@@ -33,13 +34,14 @@ class JetProxy: public TLorentzVector
 
  private:
   bool m_isBaseline;
+  bool m_isSignal;
   bool m_isBad;
   bool m_passOR;
   bool m_isBJet;
   const xAOD::Jet* m_jet;
 
 public:
-    ClassDef(JetProxy,0);
+    ClassDef(JetProxy,1);
 };
 
 
