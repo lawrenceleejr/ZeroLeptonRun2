@@ -125,11 +125,11 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
 bool FilterUpdateMerge::acceptEvent(const NTVars& ntv) const
 {
   // Custom function which can be used to filter events
-  if (ntv.MeffIncl < 700000.) return false;
-  if (ntv.jetPt.size() < 2) return false;
-  if (ntv.jetPt[1] < 60000.) return false;
-  if (ntv.MET < 160000.) return false;
-  if (ntv.jetPt[0] < 130000.) return false;
+  if (ntv.MeffIncl < 800.) return false;
+  //if (ntv.jetPt.size() < 2) return false;
+  //if (ntv.jetPt[1] < 60000.) return false;
+  if (ntv.MET < 150.) return false;
+  if (ntv.jetPt[0] < 100.) return false;
   
   return true;
 }

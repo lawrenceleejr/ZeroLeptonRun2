@@ -1,7 +1,11 @@
+29-Sep-2015 Laurent Duflot
+	* FilterUpdateMerge.cxx: update filtering cuts with values in GeV
+	* mc15_13TeV_25ns_SM_p2419.ds: update list with latest production
+
 28-Sep-2015 Geraldine Conti
 	* included CR3L in the config file
 	* Added reclustering for VRWT in config file
-	
+
 25-Sep-2015 Laurent Duflot
 	* data/data15_13TeV_p2419.ds: add current list of p2419 data samples
 	* JobBookeeper, BuildSUSYObjects: remove extra TEvent to read metadata
