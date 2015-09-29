@@ -1,4 +1,4 @@
-# Signal Region Definition
+# Signal Region Definition 
 cutEtMiss=50000.
 cutEtMiss1Jet=100000.
 
@@ -13,6 +13,7 @@ cutRJigsawJetPt=30000.
 
 cutDeltaPhi=0.4
 cutDeltaPhi2=0.2
+
 
 cutMapSR2jLoose=true
 cutMapSR2jMedium=true
@@ -77,16 +78,16 @@ cutMapSR6jTight=true
 cutMapSR6jVeryTight=true
 cutMetOverMeffSR6jLoose=0.2
 cutMetOverMeffSR6jMedium=0.2
-cutMetOverMeffSR6jTight=0.25
-cutMetOverMeffSR6jVeryTight=0.15
+cutMetOverMeffSR6jTight=0.25 
+cutMetOverMeffSR6jVeryTight=0.15 
 cutMeffSR6jLoose=900
 cutMeffSR6jMedium=1200
 cutMeffSR6jTight=1500
 cutMeffSR6jVeryTight=1700
 cutMetOverMeffCRWT6jLoose=-1.
 cutMetOverMeffCRWT6jMedium=-1.
-cutMetOverMeffCRWT6jTight=-1.
-cutMetOverMeffCRWT6jVeryTight=-1.
+cutMetOverMeffCRWT6jTight=-1. 
+cutMetOverMeffCRWT6jVeryTight=-1. 
 cutMeffCRWT6jLoose=900
 cutMeffCRWT6jMedium=1200
 cutMeffCRWT6jTight=1300

@@ -35,9 +35,10 @@ private:
 
   TTree* m_tree;
   std::string m_stringRegion;
+  bool m_fillReclusteringVars;
+  bool m_doRecl;
   bool m_doSmallNtuple;
   bool m_fillTRJigsawVars;
-  bool m_fillReclusteringVars;
   bool m_IsData;
   bool m_IsSignal;
   bool m_IsTruth;
@@ -54,6 +55,7 @@ private:
   NTCRZVars m_crzntv;
 
   std::string m_suffix;
+  std::string m_suffixRecl;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;

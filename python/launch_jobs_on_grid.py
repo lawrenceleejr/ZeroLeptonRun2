@@ -66,6 +66,7 @@ def main():
     # find local file to explicitely include them on the prun command line
     rootCoreDir = os.environ['ROOTCOREBIN']
     localfiles = []
+    localfiles += findFiles('CDIFiles',('.root'))
     flpkgs = open(rootCoreDir+'/packages','r')
     for pkgname in flpkgs:
         pkgname = pkgname.split(':')[0]
@@ -153,7 +154,7 @@ def main():
             cafeconfig = config.configfile
 
         outputs = "o.root" 
-        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; unset ROOT_TTREECACHE_SIZE; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles  Output: o.root """ 
+        scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; unset ROOT_TTREECACHE_SIZE; ln -sf \${TestArea}/CDIFiles/13TeV . ; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles  Output: o.root """ 
 
         # Real data ?
         if "data11" in inDS or "data12" in inDS or "data15" in inDS: 
@@ -186,7 +187,7 @@ def main():
         # test special derivation tags
         if not 'Global.DerivationTag' in config.runopts:
             tag = inDS.split(".")[-1]
-            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377', 'p2384' ]
+            knowntags = [ 'p1872', 'p2353', 'p2363', 'p2372', 'p2375', 'p2377', 'p2384', 'p2419' ]
             found = False
             if not('TRUTH1' in inDS):
                 for t in knowntags:

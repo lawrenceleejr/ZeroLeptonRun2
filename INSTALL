@@ -1,9 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-#rcSetup Base,2.3.15
-#rcSetup SUSY,2.3.15a
-rcSetup Base,2.3.18
-#rcSetup SUSY,2.3.18b
+rcSetup SUSY,2.3.28
 
 ## the code for ZeroLeptonRun2 is at
 ## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
@@ -15,14 +12,10 @@ svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/Zero
 ## additional packages needed
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-07 cafe
 svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-02 JetSmearing
-git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.2; cd -
+git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.4.1; cd -;
+git clone https://github.com/kratsg/xAODJetReclustering.git
 
-
-svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-06-15 SUSYTools
-
-### from SUSYTools/doc/README
-rc checkout SUSYTools/doc/packages.txt
-
+#rc checkout $ROOTCOREDIR/../SUSYTools/doc/packages.txt
 
 # compile
 rc find_packages

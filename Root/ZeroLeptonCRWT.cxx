@@ -3,6 +3,7 @@
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PtOrder.h"
 
+#include "ZeroLeptonRun2/BosonTagging.h"
 
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
@@ -30,11 +31,13 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_tree(0), 
     m_stringRegion("CRWT_SRAll"), 
     m_doSmallNtuple(true),
-    m_fillTRJigsawVars(false),
+    m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
+    m_suffixRecl(""),
+    m_doRecl(false),
     m_DoSystematics(false),
     m_period(INVALID),
     m_isVR(false),
@@ -52,9 +55,11 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
-  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_suffixRecl = config.get("suffixRecl","");
+  m_doRecl = config.get("doRecl",false);
   m_IsTruth = config.get("IsTruth",false);
   m_DoSystematics = config.get("DoSystematics",false);
 
@@ -82,7 +87,7 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   m_cutVal.ReadCutValues(cutfile);
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
@@ -132,6 +137,8 @@ void ZeroLeptonCRWT::begin()
     m_counter = new Counter("ZeroLeptonCounter"+m_stringRegion,40,m_IsSignal);
     if(m_doSmallNtuple) m_tree = bookTree(sSR);
   }
+
+  if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
 
 }
 
@@ -258,9 +265,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
-  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
+  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl;
+  std::vector<float> vD2;
   if(! m_IsTruth){
   m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+  if(m_doRecl) m_physobjsFiller->FillJetReclProxies(good_jets_recl,vD2);
   }
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
@@ -307,6 +316,42 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   std::vector<TauProxy> baseline_taus, signal_taus;
   if(! m_IsTruth){
     m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
+  }
+
+  // Boson Tagging
+
+  std::vector<float> vReclJetMass ;
+  std::vector<float> vReclJetPt;
+  std::vector<float> vReclJetEta;
+  std::vector<float> vReclJetPhi;
+  std::vector<bool> visWtight ;
+  std::vector<bool> visWmedium ;
+  std::vector<bool> visZtight ;
+  std::vector<bool> visZmedium ;
+
+  if(m_doRecl){
+    for ( size_t j0=0; j0<good_jets_recl.size(); j0++){
+      vReclJetMass.push_back(good_jets_recl[j0].M());
+      vReclJetPt.push_back(good_jets_recl[j0].Pt());
+      vReclJetEta.push_back(good_jets_recl[j0].Eta());
+      vReclJetPhi.push_back(good_jets_recl[j0].Phi());
+
+      float jetpt = good_jets_recl[j0].Pt();
+      float jetm  = good_jets_recl[j0].M();
+      float jetD2 = vD2.at(j0);
+
+      BosonTagging BT;
+
+      bool isWmedium = BT.ReturnTag(1,jetpt,jetm,jetD2);
+      bool isWtight  = BT.ReturnTag(2,jetpt,jetm,jetD2);
+      bool isZmedium = BT.ReturnTag(3,jetpt,jetm,jetD2);
+      bool isZtight  = BT.ReturnTag(4,jetpt,jetm,jetD2);
+
+      visWmedium.push_back(isWmedium);
+      visWtight.push_back(isWtight);
+      visZmedium.push_back(isZmedium);
+      visZtight.push_back(isZtight);
+    }
   }
 
   // missing ET
@@ -403,6 +448,27 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   if ( !oneLepton ) return true;
   m_counter->increment(weight,incr++,"1 Lepton",trueTopo);
 
+  // lepton isolation 
+
+  float topoetcone20 = 0 ;
+  float ptvarcone30 = 0 ;
+  float ptvarcone20 = 0 ;
+
+  if(!m_IsTruth){
+    if(m_isElectronChannel && isolated_signal_electrons.size()==1){
+      topoetcone20 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
+      ptvarcone30  = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
+      ptvarcone20     = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
+    }
+
+    if(m_isMuonChannel && isolated_signal_muons.size()==1){
+      topoetcone20 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
+      ptvarcone30 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
+      ptvarcone20     = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
+    }
+  }
+
+
   // Apply Lepton scale factors
   float muSF = eventInfo->auxdecor<float>("muSF");
   if ( muSF != 0.f ) weight *= muSF;
@@ -415,18 +481,11 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     missingETPrime = missingETPrime + TVector2(leptonTLV.Px(),leptonTLV.Py());
   }
   else {
-    good_jets.push_back(JetProxy(leptonTLV,true,true,true,false));
+    good_jets.push_back(JetProxy(leptonTLV,true,true,true,true,false));
     std::sort(good_jets.begin(),good_jets.end(),PtOrder<JetProxy>);
   }
   double MissingEtPrime = missingETPrime.Mod();
   
-  // Negative-cell cleaning cut
-  bool HasNegCell = 0;
-  if(! m_IsTruth && systag == "" ){
-    m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
-  //out() << " NegCell " << HasNegCell << std::endl;
-
   // MT cut 
   double mt = std::sqrt( 2.*leptonTLV.Pt()*MissingEt * 
 			 (1.-(leptonTLV.Px()*missingET->Px() + leptonTLV.Py()*missingET->Py())/(leptonTLV.Pt()*MissingEt)) );
@@ -521,7 +580,6 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
-    m_proxyUtils.RJigsawInit();
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingETPrime.X(),
 					   missingETPrime.Y(),
@@ -571,7 +629,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
-    if ( ! m_IsData ) runnum = mc_channel_number;
+    if ( ! m_IsData  && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
@@ -607,8 +665,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       if ( !m_IsTruth && m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
       power2 *= 2;
       
-      // Negative-cell cleaning cut
-      if ( HasNegCell ) cleaning += power2;
+      // Negative-cell cleaning cut (no longer used)
       power2 *= 2;
 
       // average timing of 2 leading jets
@@ -627,17 +684,17 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0.,0.,m_IsTruth,baseline_taus,signal_taus);
 
-    if ( systag == "" ) {
+    if ( systag == ""  && !m_IsTruth) {
       std::vector<float>* p_systweights = 0;
       if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
       m_ntv.systWeights = *p_systweights;
     }
 
     if( !m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv, good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
 
-    FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge);
+    FillCRWTVars(m_crwtntv,leptonTLV,*missingET,leptonCharge,ptvarcone20,ptvarcone30,topoetcone20);
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
 
@@ -659,16 +716,26 @@ void ZeroLeptonCRWT::finish()
 }
 
 
-void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& metv, int lepsign)
+void ZeroLeptonCRWT::FillCRWTVars(NTCRWTVars& crwtvars, const TLorentzVector& lepton, const TVector2& metv, int lepsign,
+				  float ptvarcone20, float ptvarcone30, float topoetcone20)
 {
   crwtvars.Reset();
   crwtvars.lep1sign = lepsign;
   crwtvars.lep1Pt  = lepton.Pt() * 0.001;
   crwtvars.lep1Eta = lepton.Eta();
   crwtvars.lep1Phi = lepton.Phi();
+  crwtvars.lep1ptvarcone20 = ptvarcone20 ;
+  crwtvars.lep1ptvarcone30 = ptvarcone30 ;
+  crwtvars.lep1topoetcone20 = topoetcone20 ;
 
   double met = std::sqrt(metv.Px()*metv.Px()+metv.Py()*metv.Py());
   crwtvars.mt = std::sqrt(2.*lepton.Pt() * met * (1. - (lepton.Px()*metv.Px() + lepton.Py()*metv.Py())/(lepton.Pt()*met))) * 0.001;
+
+  TLorentzVector metTLV;
+  metTLV.SetPxPyPzE(metv.Px(),metv.Py(),0,met);
+  crwtvars.dphilMET = lepton.DeltaPhi(metTLV);
+
+  crwtvars.Weta = (lepton+metTLV).Eta() ;
 
   double wpx = lepton.Px()+metv.Px();
   double wpy = lepton.Py()+metv.Py();
