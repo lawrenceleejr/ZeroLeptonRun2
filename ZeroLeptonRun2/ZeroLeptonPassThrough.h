@@ -39,6 +39,7 @@ private:
   bool m_IsTruth;
   bool m_IsSignal;
   bool m_DoSystematics;
+  int  m_maxJetCut;
   ZeroLeptonRunPeriod m_period;
 
   NTVars m_ntv;

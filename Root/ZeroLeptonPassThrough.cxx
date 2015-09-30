@@ -66,6 +66,7 @@ ZeroLeptonPassThrough::ZeroLeptonPassThrough(const char *name)
 
   m_suffix = config.get("suffix","");
   m_buildTriggerJetAndMET = config.get("BuildTriggerJetAndMET",false);
+  m_maxJetCut             = config.get("MaxJetCut"            , 10e9);
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
@@ -442,16 +443,21 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
   std::map<TString,float> RJigsawVariables_hlt;
 
   if (  m_fillTRJigsawVars ) {
+    //    std::cout << "m_maxJetCut" << m_maxJetCut << std::endl;
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingET->X(),
 					   missingET->Y(),
 					   RJigsawVariables,
-             			m_cutVal.m_cutRJigsawJetPt);
+					   m_cutVal.m_cutRJigsawJetPt,
+					   m_maxJetCut
+					   );
     if(m_buildTriggerJetAndMET){ m_proxyUtils.CalculateRJigsawVariables(hlt_jets,
 									hlt_missingET->X(),
 									hlt_missingET->Y(),
 									RJigsawVariables_hlt,
-									m_cutVal.m_cutRJigsawJetPt);
+									m_cutVal.m_cutRJigsawJetPt,
+									m_maxJetCut
+									);
     }
   }
 
