@@ -1,5 +1,6 @@
 01-Oct-2015 Laurent Duflot
 	* data/mc15_13TeV_25ns_SM_p2419.ds: update list with latest production
+	* data/data15_13TeV_p2425.ds : add durrent list of p2425 data samples
 
 29-Sep-2015 Laurent Duflot
 	* FilterUpdateMerge.cxx: update filtering cuts with values in GeV
