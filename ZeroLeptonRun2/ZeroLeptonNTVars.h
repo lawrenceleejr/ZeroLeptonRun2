@@ -66,7 +66,7 @@ class NTVars
   std::vector< float > tauLooseSFSystDown;
 
   std::vector< float > systWeights;
-  std::vector< float > triggerBits;
+  std::vector< uint64_t > triggerBits;
 };
 
 // this is a helper class to read an ntuple with an NTVars, as it need the
@@ -108,8 +108,8 @@ private:
   std::vector< float >* p_tauLooseSFSystUp;
   std::vector< float >* p_tauLooseSFSystDown;
 
-  std::vector< float >* p_systWeights;
-  std::vector< float >* p_triggerBits;
+  std::vector< float    >* p_systWeights;
+  std::vector< uint64_t >* p_triggerBits;
 };
 
 

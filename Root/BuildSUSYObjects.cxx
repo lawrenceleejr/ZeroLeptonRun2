@@ -611,20 +611,21 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_e17_lhloose_L1EM15",
     "HLT_e17_loose_L1EM15",
     "HLT_mu14_iloose",
-    "HLT_xe10_razor100",
-    "HLT_xe10_razor170",
-    "HLT_xe10_razor185",
-    "HLT_xe10_razor195",
-    "HLT_xe60_razor100",
-    "HLT_xe60_razor170",
-    "HLT_xe60_razor185",
-    "HLT_xe60_razor195",
+    "HLT_j30_xe10_razor100",
+    "HLT_j30_xe10_razor170",
+    "HLT_j30_xe10_razor185",
+    "HLT_j30_xe10_razor195",
+    "HLT_j30_xe60_razor100",
+    "HLT_j30_xe60_razor170",
+    "HLT_j30_xe60_razor185",
+    "HLT_j30_xe60_razor195",
   };
 
   const xAOD::EventInfo* eventInfo = 0;
   if ( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) throw std::runtime_error("BuildSUSYObjects: Could not retrieve EventInfo");
 
-  std::bitset<32> triggers;
+  std::bitset<64> triggers;
+  assert(64 >= trigNames.size());
   for ( size_t i = 0; i < trigNames.size(); i++ ) {
     char pass =  m_SUSYObjTool->IsTrigPassed(trigNames[i]);
     triggers[i] = pass;
@@ -632,8 +633,8 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
   }
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
-  unsigned long* triggerSet = new unsigned long;
-  *triggerSet =  triggers.to_ulong();
+  uint64_t* triggerSet = new uint64_t(triggers.to_ullong());
+  //  *triggerSet =  triggers.to_ullong();
   if ( ! store->record(triggerSet,"triggerbits").isSuccess() ) {
     throw std::runtime_error("Could not store trigger bits");
   }

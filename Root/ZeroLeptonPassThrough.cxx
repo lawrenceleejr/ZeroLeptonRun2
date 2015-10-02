@@ -552,7 +552,7 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
     if ( m_fillTRJigsawVars ){
       m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
       if(m_buildTriggerJetAndMET){
-	unsigned long * trigvalues = nullptr;
+	uint64_t * trigvalues = nullptr;
 	if( ! store->retrieve(trigvalues, "triggerbits" ).isSuccess()) throw std::runtime_error("failed to retrieve trigger bits");
 	//	std::cout << "filling trigger bits with " << *trigvalues << std::endl;
 	m_proxyUtils.FillTriggerBits(m_ntv,*trigvalues);
