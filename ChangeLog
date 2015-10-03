@@ -1,6 +1,14 @@
+03-Oct-2015 Laurent Duflot
+	* data/data15_13TeV_p2425.ds : update list of p2425 data samples
+	* tag as ZeroLeptonRun2-00-00-53
+
+02-Oct-2015 Laurent Duflot
+	* CRWT,CRZ,CR3L,BuildSUSYObjects: add trigger HLT_e24_lhmedium_iloose_L1EM20VH
+
+
 01-Oct-2015 Laurent Duflot
 	* data/mc15_13TeV_25ns_SM_p2419.ds: update list with latest production
-	* data/data15_13TeV_p2425.ds : add durrent list of p2425 data samples
+	* data/data15_13TeV_p2425.ds : add current list of p2425 data samples
 
 29-Sep-2015 Laurent Duflot
 	* FilterUpdateMerge.cxx: update filtering cuts with values in GeV

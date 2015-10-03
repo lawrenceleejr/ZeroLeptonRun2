@@ -255,8 +255,13 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
     }
     else {
-      if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH")==1 || (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) passEltrigger = true;
-      if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || (int)eventInfo->auxdata<char>("HLT_mu50")==1) passMutrigger = true;
+      if( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH")==1 || 
+	  (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM20VH")==1 || 
+	  (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) 
+	passEltrigger = true;
+      if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || 
+	 (int)eventInfo->auxdata<char>("HLT_mu50")==1) 
+	passMutrigger = true;
       if( !(passEltrigger || passMutrigger) ) return true; 
     }
   }
