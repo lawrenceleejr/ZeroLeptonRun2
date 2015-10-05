@@ -1,3 +1,9 @@
+05-Oct-2015 Laurent Duflot
+	* data/data15_13TeV_p2425.ds : update list of p2425 data samples
+
+03-Oct-2015 Laurent Duflot
+	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx, launch_jobs_on_grid.py: add p2425
+
 03-Oct-2015 Laurent Duflot
 	* data/data15_13TeV_p2425.ds : update list of p2425 data samples
 	* tag as ZeroLeptonRun2-00-00-53
