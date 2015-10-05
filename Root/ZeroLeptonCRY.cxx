@@ -459,12 +459,12 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // MissingET cut
   if (!(MissingEtCorr > m_cutVal.m_cutEtMiss)) return true;
-  m_counter->increment(weight,incr++,"MET cut",trueTopo);
+  m_counter->increment(weight,incr++,"MET cut > "  + std::to_string(int(m_cutVal.m_cutEtMiss)) + " GeV Selection",trueTopo);
 
   // Leading jet Pt cut
   if ( good_jets.empty() ) return true;
   if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
-  m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
+  m_counter->increment(weight,incr++,"1 jet Pt > " + std::to_string(int(m_cutVal.m_cutJetPt0)) + " GeV Selection",trueTopo);
 
 
 
