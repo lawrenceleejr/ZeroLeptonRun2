@@ -619,6 +619,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_j30_xe60_razor170",
     "HLT_j30_xe60_razor185",
     "HLT_j30_xe60_razor195",
+    "L1_2J15_XE55"
   };
 
   const xAOD::EventInfo* eventInfo = 0;
