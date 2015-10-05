@@ -1,6 +1,7 @@
 05-Oct-2015 Laurent Duflot
 	* data/data15_13TeV_p2425.ds : update list of p2425 data samples
-	* ZeroLeptonRun2/data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
+	* data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
+	* data/mc15_13TeV_25ns_SM_xAOD.ds : update list of xAOD SM MC samples
 
 03-Oct-2015 Laurent Duflot
 	* ZeroLeptonRunPeriod.h, JobBookeeping.cxx, launch_jobs_on_grid.py: add p2425
