@@ -23,12 +23,13 @@ ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
 ROOT.xAOD.Init()
 
 datadirs =[
-"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
-"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root"
+#"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
+#"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root"
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
-] #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/"
-#"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/"
+ "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/",
+ "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/"
+]
 files = []
 
 for datadir in datadirs :
@@ -120,12 +121,16 @@ for datadir in datadirs :
 
                  branch = tree.GetBranch( "NTRJigsawVars" );
                  mDeltaR = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0);
+                 if tree.jetPt.size() > 8 : print "jet size : " + str(tree.jetPt.size())
 
                  if(triggerDict["L1_XE50"]) :
                      eff_xe10_razor170.Fill(triggerDict["HLT_j30_xe10_razor170"], mDeltaR/1000.)
 
              #        outfile .Write()
          rootfile.Close()
+
+     print "exiting early"
+     exit()
 
      outfile  = root_open('outfile'+ifile.split('v7')[1].split("mc15")[0]+'root', 'recreate')
      outfile.cd()
