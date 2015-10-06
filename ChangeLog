@@ -1,5 +1,7 @@
 06-Oct-2015 Laurent Duflot
-	* data/data15_13TeV_p2425.ds : update list of p2425 data samples
+	* makeDatasetList.py: add option --grl to filter list of datasets with
+	runs from a grl
+	* data/data15_13TeV_p2425.ds : update list of p2425 data samples with runs in grl data15_13TeV.periodAllYear_DetStatus-v65-pro19-01_DQDefects-00-01-02_PHYS_StandardGRL_All_Good.xml
 
 05-Oct-2015 Laurent Duflot
 	* data/data15_13TeV_p2425.ds : update list of p2425 data samples

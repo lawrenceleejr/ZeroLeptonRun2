@@ -5,6 +5,7 @@
 #
 
 import os,sys,subprocess,datetime,re,string
+import xml.etree.ElementTree as ET
 try:
     import pyAMI.client
     import pyAMI.atlas.api
@@ -80,6 +81,7 @@ def parseCmdLine(args):
     parser.add_option("--baseline", dest="baseline", help="Select only baseline samples from MCSampleList", action='store_true', default=False)
     parser.add_option("--sample", dest="sample", help="Selected any sample list defined in MCSampleList, e.g. lTop", default=None)
     parser.add_option("--signal", dest="signal", help="For MC select only signal samples", action='store_true', default=False)
+    parser.add_option("--grl", dest="grl", help="GRL to select good runs",default="") 
     (config, args) = parser.parse_args(args)
     return config
 
@@ -89,6 +91,10 @@ def main():
 
     if (config.baseline or config.official ) and config.sample:
         print "--baseline, --official and --sample are mutually exclusive"
+        sys.exit(1)
+
+    if (config.baseline or config.official or config.sample) and config.grl!="":
+        print "--grl is incompatible with --baseline, --official and --sample"
         sys.exit(1)
 
     # AMI client connection
@@ -132,6 +138,17 @@ def main():
             officialids = mcsl.__dict__["lbaseline"]
             if config.official:
                 officialids += mcsl.__dict__["lalt"]
+    elif config.grl != "":
+        if not os.path.exists(config.grl):
+            print 'Couldnot find GRL',config.grl
+            sys.exit(1)
+            pass
+        doc = ET.parse(config.grl)
+        for item in doc.findall('./NamedLumiRange/Metadata'):
+            if item.attrib['Name']=='RunList':
+                for r in item.text.split(','):
+                    officialids.append(int(r))
+        pass
 
     # get all datasets matching prefix & tag and then filter them
     from pyAMI.atlas.api import get_dataset_info, list_datasets
@@ -157,7 +174,7 @@ def main():
         cut = False
         for filter in filters:
             if filter in dsname.split('.')[2]: cut = True
-        if (config.official or config.baseline or config.sample) and not int(dsname.split('.')[1]) in officialids: cut = True
+        if (config.official or config.baseline or config.sample or config.grl!="") and not int(dsname.split('.')[1]) in officialids: cut = True
         if config.signal :
             cut = True
             for pattern in lsignals:
@@ -183,15 +200,18 @@ def main():
     for info in dsinfos:
         try:
             dsname = info['logicalDatasetName']
-            generatorString  = info['generatorName']
-            version  = info['version']
-            if badDataset(dsname,generatorString,version): continue
+            if  config.grl=="" :
+                generatorString  = info['generatorName']
+                version  = info['version']
+                if badDataset(dsname,generatorString,version): continue
             availability = info['prodsysStatus']
             if config.onlyComplete and availability != u'ALL EVENTS AVAILABLE':
                 print 'Skip incomplete dataset',dsname,availability
                 continue
             nFiles = int(info['nFiles'])
-            if nFiles>0:
+            if nFiles>0 and config.grl != "":
+                fout.write(dsname+'\n')
+            if nFiles>0 and config.grl == "":
                 period = 'MC'
                 xsec = 0.
                 effic = 1.
