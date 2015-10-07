@@ -1,3 +1,6 @@
+07-Oct-2015 Laurent Duflot
+	* data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
+
 06-Oct-2015 Laurent Duflot
 	* makeDatasetList.py: add option --grl to filter list of datasets with
 	runs from a grl
