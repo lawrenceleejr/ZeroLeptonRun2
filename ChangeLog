@@ -1,3 +1,8 @@
+08-Oct-2015 Laurent Duflot
+	* data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
+	* makeDatasetList.py: differentiate data and mc via prefix
+	* PhysObjProxyUtils: fix typo in dPhiBadTile
+
 07-Oct-2015 Laurent Duflot
 	* data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
 

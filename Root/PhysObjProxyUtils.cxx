@@ -1102,7 +1102,7 @@ float PhysObjProxyUtils::dPhiBadTile(const std::vector<JetProxy>& jets, const TV
 	 (phi>1.9 && phi<2.1 && eta>-1.6 && eta<-0.9 ) ) {
       // jet points to a dead tile
       float dphi = std::acos(std::cos(phi-MET_phi));
-      if ( phi < minDPhi ) minDPhi = dphi;
+      if ( dphi < minDPhi ) minDPhi = dphi;
     }
   }
   return minDPhi;
