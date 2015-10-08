@@ -209,9 +209,9 @@ def main():
                 print 'Skip incomplete dataset',dsname,availability
                 continue
             nFiles = int(info['nFiles'])
-            if nFiles>0 and config.grl != "":
+            if nFiles>0 and config.prefix.startswith('data'):
                 fout.write(dsname+'\n')
-            if nFiles>0 and config.grl == "":
+            elif nFiles>0:
                 period = 'MC'
                 xsec = 0.
                 effic = 1.
