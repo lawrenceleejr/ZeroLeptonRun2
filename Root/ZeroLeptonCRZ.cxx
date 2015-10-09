@@ -245,8 +245,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){  
     bool passEltrigger=false;
     bool passMutrigger=false;
-    if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM18VH")==1 || 
-       (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM20VH")==1  || 
+    if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM20VH")==1  || 
        (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) 
       passEltrigger = true;
     if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || 

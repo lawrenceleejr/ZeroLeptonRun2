@@ -1,5 +1,6 @@
 09-Oct-2015 Laurent Duflot
 	* DetectorQuality: also check Tile and Core errors
+	* CRWT, CRZ, CR3L: remove HLT_e24_lhmedium_iloose_L1EM18VH (prescaled)
 
 08-Oct-2015 Laurent Duflot
 	* data/mc15_13TeV_25ns_SM_p2419.ds: update list of p2419 SM MC samples
