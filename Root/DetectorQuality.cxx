@@ -25,8 +25,10 @@ bool DetectorQuality::processEvent(xAOD::TEvent& event)
   //std::cout << "Event flag : LAr " << eventInfo->errorState(xAOD::EventInfo::LAr) << " Tile " << eventInfo->errorState(xAOD::EventInfo::Tile)  << " Core " << eventInfo->eventFlags(xAOD::EventInfo::Core)  << std::endl;
 
   bool* badDetectorQuality = new bool;
-  *badDetectorQuality = eventInfo->errorState(xAOD::EventInfo::LAr) != xAOD::EventInfo::NotSet;
-  if ( m_period == p8tev )  *badDetectorQuality = *badDetectorQuality && eventInfo->errorState(xAOD::EventInfo::Tile)==xAOD::EventInfo::Error && ((eventInfo->eventFlags(xAOD::EventInfo::Core) & 0x40000) != 0);
+  *badDetectorQuality = 
+    eventInfo->errorState(xAOD::EventInfo::LAr) != xAOD::EventInfo::NotSet && 
+    eventInfo->errorState(xAOD::EventInfo::Tile)==xAOD::EventInfo::Error && 
+    ((eventInfo->eventFlags(xAOD::EventInfo::Core) & 0x40000) != 0);
 
   xAOD::TStore* store = xAOD::TActiveStore::store();
   RETURN_CHECK("DetectorQuality::processEvent",store->record<bool>(badDetectorQuality,"badDetectorQuality"));
