@@ -1,6 +1,8 @@
 10-Oct-2015 Laurent Duflot
 	* python/mc15_13TeV_MCSampleList.py: remove 410015,410016 due to
 	overlap
+	* data/mc15_13TeV_25ns_SM_p2419.ds, data/data15_13TeV_p2425.ds: update
+	lists
 
 09-Oct-2015 Laurent Duflot
 	* DetectorQuality: also check Tile and Core errors
