@@ -48,6 +48,9 @@ lZjetsAlt = [361106,361107,361108] # PowhegPythia8 samples
 
 lWjetsAlt   = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 samples
 
+lsingletAlt = [ 410015, 410016, # PowhegPythia Wt dilepton (overlap with 13+14
+                ]       
+
 lalt = lZjetsLO + lZjetsAlt + lWjetsAlt
 
 #print lbaseline
