@@ -4,6 +4,8 @@
 class JetProxy;
 class MuonProxy;
 class TauProxy;
+class ElectronProxy;
+class MuonProxy;
 class NTVars;
 class NTReclusteringVars;
 class NTExtraVars;
@@ -119,8 +121,8 @@ class PhysObjProxyUtils
 		  bool istruth = false,
 		  std::vector<TauProxy> baseline_taus = std::vector<TauProxy>(),
 		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>(),
-		  const std::vector<ElectronProxy>& electrons,
-		  const std::vector<MuonProxy>& muons
+		  const std::vector<ElectronProxy>& electrons = std::vector<ElectronProxy>(),
+		  const std::vector<MuonProxy>& muons = std::vector<MuonProxy>()
 );
 
   void FillNTReclusteringVars(NTReclusteringVars& RTntv,
