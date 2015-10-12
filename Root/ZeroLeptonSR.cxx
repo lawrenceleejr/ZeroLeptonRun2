@@ -20,9 +20,9 @@
 #include <stdexcept>
 
 ZeroLeptonSR::ZeroLeptonSR(const char *name)
-  : cafe::Processor(name), 
-    m_tree(0), 
-    m_stringRegion("SRAll"), 
+  : cafe::Processor(name),
+    m_tree(0),
+    m_stringRegion("SRAll"),
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
@@ -102,7 +102,7 @@ TTree* ZeroLeptonSR::getTree(const std::string& treename)
 void ZeroLeptonSR::begin()
 {
   std::string sSR = m_stringRegion;
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     sSR+="NT";
   }
 
@@ -153,7 +153,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // get generator weight
   float genWeight = 1.f;
-  if ( !m_IsData ) { 
+  if ( !m_IsData ) {
     genWeight = eventInfo->mcEventWeight(0);
     //out() << " gen weight " << genWeight << std::endl;
     weight *= genWeight;
@@ -306,7 +306,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
-    bool* badDetectorQuality = 0 ; 
+    bool* badDetectorQuality = 0 ;
     if ( !store->retrieve<bool>(badDetectorQuality,"badDetectorQuality").isSuccess() ) throw std::runtime_error("could not retrieve badDetectorQuality");
     if ( *badDetectorQuality ) return true;
   }
@@ -336,11 +336,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     if ( !isolated_baseline_muons_truth.empty() ) return true;
   }
   m_counter->increment(weight,incr++,"0 Lepton",trueTopo);
- 
 
-  if (good_jets.size()<1) return true;  
+
+  if (good_jets.size()<1) return true;
   m_counter->increment(weight,incr++,"At least one jet",trueTopo);
-  
+
   // jet timing
   std::vector<float> time;
   m_proxyUtils.EnergyWeightedTime(good_jets,time);
@@ -355,7 +355,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   m_counter->increment(weight,incr++,"MET cut",trueTopo);
   // Leading jet Pt cut
-  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
+  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
   // leave counter to keep the cutflow sequence
@@ -394,7 +394,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;
-  // Fill ISR variables. These vectors have for each jet > 50GeV the ISR variables in them. 
+  // Fill ISR variables. These vectors have for each jet > 50GeV the ISR variables in them.
   std::vector<size_t> isr_jet_indices;
   std::vector<std::vector<double> > ISRvars;
   std::vector<double> ISRvar_alpha;
@@ -409,7 +409,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_proxyUtils.GetMaxRapidityOtherJets(good_jets,ISRvar_maxRapidityOtherJets);
   std::vector<double> ISRvar_dPhiJetMET;
   m_proxyUtils.GetdPhiJetMet(good_jets,phi_met,ISRvar_dPhiJetMET);
-  m_proxyUtils.GetISRJet(good_jets,isr_jet_indices,MissingEt,phi_met,"squark",false);  
+  m_proxyUtils.GetISRJet(good_jets,isr_jet_indices,MissingEt,phi_met,"squark",false);
   ISRvars.push_back(ISRvar_alpha);
   ISRvars.push_back(ISRvar_minPtDistinction);
   ISRvars.push_back(ISRvar_minDeltaFraction);
@@ -422,15 +422,15 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   }
 
 
-  double mT2=-9; 
+  double mT2=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingET);
   double mT2_noISR=-9;
-  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET); 
-  //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
+  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET);
+  //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
-    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+    m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingET->X(),
 					   missingET->Y(),
 					   RJigsawVariables,
@@ -446,16 +446,16 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   double Minv2 =-999;
   double Einv =-999;
   double  gamma_R=-999;
-  double dphi_BETA_R =-999; 
-  double dphi_leg1_leg2 =-999; 
+  double dphi_BETA_R =-999;
+  double dphi_leg1_leg2 =-999;
   double costhetaR =-999;
   double dphi_BETA_Rp1_BETA_R=-999;
   double gamma_Rp1=-999;
   double Eleg1=-999;
-  double Eleg2=-999; 
+  double Eleg2=-999;
   double costhetaRp1=-999;
 
-  m_proxyUtils.RazorVariables(good_jets, 
+  m_proxyUtils.RazorVariables(good_jets,
 			      missingET->X(),
 			      missingET->Y(),
 			      gaminvRp1 ,
@@ -465,19 +465,19 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 			      Minv2 ,
 			      Einv ,
 			      gamma_R,
-			      dphi_BETA_R , 
-			      dphi_leg1_leg2 , 
+			      dphi_BETA_R ,
+			      dphi_leg1_leg2 ,
 			      costhetaR ,
 			      dphi_BETA_Rp1_BETA_R,
 			      gamma_Rp1,
 			      Eleg1,
-			      Eleg2, 
+			      Eleg2,
 			      costhetaRp1);
 
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
     if ( ! m_IsData && ! m_IsTruth) runnum = mc_channel_number;
 
@@ -515,7 +515,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     power2 *= 4;
 
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus );
 
     if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
@@ -529,7 +529,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
     if(!m_IsTruth && m_fillReclusteringVars)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
-    
+
     m_tree->Fill();
   }
   return true;
@@ -539,7 +539,7 @@ void ZeroLeptonSR::finish()
 {
   if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
-  } 
+  }
   else {
     out() << *m_counter << std::endl;
   }
