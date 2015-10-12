@@ -1,3 +1,6 @@
+12-Oct-2015 Laurent Duflot
+	* data/data15_13TeV_p2419.ds: update lists
+
 10-Oct-2015 Laurent Duflot
 	* python/mc15_13TeV_MCSampleList.py: remove 410015,410016 due to
 	overlap
