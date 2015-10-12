@@ -118,7 +118,10 @@ class PhysObjProxyUtils
 		  float tauMt = 0.f, float SherpaBugMET = 0.f,
 		  bool istruth = false,
 		  std::vector<TauProxy> baseline_taus = std::vector<TauProxy>(),
-		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>());
+		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>(),
+		  const std::vector<ElectronProxy>& electrons,
+		  const std::vector<MuonProxy>& muons
+);
 
   void FillNTReclusteringVars(NTReclusteringVars& RTntv,
 			      const std::vector<JetProxy>& good_jets,

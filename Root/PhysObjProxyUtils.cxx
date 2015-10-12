@@ -1250,7 +1250,10 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   float SherpaBugMET,
 				   bool isTruth,
 				   std::vector<TauProxy> baseline_taus,
-				   std::vector<TauProxy> signal_taus)
+				   std::vector<TauProxy> signal_taus,
+				   const std::vector<ElectronProxy>& electrons,
+				   const std::vector<MuonProxy>& muons
+				   )
 {
   ntv.Reset();
 
@@ -1390,6 +1393,22 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     ntv.tauLooseSFSystUp.push_back(sfSystUp);
     ntv.tauLooseSFSystDown.push_back(sfSystDown);
     //std::cout<<" tauLooseSF = "<<sf<<"+"<<sfStatUp<<"-"<<sfStatDown<<"+"<<sfSystUp<<"-"<<sfSystDown<<std::endl;
+  }
+
+  for ( size_t ielectron = 0 ; ielectron < electrons.size(); ++ielectron){
+    const ElectronProxy& thiselectron = electrons.at(ielectron);
+    ntv.elPt .push_back(thiselectron.Pt()*.001);
+    ntv.elEta.push_back(thiselectron.Eta()    );
+    ntv.elPhi.push_back(thiselectron.Phi()    );
+    ntv.elMass.push_back(.511*.001); //because I can
+  }
+
+  for ( size_t imuon = 0 ; imuon < muons.size(); ++imuon){
+    const MuonProxy& thismuon = muons.at(imuon);
+    ntv.muPt .push_back(thismuon.Pt()*.001);
+    ntv.muEta.push_back(thismuon.Eta()    );
+    ntv.muPhi.push_back(thismuon.Phi()    );
+    ntv.muMass.push_back(.511*.001*200); //because I can
   }
 }
 
