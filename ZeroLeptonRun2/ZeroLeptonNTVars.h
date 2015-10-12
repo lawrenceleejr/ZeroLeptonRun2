@@ -39,10 +39,21 @@ class NTVars
   float tauMt;
   float SherpaBugMET;
 
+  int nHLTJets;
   // WARNING: if you add another vector you need to update NTVarsRead below
 
   // STL vectors, store 4-momenta, b-tagged weight and truth flavor of
   // every jet with pT above a threshold (40 GeV)
+  std::vector< float > elPt;
+  std::vector< float > elEta;
+  std::vector< float > elPhi;
+  std::vector< float > elM;
+
+  std::vector< float > muPt;
+  std::vector< float > muEta;
+  std::vector< float > muPhi;
+  std::vector< float > muM;
+
   std::vector< float > jetPt;
   std::vector< float > jetEta;
   std::vector< float > jetPhi;
@@ -86,6 +97,16 @@ public:
 
   NTVars ntv;
 private:
+  std::vector< float >* p_elPt;
+  std::vector< float >* p_elEta;
+  std::vector< float >* p_elPhi;
+  std::vector< float >* p_elM;
+
+  std::vector< float >* p_muPt;
+  std::vector< float >* p_muEta;
+  std::vector< float >* p_muPhi;
+  std::vector< float >* p_muM;
+
   std::vector< float >* p_jetPt;
   std::vector< float >* p_jetEta;
   std::vector< float >* p_jetPhi;
