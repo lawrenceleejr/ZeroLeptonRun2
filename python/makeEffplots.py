@@ -26,10 +26,11 @@ datadirs =[
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
-#"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
-#     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/",
-"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.tenjetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root",
-"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.alljetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root"
+     #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
+     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/",
+     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root",
+#"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.tenjetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root",
+#"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.alljetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root"
 ]
 
 
@@ -46,6 +47,7 @@ for datadir in datadirs :
      eff_xe10_razor170_off_metcut = ROOT.TEfficiency("eff_xe10_razor170_off_metcut" , "xe10_razor170_eff_off_metcut; mDeltaR (GeV) ; wrt L1 seed", 100 , 0 , 3000)
      njet_vs_mDeltaR = ROOT.TH2F("njet_mDeltaR" , "njet_mDeltaR", 100, 0 , 3000 , 13, -.5 , 12.5)
      onlineMDR_vs_offlineMDR = ROOT.TH2F("onlineMDR_vs_offlineMDR" , "onlineMDR_vs_offlineMDR", 100, 0 , 1000 , 100, 0 , 1000.)
+     onlineMDR_vs_offlineMDR_min8jet = ROOT.TH2F("onlineMDR_vs_offlineMDR_min8jet" , "onlineMDR_vs_offlineMDR_min8jets", 100, 0 , 1000 , 100, 0 , 1000.)
      njets = ROOT.TH1F("njet", "njet", 13 , -.5 , 12.5 )
 
      for filecount, ifile in enumerate(files):
@@ -152,15 +154,17 @@ for datadir in datadirs :
                     mDeltaR_hlt > 0.001
                     ) :
                       onlineMDR_vs_offlineMDR.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
+                      if(event.jetPt.size() > 8 ) : onlineMDR_vs_offlineMDR_min8jet.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
              if (totalEventCounter > 100000) : break
 
      print "nentries :"  + str(eff_xe10_razor170_off.GetTotalHistogram().GetEntries())
      rootfile.Close()
-     outfile  = root_open('outfile'+ifile.split('/')[-1].replace('.root','')+'.root', 'recreate')
+     outfile  = root_open('outfile.ttbar.'+ifile.split('/')[-1].replace('.root','')+'.root', 'recreate')
      outfile.cd()
      njets.Write()
      eff_xe10_razor170_off.Write()
      eff_xe10_razor170_off_metcut.Write()
+     onlineMDR_vs_offlineMDR_min8jet.Write()
      onlineMDR_vs_offlineMDR.Write()
      outfile .Close()
 
