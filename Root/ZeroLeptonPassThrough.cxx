@@ -538,7 +538,10 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
     power2 *= 4;
 
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus,
+			    baseline_electrons,
+			    baseline_muons
+			    );
 
     if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
@@ -555,7 +558,7 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 	uint64_t * trigvalues = nullptr;
 	if( ! store->retrieve(trigvalues, "triggerbits" ).isSuccess()) throw std::runtime_error("failed to retrieve trigger bits");
 	//	std::cout << "filling trigger bits with " << *trigvalues << std::endl;
-	m_proxyUtils.FillTriggerBits(m_ntv,*trigvalues);
+	m_proxyUtils.FillTriggerBits(m_ntv,*trigvalues, hlt_jets.size());
 	m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv_hlt, RJigsawVariables_hlt );
       }
     }

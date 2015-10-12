@@ -39,7 +39,7 @@ class NTVars
   float tauMt;
   float SherpaBugMET;
 
-  int nHLTJets;
+
   // WARNING: if you add another vector you need to update NTVarsRead below
 
   // STL vectors, store 4-momenta, b-tagged weight and truth flavor of
@@ -78,6 +78,7 @@ class NTVars
 
   std::vector< float > systWeights;
   std::vector< uint64_t > triggerBits;
+  int nHLTJets;
 };
 
 // this is a helper class to read an ntuple with an NTVars, as it need the

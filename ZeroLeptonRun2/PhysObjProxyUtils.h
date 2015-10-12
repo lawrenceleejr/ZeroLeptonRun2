@@ -142,7 +142,9 @@ class PhysObjProxyUtils
 
 
   void FillTriggerBits(NTVars& ntv,
-		       long trigger);
+		       long trigger,
+		       int njets
+		       );
 
   void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
 

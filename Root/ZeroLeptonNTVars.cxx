@@ -59,8 +59,19 @@ void NTVars::Reset()
   tauLooseN = 0;
   tauMt = 0.f;
   SherpaBugMET = 0.f;
+  nHLTJets = 0;
 
   // Clear vectors
+  elPt.clear();
+  elEta.clear();
+  elPhi.clear();
+  elM.clear();
+
+  muPt.clear();
+  muEta.clear();
+  muPhi.clear();
+  muM.clear();
+
   jetPt.clear();
   jetEta.clear();
   jetPhi.clear();
@@ -89,6 +100,16 @@ void NTVars::Reset()
 
 NTVarsRead::NTVarsRead(): ntv()
 {
+  p_elPt   = &ntv.elPt;
+  p_elEta  = &ntv.elEta;
+  p_elPhi  = &ntv.elPhi;
+  p_elM    = &ntv.elM;
+
+  p_muPt   = &ntv.muPt;
+  p_muEta  = &ntv.muEta;
+  p_muPhi  = &ntv.muPhi;
+  p_muM    = &ntv.muM;
+
   p_jetPt   = &ntv.jetPt;
   p_jetEta  = &ntv.jetEta;
   p_jetPhi  = &ntv.jetPhi;
@@ -433,6 +454,17 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("jetEta",&(ntv.jetEta));
   tree->Branch("jetPhi",&(ntv.jetPhi));
   tree->Branch("jetM",&(ntv.jetM));
+
+  tree->Branch("elPt",&(ntv.elPt));
+  tree->Branch("elEta",&(ntv.elEta));
+  tree->Branch("elPhi",&(ntv.elPhi));
+  tree->Branch("elM",&(ntv.elM));
+
+  tree->Branch("muPt",&(ntv.muPt));
+  tree->Branch("muEta",&(ntv.muEta));
+  tree->Branch("muPhi",&(ntv.muPhi));
+  tree->Branch("muM",&(ntv.muM));
+
   tree->Branch("jetBTag",&(ntv.jetBTag));
   tree->Branch("jetFlav",&(ntv.jetFlav));
   tree->Branch("jetTagU",&(ntv.jetTagU));

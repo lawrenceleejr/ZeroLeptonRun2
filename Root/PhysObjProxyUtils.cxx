@@ -1400,7 +1400,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     ntv.elPt .push_back(thiselectron.Pt()*.001);
     ntv.elEta.push_back(thiselectron.Eta()    );
     ntv.elPhi.push_back(thiselectron.Phi()    );
-    ntv.elMass.push_back(.511*.001); //because I can
+    ntv.elM  .push_back(.511*.001); //because I can
   }
 
   for ( size_t imuon = 0 ; imuon < muons.size(); ++imuon){
@@ -1408,14 +1408,17 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
     ntv.muPt .push_back(thismuon.Pt()*.001);
     ntv.muEta.push_back(thismuon.Eta()    );
     ntv.muPhi.push_back(thismuon.Phi()    );
-    ntv.muMass.push_back(.511*.001*200); //because I can
+    ntv.muM  .push_back(.511*.001*200); //because I can
   }
 }
 
 void PhysObjProxyUtils::FillTriggerBits(NTVars& ntv,
-					long trigger)
+					long trigger,
+					int njets
+)
 {
   ntv.triggerBits.push_back(trigger);
+  ntv.nHLTJets = njets;
 }
 
 
