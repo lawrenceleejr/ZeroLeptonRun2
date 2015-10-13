@@ -392,7 +392,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       }
     }
   }
-  if ( allphotons.size() < 0  ) return true;
+  if ( allphotons.size() < 1  ) return true;
   m_counter->increment(weight,incr++,"One photon",trueTopo);
 
 
