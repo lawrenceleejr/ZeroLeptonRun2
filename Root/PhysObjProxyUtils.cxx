@@ -1418,7 +1418,7 @@ void PhysObjProxyUtils::FillTriggerBits(NTVars& ntv,
 )
 {
   ntv.triggerBits.push_back(trigger);
-  ntv.nHLTJets = njets;
+  ntv.nHLTJets = float(njets)+.1;
 }
 
 
