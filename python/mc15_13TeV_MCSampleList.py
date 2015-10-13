@@ -45,12 +45,15 @@ lbaseline = lZjets + lWjets + lYjets + lTop + lQCDMC + lDiBoson
 ##[187150,187158+1]+[187160,187168+1]+[187170,187178+1]+[187180,187188+1]+[206618,206620+1] # diboson PowhegPythia
 
 lZjetsAlt = [361106,361107,361108] # PowhegPythia8 samples
+lZjetsAlt += range(361503,361519+1)  # Madgraph+Pythia8
 
-lWjetsAlt   = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 samples
+lWjetsAlt = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 samples
+lWjetsAlt += range(361520,361534+1)  # Madgraph+Pythia8
 
+lttbarAlt = [410001,410002,410003,410004,410006]
 lsingletAlt = [ 410015, 410016, # PowhegPythia Wt dilepton (overlap with 13+14
-                ]       
+               ]       
 
-lalt = lZjetsLO + lZjetsAlt + lWjetsAlt
+lalt = lZjetsLO + lZjetsAlt + lWjetsAlt + lttbarAlt + lsingletAlt
 
 #print lbaseline

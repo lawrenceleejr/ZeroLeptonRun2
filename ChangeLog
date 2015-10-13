@@ -1,3 +1,6 @@
+13-Oct-2015 Laurent Duflot
+	* python/mc15_13TeV_MCSampleList.py: add ttbar alt samples and madgraph W/Z
+
 12-Oct-2015 Laurent Duflot
 	* data/data15_13TeV_p2419.ds: update lists
 
