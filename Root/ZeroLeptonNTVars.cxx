@@ -5,7 +5,7 @@ std::string NTVars::toString()
 {
   return
 
-std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F");
+std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:nHLTJets/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F");
 }
 
 void NTVars::Reset()
@@ -23,6 +23,7 @@ void NTVars::Reset()
   WZweight = 1.f;
   Njet = 0;
   MET = 0.f;
+  nHLTJets = 0.f;
   METPhi = 0.f;
   deltaPhi = 0.f;
   deltaPhiRemaining = 0.f;
@@ -59,7 +60,7 @@ void NTVars::Reset()
   tauLooseN = 0;
   tauMt = 0.f;
   SherpaBugMET = 0.f;
-  nHLTJets = 0;
+
 
   // Clear vectors
   elPt.clear();
@@ -140,6 +141,18 @@ NTVarsRead::NTVarsRead(): ntv()
 void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
 {
   tree->GetBranch("NTVars")->SetAddress(&ntv.RunNumber);
+
+  tree->GetBranch("elPt")->SetAddress(&p_elPt);
+  tree->GetBranch("elEta")->SetAddress(&p_elEta);
+  tree->GetBranch("elPhi")->SetAddress(&p_elPhi);
+  tree->GetBranch("elM")->SetAddress(&p_elM);
+
+  tree->GetBranch("muPt")->SetAddress(&p_muPt);
+  tree->GetBranch("muEta")->SetAddress(&p_muEta);
+  tree->GetBranch("muPhi")->SetAddress(&p_muPhi);
+  tree->GetBranch("muM")->SetAddress(&p_muM);
+
+
   tree->GetBranch("jetPt")->SetAddress(&p_jetPt);
   tree->GetBranch("jetEta")->SetAddress(&p_jetEta);
   tree->GetBranch("jetPhi")->SetAddress(&p_jetPhi);
