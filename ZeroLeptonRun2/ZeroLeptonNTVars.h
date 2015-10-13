@@ -21,7 +21,7 @@ class NTVars
   float weight, pileupWeight, pileupWeightUp, pileupWeightDown, genWeight;
   float ttbarWeightHT, ttbarWeightPt2, ttbarAvgPt, WZweight;
   int Njet;
-  float MET, METPhi, deltaPhi, deltaPhiRemaining, MeffIncl;
+  float MET, nHLTJets, METPhi, deltaPhi, deltaPhiRemaining, MeffIncl;
   //unsigned int region;
   int hardproc;
   int nBJet;
@@ -78,7 +78,7 @@ class NTVars
 
   std::vector< float > systWeights;
   std::vector< uint64_t > triggerBits;
-  int nHLTJets;
+
 };
 
 // this is a helper class to read an ntuple with an NTVars, as it need the
