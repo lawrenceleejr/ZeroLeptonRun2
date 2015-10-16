@@ -164,7 +164,7 @@ void BuildSUSYObjects::initSUSYTools()
     else {
       for ( const auto & sys : sysInfos ) {
 	const CP::SystematicSet& systSet = sys.systset;
-	std::string name = systSet.name(); 
+	std::string name = systSet.name();
 	bool matched = false;
 	if ( name == "" ) {
 	  matched = true;
@@ -204,7 +204,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 {
 
   // SUSYTools initialisation must be delayed until we have a TEvent associated
-  // with a file due to xAODConfigTool 
+  // with a file due to xAODConfigTool
   if ( !m_SUSYObjTool ) {
     initSUSYTools();
   }
@@ -226,7 +226,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   if (!event.retrieve(taus,m_taukey).isSuccess()){
     throw std::runtime_error("Could not retrieve TauJetContainer with key TauRecContainer");
   }
-    
+
   xAOD::TauJet::Decorator<float> dec_SFJetID("SFJetID");
   xAOD::TauJet::Decorator<float> dec_SFJetIDStatUp("SFJetIDStatUp");
   xAOD::TauJet::Decorator<float> dec_SFJetIDStatDown("SFJetIDStatDown");
@@ -236,11 +236,11 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   xAOD::TauJetContainer::iterator tau_itr = susytaus.first->begin();
   xAOD::TauJetContainer::iterator tau_end = susytaus.first->end();
   for( ; tau_itr != tau_end; ++tau_itr ) {
-    
+
     if ( ! m_SUSYObjTool->FillTau( **tau_itr).isSuccess() ) throw std::runtime_error("Error in FillTau");
     if( (*tau_itr)->auxdecor<char>("baseline")==1 ){
       for ( const auto& syst : m_tauEffSystSetList ){
-	// one by one apply systematic variation 
+	// one by one apply systematic variation
 	if (m_tauEffTool->applySystematicVariation(syst) != CP::SystematicCode::Ok){
 	  throw std::runtime_error("Could not configure for systematic variatoin" );
 	}else{
@@ -261,7 +261,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       }
     }
   }
-    
+
   if ( ! store->record(susytaus.first,"SUSYTaus"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not store SUSYTaus"+m_suffix);
   }
@@ -319,7 +319,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     for ( const auto& mu : *muons ) {
       // declare calo and forward muons non baseline so they don't get used in MET
       if ( mu->muonType() != xAOD::Muon::Combined &&
-	   mu->muonType() != xAOD::Muon::MuonStandAlone && 
+	   mu->muonType() != xAOD::Muon::MuonStandAlone &&
 	   mu->muonType() != xAOD::Muon::SegmentTagged ) {
 	mu->auxdecor<char>("baseline") = 0;
       }
@@ -328,15 +328,15 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       m_SUSYObjTool->IsBadMuon(*mu);
       /*
       out() << " Muon " << mu->pt() << " " << mu->eta()
-	    << " " << mu->phi() 
-	    << " bad " <<  (int) mu->auxdata<char>("bad") 
-	    << " baseline " <<  (int) mu->auxdata<char>("baseline") 
-	    << " signal " <<  (int) mu->auxdata<char>("signal") 
+	    << " " << mu->phi()
+	    << " bad " <<  (int) mu->auxdata<char>("bad")
+	    << " baseline " <<  (int) mu->auxdata<char>("baseline")
+	    << " signal " <<  (int) mu->auxdata<char>("signal")
 	    <<std::endl;
       */
     }
     float muSF = (float) m_SUSYObjTool->GetTotalMuonSF(*muons,true,"HLT_mu20_iloose_L1MU15_OR_HLT_mu50");
-    eventInfo->auxdecor<float>("muSF") = muSF ; 
+    eventInfo->auxdecor<float>("muSF") = muSF ;
 
 
      //----------------------------------------   Electrons
@@ -358,14 +358,14 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       m_SUSYObjTool->IsSignalElectron(*el);
       /*
       out() << " Electron " << el->pt() << " " << el->eta()
-	    << " " << el->phi() 
-	    << " baseline " <<  (int) el->auxdata<char>("baseline") 
-	    << " signal " <<  (int) el->auxdata<char>("signal") 
+	    << " " << el->phi()
+	    << " baseline " <<  (int) el->auxdata<char>("baseline")
+	    << " signal " <<  (int) el->auxdata<char>("signal")
 	    <<std::endl;
       */
     }
     float elSF = (float) m_SUSYObjTool->GetTotalElectronSF(*electrons);
-    eventInfo->auxdecor<float>("elSF") = elSF ; 
+    eventInfo->auxdecor<float>("elSF") = elSF ;
 
 
      //----------------------------------------   Photons
@@ -397,28 +397,31 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       }
       /*
       out() << " Photon " << ph->pt() << " " << ph->eta()
-	    << " " << ph->phi() 
-	    << " baseline " <<  (int) ph->auxdata<char>("baseline") 
-	    << " signal " <<  (int) ph->auxdata<char>("signal") 
+	    << " " << ph->phi()
+	    << " baseline " <<  (int) ph->auxdata<char>("baseline")
+	    << " signal " <<  (int) ph->auxdata<char>("signal")
 	    <<std::endl;
       */
     }
-    eventInfo->auxdecor<float>("phSF") = phSF ; 
+    eventInfo->auxdecor<float>("phSF") = phSF ;
 
     // Overlap removal
     if ( m_PhotonInOR ) {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      //      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, photons)// , false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.4, 0.4, 0.4)
+	   .isSuccess())  throw std::runtime_error("Error in OverlapRemoval");
     }
     else {
-      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets, false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05).isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
+      if ( ! m_SUSYObjTool->OverlapRemoval(electrons, muons, jets)// , false, false, false, 0.2, 0.4, 0.4, 0.01, 0.05)
+	   .isSuccess() ) throw std::runtime_error("Error in OverlapRemoval");
     }
 
     // signal and btag jet now depend on OR, so loop again on jets
     //out() <<  "SUSYJets"+m_suffix+tag+" jets " << std::endl;
     for ( const auto& jet : *jets ) {
-      if ( !m_UseSmearedJets ) { 
+      if ( !m_UseSmearedJets ) {
 	m_SUSYObjTool->IsSignalJet(*jet, 20000.,10., -1e+99); // no JVT cut
-	m_SUSYObjTool->IsBadJet(*jet, 1e+99); // no JVT cut (sic)	
+	m_SUSYObjTool->IsBadJet(*jet, 1e+99); // no JVT cut (sic)
       }
       if ( m_period == p8tev ) {
 	//FIXME m_SUSYObjTool->IsBJet(**jet_itr,false,1.85);
@@ -428,10 +431,10 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       }
       /*
       out() << " Jet " << jet->pt() << " " << jet->eta()
-	    << " " << jet->phi() 
-	    << " bad " <<  (int) jet->auxdata<char>("bad") 
-	    << " baseline " <<  (int) jet->auxdata<char>("baseline") 
-	    << " signal " <<  (int) jet->auxdata<char>("signal") 
+	    << " " << jet->phi()
+	    << " bad " <<  (int) jet->auxdata<char>("bad")
+	    << " baseline " <<  (int) jet->auxdata<char>("baseline")
+	    << " signal " <<  (int) jet->auxdata<char>("signal")
 	    <<std::endl;
       */
     }
@@ -448,7 +451,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	throw std::runtime_error("Unable to store MissingETAuxContainer with tag MET_ZL"+m_suffix+tag+"Aux");
       }
     }
-    
+
     if ( ! m_SUSYObjTool->GetMET(*rebuiltmetc,
 				 jets,
 				 electrons,
@@ -457,7 +460,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 				 0,
 				 false,
 				 false,
-				 0).isSuccess() 
+				 0).isSuccess()
 	 ) throw std::runtime_error("Error in GetMET");
     TVector2* MissingET = new TVector2(0.,0.);
     xAOD::MissingETContainer::const_iterator met_it = rebuiltmetc->find("Final");
@@ -553,7 +556,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_mu18",
     "HLT_e17_lhloose_L1EM15",
     "HLT_e17_loose_L1EM15",
-    "HLT_mu14_iloose"    
+    "HLT_mu14_iloose"
   };
 
   const xAOD::EventInfo* eventInfo = 0;

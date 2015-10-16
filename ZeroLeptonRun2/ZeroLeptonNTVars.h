@@ -280,77 +280,58 @@ public:
 
   void Reset();
 
-  float RJVars_PP_Mass           ;
-  float RJVars_PP_InvGamma       ;
-  float RJVars_PP_dPhiBetaR      ;
-  float RJVars_PP_dPhiVis        ;
-  float RJVars_PP_CosTheta       ;
-  float RJVars_PP_dPhiDecayAngle ;
-  float RJVars_PP_VisShape       ;
-  float RJVars_PP_MDeltaR        ;
-  float RJVars_P1_Mass           ;
-  float RJVars_P1_CosTheta       ;
-  float RJVars_P2_Mass           ;
-  float RJVars_P2_CosTheta       ;
-  float RJVars_I1_Depth          ;
-  float RJVars_I2_Depth          ;
-  float RJVars_V1_N              ;
-  float RJVars_V2_N              ;
+  float RJVars_PP_Mass;
+  float RJVars_PP_InvGamma;
+  float RJVars_PP_dPhiBetaR;
+  float RJVars_PP_dPhiVis;
+  float RJVars_PP_CosTheta;
+  float RJVars_PP_dPhiDecayAngle;
+  float RJVars_PP_VisShape;
+  float RJVars_PP_MDeltaR;
+  float RJVars_P1_Mass;
+  float RJVars_P1_CosTheta;
+  float RJVars_P2_Mass;
+  float RJVars_P2_CosTheta;
+  float RJVars_I1_Depth;
+  float RJVars_I2_Depth;
+  float RJVars_MP;
 
-  // Gluino Variables
-  float RJVars_MG      ;
-  float RJVars_DeltaBetaGG      ;
-  float RJVars_dphiVG      ;
-  float RJVars_P_0_CosTheta      ;
-  float RJVars_C_0_CosTheta      ;
-  float RJVars_P_0_dPhiGC        ;
-  float RJVars_P_0_MassRatioGC   ;
-  float RJVars_P_0_Jet1_pT       ;
-  float RJVars_P_0_Jet2_pT       ;
-  float RJVars_P_0_PInvHS        ;
-  float RJVars_P_1_CosTheta      ;
-  float RJVars_C_1_CosTheta      ;
-  float RJVars_P_1_dPhiGC        ;
-  float RJVars_P_1_MassRatioGC   ;
-  float RJVars_P_1_Jet1_pT       ;
-  float RJVars_P_1_Jet2_pT       ;
-  float RJVars_P_1_PInvHS        ;
+  float RJVars_dphiPV1a ;
+  float RJVars_cosV1a   ;
+  float RJVars_dphiCV2a ;
+  float RJVars_cosV2a;
+  float RJVars_dphiPV1b;
+  float RJVars_cosV1b;
+  float RJVars_dphiCV2b;
+  float RJVars_cosV2b;
 
-  //QCD Variables
-  float RJVars_QCD_dPhiR         ;
-  float RJVars_QCD_Rpt           ;
-  float RJVars_QCD_Rmsib         ;
-  float RJVars_QCD_Rpsib         ;
-  float RJVars_QCD_Delta1         ;
-  float RJVars_QCD_Delta2         ;
-
-  //H_{n,m}^{Frame} scale variables
-  //FIXME / todo clean up the naming here
-
+  float RJVars_V1_N;
+  float RJVars_V2_N;
+  float RJVars_DeltaBetaGG;
+  float RJVars_dphiVG;
+  float RJVars_QCD_dPhiR;
+  float RJVars_QCD_Rpt;
+  float RJVars_QCD_Rsib;
+  float RJVars_QCD_Delta1;
   float RJVars_H2PP;
   float RJVars_H3PP;
   float RJVars_H4PP;
   float RJVars_H6PP;
-
   float RJVars_H2Pa;
   float RJVars_H2Pb;
   float RJVars_H3Pa;
   float RJVars_H3Pb;
-
   float RJVars_H4Pa;
   float RJVars_H4Pb;
   float RJVars_H5Pa;
   float RJVars_H5Pb;
-
   float RJVars_H2Ca;
   float RJVars_H2Cb;
   float RJVars_H3Ca;
   float RJVars_H3Cb;
-
   float RJVars_HT4PP;
   float RJVars_HT6PP;
   float RJVars_minH3P;
-
   float RJVars_sangle;
   float RJVars_dangle;
   float RJVars_ddphiPC;

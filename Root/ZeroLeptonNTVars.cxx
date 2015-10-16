@@ -267,79 +267,65 @@ std::string NTRJigsawVars::toString()
 }
 
 void NTRJigsawVars::Reset()
-{
+{RJVars_PP_Mass           = 0.f;
+ RJVars_PP_InvGamma       = 0.f;
+ RJVars_PP_dPhiBetaR      = 0.f;
+ RJVars_PP_dPhiVis        = 0.f;
+ RJVars_PP_CosTheta       = 0.f;
+ RJVars_PP_dPhiDecayAngle = 0.f;
+ RJVars_PP_VisShape       = 0.f;
+ RJVars_PP_MDeltaR        = 0.f;
+ RJVars_P1_Mass           = 0.f;
+ RJVars_P1_CosTheta       = 0.f;
+ RJVars_P2_Mass           = 0.f;
+ RJVars_P2_CosTheta       = 0.f;
+ RJVars_I1_Depth          = 0.f;
+ RJVars_I2_Depth          = 0.f;
+ RJVars_MP                = 0.f;
 
-  RJVars_PP_Mass           =0.f;
-  RJVars_PP_InvGamma       =0.f;
-  RJVars_PP_dPhiBetaR      =0.f;
-  RJVars_PP_dPhiVis        =0.f;
-  RJVars_PP_CosTheta       =0.f;
-  RJVars_PP_dPhiDecayAngle =0.f;
-  RJVars_PP_VisShape       =0.f;
-  RJVars_PP_MDeltaR        =0.f;
-  RJVars_P1_Mass           =0.f;
-  RJVars_P1_CosTheta       =0.f;
-  RJVars_P2_Mass           =0.f;
-  RJVars_P2_CosTheta       =0.f;
-  RJVars_I1_Depth          =0.f;
-  RJVars_I2_Depth          =0.f;
-  RJVars_V1_N              =0.f;
-  RJVars_V2_N              =0.f;
-  RJVars_MG                =0.f;
-  RJVars_DeltaBetaGG       =0.f;
-  RJVars_dphiVG            =0.f;
-  RJVars_P_0_CosTheta      =0.f;
-  RJVars_C_0_CosTheta      =0.f;
-  RJVars_P_0_dPhiGC        =0.f;
-  RJVars_P_0_MassRatioGC   =0.f;
-  RJVars_P_0_Jet1_pT       =0.f;
-  RJVars_P_0_Jet2_pT       =0.f;
-  RJVars_P_0_PInvHS        =0.f;
-  RJVars_P_1_CosTheta      =0.f;
-  RJVars_C_1_CosTheta      =0.f;
-  RJVars_P_1_dPhiGC        =0.f;
-  RJVars_P_1_MassRatioGC   =0.f;
-  RJVars_P_1_Jet1_pT       =0.f;
-  RJVars_P_1_Jet2_pT       =0.f;
-  RJVars_P_1_PInvHS        =0.f;
-  RJVars_QCD_dPhiR         =0.f;
-  RJVars_QCD_Rpt           =0.f;
-  RJVars_QCD_Rmsib         =0.f;
-  RJVars_QCD_Rpsib         =0.f;
-  RJVars_QCD_Delta1        =0.f;
-  RJVars_QCD_Delta2        =0.f;
+ RJVars_dphiPV1a          = 0.f;
+ RJVars_cosV1a            = 0.f;
+ RJVars_dphiCV2a          = 0.f;
+ RJVars_cosV2a      = 0.f;
+ RJVars_dphiPV1b    = 0.f;
+ RJVars_cosV1b      = 0.f;
+ RJVars_dphiCV2b    = 0.f;
+ RJVars_cosV2b      = 0.f;
 
-  RJVars_H2PP              =0.f;
-  RJVars_H3PP              =0.f;
-  RJVars_H4PP              =0.f;
-  RJVars_H6PP              =0.f;
-
-  RJVars_H2Pa              =0.f;
-  RJVars_H2Pb              =0.f;
-  RJVars_H3Pa              =0.f;
-  RJVars_H3Pb              =0.f;
-
-  RJVars_H4Pa              =0.f;
-  RJVars_H4Pb              =0.f;
-  RJVars_H5Pa              =0.f;
-  RJVars_H5Pb              =0.f;
-
-  RJVars_H2Ca              =0.f;
-  RJVars_H2Cb              =0.f;
-  RJVars_H3Ca              =0.f;
-  RJVars_H3Cb              =0.f;
-
-  RJVars_HT4PP             =0.f;
-  RJVars_HT6PP             =0.f;
-  RJVars_minH3P            =0.f;
-
-  RJVars_sangle            =0.f;
-  RJVars_dangle            =0.f;
-  RJVars_ddphiPC           =0.f;
-  RJVars_sdphiPC           =0.f;
-  RJVars_dH2o3P            =0.f;
-  RJVars_RPZ_HT4PP         =0.f;
-  RJVars_RPZ_HT6PP         =0.f;
+ RJVars_V1_N        = 0.f;
+ RJVars_V2_N        = 0.f;
+ RJVars_DeltaBetaGG = 0.f;
+ RJVars_dphiVG      = 0.f;
+ RJVars_QCD_dPhiR   = 0.f;
+ RJVars_QCD_Rpt     = 0.f;
+ RJVars_QCD_Rsib    = 0.f;
+ RJVars_QCD_Delta1  = 0.f;
+ RJVars_H2PP        = 0.f;
+ RJVars_H3PP        = 0.f;
+ RJVars_H4PP        = 0.f;
+ RJVars_H6PP        = 0.f;
+ RJVars_H2Pa        = 0.f;
+ RJVars_H2Pb        = 0.f;
+ RJVars_H3Pa        = 0.f;
+ RJVars_H3Pb        = 0.f;
+ RJVars_H4Pa        = 0.f;
+ RJVars_H4Pb        = 0.f;
+ RJVars_H5Pa        = 0.f;
+ RJVars_H5Pb        = 0.f;
+ RJVars_H2Ca        = 0.f;
+ RJVars_H2Cb        = 0.f;
+ RJVars_H3Ca        = 0.f;
+ RJVars_H3Cb        = 0.f;
+ RJVars_HT4PP       = 0.f;
+ RJVars_HT6PP       = 0.f;
+ RJVars_minH3P      = 0.f;
+ RJVars_sangle      = 0.f;
+ RJVars_dangle      = 0.f;
+ RJVars_ddphiPC     = 0.f;
+ RJVars_sdphiPC     = 0.f;
+ RJVars_dH2o3P      = 0.f;
+ RJVars_RPZ_HT4PP   = 0.f;
+ RJVars_RPZ_HT6PP   = 0.f;
 
 }
 
