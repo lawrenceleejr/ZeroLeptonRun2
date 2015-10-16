@@ -14,7 +14,7 @@ class NTVars
   NTVars() { Reset(); }
 
   static std::string toString();
-  
+
   void Reset();
 
   unsigned int RunNumber, EventNumber, LumiBlockNumber, veto;
@@ -41,7 +41,7 @@ class NTVars
 
   // WARNING: if you add another vector you need to update NTVarsRead below
 
-  // STL vectors, store 4-momenta, b-tagged weight and truth flavor of 
+  // STL vectors, store 4-momenta, b-tagged weight and truth flavor of
   // every jet with pT above a threshold (40 GeV)
   std::vector< float > jetPt;
   std::vector< float > jetEta;
@@ -51,7 +51,7 @@ class NTVars
   std::vector< int > jetFlav;
   std::vector< float > jetTagU;
   std::vector< float > jetTagB;
-  std::vector< float > jetTagC;  
+  std::vector< float > jetTagC;
   std::vector< float > jetSmearSystW;
   std::vector< float > jetFracSamplingMax;
   std::vector< float > jetFracSamplingMaxIndex;
@@ -77,7 +77,7 @@ class NTVars
     inVars.setAddresses(tree);
     tree.GetEntry(1);
 */
-class NTVarsRead 
+class NTVarsRead
 {
 public:
   NTVarsRead();
@@ -97,7 +97,7 @@ private:
   std::vector< float >* p_jetSmearSystW;
   std::vector< float >* p_jetFracSamplingMax;
   std::vector< float >* p_jetFracSamplingMaxIndex;
- 
+
   std::vector< float >* p_tauPt;
   std::vector< float >* p_tauEta;
   std::vector< float >* p_tauPhi;
@@ -117,24 +117,24 @@ class NTReclusteringVars
   NTReclusteringVars() { Reset(); }
 
   static std::string toString();
-  
+
   void Reset();
 
   unsigned int NWcandidates;
   int test;
-  
+
   // WARNING: if you add another vector you need to update NTVarsRead below
 
-  // STL vectors of RT jets  
+  // STL vectors of RT jets
   std::vector< std::vector< int > > RTjets10SubJetIndeces;
-  std::vector< float > RTjetM;  
+  std::vector< float > RTjetM;
   std::vector< float > RTjetPt;
   std::vector< float > RTjetEta;
   std::vector< float > RTjetPhi;
 
 };
 
-class NTReclusteringVarsRead 
+class NTReclusteringVarsRead
 {
 public:
   NTReclusteringVarsRead();
@@ -142,24 +142,24 @@ public:
 
   NTReclusteringVars RTntv;
 private:
-  
+
   std::vector< std::vector< int > >* p_RTjets10SubJetIndeces;
   std::vector< float >* p_RTjetM;
   std::vector< float >* p_RTjetPt;
   std::vector< float >* p_RTjetEta;
   std::vector< float >* p_RTjetPhi;
-   
+
 };
 
 class NTCRZVars
 {
  public:
   NTCRZVars() { Reset(); }
-  
+
   static std::string toString();
 
   void Reset();
-  
+
   float lep1Pt, lep2Pt;
   float lep1Eta, lep2Eta;
   float lep1Phi, lep2Phi;
@@ -180,7 +180,7 @@ class NTCRWTVars
 
   static std::string toString();
   void Reset();
-  
+
   float lep1Pt, lep1Eta, lep1Phi;
   int lep1sign;
   float mt, Wpt;
@@ -195,7 +195,7 @@ class NTCRYVars
 {
  public:
   NTCRYVars() { Reset(); }
-  
+
   static std::string toString() {return std::string("origmet/F:origmetPhi/F");}
   void Reset();
 
@@ -217,7 +217,7 @@ class NTCRYVars
   std::vector<bool> phTight;
 };
 
-class NTCRYVarsRead 
+class NTCRYVarsRead
 {
 public:
   NTCRYVarsRead();
@@ -242,11 +242,11 @@ private:
 
 class NTPdfVars {
 public:
-  NTPdfVars() { 
-    Reset(0); 
+  NTPdfVars() {
+    Reset(0);
   }
   void Reset(int n)
-  { 
+  {
     NpdfWeight = n; // no need to initialize pdfWeight[] as it is dynamic aray
   }
   int NpdfWeight;
@@ -255,12 +255,12 @@ public:
 
 class NTExtraVars {
 public:
-  NTExtraVars() { 
-    Reset(); 
+  NTExtraVars() {
+    Reset();
   }
 
   static std::string toString();
-   
+
   void Reset();
 
   float mettrack;
@@ -272,64 +272,99 @@ public:
 
 class NTRJigsawVars {
 public:
-  NTRJigsawVars() { 
-    Reset(); 
+  NTRJigsawVars() {
+    Reset();
   }
 
   static std::string toString();
-   
+
   void Reset();
 
-  float RJVars_PP_Mass           ; 
-  float RJVars_PP_InvGamma       ; 
-  float RJVars_PP_dPhiBetaR      ; 
-  float RJVars_PP_dPhiVis        ; 
-  float RJVars_PP_CosTheta       ; 
-  float RJVars_PP_dPhiDecayAngle ; 
-  float RJVars_PP_VisShape       ; 
-  float RJVars_PP_MDeltaR        ; 
-  float RJVars_P1_Mass           ; 
-  float RJVars_P1_CosTheta       ; 
-  float RJVars_P2_Mass           ; 
-  float RJVars_P2_CosTheta       ; 
-  float RJVars_I1_Depth          ; 
-  float RJVars_I2_Depth          ; 
-  float RJVars_V1_N              ; 
-  float RJVars_V2_N              ;     
+  float RJVars_PP_Mass           ;
+  float RJVars_PP_InvGamma       ;
+  float RJVars_PP_dPhiBetaR      ;
+  float RJVars_PP_dPhiVis        ;
+  float RJVars_PP_CosTheta       ;
+  float RJVars_PP_dPhiDecayAngle ;
+  float RJVars_PP_VisShape       ;
+  float RJVars_PP_MDeltaR        ;
+  float RJVars_P1_Mass           ;
+  float RJVars_P1_CosTheta       ;
+  float RJVars_P2_Mass           ;
+  float RJVars_P2_CosTheta       ;
+  float RJVars_I1_Depth          ;
+  float RJVars_I2_Depth          ;
+  float RJVars_V1_N              ;
+  float RJVars_V2_N              ;
 
   // Gluino Variables
-  float RJVars_MG      ;       
-  float RJVars_DeltaBetaGG      ;       
-  float RJVars_dphiVG      ;       
-  float RJVars_P_0_CosTheta      ;       
-  float RJVars_C_0_CosTheta      ;       
-  float RJVars_P_0_dPhiGC        ;     
-  float RJVars_P_0_MassRatioGC   ;   
-  float RJVars_P_0_Jet1_pT       ; 
-  float RJVars_P_0_Jet2_pT       ; 
-  float RJVars_P_0_PInvHS        ;        
-  float RJVars_P_1_CosTheta      ;       
-  float RJVars_C_1_CosTheta      ;       
-  float RJVars_P_1_dPhiGC        ;     
-  float RJVars_P_1_MassRatioGC   ;      
-  float RJVars_P_1_Jet1_pT       ; 
-  float RJVars_P_1_Jet2_pT       ; 
-  float RJVars_P_1_PInvHS        ; 
+  float RJVars_MG      ;
+  float RJVars_DeltaBetaGG      ;
+  float RJVars_dphiVG      ;
+  float RJVars_P_0_CosTheta      ;
+  float RJVars_C_0_CosTheta      ;
+  float RJVars_P_0_dPhiGC        ;
+  float RJVars_P_0_MassRatioGC   ;
+  float RJVars_P_0_Jet1_pT       ;
+  float RJVars_P_0_Jet2_pT       ;
+  float RJVars_P_0_PInvHS        ;
+  float RJVars_P_1_CosTheta      ;
+  float RJVars_C_1_CosTheta      ;
+  float RJVars_P_1_dPhiGC        ;
+  float RJVars_P_1_MassRatioGC   ;
+  float RJVars_P_1_Jet1_pT       ;
+  float RJVars_P_1_Jet2_pT       ;
+  float RJVars_P_1_PInvHS        ;
 
   //QCD Variables
-  float RJVars_QCD_dPhiR         ;  
-  float RJVars_QCD_Rpt           ;  
-  float RJVars_QCD_Rmsib         ;  
-  float RJVars_QCD_Rpsib         ;  
-  float RJVars_QCD_Delta1         ;  
-  float RJVars_QCD_Delta2         ;  
-  
+  float RJVars_QCD_dPhiR         ;
+  float RJVars_QCD_Rpt           ;
+  float RJVars_QCD_Rmsib         ;
+  float RJVars_QCD_Rpsib         ;
+  float RJVars_QCD_Delta1         ;
+  float RJVars_QCD_Delta2         ;
+
+  //H_{n,m}^{Frame} scale variables
+  //FIXME / todo clean up the naming here
+
+  float RJVars_H2PP;
+  float RJVars_H3PP;
+  float RJVars_H4PP;
+  float RJVars_H6PP;
+
+  float RJVars_H2Pa;
+  float RJVars_H2Pb;
+  float RJVars_H3Pa;
+  float RJVars_H3Pb;
+
+  float RJVars_H4Pa;
+  float RJVars_H4Pb;
+  float RJVars_H5Pa;
+  float RJVars_H5Pb;
+
+  float RJVars_H2Ca;
+  float RJVars_H2Cb;
+  float RJVars_H3Ca;
+  float RJVars_H3Cb;
+
+  float RJVars_HT4PP;
+  float RJVars_HT6PP;
+  float RJVars_minH3P;
+
+  float RJVars_sangle;
+  float RJVars_dangle;
+  float RJVars_ddphiPC;
+  float RJVars_sdphiPC;
+  float RJVars_dH2o3P;
+  float RJVars_RPZ_HT4PP;
+  float RJVars_RPZ_HT6PP;
+
 };
 
 class NTTheoryVars {
 public:
-  NTTheoryVars() { 
-    Reset(); 
+  NTTheoryVars() {
+    Reset();
   }
 
   static std::string toString();
@@ -344,8 +379,8 @@ public:
 
 class NTISRVars {
 public:
-  NTISRVars() { 
-    Reset(); 
+  NTISRVars() {
+    Reset();
   }
   static std::string toString();
 
