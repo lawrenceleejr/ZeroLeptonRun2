@@ -1,3 +1,6 @@
+16-Oct-2015 Laurent Duflot
+	* FilterUpdateMerge.py: add protection against multiple tree cycles
+
 13-Oct-2015 Laurent Duflot
 	* python/mc15_13TeV_MCSampleList.py: add ttbar alt samples and madgraph W/Z
 

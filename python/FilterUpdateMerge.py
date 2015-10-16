@@ -167,7 +167,9 @@ class Sample:
         keys=ftemp.GetListOfKeys()
         mykeys=[]
         for k in keys:
-            kname=k.GetName()            
+            kname=k.GetName()
+            # could be have been already found with different cycle number
+            if kname in mykeys: continue
             obj=ftemp.Get(kname)
             if not obj.IsA().InheritsFrom( ROOT.TTree.Class() ): continue
             mykeys.append(kname)
