@@ -197,6 +197,7 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
 
 
 void PhysObjProxyUtils::RJigsawInit(){
+  using namespace RestFrames;
 
   // cleanup previously computed variables
   if( LAB)               delete  LAB                   ;  LAB               = nullptr;
@@ -232,22 +233,24 @@ void PhysObjProxyUtils::RJigsawInit(){
   if( InvMass_bkg)       delete  InvMass_bkg           ;  InvMass_bkg       = nullptr;
   if( InvRapidity_bkg)   delete  InvRapidity_bkg       ;  InvRapidity_bkg   = nullptr;
 
-  LAB   = new RestFrames:: LabRecoFrame("LAB","lab");
-  PP    = new RestFrames:: DecayRecoFrame("PP","PP");
-  Pa    = new RestFrames:: DecayRecoFrame("Pa","P_{a}");
-  Pb    = new RestFrames:: DecayRecoFrame("Pb","P_{b}");
-  Ca    = new RestFrames:: DecayRecoFrame("Ca","C_{a}");
-  Cb    = new RestFrames:: DecayRecoFrame("Cb","C_{b}");
-  SAV1a = new RestFrames:: SelfAssemblingRecoFrame("SAV1a","SA_{V1a}");
-  SAV1b = new RestFrames:: SelfAssemblingRecoFrame("SAV1b","SA_{V1b}");
-  SAV2a = new RestFrames:: SelfAssemblingRecoFrame("SAV2a","SA_{V2a}");
-  SAV2b = new RestFrames:: SelfAssemblingRecoFrame("SAV2b","SA_{V2b}");
-  V1a   = new RestFrames:: VisibleRecoFrame("V1a","V_{1a}");
-  V1b   = new RestFrames:: VisibleRecoFrame("V1b","V_{1b}");
-  V2a   = new RestFrames:: VisibleRecoFrame("V2a","V_{2a}");
-  V2b   = new RestFrames:: VisibleRecoFrame("V2b","V_{2b}");
-  Ia    = new RestFrames:: InvisibleRecoFrame("Ia","I_{a}");
-  Ib    = new RestFrames:: InvisibleRecoFrame("Ib","I_{b}");
+  // RestFrames stuff
+
+  LAB = new LabRecoFrame("LAB","lab");
+  PP = new DecayRecoFrame("PP","PP");
+  Pa = new DecayRecoFrame("Pa","P_{a}");
+  Pb = new DecayRecoFrame("Pb","P_{b}");
+  Ca = new DecayRecoFrame("Ca","C_{a}");
+  Cb = new DecayRecoFrame("Cb","C_{b}");
+  SAV1a = new SelfAssemblingRecoFrame("SAV1a","SA_{V1a}");
+  SAV1b = new SelfAssemblingRecoFrame("SAV1b","SA_{V1b}");
+  SAV2a = new SelfAssemblingRecoFrame("SAV2a","SA_{V2a}");
+  SAV2b = new SelfAssemblingRecoFrame("SAV2b","SA_{V2b}");
+  V1a = new VisibleRecoFrame("V1a","V_{1a}");
+  V1b = new VisibleRecoFrame("V1b","V_{1b}");
+  V2a = new VisibleRecoFrame("V2a","V_{2a}");
+  V2b = new VisibleRecoFrame("V2b","V_{2b}");
+  Ia = new InvisibleRecoFrame("Ia","I_{a}");
+  Ib = new InvisibleRecoFrame("Ib","I_{b}");
 
   LAB->SetChildFrame(*PP);
   PP->AddChildFrame(*Pa);
@@ -270,6 +273,79 @@ void PhysObjProxyUtils::RJigsawInit(){
 
   LAB->InitializeTree();
 
+  INV = new InvisibleGroup("INV","Invisible State Jigsaws");
+  INV->AddFrame(*Ia);
+  INV->AddFrame(*Ib);
+
+  VIS = new CombinatoricGroup("VIS","Visible Object Jigsaws");
+  VIS->AddFrame(*V1a);
+  VIS->SetNElementsForFrame(*V1a,0,false);
+  VIS->AddFrame(*V1b);
+  VIS->SetNElementsForFrame(*V1b,0,false);
+  VIS->AddFrame(*V2a);
+  VIS->SetNElementsForFrame(*V2a,1,false);
+  VIS->AddFrame(*V2b);
+  VIS->SetNElementsForFrame(*V2b,1,false);
+
+  InvMassJigsaw = new SetMassInvJigsaw("InvMassJigsaw", "Invisible system mass Jigsaw");
+  INV->AddJigsaw(*InvMassJigsaw);
+
+  InvRapidityJigsaw = new SetRapidityInvJigsaw("InvRapidityJigsaw", "Invisible system rapidity Jigsaw");
+  INV->AddJigsaw(*InvRapidityJigsaw);
+  InvRapidityJigsaw->AddVisibleFrames(LAB->GetListVisibleFrames());
+
+  InvCBJigsaw = new ContraBoostInvJigsaw("InvCBJigsaw","Contraboost invariant Jigsaw");
+  INV->AddJigsaw(*InvCBJigsaw);
+  InvCBJigsaw->AddVisibleFrames(Pa->GetListVisibleFrames(), 0);
+  InvCBJigsaw->AddVisibleFrames(Pb->GetListVisibleFrames(), 1);
+  InvCBJigsaw->AddInvisibleFrame(*Ia, 0);
+  InvCBJigsaw->AddInvisibleFrame(*Ib, 1);
+
+  CombPPJigsaw = new MinMassesCombJigsaw("CombPPJigsaw","Minimize m _{V_{a,b}} Jigsaw");
+  VIS->AddJigsaw(*CombPPJigsaw);
+  CombPPJigsaw->AddFrame(*V1a,0);
+  CombPPJigsaw->AddFrame(*V1b,1);
+  CombPPJigsaw->AddFrame(*V2a,0);
+  CombPPJigsaw->AddFrame(*V2b,1);
+
+  CombPaJigsaw = new MinMassesCombJigsaw("C1HEM_JIGSAW","Minimize m _{C_{a}} Jigsaw");
+  VIS->AddJigsaw(*CombPaJigsaw);
+  CombPaJigsaw->AddFrame(*V1a,0);
+  CombPaJigsaw->AddFrame(*V2a,1);
+
+  CombPbJigsaw = new MinMassesCombJigsaw("C2HEM_JIGSAW","Minimize m _{C_{b}} Jigsaw");
+  VIS->AddJigsaw(*CombPbJigsaw);
+  CombPbJigsaw->AddFrame(*V1b,0);
+  CombPbJigsaw->AddFrame(*V2b,1);
+
+  LAB->InitializeAnalysis();
+
+  LAB_bkg = new LabRecoFrame("LAB","lab");
+  S_bkg   = new SelfAssemblingRecoFrame("CM","CM");
+  V_bkg   = new VisibleRecoFrame("V_bkg","Vis");
+  I_bkg   = new InvisibleRecoFrame("I_bkg","Inv");
+
+  LAB_bkg->SetChildFrame(*S_bkg);
+  S_bkg->AddChildFrame(*V_bkg);
+  S_bkg->AddChildFrame(*I_bkg);
+
+  LAB_bkg->InitializeTree();
+
+  INV_bkg = new InvisibleGroup("INV_bkg","Invisible State Jigsaws");
+  INV_bkg->AddFrame(*I_bkg);
+
+  VIS_bkg = new CombinatoricGroup("VIS_bkg","Visible Object Jigsaws");
+  VIS_bkg->AddFrame(*V_bkg);
+  VIS_bkg->SetNElementsForFrame(*V_bkg,1,false);
+
+  InvMass_bkg = new SetMassInvJigsaw("InvMass_bkg", "Invisible system mass Jigsaw");
+  INV_bkg->AddJigsaw(*InvMass_bkg);
+
+  InvRapidity_bkg = new SetRapidityInvJigsaw("InvRapidity_bkg", "Invisible system rapidity Jigsaw");
+  INV_bkg->AddJigsaw(*InvRapidity_bkg);
+  InvRapidity_bkg->AddVisibleFrames(LAB_bkg->GetListVisibleFrames());
+
+  LAB_bkg->InitializeAnalysis();
 
   return;
 
