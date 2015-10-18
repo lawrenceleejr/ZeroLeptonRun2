@@ -221,6 +221,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   m_SUSYObjTool->resetSystematics();
 
   //----------------------------------------   Taus
+  if(0){
   std::pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* > susytaus = std::make_pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);
   const xAOD::TauJetContainer* taus = 0;
   if (!event.retrieve(taus,m_taukey).isSuccess()){
@@ -268,7 +269,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   if ( ! store->record(susytaus.second,"SUSYTaus"+m_suffix+"Aux.").isSuccess()) {
     throw std::runtime_error("Could not store SUSYTaus"+m_suffix+"Aux.");
   }
-
+}
 
 
   // loop over systematics variations

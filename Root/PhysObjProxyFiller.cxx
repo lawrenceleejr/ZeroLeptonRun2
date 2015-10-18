@@ -131,7 +131,8 @@ void PhysObjProxyFiller::FillMuonProxies(std::vector<MuonProxy>& baseline_muons,
 
 void PhysObjProxyFiller::FillTauProxies(std::vector<TauProxy>& baseline_taus,
 					std::vector<TauProxy>& signal_taus)
-{
+{ return;
+
   baseline_taus.clear();
   signal_taus.clear();
   xAOD::TStore* store = xAOD::TActiveStore::store();
