@@ -6,6 +6,8 @@
 #include "AsgTools/ToolHandle.h"
 #include "TauAnalysisTools/TauSelectionTool.h"
 #include "TauAnalysisTools/TauEfficiencyCorrectionsTool.h"
+#include "TauAnalysisTools/TauTruthMatchingTool.h"
+
 namespace CP{
 	class SystematicSet;
 }
@@ -35,22 +37,27 @@ public:
 
 private:
   void initSUSYTools();
-  void fillTriggerInfo(xAOD::TEvent& event) const;
-
+  void fillTriggerInfo     (xAOD::TEvent& event) const;
+  void fillTriggerJetAndMET(xAOD::TEvent& event) const;
   ST::SUSYObjDef_xAOD* m_SUSYObjTool;
+
   bool m_IsData;
+  bool m_Is25ns;
   bool m_IsAtlfast;
   bool m_UseSmearedJets;
   bool m_DoSystematics;
   bool m_PhotonInOR;
 
+
   ToolHandle<TauAnalysisTools::ITauSelectionTool> m_tauSelTool;
   ToolHandle<TauAnalysisTools::ITauEfficiencyCorrectionsTool> m_tauEffTool;
+  ToolHandle<TauAnalysisTools::ITauTruthMatchingTool> m_tauTruthMatchTool;
   std::vector<CP::SystematicSet> m_tauEffSystSetList;
 
-  std::string m_jetkey; 
-  std::string m_taukey; 
+  std::string m_jetkey;
+  std::string m_taukey;
   std::string m_suffix;
+  std::string m_suffixRecl;
   ZeroLeptonRunPeriod m_period;
   ZeroLeptonDerivationTag m_derivationTag;
   int m_JESNuisanceParameterSet;
@@ -59,7 +66,7 @@ private:
 
   std::vector<ST::SystInfo> m_SystInfoList;
   std::vector<std::string> m_SystMatch;
-
+  bool m_buildTriggerJetAndMET;
 public:
   ClassDef(BuildSUSYObjects,0);
 };

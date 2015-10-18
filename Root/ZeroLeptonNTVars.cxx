@@ -84,6 +84,7 @@ void NTVars::Reset()
   tauLooseSFSystDown.clear();
 
   systWeights.clear();
+  triggerBits.clear();
 }
 
 NTVarsRead::NTVarsRead(): ntv()
@@ -111,6 +112,7 @@ NTVarsRead::NTVarsRead(): ntv()
   p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown;
 
   p_systWeights = &ntv.systWeights;
+  p_triggerBits = &ntv.triggerBits;
 }
 
 
@@ -142,19 +144,21 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
   tree->GetBranch("tauLooseSFSystDown")->SetAddress(&p_tauLooseSFSystDown);
 
   tree->GetBranch("systWeights")->SetAddress(&p_systWeights);
+  tree->GetBranch("triggerBits")->SetAddress(&p_triggerBits);
 
 }
 
 
 std::string NTReclusteringVars::toString()
 {
-  return std::string("NWcandidates/i:test/i");
+  return std::string("NWcandidates/i:test/i:nJetsRecl/I");
 }
 
 void NTReclusteringVars::Reset()
 {
   NWcandidates = 0;
   test = 0;
+  nJetsRecl = 0;
 
   // Clear vectors
   RTjets10SubJetIndeces.clear();
@@ -162,7 +166,15 @@ void NTReclusteringVars::Reset()
   RTjetEta.clear();
   RTjetPhi.clear();
   RTjetM.clear();
-
+  ReclJetMass.clear();
+  ReclJetPt.clear();
+  ReclJetEta.clear();
+  ReclJetPhi.clear();
+  D2.clear();
+  isWmedium.clear();
+  isWtight.clear();
+  isZmedium.clear();
+  isZtight.clear();
 }
 
 NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
@@ -174,6 +186,15 @@ NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
   p_RTjetEta  = &RTntv.RTjetEta;
   p_RTjetPhi  = &RTntv.RTjetPhi;
   p_RTjetM    = &RTntv.RTjetM;
+  p_ReclJetMass = &RTntv.ReclJetMass;
+  p_ReclJetPt   = &RTntv.ReclJetPt;
+  p_ReclJetEta  = &RTntv.ReclJetEta;
+  p_ReclJetPhi  = &RTntv.ReclJetPhi;
+  p_D2          = &RTntv.D2;
+  p_isWmedium   = &RTntv.isWmedium;
+  p_isWtight    = &RTntv.isWtight;
+  p_isZmedium   = &RTntv.isZmedium;
+  p_isZtight    = &RTntv.isZtight;
 
 }
 
@@ -188,11 +209,21 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("RTjetEta")->SetAddress(&p_RTjetEta);
   tree->GetBranch("RTjetPhi")->SetAddress(&p_RTjetPhi);
   tree->GetBranch("RTjetM")->SetAddress(&p_RTjetM);
+  tree->GetBranch("ReclJetMass")->SetAddress(&p_ReclJetMass);
+  tree->GetBranch("ReclJetPt")->SetAddress(&p_ReclJetPt);
+  tree->GetBranch("ReclJetEta")->SetAddress(&p_ReclJetEta);
+  tree->GetBranch("ReclJetPhi")->SetAddress(&p_ReclJetPhi);
+  tree->GetBranch("D2")->SetAddress(&p_D2);
+  tree->GetBranch("isWmedium")->SetAddress(&p_isWmedium);
+  tree->GetBranch("isWtight")->SetAddress(&p_isWtight);
+  tree->GetBranch("isZmedium")->SetAddress(&p_isZmedium);
+  tree->GetBranch("isZtight")->SetAddress(&p_isZtight);
+
 }
 
 std::string NTCRWTVars::toString()
 {
-  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F");
+  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:dphilMET/F:Weta/F:lep1ptvarcone20/F:lep1ptvarcone30/F:lep1topoetcone20/F");
   //return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:lep1Iso/F:lep1DRjet/F:lep1jetJVF/F");
 }
 
@@ -202,6 +233,11 @@ void NTCRWTVars::Reset()
   lep1sign = 0;
   mt = 0.f;
   Wpt = 0.f;
+  dphilMET = 0.f;
+  Weta = 0.f;
+  lep1ptvarcone20 = 0.f;
+  lep1ptvarcone30 = 0.f;
+  lep1topoetcone20 = 0.f;
   //leptonWeight     = 1.f;
   //leptonWeightUp   = 1.f;
   //leptonWeightDown = 1.f;
@@ -243,6 +279,39 @@ void NTCRZVars::Reset()
 }
 
 
+std::string NTCR3LVars::toString()
+{
+  return std::string("lep1Pt/F:lep2Pt/F:lep3Pt/F:lep1Eta/F:lep2Eta/F:lep3Eta/F:lep1Phi/F:lep2Phi/F:lep3Phi/F:lep1sign/I:lep2sign/I:lep3sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1ptvarcone20/F:lep2ptvarcone20/F:lep3ptvarcone20/F:lep1ptvarcone30/F:lep2ptvarcone30/F:lep3ptvarcone30/F:lep1topoetcone20/F:lep2topoetcone20/F:lep3topoetcone20/F:lep1DRjet/F:lep2DRjet/F:lep3DRjet/F:lep1jetJVF/F:lep2jetJVF/F:lep3jetJVF/F:mt/F:Wpt/F:lepfromW/I:lepptfromW/F");
+}
+
+void NTCR3LVars::Reset()
+{
+  lep1Pt = lep1Eta = lep1Phi = 0.f;
+  lep1sign = 0;
+  lep2Pt = lep2Eta = lep2Phi = 0.f;
+  lep2sign = 0;
+  lep3Pt = lep3Eta = lep3Phi = 0.f;
+  lep3sign = 0;
+  lepfromW = 0;
+  lepptfromW = 0 ;
+  mll = 0.f;
+  Zpt = 0.f;
+  mt = 0.f;
+  Wpt = 0.f;
+  leptonWeight     = 1.f;
+  leptonWeightUp   = 1.f;
+  leptonWeightDown = 1.f;
+  triggerWeight     = 1.f;
+  triggerWeightUp   = 1.f;
+  triggerWeightDown = 1.f;
+  fakemet = fakemetPhi = 0.f;
+  lep1ptvarcone20 = lep2ptvarcone20 = lep3ptvarcone20 = 0.f;
+  lep1ptvarcone30 = lep2ptvarcone30 = lep3ptvarcone30 = 0.f;
+  lep1topoetcone20 = lep2topoetcone20 = lep3topoetcone20 = 0.f;
+  lep1DRjet = lep2DRjet = lep3DRjet = 999.f;
+  lep1jetJVF = lep2jetJVF = lep3jetJVF = -999.f;
+}
+
 
 std::string NTExtraVars::toString()
 {
@@ -259,6 +328,7 @@ void NTExtraVars::Reset()
   mT2=0.f;
   mT2_noISR=0.f;
   Ap =0.f;
+  //  triggers = 0 ;
 }
 
 std::string NTRJigsawVars::toString()
@@ -326,7 +396,6 @@ void NTRJigsawVars::Reset()
  RJVars_dH2o3P      = 0.f;
  RJVars_RPZ_HT4PP   = 0.f;
  RJVars_RPZ_HT6PP   = 0.f;
-
 }
 
 
@@ -404,6 +473,9 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
 
   tree->Branch("systWeights",&(ntv.systWeights));
+  tree->Branch("triggerBits",&(ntv.triggerBits));
+
+  treePolicies(tree);
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
@@ -416,7 +488,16 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   tree->Branch("RTjetEta",&(RTntv.RTjetEta));
   tree->Branch("RTjetPhi",&(RTntv.RTjetPhi));
   tree->Branch("RTjetM",&(RTntv.RTjetM));
-
+  tree->Branch("ReclJetMass",&(RTntv.ReclJetMass));
+  tree->Branch("ReclJetPt",&(RTntv.ReclJetPt));
+  tree->Branch("ReclJetEta",&(RTntv.ReclJetEta));
+  tree->Branch("ReclJetPhi",&(RTntv.ReclJetPhi));
+  tree->Branch("D2",&(RTntv.D2));
+  tree->Branch("isWmedium",&(RTntv.isWmedium));
+  tree->Branch("isWtight",&(RTntv.isWtight));
+  tree->Branch("isZmedium",&(RTntv.isZmedium));
+  tree->Branch("isZtight",&(RTntv.isZtight));
+  treePolicies(tree);
 }
 
 
@@ -437,6 +518,9 @@ void NTCRYVars::Reset()
   //phisEMTight.clear();
   phLoose.clear();
   phTight.clear();
+  phTruthType.clear();
+  phTruthOrigin.clear();
+  phisEMvalue.clear();
 }
 
 
@@ -455,6 +539,9 @@ NTCRYVarsRead::NTCRYVarsRead(): ntv()
   //p_phisEMTight  = &ntv.phisEMTight;
   p_phLoose = &ntv.phLoose;
   p_phTight = &ntv.phTight;
+  p_phTruthType = &ntv.phTruthType;
+  p_phTruthOrigin = &ntv.phTruthOrigin;
+  p_phisEMvalue = &ntv.phisEMvalue;
 }
 
 void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
@@ -473,6 +560,10 @@ void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
   //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
   tree->Branch("phLoose",&(cryntv.phLoose));
   tree->Branch("phTight",&(cryntv.phTight));
+  tree->Branch("phTruthType",&(cryntv.phTruthType));
+  tree->Branch("phTruthOrigin",&(cryntv.phTruthOrigin));
+  tree->Branch("phisEMvalue",&(cryntv.phisEMvalue));
+  treePolicies(tree);
 }
 
 void NTCRYVarsRead::setAddresses(TTree* tree)
@@ -491,5 +582,8 @@ void NTCRYVarsRead::setAddresses(TTree* tree)
   //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
   tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
   tree->GetBranch("phTight")->SetAddress(&p_phTight);
+  tree->GetBranch("phTruthType")->SetAddress(&p_phTruthType);
+  tree->GetBranch("phTruthOrigin")->SetAddress(&p_phTruthOrigin);
+  tree->GetBranch("phisEMvalue")->SetAddress(&p_phisEMvalue);
 }
 

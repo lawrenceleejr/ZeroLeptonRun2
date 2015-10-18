@@ -1,9 +1,8 @@
-#ifndef ZeroLeptonRun2_ZeroLeptonCRY_H_
-#define ZeroLeptonRun2_ZeroLeptonCRY_H_
+#ifndef ZeroLeptonRun2_ZeroLeptonCR3L_H_
+#define ZeroLeptonRun2_ZeroLeptonCR3L_H_
 
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
-#include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PhysObjProxyFiller.h"
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/ZeroLeptonUtils.h"
@@ -12,20 +11,18 @@
 #include "ZeroLeptonRun2/PhysObjProxyUtils.h"
 #include "ZeroLeptonRun2/Counter.h"
 
-#include "AsgTools/AsgMetadataTool.h"
-#include "AsgTools/ToolHandle.h"
-
 class TTree;
-class IAsgPhotonIsEMSelector;
+class TLorentzVector;
+class TVector2;
 
 #include <string>
 #include <map>
 
 
-class ZeroLeptonCRY : public cafe::Processor {
+class ZeroLeptonCR3L : public cafe::Processor {
 public:
-  ZeroLeptonCRY(const char *name);
-  ~ZeroLeptonCRY();
+  ZeroLeptonCR3L(const char *name);
+  ~ZeroLeptonCR3L();
   void begin();
   void finish();
   bool processEvent(xAOD::TEvent& event);
@@ -33,27 +30,30 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose, std::vector<float>& vetcone20, std::vector<float>& vptvarcone20, 
-		     std::vector<float>& vptcone20,std::vector<float>& vetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,//std::vector<int>& visEMTight,
-		     std::vector<float>& vpt, std::vector<float>& veta, std::vector<int>& vtruthtype, std::vector<int>& vtruthorigin, std::vector<int>& visEMtight);
+  void FillCR3LVars(NTCR3LVars& cr3lvars, std::vector<TLorentzVector>& lepton, const TVector2& met, std::vector<int> lepsigns, int lepfromW, float InvMassLepPair, std::vector<float> vptvarcone20, std::vector<float> vptvarcone30, std::vector<float> vetcone20, bool isTruth, float lepptfromW);
+
 
   TTree* m_tree;
   std::string m_stringRegion;
   bool m_doSmallNtuple;
   bool m_fillTRJigsawVars;
   bool m_fillReclusteringVars;
-  bool m_doRecl;
   bool m_IsData;
-  bool m_IsTruth;
   bool m_IsSignal;
+  bool m_IsTruth;
+  bool m_isVR;
+  bool m_doRecl;
   bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
+  bool m_isMuonChannel;
+  bool m_isElectronChannel;
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
   NTRJigsawVars m_rjigsawntv;
   NTReclusteringVars m_RTntv;
-  NTCRYVars m_cryntv;
+  NTTheoryVars m_theoryntv;
+  NTCR3LVars m_cr3lntv;
 
   std::string m_suffix;
   std::string m_suffixRecl;
@@ -66,14 +66,12 @@ private:
   Counter* m_counter;
   CounterRepository m_counterRepository;
 
-  ToolHandle<IAsgPhotonIsEMSelector>     m_photonSelIsEM;
-
   // TODO : an unordered_map would be faster
   std::map<std::string,TTree*> m_treeRepository;
 
   ZeroLeptonDerivationTag m_derivationTag;
 public:
-  ClassDef(ZeroLeptonCRY,0);
+  ClassDef(ZeroLeptonCR3L,0);
 };
 
-#endif // ZeroLeptonRun2_ZeroLeptonCRY_H_
+#endif // ZeroLeptonRun2_ZeroLeptonCR3L_H_

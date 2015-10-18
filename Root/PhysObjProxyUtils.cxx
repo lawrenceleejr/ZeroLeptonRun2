@@ -84,7 +84,6 @@ PhysObjProxyUtils::~PhysObjProxyUtils()
   delete VIS_bkg;
   delete InvMass_bkg;
   delete InvRapidity_bkg;
-
 }
 
 
@@ -165,7 +164,6 @@ double PhysObjProxyUtils::Meff(const std::vector<JetProxy>& jets, size_t njets, 
 void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, double & Sp, double & ST, double & Ap)
 {
 
-  int njet = jets.size(); //you can set Number of jets for calculation
   Sp=-1;
   ST=-1;
   Ap=-1;
@@ -173,26 +171,23 @@ void PhysObjProxyUtils::ComputeSphericity(const std::vector<JetProxy>& jets, dou
   vector<TLorentzVector> v_tlv;
 
   //prepare vector<TLorentzVector> of jets to use
-  for(size_t ijet=0; ijet<jets.size(); ijet++)
-    {
-
-      //      if(jets[ijet].Pt()<ptcut)break;
-      TLorentzVector jet;
-      jet.SetPtEtaPhiM(jets[ijet].Pt(),
-		       jets[ijet].Eta(),
+  for(size_t ijet=0; ijet<jets.size(); ijet++)  {
+    if ( jets[ijet].Pt() < 40000. ) continue;
+    TLorentzVector jet;
+    jet.SetPtEtaPhiM(jets[ijet].Pt(),
+		     jets[ijet].Eta(),
 		       jets[ijet].Phi(),
-		       jets[ijet].M());
-      v_tlv.push_back(jet);
-    }
+		     jets[ijet].M());
+    v_tlv.push_back(jet);
+  }
 
-    if(v_tlv.size() < (size_t)njet || v_tlv.size()==0)return ;
-
-
-    Sphericity sp; //construct
-    sp.SetTLV(v_tlv, njet);
-    sp.GetSphericity(Sp, ST, Ap);
+  int njet = v_tlv.size();
+  if(v_tlv.size() < (size_t)njet || v_tlv.size()==0)return ;
 
 
+  Sphericity sp; //construct
+  sp.SetTLV(v_tlv, njet);
+  sp.GetSphericity(Sp, ST, Ap);
 };
 
 
@@ -356,19 +351,23 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 						  Double_t metx,
 						  Double_t mety,
 						  std::map<TString,float>& RJigsawVariables,
-						  Double_t jetPtCut
+						  Double_t jetPtCut,
+						  size_t njetsCut//todo reimplement this
 						  ){
   using namespace RestFrames;
   TVector3 ETMiss(metx , mety , 0) ;
 
   vector<TLorentzVector> Jets;//translate to the code from Chris
-  for( std::vector<JetProxy>::const_iterator ijet = jets.begin();
-       ijet != jets.end();
-       ++ijet
-       ){
-    if( (*ijet).Pt() > jetPtCut &&
-	(*ijet).Eta() < 2.8 ) //todo FIXME hardcode
-      Jets.push_back( (*ijet) );//we might not need to do this but let's be a bit safer
+
+  for( size_t jj = 0; jj < std::min(njetsCut, jets.size()); ++jj){
+  // for( std::vector<JetProxy>::const_iterator ijet = jets.begin();
+  //      ijet != jets.end();
+  //      ++ijet
+  //      ){
+    JetProxy const & ijet = jets.at(jj);
+    if( (ijet).Pt() > jetPtCut &&
+	(ijet).Eta() < 2.8 ) //todo FIXME hardcode
+      Jets.push_back( (ijet) );//we might not need to do this but let's be a bit safer
   }
 
   // need two jets to play
@@ -1328,6 +1327,11 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
   extrantv.Ap=Ap;
 }
 
+// void PhysObjProxyUtils::FillNTExtraVarsTriggerBits(NTExtraVars& extrantv,
+// 						   long triggers){
+//   extrantv.triggers = triggers;
+// }
+
 void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
               std::map<TString,float> & RJigsawVariables
           )
@@ -1578,9 +1582,21 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   }
 }
 
+void PhysObjProxyUtils::FillTriggerBits(NTVars& ntv,
+					long trigger)
+{
+  ntv.triggerBits.push_back(trigger);
+}
+
+
 
 void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv,
-				   const std::vector<JetProxy>& good_jets)
+					       const std::vector<JetProxy>& good_jets,
+					       std::vector<float> vReclJetMass, std::vector<float> vReclJetPt,
+                                               std::vector<float> vReclJetEta, std::vector<float> vReclJetPhi,
+                                               std::vector<float> vD2,std::vector<bool> visWmedium,
+                                               std::vector<bool> visWtight, std::vector<bool> visZmedium,
+                                               std::vector<bool> visZtight)
 {
   RTntv.Reset();
 
@@ -1606,6 +1622,18 @@ void PhysObjProxyUtils::FillNTReclusteringVars(NTReclusteringVars& RTntv,
   }
   RTntv.NWcandidates= NWcandidates;
 
+  // NEW RECLUSTERING
+
+  RTntv.nJetsRecl  = vReclJetMass.size();
+  RTntv.ReclJetMass = vReclJetMass;
+  RTntv.ReclJetPt = vReclJetPt;
+  RTntv.ReclJetPhi = vReclJetPhi;
+  RTntv.ReclJetEta = vReclJetEta;
+  RTntv.D2 = vD2;
+  RTntv.isWmedium = visWmedium;
+  RTntv.isWtight = visWtight;
+  RTntv.isZmedium = visZmedium;
+  RTntv.isZtight = visZtight;
 }
 
 PhysObjProxyUtils::ReclJets PhysObjProxyUtils::Recluster(const std::vector<JetProxy>& small_jets, double PTcut, double fcut, double jetRad){

@@ -1,6 +1,7 @@
 #include "ZeroLeptonRun2/ZeroLeptonSR.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 
+#include "ZeroLeptonRun2/BosonTagging.h"
 
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
@@ -23,11 +24,13 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_tree(0), 
     m_stringRegion("SRAll"), 
     m_doSmallNtuple(true),
-    m_fillTRJigsawVars(false),
+    m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
     m_IsTruth(false),
     m_IsSignal(false),
+    m_suffixRecl(""),
+    m_doRecl(false),
     m_DoSystematics(false),
     m_period(INVALID),
     m_suffix(""),
@@ -41,10 +44,12 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
-  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
   m_IsTruth = config.get("IsTruth",false);
   m_IsSignal = config.get("IsSignal",false);
+  m_suffixRecl = config.get("suffixRecl","");
+  m_doRecl = config.get("doRecl",false);
   m_DoSystematics = config.get("DoSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
@@ -59,7 +64,7 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
 
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
@@ -108,6 +113,8 @@ void ZeroLeptonSR::begin()
     m_counter = new Counter("ZeroLeptonCounter"+m_stringRegion,40,m_IsSignal);
     if(m_doSmallNtuple) m_tree = bookTree(sSR);
   }
+
+  if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
 
 }
 
@@ -214,9 +221,13 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
-  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets;
+  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl;
+  std::vector<float> vD2;
   if(! m_IsTruth){
     m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
+    if(m_doRecl){
+      m_physobjsFiller->FillJetReclProxies(good_jets_recl,vD2);
+    }
   }
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
@@ -245,6 +256,42 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   std::vector<TauProxy> baseline_taus, signal_taus;
   if(! m_IsTruth){
     m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
+  }
+
+  // Boson Tagging
+
+  std::vector<float> vReclJetMass ;
+  std::vector<float> vReclJetPt;
+  std::vector<float> vReclJetEta;
+  std::vector<float> vReclJetPhi;
+  std::vector<bool> visWtight ;
+  std::vector<bool> visWmedium ;
+  std::vector<bool> visZtight ;
+  std::vector<bool> visZmedium ;
+
+  if(m_doRecl){
+    for ( size_t j0=0; j0<good_jets_recl.size(); j0++){
+      vReclJetMass.push_back(good_jets_recl[j0].M());
+      vReclJetPt.push_back(good_jets_recl[j0].Pt());
+      vReclJetEta.push_back(good_jets_recl[j0].Eta());
+      vReclJetPhi.push_back(good_jets_recl[j0].Phi());
+
+      float jetpt = good_jets_recl[j0].Pt();
+      float jetm  = good_jets_recl[j0].M();
+      float jetD2 = vD2.at(j0);
+
+      BosonTagging BT;
+
+      bool isWmedium = BT.ReturnTag(1,jetpt,jetm,jetD2);
+      bool isWtight  = BT.ReturnTag(2,jetpt,jetm,jetD2);
+      bool isZmedium = BT.ReturnTag(3,jetpt,jetm,jetD2);
+      bool isZtight  = BT.ReturnTag(4,jetpt,jetm,jetD2);
+
+      visWmedium.push_back(isWmedium);
+      visWtight.push_back(isWtight);
+      visZmedium.push_back(isZmedium);
+      visZtight.push_back(isZtight);
+    }
   }
 
   // missing ET
@@ -278,12 +325,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
-
-  // Negative-cell cleaning cut
-  bool HasNegCell = false ; 
-  if(! m_IsTruth && systag == ""){
-    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
 
   // 0 lepton
   if( !m_IsTruth ){
@@ -389,19 +430,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
-    m_proxyUtils.RJigsawInit();
     m_proxyUtils.CalculateRJigsawVariables(good_jets, 
 					   missingET->X(),
 					   missingET->Y(),
 					   RJigsawVariables,
              			m_cutVal.m_cutRJigsawJetPt);
-    //if(RJigsawVariables.empty()){ std::cout << "Container is empty" << std::endl;}
-    //else{ std::cout << "Container is not empty --------------------------------------" << std::endl;}
-
-
-    //std::cout << "in SR function..."  << std::endl;
-    //std::cout << RJigsawVariables["RJVars_C_0_CosTheta"]  << std::endl;
-    //std::cout << RJigsawVariables["RJVars_G_0_CosTheta"    ] << std::endl;
   }
 
 
@@ -446,7 +479,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   if(m_doSmallNtuple) { 
     unsigned int runnum = RunNumber;
-    if ( ! m_IsData ) runnum = mc_channel_number;
+    if ( ! m_IsData && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
@@ -466,8 +499,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
     power2 *= 2;
 
-    // Negative-cell cleaning cut
-    if ( HasNegCell ) cleaning += power2;
+    // Negative-cell cleaning cut (no longer used)
     power2 *= 2;
 
     // average timing of 2 leading jets
@@ -485,7 +517,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
 
-    if ( systag == "" ) {
+    if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
       if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
       m_ntv.systWeights = *p_systweights;
@@ -496,7 +528,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     if ( m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 
     if(!m_IsTruth && m_fillReclusteringVars)
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     
     m_tree->Fill();
   }

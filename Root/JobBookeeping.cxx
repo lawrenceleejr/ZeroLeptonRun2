@@ -68,7 +68,8 @@ void JobBookeeping::inputFileOpened(TFile *file)
   }
   if ( m_derivationTag == p2353 || m_derivationTag == p2363 || 
        m_derivationTag == p2372 || m_derivationTag == p2375 ||
-       m_derivationTag == p2377 || m_derivationTag == p2384 ) {    
+       m_derivationTag == p2377 || m_derivationTag == p2384 ||
+       m_derivationTag == p2419 ) {    
 
     // extract information from CutBookkeeperContainer in Metadata
     // https://twiki.cern.ch/twiki/bin/view/AtlasProtected/AnalysisMetadata

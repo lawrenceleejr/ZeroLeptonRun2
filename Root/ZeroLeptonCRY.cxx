@@ -1,6 +1,13 @@
 #include "ZeroLeptonRun2/ZeroLeptonCRY.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 
+#include "ElectronPhotonSelectorTools/IAsgPhotonIsEMSelector.h"
+#include "AsgTools/IAsgTool.h"
+#include "PATCore/IAsgSelectionTool.h"
+#include "ElectronPhotonSelectorTools/AsgElectronIsEMSelector.h"
+#include "ElectronPhotonSelectorTools/AsgPhotonIsEMSelector.h"
+#include "ElectronPhotonSelectorTools/AsgElectronLikelihoodTool.h"
+#include "ElectronPhotonShowerShapeFudgeTool/ElectronPhotonShowerShapeFudgeTool.h"
 
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
@@ -22,13 +29,14 @@
 #include <stdexcept>
 
 ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
-  : cafe::Processor(name), 
-    m_tree(0), 
-    m_stringRegion("CRY_SRAll"), 
+  : cafe::Processor(name),
+    m_tree(0),
+    m_stringRegion("CRY_SRAll"),
     m_doSmallNtuple(true),
-    m_fillTRJigsawVars(false),
+    m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
     m_IsData(false),
+    m_photonSelIsEM(""),
     m_IsTruth(false),
     m_IsSignal(false),
     m_DoSystematics(false),
@@ -45,7 +53,7 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
     m_derivationTag(INVALID_Derivation)
 {
   cafe::Config config(name);
-  m_fillTRJigsawVars = config.get("fillTRJigsawVars",false);
+  m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
   m_IsData = config.get("IsData",false);
   m_IsSignal = config.get("IsSignal",false);
   m_IsTruth = config.get("IsTruth",false);
@@ -63,11 +71,37 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
 
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
+
+  string m_phId = "Tight";
+
+  if (m_photonSelIsEM.empty()) {
+    if ( asg::ToolStore::contains<AsgPhotonIsEMSelector>("PhotonSelIsEM_" + m_phId) ) {
+      m_photonSelIsEM = asg::ToolStore::get<AsgPhotonIsEMSelector>("PhotonSelIsEM_" + m_phId);
+    } else {
+      AsgPhotonIsEMSelector* photonSelIsEM = new AsgPhotonIsEMSelector("PhotonSelIsEM_" + m_phId);
+      if (m_phId == "Tight" ) {
+	photonSelIsEM->setProperty("ConfigFile", "ElectronPhotonSelectorTools/offline/mc15_20150429/PhotonIsEMTightSelectorCutDefs.conf") ;
+        photonSelIsEM->setProperty("isEMMask", static_cast<unsigned int> (egammaPID::PhotonTight) );
+      }
+      if (m_phId == "Medium" ) {
+        photonSelIsEM->setProperty("ConfigFile", "ElectronPhotonSelectorTools/offline/mc15_20150429/PhotonIsEMMediumSelectorCutDefs.conf") ;
+        photonSelIsEM->setProperty("isEMMask", static_cast<unsigned int> (egammaPID::PhotonMedium) );
+      }
+      if (m_phId == "Loose" ) {
+        photonSelIsEM->setProperty("ConfigFile", "ElectronPhotonSelectorTools/offline/mc15_20150429/PhotonIsEMLooseSelectorCutDefs.conf") ;
+        photonSelIsEM->setProperty("isEMMask", static_cast<unsigned int> (egammaPID::PhotonLoose) );
+      }
+      photonSelIsEM->initialize() ;
+      m_photonSelIsEM = photonSelIsEM;
+    }
+  }
+
+
 }
 
 ZeroLeptonCRY::~ZeroLeptonCRY()
@@ -102,7 +136,7 @@ TTree* ZeroLeptonCRY::getTree(const std::string& treename)
 void ZeroLeptonCRY::begin()
 {
   std::string sSR = m_stringRegion;
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     sSR+="NT";
   }
 
@@ -113,6 +147,9 @@ void ZeroLeptonCRY::begin()
     m_counter = new Counter("ZeroLeptonCounter"+m_stringRegion,40,m_IsSignal);
     if(m_doSmallNtuple) m_tree = bookTree(sSR);
   }
+
+  if (  m_fillTRJigsawVars ) {    m_proxyUtils.RJigsawInit(); }
+
 
 }
 
@@ -151,7 +188,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // get generator weight
   float genWeight = 1.f;
-  if ( !m_IsData ) { 
+  if ( !m_IsData ) {
     genWeight = eventInfo->mcEventWeight(0);
     //out() << " gen weight " << genWeight << std::endl;
     weight *= genWeight;
@@ -212,7 +249,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // FIXME : to be implemented ... not in xAOD yet
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
-  // Trigger selection 
+  // Trigger selection
   if(! m_IsTruth){
     if( !((int)eventInfo->auxdata<char>("HLT_g120_loose")==1) && !((int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
   }
@@ -263,10 +300,12 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   std::vector<float> vtopoetcone40;
   std::vector<float> vptvarcone40;
   std::vector<float> vptcone40;
-
-  //std::vector<int> visEMTight;
+  std::vector<int>   vtruthType;
+  std::vector<int>   vtruthOrigin;
+  std::vector<int> visEMvalue;
   std::vector<float> vpt;
   std::vector<float> veta;
+
   if(! m_IsTruth){
     if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
       throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
@@ -294,6 +333,23 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       vptvarcone40.push_back(ptvarcone40);
       vtopoetcone40.push_back(topoetcone40);
       vptcone40.push_back(ptcone40);
+
+      int isEMvalue = -1000;
+      if(!m_photonSelIsEM.empty()){
+        isEMvalue = m_photonSelIsEM->IsemValue();
+      }
+      visEMvalue.push_back(isEMvalue);
+
+      if(!m_IsData){
+        vtruthType.push_back((*phit)->auxdata<int>("truthType"));
+        vtruthOrigin.push_back((*phit)->auxdata<int>("truthOrigin"));
+      }
+      else{
+        vtruthType.push_back(-1000);
+        vtruthOrigin.push_back(-1000);
+      }
+
+
       //
       vpt.push_back((*phit)->pt());
       veta.push_back((*phit)->eta());
@@ -336,13 +392,13 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       }
     }
   }
-  if ( leadPhPt == 0. ) return true;
+  if ( allphotons.size() < 1  ) return true;
   m_counter->increment(weight,incr++,"One photon",trueTopo);
-  
+
 
   //out() << "Leading photon pt px py  " << leadPhPt ;
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
-  //out() <<std::endl;  
+  //out() <<std::endl;
 
   std::vector<TauProxy> baseline_taus, signal_taus;
   if(! m_IsTruth){
@@ -361,17 +417,17 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // the lead photon as if it was a Z->nunu
   if(m_IsTruth) {
-    missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py()); 
+    missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py());
   }
   else {
     missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
-  } 
+  }
   double MissingEt = missingET->Mod();
   double MissingEtCorr = missingETCorr.Mod();
 
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
-    bool* badDetectorQuality = 0 ; 
+    bool* badDetectorQuality = 0 ;
     if ( !store->retrieve<bool>(badDetectorQuality,"badDetectorQuality").isSuccess() ) throw std::runtime_error("could not retrieve badDetectorQuality");
     if ( *badDetectorQuality ) return true;
   }
@@ -383,7 +439,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
   }
-  
+
   // primary vertex cut
   const xAOD::Vertex* primVertex = 0;
   if(! m_IsTruth){
@@ -391,12 +447,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     if ( !primVertex ||  !( primVertex->nTrackParticles() > 4) ) return true;
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
-
-  // Negative-cell cleaning cut
-  bool HasNegCell = 0;
-  if(! m_IsTruth){
-    HasNegCell = m_ZLUtils.NegCellCleaning(event,*missingET);
-  }
 
   // at least one photon
   if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
@@ -406,15 +456,15 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   float phSF = eventInfo->auxdecor<float>("phSF");
   if ( phSF != 0.f ) weight *= phSF;
 
- 
+
   // MissingET cut
   if (!(MissingEtCorr > m_cutVal.m_cutEtMiss)) return true;
-  m_counter->increment(weight,incr++,"MET cut",trueTopo);
+  m_counter->increment(weight,incr++,"MET cut > "  + std::to_string(int(m_cutVal.m_cutEtMiss)) + " GeV Selection",trueTopo);
 
   // Leading jet Pt cut
   if ( good_jets.empty() ) return true;
-  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
-  m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
+  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
+  m_counter->increment(weight,incr++,"1 jet Pt > " + std::to_string(int(m_cutVal.m_cutJetPt0)) + " GeV Selection",trueTopo);
 
 
 
@@ -446,16 +496,15 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   float WZweight = 1.;
 
 
-  double mT2=-9; 
+  double mT2=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETCorr);
   double mT2_noISR=-9;
-  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETCorr); 
-  //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl; 
+  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETCorr);
+  //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
   std::map<TString,float> RJigsawVariables;
   if ( m_fillTRJigsawVars) {
-    m_proxyUtils.RJigsawInit();
-    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+    m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingETCorr.X(),
 					   missingETCorr.Y(),
 					   RJigsawVariables,
@@ -471,15 +520,15 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   double Minv2 =-999;
   double Einv =-999;
   double  gamma_R=-999;
-  double dphi_BETA_R =-999; 
-  double dphi_leg1_leg2 =-999; 
+  double dphi_BETA_R =-999;
+  double dphi_leg1_leg2 =-999;
   double costhetaR =-999;
   double dphi_BETA_Rp1_BETA_R=-999;
   double gamma_Rp1=-999;
   double Eleg1=-999;
-  double Eleg2=-999; 
+  double Eleg2=-999;
   double costhetaRp1=-999;
-  m_proxyUtils.RazorVariables(good_jets, 
+  m_proxyUtils.RazorVariables(good_jets,
 			      missingETCorr.X(),
 			      missingETCorr.Y(),
 			      gaminvRp1 ,
@@ -489,21 +538,21 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 			      Minv2 ,
 			      Einv ,
 			      gamma_R,
-			      dphi_BETA_R , 
-			      dphi_leg1_leg2 , 
+			      dphi_BETA_R ,
+			      dphi_leg1_leg2 ,
 			      costhetaR ,
 			      dphi_BETA_Rp1_BETA_R,
 			      gamma_Rp1,
 			      Eleg1,
-			      Eleg2, 
+			      Eleg2,
 			      costhetaRp1);
 
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
-    if ( ! m_IsData ) runnum = mc_channel_number;
+    if ( ! m_IsData && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
@@ -512,11 +561,11 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     unsigned int power2 = 1;
 
     if(!m_IsTruth){
-      
+
       // bad jet veto
       if ( !bad_jets.empty() ) cleaning += power2;
       power2 *= 2;
-      
+
       // bad muon veto
       for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
 	if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
@@ -526,27 +575,26 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 	}
       }
       power2 *= 2;
-      
+
       // Cosmic muon cut
       if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaning += power2;
       power2 *= 2;
-      
+
       // bad muons for MET cut: based on non isolated muons
       if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) )  cleaning += power2;
       power2 *= 2;
-      
+
       // bad Tile cut
       if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
       power2 *= 2;
-      
-      // Negative-cell cleaning cut
-      if ( HasNegCell ) cleaning += power2;
+
+      // Negative-cell cleaning cut (no longer used)
       power2 *= 2;
 
       // average timing of 2 leading jets
       if (fabs(time[0]) > 5) cleaning += power2;
       power2 *= 2;
-      
+
       bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       if (  m_period == p8tev && chfTileVeto ) cleaning += power2;
       power2 *= 2;
@@ -559,7 +607,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtCorr, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
 
-    if ( systag == "" ) {
+    if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
       if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);
       m_ntv.systWeights = *p_systweights;
@@ -573,10 +621,20 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     FillNTCRYVars(m_cryntv,allphotons,*missingET,vtight,vloose,vtopoetcone20,vptvarcone20,
 		  //visEMTight,
 		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
-		  vpt,veta);
-      
+		  vpt,veta,vtruthType,vtruthOrigin,visEMvalue);
+
+    std::vector<float> vReclJetMass ;
+    std::vector<float> vReclJetPt;
+    std::vector<float> vReclJetEta;
+    std::vector<float> vReclJetPhi;
+    std::vector<bool> visWtight ;
+    std::vector<bool> visWmedium ;
+    std::vector<bool> visZtight ;
+    std::vector<bool> visZmedium ;
+    std::vector<float> vD2;
+
     if(! m_IsTruth && m_fillReclusteringVars){
-      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets);
+      m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
 
     m_tree->Fill();
@@ -588,19 +646,20 @@ void ZeroLeptonCRY::finish()
 {
   if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
-  } 
+  }
   else {
     out() << *m_counter << std::endl;
   }
 }
 
-void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
+void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
 				  const std::vector<PhotonProxy>& photons,
 				  TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose,
 				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,std::vector<float>& vptcone20,
 				  //std::vector<int>& visEMTight,
 				  std::vector<float>& vtopoetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,
-				  std::vector<float>& vpt,std::vector<float>& veta)
+				  std::vector<float>& vpt,std::vector<float>& veta, std::vector<int>& vtruthType, std::vector<int>& vtruthOrigin,
+				  std::vector<int>& visEMvalue)
 {
   cryntv.Reset();
   for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
@@ -609,7 +668,7 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
       cryntv.phEta.push_back(phit->Eta());
       cryntv.phPhi.push_back(phit->Phi());
       cryntv.phSignal.push_back(phit->isSignal());
-      
+
       for (size_t n=0;n<vloose.size();n++){
 	if(fabs(phit->Pt()-vpt.at(n))<0.001 && fabs(phit->Eta()-veta.at(n))<0.001){
 	  cryntv.phLoose.push_back(vloose.at(n));
@@ -620,8 +679,11 @@ void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv,
 	  cryntv.phTopoetcone40.push_back(vtopoetcone40.at(n));
           cryntv.phPtvarcone40.push_back(vptvarcone40.at(n));
           cryntv.phPtcone40.push_back(vptcone40.at(n));
-
+	  cryntv.phTruthType.push_back(vtruthType.at(n));
+          cryntv.phTruthOrigin.push_back(vtruthOrigin.at(n));
+          cryntv.phisEMvalue.push_back(visEMvalue.at(n));
 	  //cryntv.phisEMTight.push_back(visEMTight.at(n));
+	  break;
 	}
       }
     }

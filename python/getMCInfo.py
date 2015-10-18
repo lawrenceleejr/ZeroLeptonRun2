@@ -73,67 +73,98 @@ def updateMap(processMap,xsecDB,key,nb_of_events,weight):
     pass
     return processMap
 
+
+def processFile(config,fname,channel,xsecDB,myMap):
+    if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
+    tfile=ROOT.TFile.Open(fname)
+    hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
+    if hist!=None and hist.GetNbinsX()>=2:
+        # if not channel in hsum:
+        #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
+        # else:
+        #     hsum[channel].Add(hist)
+        nb_of_events=0
+        weight=0
+        if config.isSignal==False:
+            nb_of_events=hist.GetBinContent(1)
+            weight=hist.GetBinContent(2)
+            updateMap(myMap,xsecDB,channel,nb_of_events,weight)
+        else:
+            """
+            gets complicated with derivations: from JobBookeeping we
+            can extract the sum of weights for all events before skimming
+            but we don't know for which hardproc. All we can do is calculate
+            the average efficiency of the derivation over hardprocs and
+            rescale for that. Would be OK for simplified models but can
+            be really wrong if many very different processes are present.
+            """
+            hist2=tfile.Get('Counter_for_ZeroLeptonCounterSRAll')
+            sumwini = hist.GetBinContent(2)
+            sumwkept = 0.
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                sumwkept+=hist2.GetBinContent(2,ybin)
+                pass
+            scale = sumwini/sumwkept
+            for ybin in range(1,hist2.GetNbinsY()+1):
+                nb_of_events=hist2.GetBinContent(1,ybin)
+                weight=hist2.GetBinContent(2,ybin)
+                if nb_of_events>0:
+                    updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events*scale,weight*scale)
+                    pass
+                pass
+            pass
+        pass
+    else:
+        print "WARNING: file ignored ", fname 
+        pass
+    tfile.Close()
+
+def extractChannel(name):
+    for prefix in ('mc11_7TeV.', 'mc12_8TeV.', 'mc14_8TeV.','mc14_13TeV.', 'mc15_13TeV.'):
+        if prefix in name:
+            return int(name.split(prefix)[1].split('.')[0])
+    return None
+
+
 def getMCInfo(config):
     myMap={}
     xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile)
 
     lds = getMCSampleList(config.lds)
     hsum = {}
-    for file in open(config.inputfilename,'read'):    
-        file.strip()
-        if len(file) == 0: continue
-        if file.startswith('#'): continue
-        file = file.strip()
 
-        # get dataset number from input file
-        channel = int(file.split(".")[int(config.NB)])
-        if len(lds) and not channel in lds: continue
-
-        if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
-            print 'No cross section for sample',channel,'skip file',file
-            continue
-
-        # get weight from histogram
-        fname = file
-        if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
-        tfile=ROOT.TFile.Open(fname)
-        hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
-        if hist!=None and hist.GetNbinsX()>=2:
-            # if not channel in hsum:
-            #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
-            # else:
-            #     hsum[channel].Add(hist)
-            nb_of_events=0
-            weight=0
-            if config.isSignal==False:
-                nb_of_events=hist.GetBinContent(1)
-                weight=hist.GetBinContent(2)
-                updateMap(myMap,xsecDB,channel,nb_of_events,weight)
-            else:
-                """
-                gets complicated with derivations: from JobBookeeping we
-                can extract the sum of weights for all events before skimming
-                but we don't know for which hardproc. All we can do is calculate
-                the average efficiency of the derivation over hardprocs and
-                rescale for that. Would be OK for simplified models but can
-                be really wrong if many very different processes are present.
-                """
-                hist2=tfile.Get('Counter_for_ZeroLeptonCounterSRAll')
-                sumwini = hist.GetBinContent(2)
-                sumwkept = 0.
-                for ybin in range(1,hist2.GetNbinsY()+1):
-                    sumwkept+=hist2.GetBinContent(2,ybin)
-                scale = sumwini/sumwkept
-                for ybin in range(1,hist2.GetNbinsY()+1):
-                    nb_of_events=hist2.GetBinContent(1,ybin)
-                    weight=hist2.GetBinContent(2,ybin)
-                    if nb_of_events>0 : updateMap(myMap,xsecDB,(channel,ybin-1),nb_of_events*scale,weight*scale)
-            tfile.Close()
-
-        else:
-            print "WARNING: file ignored ", file 
+    if config.inputfilename.endswith('.pkl'):
+        import pickle
+        if not os.path.isfile(config.inputfilename):
+            print "can't read file",config.inputfilename
+            sys.exit()
             pass
-        pass
+        picklefile = open(config.inputfilename,'rb')
+        myfiles = pickle.load(picklefile)
+        picklefile.close()
+
+        for (did,flist) in myfiles.iteritems():
+            channel = extractChannel(did)
+            for fname in flist:
+                processFile(config,fname,channel,xsecDB,myMap)
+    else:
+        for fname in open(config.inputfilename,'read'):    
+            fname.strip()
+            if len(fname) == 0: continue
+            if fname.startswith('#'): continue
+            fname = fname.strip()
+
+            # get dataset number from input file
+            channel = int(fname.split(".")[int(config.NB)])
+            if len(lds) and not channel in lds: continue
+
+            if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
+                print 'No cross section for sample',channel,'skip file',fname
+                continue
+
+            # get weight from histogram
+            processFile(config,fname,channel,xsecDB,myMap)
+
 
     f=open(config.outputfilename,'w')
     ftex=open(config.outputfilename.split('.')[0]+'.tex','w')

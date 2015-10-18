@@ -1,1 +1,0 @@
-python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=10 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.leejr.' --suffix='_071715a' --tmpDir=/tmp/leejr/  --inDSfile data/mc15_13TeV_forEPS_p2375.ds --config  config/zerolepton.config

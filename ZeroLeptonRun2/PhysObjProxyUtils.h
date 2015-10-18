@@ -83,10 +83,12 @@ class PhysObjProxyUtils
   void RJigsawInit();
 
   void CalculateRJigsawVariables(const std::vector<JetProxy>& jets,
-			Double_t metx,
-			Double_t mety,
-			std::map<TString,float>& RJigsawVariables,
-			Double_t jetPtCut=0.);
+				 Double_t metx,
+				 Double_t mety,
+				 std::map<TString,float>& RJigsawVariables,
+				 Double_t jetPtCut=0.,
+				 size_t njetsCut = 1e9
+				 );
 
   //double MT2(const std::vector<JetProxy>& jets,const TVector2& MissingET) const;
 
@@ -119,8 +121,12 @@ class PhysObjProxyUtils
 		  std::vector<TauProxy> signal_taus   = std::vector<TauProxy>());
 
   void FillNTReclusteringVars(NTReclusteringVars& RTntv,
-		  const std::vector<JetProxy>& good_jets);
-
+			      const std::vector<JetProxy>& good_jets,
+                              std::vector<float> vReclJetMass, std::vector<float> vReclJetPt,
+                              std::vector<float> vReclJetEta, std::vector<float> vReclJetPhi,
+                              std::vector<float> vD2,std::vector<bool> visWmedium,
+                              std::vector<bool> visWtight, std::vector<bool> visZmedium,
+                              std::vector<bool> visZtight);
   void FillNTExtraVars(NTExtraVars& extrantv,
 		       double MET_Track,
 		       double MET_Track_phi,
@@ -128,8 +134,12 @@ class PhysObjProxyUtils
 		       double MT2_noISR,
 		       double Ap);
 
-
+  void FillTriggerBits(NTVars& ntv,
+		       long trigger);
   void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
+
+  // void FillNTExtraVarsTriggerBits(NTExtraVars& extrantv,
+  // 				  long triggers);
 
   class ReclJets {
       public:

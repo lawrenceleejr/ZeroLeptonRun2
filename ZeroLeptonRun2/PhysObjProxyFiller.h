@@ -5,6 +5,7 @@ class JetProxy;
 class ElectronProxy;
 class MuonProxy;
 class TauProxy;
+class JetReclusteringTool;
 
 #include <vector>
 #include <string>
@@ -12,12 +13,18 @@ class TauProxy;
 class PhysObjProxyFiller
 {
  public:
-  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, const std::string suffix);
+  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl,float jetEtaCut = 2.8);
 
   // fill with good and bad jets, overlap removal already performed
   void FillJetProxies(std::vector<JetProxy>& good_jets,
 		      std::vector<JetProxy>& bad_jets,
 		      std::vector<JetProxy>& b_jets) const;
+
+  void FillHLTJetProxies(std::vector<JetProxy>& hlt_jets) const;
+
+  void FillJetReclProxies(std::vector<JetProxy>& good_jets_recl,
+			  std::vector<float>& vD2) const;
+
 
   // fill with baseline and signal electron after overlap removal
   void FillElectronProxies(std::vector<ElectronProxy>& baseline_electrons,
@@ -38,9 +45,13 @@ class PhysObjProxyFiller
 
  private:
   float m_jetPtCut;
+  float m_jetEtaCut;
   float m_elPtCut;
   float m_muonPtCut;
+  bool m_doRecl;
   std::string m_suffix;
+  std::string m_suffixRecl;
+  JetReclusteringTool* m_jetReclusteringTool;
 };
 
 

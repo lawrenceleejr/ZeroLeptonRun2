@@ -18,27 +18,6 @@ ZeroLeptonUtils::ZeroLeptonUtils(bool IsData, ZeroLeptonDerivationTag tag,
   }
 }
 
-bool ZeroLeptonUtils::NegCellCleaning(xAOD::TEvent& event, const TVector2& missingET) const
-{
-  bool isNegCell=false; 
-
-  double MET_phi = TMath::ATan2(missingET.Y(),missingET.X()); 
-
-  const xAOD::MissingETContainer* metcontainer = 0;
-  if ( ! event.retrieve( metcontainer, m_MET_key ).isSuccess() ){
-    throw std::runtime_error("Could not retrieve MissingETContainer with key "+m_MET_key);
-  }
-  xAOD::MissingETContainer::const_iterator met = metcontainer->find("SoftClus");
-  if (met == metcontainer->end()) {
-    throw std::runtime_error("MissingETContainer with key "+m_MET_key+" has no SoftClus component");
-  }
-
-  if ( ( (*met)->met()/missingET.Mod()) * std::cos((*met)->phi()-MET_phi) >= 0.5) isNegCell=true;
-  
-  return isNegCell ;
-
-}
-
 void  ZeroLeptonUtils::trackMET(xAOD::TEvent& event, double& met, double& phi) const
 {
   const xAOD::MissingETContainer* metcontainer = 0;
