@@ -1,4 +1,10 @@
 16-Oct-2015 Laurent Duflot
+	* data/mc15_13TeV_25ns_SM_p2419.ds: update list from 1.4fb-1 GRL
+
+21-Oct-2015 Larry Lee
+	* FilterUpdateMerge.py: write only one cycle of output tree
+
+16-Oct-2015 Laurent Duflot
 	* FilterUpdateMerge.py: add protection against multiple tree cycles
 
 13-Oct-2015 Laurent Duflot
