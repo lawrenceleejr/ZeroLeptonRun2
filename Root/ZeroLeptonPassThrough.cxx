@@ -498,7 +498,7 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 					       hlt_missingET->X(),
 					       hlt_missingET->Y(),
 					       dummy,
-					       jetPtIntVec.at(ii),
+					       jetPtIntVec.at(ii)*1000.,
 					       m_maxJetCut
 					       );
 	RJigsawVariables_hlt.push_back(dummy);
