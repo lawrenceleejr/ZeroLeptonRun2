@@ -19,6 +19,24 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <sstream>
+namespace stringSplit {
+  std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+      elems.push_back(item);
+    }
+    return elems;
+  }
+
+
+  std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+  }
+}
 ZeroLeptonPassThrough::ZeroLeptonPassThrough(const char *name)
   : cafe::Processor(name),
     m_tree(0),
@@ -67,11 +85,16 @@ ZeroLeptonPassThrough::ZeroLeptonPassThrough(const char *name)
   m_suffix = config.get("suffix","");
   m_buildTriggerJetAndMET = config.get("BuildTriggerJetAndMET",false);
   m_maxJetCut             = config.get("MaxJetCut"            , 10e9);
+  m_hltJetPts             = config.get("hltJetPts"            , ""  );
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
+
+  std::vector< std::string > jetPtVec;
+  stringSplit::split(m_hltJetPts, ',' , jetPtVec ) ;
+  m_rjigsawntv_hlt.resize(jetPtVec.size());
 }
 
 ZeroLeptonPassThrough::~ZeroLeptonPassThrough()
@@ -90,7 +113,13 @@ TTree* ZeroLeptonPassThrough::bookTree(const std::string& treename)
   if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
   if ( m_fillTRJigsawVars                           ) bookNTRJigsawVars(tree,m_rjigsawntv);
-  if ( m_fillTRJigsawVars && m_buildTriggerJetAndMET) bookNTRJigsawVars(tree,m_rjigsawntv_hlt);
+  if ( m_fillTRJigsawVars && m_buildTriggerJetAndMET){
+    std::vector< std::string > jetPtVec;
+    stringSplit::split(m_hltJetPts, ',' , jetPtVec ) ;
+    for(int ii = 0 ; ii < jetPtVec.size(); ++ii){
+      bookNTRJigsawVars(tree,m_rjigsawntv_hlt.at(ii), std::string("_hlt_jetPt") + jetPtVec.at(ii) );
+    }
+  }
   return tree;
 }
 
@@ -440,7 +469,17 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
   std::map<TString,float> RJigsawVariables;
-  std::map<TString,float> RJigsawVariables_hlt;
+
+  std::vector< std::map<TString,float>> RJigsawVariables_hlt;
+  std::vector< std::string > jetPtVec;
+  stringSplit::split(m_hltJetPts, ',' , jetPtVec ) ;
+
+  std::vector< int > jetPtIntVec;
+  for( int ii = 0; ii < jetPtVec.size(); ++ii){
+    jetPtIntVec.push_back(std::stoi( jetPtVec.at(ii) ));
+  }
+
+
 
   if (  m_fillTRJigsawVars ) {
     //    std::cout << "m_maxJetCut" << m_maxJetCut << std::endl;
@@ -451,13 +490,19 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 					   m_cutVal.m_cutRJigsawJetPt,
 					   m_maxJetCut
 					   );
-    if(m_buildTriggerJetAndMET){ m_proxyUtils.CalculateRJigsawVariables(hlt_jets,
-									hlt_missingET->X(),
-									hlt_missingET->Y(),
-									RJigsawVariables_hlt,
-									m_cutVal.m_cutRJigsawJetPt,
-									m_maxJetCut
-									);
+    if(m_buildTriggerJetAndMET){
+      for( int ii = 0; ii <  jetPtVec.size() ; ++ii){
+	std::cout << jetPtVec.at(ii) << std::endl;
+	std::map<TString,float> dummy;
+	m_proxyUtils.CalculateRJigsawVariables(hlt_jets,
+					       hlt_missingET->X(),
+					       hlt_missingET->Y(),
+					       dummy,
+					       jetPtIntVec.at(ii),
+					       m_maxJetCut
+					       );
+	RJigsawVariables_hlt.push_back(dummy);
+      }
     }
   }
 
@@ -559,7 +604,10 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 	if( ! store->retrieve(trigvalues, "triggerbits" ).isSuccess()) throw std::runtime_error("failed to retrieve trigger bits");
 	//	std::cout << "filling trigger bits with " << *trigvalues << std::endl;
 	m_proxyUtils.FillTriggerBits(m_ntv,*trigvalues, hlt_jets.size());
-	m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv_hlt, RJigsawVariables_hlt );
+
+	for (int ii = 0; ii < RJigsawVariables_hlt.size() ; ++ii ){
+	  m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv_hlt.at(ii), RJigsawVariables_hlt.at(ii) );
+	}
       }
     }
 

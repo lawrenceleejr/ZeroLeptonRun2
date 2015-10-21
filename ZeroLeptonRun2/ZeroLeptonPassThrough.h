@@ -40,12 +40,13 @@ private:
   bool m_IsSignal;
   bool m_DoSystematics;
   int  m_maxJetCut;
+  string m_hltJetPts;
   ZeroLeptonRunPeriod m_period;
 
   NTVars m_ntv;
   NTExtraVars m_extrantv;
   NTRJigsawVars m_rjigsawntv;
-  NTRJigsawVars m_rjigsawntv_hlt;
+  std::vector<NTRJigsawVars> m_rjigsawntv_hlt;
   NTReclusteringVars m_RTntv;
   NTTheoryVars m_theoryntv;
   NTISRVars m_isrntv;
