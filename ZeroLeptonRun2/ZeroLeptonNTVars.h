@@ -461,6 +461,13 @@ inline void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv)
   treePolicies(tree);
 }
 
+inline void bookNTRJigsawVars(TTree* tree, NTRJigsawVars& rjigsawntv, std::string suffix)
+{
+  tree->Branch(("NTRJigsawVars"+suffix).c_str(),&rjigsawntv,NTRJigsawVars::toString().c_str());
+  treePolicies(tree);
+}
+
+
 inline void bookNTTheoryVars(TTree* tree, NTTheoryVars& theoryntv)
 {
   tree->Branch("NTTheoryVars",&theoryntv,NTTheoryVars::toString().c_str());
