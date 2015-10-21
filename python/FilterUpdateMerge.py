@@ -101,13 +101,13 @@ class Sample:
         else:
             self.files=[]
             try:
-                for file in open(inputfile,'read'):
-                    file.strip()
-                    file = file[:-1] # get rid of the \n
-                    if len(file) == 0: continue
+                for myfile in open(inputfile,'read'):
+                    myfile.strip()
+                    myfile = myfile[:-1] # get rid of the \n
+                    if len(myfile) == 0: continue
                     for id in myarg:
-                        if not str(id) in file: continue
-                        fname = file
+                        if not str(id) in myfile: continue
+                        fname = myfile
                         if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
                         if self.emptyFile(fname):
                             print 'Empty file, ignored',fname
@@ -419,7 +419,7 @@ class Sample:
                 break
             merger.process(outTree, inTreeName, inList, isSignal, self.config.doNormWeight, self.config.filter, doExtraVars, doRJigsawVars, doCRWTVars, doCRZVars, doCRYVars)
             newfile.cd()
-            outTree.Write()
+            outTree.Write("",ROOT.TObject.kOverwrite)
 
         newfile.Close()
 
