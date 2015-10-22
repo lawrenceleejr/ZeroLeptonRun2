@@ -27,24 +27,28 @@ datadirs =[
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370911.MadGraphPythia8EvtGen_GG_direct_800_600.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
 #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
      #"/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.370938.MadGraphPythia8EvtGen_GG_direct_1200_200.SUSY1.e3962_a766_a777_r6282_p2419_o.root",
-     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/",
-     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root",
+#     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.tenjetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root/",
+#     "/data/users/rsmith/razor_trigger/user.rsmith.trig.v7.alljetRJ.mc15_13TeV.410000.PowHPEvG_ttbar_nonallhad.SUSY1.e3698_s2608_s2183_r6765_r6282_p2419_o.root",
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.tenjetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root",
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.alljetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root"
+"/afs/cern.ch/work/r/rsmith/ttbar_trigger/ttbar_alljet.root",
+"/afs/cern.ch/work/r/rsmith/ttbar_trigger/ttbar_tenjet.root",
 ]
 
 
 for datadir in datadirs :
      files = []
-     print "searching " +datadir
-     for root, _, filenames in os.walk(datadir):
-          for filename in filenames:
-              files.append(os.path.join(root, filename))
+     files.append(datadir)
+     # print "searching " +datadir
+     # for root, _, filenames in os.walk(datadir):
+     #      for filename in filenames:
+     #          files.append(os.path.join(root, filename))
      print files
 
-     totalEventCounter = 0
+
      eff_xe10_razor170_off        = ROOT.TEfficiency("eff_xe10_razor170_off" , "xe10_razor170_eff_off; mDeltaR (GeV) ; wrt L1 seed", 100 , 0 , 3000)
      eff_xe10_razor170_off_metcut = ROOT.TEfficiency("eff_xe10_razor170_off_metcut" , "xe10_razor170_eff_off_metcut; mDeltaR (GeV) ; wrt L1 seed", 100 , 0 , 3000)
+     eff_xe10_razor170_off_0L        = ROOT.TEfficiency("eff_xe10_razor170_0L_off" , "xe10_razor170_0L_off; mDeltaR (GeV) ; wrt L1 seed", 100 , 0 , 3000)
      njet_vs_mDeltaR = ROOT.TH2F("njet_mDeltaR" , "njet_mDeltaR", 100, 0 , 3000 , 13, -.5 , 12.5)
      onlineMDR_vs_offlineMDR = ROOT.TH2F("onlineMDR_vs_offlineMDR" , "onlineMDR_vs_offlineMDR", 100, 0 , 1000 , 100, 0 , 1000.)
      onlineMDR_vs_offlineMDR_min8jet = ROOT.TH2F("onlineMDR_vs_offlineMDR_min8jet" , "onlineMDR_vs_offlineMDR_min8jets", 100, 0 , 1000 , 100, 0 , 1000.)
@@ -52,6 +56,7 @@ for datadir in datadirs :
 
      for filecount, ifile in enumerate(files):
      #    print ifile.isfile
+          totalEventCounter = 0
           rootfile = root_open(ifile)
           treeName = "PassThroughNT"
 
@@ -67,7 +72,7 @@ for datadir in datadirs :
                  counter = counter + 1
 
                  if ( counter % 1000 == 0 ) : print counter
-#                 if ( counter > 50000 ) : break
+                 if ( counter > 500000 ) : break
      #             RJvars = event.NTRJigsawVars #ROOT.NTRJigsawVars()
 
                  triggerBits = int( event.triggerBits.at(0))
@@ -129,11 +134,11 @@ for datadir in datadirs :
                  for count, trig in enumerate(triggers) :
                      triggerDict[trig] = ( (triggerBits&(1<<count) ) > 0.)
 
-
-
                  listOfLeaves = tree.GetListOfLeaves()
                  missingEt = tree.GetLeaf("met").GetValue(0);
                  njets.Fill( event.jetPt.size())
+
+                 nlepton = event.elPt.size() + event.muPt.size()
 
                  first = True
                  for leaf in listOfLeaves :
@@ -147,7 +152,7 @@ for datadir in datadirs :
                       passedRazor170 = triggerDict["HLT_j30_xe10_razor170"]
                       eff_xe10_razor170_off.Fill(passedRazor170, mDeltaR_off/1000.)
                       if(missingEt > 140.) :  eff_xe10_razor170_off_metcut.Fill(passedRazor170, mDeltaR_off/1000.)
-
+                      if(nlepton   <  .5 ) :  eff_xe10_razor170_off_0L.Fill(passedRazor170, mDeltaR_off/1000.)
                  #in data > 2jets and L1
                  if(triggerDict["L1_2J15_XE55"] and
                     event.jetPt.size() >= 2 and
@@ -155,7 +160,6 @@ for datadir in datadirs :
                     ) :
                       onlineMDR_vs_offlineMDR.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
                       if(event.jetPt.size() > 8 ) : onlineMDR_vs_offlineMDR_min8jet.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
-             if (totalEventCounter > 100000) : break
 
      print "nentries :"  + str(eff_xe10_razor170_off.GetTotalHistogram().GetEntries())
      rootfile.Close()
@@ -164,6 +168,7 @@ for datadir in datadirs :
      njets.Write()
      eff_xe10_razor170_off.Write()
      eff_xe10_razor170_off_metcut.Write()
+     eff_xe10_razor170_off_0L.Write()
      onlineMDR_vs_offlineMDR_min8jet.Write()
      onlineMDR_vs_offlineMDR.Write()
      outfile .Close()
