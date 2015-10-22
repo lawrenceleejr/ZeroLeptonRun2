@@ -158,10 +158,9 @@ for datadir in datadirs :
                       if( "NTRJigsaw" in branch.GetName() ) :
                            mDeltaR[branch.GetName()] = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)/1000.
 
-                 if(mDeltaR["NTRJigsawVars_hlt_jetPt30"]):
-                       mDeltaR_hlt_jetpt["pt30_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
-                       mDeltaR_hlt_jetpt["pt30_vs_pt40"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt40"])
-                       mDeltaR_hlt_jetpt["pt40_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt40"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
+                 mDeltaR_hlt_jetpt["pt30_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
+                 mDeltaR_hlt_jetpt["pt30_vs_pt40"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt40"])
+                 mDeltaR_hlt_jetpt["pt40_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt40"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
 
      print "nentries :"  + str(eff_xe10_razor170_off.GetTotalHistogram().GetEntries())
      rootfile.Close()

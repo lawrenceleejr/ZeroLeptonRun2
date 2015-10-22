@@ -51,6 +51,7 @@ jetPtCuts[30].GetYaxis().SetTitle("Entries")
 for color,value in enumerate(jetPtCuts.values()) :
 #    value.Scale(1./value.Integral()) #a.u.
     value.SetMarkerColor(color+2 )
+    print "jetPtCut " + str(color) + "  "  +  str(value.Integral())
 
 jetPtCuts[30].Draw()
 jetPtCuts[40].Draw("same")
