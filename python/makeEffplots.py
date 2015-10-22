@@ -32,12 +32,12 @@ datadirs =[
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.tenjetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root",
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.alljetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root"
 #"/afs/cern.ch/work/r/rsmith/ttbar_trigger/ttbar_alljet.root",
-#"/afs/cern.ch/work/r/rsmith/data_trigger_test/"
-"/afs/cern.ch/work/r/rsmith/data_trigger/"
+"/afs/cern.ch/work/r/rsmith/data_trigger_test/"
+#"/afs/cern.ch/work/r/rsmith/data_trigger/"
 ]
 
-def findPt( mydict,  ptCut ) :
-      return (v for (k,v) in mDeltaR.iteritems() if ptCut in k).next()
+# def findPt( mydict,  ptCut ) :
+#       return (v for (k,v) in mDeltaR.iteritems() if ptCut in k).next()
 
 for datadir in datadirs :
      files = []
@@ -156,32 +156,12 @@ for datadir in datadirs :
                  mDeltaR = {}
                  for branch in listOfBranches :
                       if( "NTRJigsaw" in branch.GetName() ) :
-                           mDeltaR[branch.GetName()] = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)
+                           mDeltaR[branch.GetName()] = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)/1000.
 
-                 mDeltaR_hlt_jetpt["pt30_vs_pt50"].Fill(findPt(mDeltaR, '30'), findPt(mDeltaR, '50'))
-                 mDeltaR_hlt_jetpt["pt30_vs_pt40"].Fill(findPt(mDeltaR, '30'), findPt(mDeltaR, '40'))
-                 mDeltaR_hlt_jetpt["pt40_vs_pt50"].Fill(findPt(mDeltaR, '40'), findPt(mDeltaR, '50'))
-
-                 # first = True
-                 # for leaf in listOfLeaves :
-                 #      if( leaf.GetName() == "RJVars_PP_MDeltaR") :
-                 #           if(first) :
-                 #                mDeltaR_off = leaf.GetValue(0);
-                 #                first = False#first one is the offline value
-                 #           if(not first) : mDeltaR_hlt = leaf.GetValue(0)
-
-                 # if(triggerDict["L1_2J15_XE55"] ) :
-                 #      passedRazor170 = triggerDict["HLT_j30_xe10_razor170"]
-                 #      eff_xe10_razor170_off.Fill(passedRazor170, mDeltaR_off/1000.)
-                 #      if(missingEt > 140.) :  eff_xe10_razor170_off_metcut.Fill(passedRazor170, mDeltaR_off/1000.)
-                 #      if(nlepton   <  .5 ) :  eff_xe10_razor170_off_0L.Fill(passedRazor170, mDeltaR_off/1000.)
-                 # #in data > 2jets and L1
-                 # if(triggerDict["L1_2J15_XE55"] and
-                 #    event.jetPt.size() >= 2 and
-                 #    mDeltaR_hlt > 0.001
-                 #    ) :
-                 #      onlineMDR_vs_offlineMDR.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
-                 #      if(event.jetPt.size() > 8 ) : onlineMDR_vs_offlineMDR_min8jet.Fill(mDeltaR_off/1000.,mDeltaR_hlt/1000.)
+                 if(mDeltaR["NTRJigsawVars_hlt_jetPt30"]):
+                       mDeltaR_hlt_jetpt["pt30_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
+                       mDeltaR_hlt_jetpt["pt30_vs_pt40"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt40"])
+                       mDeltaR_hlt_jetpt["pt40_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt40"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
 
      print "nentries :"  + str(eff_xe10_razor170_off.GetTotalHistogram().GetEntries())
      rootfile.Close()
