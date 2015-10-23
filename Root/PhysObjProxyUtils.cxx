@@ -385,13 +385,13 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   INV->SetLabFrameThreeVector(ETMiss);
   if(!LAB->AnalyzeEvent()) cout << "Something went wrong..." << endl;
 
-  float const m_NJet = Jets.size();
+  //  float const m_NJet = Jets.size();
   float const m_NJ1a = VIS->GetNElementsInFrame(*V1a);
   float const m_NJ1b = VIS->GetNElementsInFrame(*V1b);
   float const m_NJ2a = VIS->GetNElementsInFrame(*V2a);
   float const m_NJ2b = VIS->GetNElementsInFrame(*V2b);
-  float const m_NJa = m_NJ1a+m_NJ2a;
-  float const m_NJb = m_NJ1b+m_NJ2b;
+  //  float const m_NJa = m_NJ1a+m_NJ2a;
+  //  float const m_NJb = m_NJ1b+m_NJ2b;
 
   //  if(ETMiss.Mag() < 100. || m_NJet < 2)
   //  return;
@@ -519,7 +519,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   double m_pTCM = vP_PP.Pt();
   double m_pZCM = fabs(vP_PP.Pz());
   float const m_RPT = m_pTCM / (m_pTCM + m_MPP/4.);
-  float const m_RPZ = m_pZCM;
+  //  float const m_RPZ = m_pZCM;
 
   float const m_PP_VisShape = PP->GetVisibleShape();
 
@@ -527,7 +527,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_MDR = m_PP_VisShape*PP->GetMass();
 
   float const m_cosPP = PP->GetCosDecayAngle();
-  float const m_dphiVP = PP->GetDeltaPhiDecayVisible();
+  float m_dphiVP = PP->GetDeltaPhiDecayVisible();
   float const m_dphiPPV = PP->GetDeltaPhiBoostVisible();
   float const m_cosP = Pa->GetCosDecayAngle(*Ia);
 
@@ -551,8 +551,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   // float const m_dphi = NTVars_dPhi;
   // float const m_dphiR = NTVars_dPhiR;
 
-  float const m_pT_jet1 = Jets[0].Pt();
-  float const m_pT_jet2 = Jets[1].Pt();
+  //  float const m_pT_jet1 = Jets[0].Pt();
+  //  float const m_pT_jet2 = Jets[1].Pt();
   // if(m_NJet >= 3)
   //   m_pT_jet3 = Jets[2].Pt();
   // else
@@ -569,16 +569,19 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   //   m_pT_jet6 = Jets[5].Pt();
   // else
   //   m_pT_jet6 = 0.;
-
+  float const m_pTPP_Va  = PP->GetTransverseMomentum(V1a->GetFourVector()+V2a->GetFourVector());
   float const m_pTPP_V1a = V1a->GetTransverseMomentum(*PP);
   float const m_pTPP_V2a = V2a->GetTransverseMomentum(*PP);
+  float const m_pTPP_Vb  = PP->GetTransverseMomentum(V1b->GetFourVector()+V2b->GetFourVector());
   float const m_pTPP_V1b = V1b->GetTransverseMomentum(*PP);
   float const m_pTPP_V2b = V2b->GetTransverseMomentum(*PP);
   float const m_pTPP_Ia = Ia->GetTransverseMomentum(*PP);
   float const m_pTPP_Ib = Ib->GetTransverseMomentum(*PP);
 
+  float const m_pPP_Va = (V1a->GetFourVector(*PP)+V2a->GetFourVector(*PP)).P();
   float const m_pPP_V1a = V1a->GetMomentum(*PP);
   float const m_pPP_V2a = V2a->GetMomentum(*PP);
+  float const m_pPP_Vb  = (V1b->GetFourVector(*PP)+V2b->GetFourVector(*PP)).P();
   float const m_pPP_V1b = V1b->GetMomentum(*PP);
   float const m_pPP_V2b = V2b->GetMomentum(*PP);
   float const m_pPP_Ia = Ia->GetMomentum(*PP);
@@ -655,8 +658,11 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     }
   }
 
+
+
+
   float PG = Pa->GetMomentum(*PP);
-  float MGG = 2.*sqrt(PG*PG + m_MP*m_MP);//todo MG is MP right?
+  //  float MGG = 2.*sqrt(PG*PG + m_MP*m_MP);//todo MG is MP right?
   float gaminvGG = 2.*m_MP/m_MPP;
   float gaminv = PP->GetVisibleShape();
   float beta = sqrt(1.- gaminv*gaminv);
@@ -665,25 +671,57 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   //*** velocity difference between 'massive' and 'mass-less'
   float const DeltaBetaGG = -(betaGG-beta)/(1.-betaGG*beta);
 
-  // m_weight = GetEventWeight();
-  // m_veto = NTVars_veto;
-  // m_cleaning = NTVars_cleaning;
-  // m_timing = NTVars_timing;
+  //here
 
 
-  // if(jetID_R.size() < 2){
-  //   RJigsawVariables = std::map<TString, float>();
-  //   return;
-  // }
+  float const m_HT4PP = m_pTPP_Va + m_pTPP_Vb +
+            m_pTPP_Ia + m_pTPP_Ib;
+  float const m_HT6PP = m_pTPP_V1a + m_pTPP_V1b +
+            m_pTPP_V2a + m_pTPP_V2b +
+            m_pTPP_Ia + m_pTPP_Ib;
+  float const m_minH3P = min(m_H3Pa,m_H3Pb);
 
-  ////////////////////////////////////////////////////////////////////////////////
-  // 1st order vars
+  /// squark ratios
+  float const   m_R_HT4PP_H4PP = m_HT4PP/m_H4PP;
+  float const   m_R_H2PP_H4PP = m_H2PP/m_H4PP;
+  float const   m_R_H2PP_HT4PP = m_H2PP/m_HT4PP;
+  float const   m_R_pTj1a_HT4PP = m_pTPP_jet1a/m_HT4PP;
+  float const   m_R_pTj1b_HT4PP = m_pTPP_jet1b/m_HT4PP;
 
+  /// gluino ratios
+  float const  m_R_HT6PP_H6PP = m_HT6PP/m_H6PP;
+  float const  m_R_H2PP_H6PP = m_H2PP/m_H6PP;
+  float const  m_R_H2PP_HT6PP = m_H2PP/m_HT6PP;
+  float const  m_R_minH3PP_H6PP = m_minH3P/m_H6PP;
+  float const  m_R_pTj2a_HT6PP = m_pTPP_jet2a/m_HT6PP;
+  float const  m_R_pTj2b_HT6PP = m_pTPP_jet2b/m_HT6PP;
 
+  float const  m_dH2o3P = m_H2Pa/m_H3Pa - m_H2Pb/m_H3Pb;
+
+  //  float const     m_pTCM = vP_PP.Pt();
+  //  float const     m_pZCM = fabs(vP_PP.Pz());
+  //  float const     m_RPT = m_pTCM / (m_pTCM + MPP/4.);
+  float const     m_RPZ_HT4PP = m_pZCM / (m_pZCM + m_HT4PP);
+  float const     m_RPZ_HT6PP = m_pZCM / (m_pZCM + m_HT6PP);
+
+  m_dphiVP = (m_dphiVP-acos(-1.)/2.)/(acos(-1.)/2.);
+
+  float const m_sangle = fabs(m_dphiVP + m_cosP)/2.;
+  float const  m_dangle = (m_dphiVP - m_cosP)/2.;
+
+  float dphiA = m_dphiPCa;
+  float dphiB = m_dphiPCb;
+  if(dphiA > acos(-1.))
+    dphiA = 2.*acos(-1.) - dphiA;
+  if(dphiB > acos(-1.))
+    dphiB = 2.*acos(-1.) - dphiB;
+
+float const  m_ddphiPC = (dphiA-dphiB)/acos(-1.);
+float const  m_sdphiPC = fabs(dphiA+dphiB)/2./acos(-1.);
 
   RJigsawVariables[ "RJVars_PP_Mass"           ] = m_MPP;
   RJigsawVariables[ "RJVars_PP_InvGamma"       ] = m_PP_VisShape;
-  RJigsawVariables[ "RJVars_PP_dPhiBetaR"      ] = PP->GetDeltaPhiBoostVisible();
+  RJigsawVariables[ "RJVars_PP_dPhiBetaR"      ] = m_dphiPPV;
   RJigsawVariables[ "RJVars_PP_dPhiVis"        ] = PP->GetDeltaPhiVisible();
   RJigsawVariables[ "RJVars_PP_CosTheta"       ] = m_cosPP;
   RJigsawVariables[ "RJVars_PP_dPhiDecayAngle" ] = m_dphiVP ; // I think ...
@@ -733,16 +771,16 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   RJigsawVariables["RJVars_H2Cb"]      = m_H2Cb;
   RJigsawVariables["RJVars_H3Ca"]      = m_H3Ca;
   RJigsawVariables["RJVars_H3Cb"]      = m_H3Cb;
-  RJigsawVariables["RJVars_HT4PP"]     = -100 ; //m_HT4PP;
-  RJigsawVariables["RJVars_HT6PP"]     = -100 ; //m_HT6PP;
-  RJigsawVariables["RJVars_minH3P"]    = -100 ; //m_minH3P;
-  RJigsawVariables["RJVars_sangle"]    = -100;
-  RJigsawVariables["RJVars_dangle"]    = -100;
-  RJigsawVariables["RJVars_ddphiPC"]   = -100;
-  RJigsawVariables["RJVars_sdphiPC"]   = -100;
-  RJigsawVariables["RJVars_dH2o3P"]    = -100;
-  RJigsawVariables["RJVars_RPZ_HT4PP"] = -100;
-  RJigsawVariables["RJVars_RPZ_HT6PP"] = -100;
+  RJigsawVariables["RJVars_HT4PP"]     = m_HT4PP; //m_HT4PP;
+  RJigsawVariables["RJVars_HT6PP"]     = m_HT6PP; //m_HT6PP;
+  RJigsawVariables["RJVars_minH3P"]    = m_minH3P; //m_minH3P;
+  RJigsawVariables["RJVars_sangle"]    = m_sangle;
+  RJigsawVariables["RJVars_dangle"]    = m_dangle;
+  RJigsawVariables["RJVars_ddphiPC"]   = m_ddphiPC;
+  RJigsawVariables["RJVars_sdphiPC"]   = m_sdphiPC;
+  RJigsawVariables["RJVars_dH2o3P"]    = m_sdphiPC;
+  RJigsawVariables["RJVars_RPZ_HT4PP"] = m_RPZ_HT4PP;
+  RJigsawVariables["RJVars_RPZ_HT6PP"] = m_RPZ_HT6PP;
 
   // end
   ////////////////////////////////////////////////////////////////////////////////
