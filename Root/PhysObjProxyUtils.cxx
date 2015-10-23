@@ -692,7 +692,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   RJigsawVariables[ "RJVars_P1_Mass"           ] = Pa->GetMass();
   RJigsawVariables[ "RJVars_P1_CosTheta"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
-  RJigsawVariables[ "RJVars_P2_Mass"           ] = Pa->GetMass();
+  RJigsawVariables[ "RJVars_P2_Mass"           ] = Pb->GetMass();
   RJigsawVariables[ "RJVars_P2_CosTheta"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
   RJigsawVariables[ "RJVars_I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
   RJigsawVariables[ "RJVars_I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
