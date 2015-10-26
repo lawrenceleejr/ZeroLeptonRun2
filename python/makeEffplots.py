@@ -32,8 +32,8 @@ datadirs =[
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.tenjetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root",
 #"/data/users/rsmith/razor_trigger_data/user.rsmith.trig.v13.alljetRJ.data15_13TeV.00279984.physics_Main.merge.DAOD_SUSY1.f629_m1504_p2425_o.root"
 #"/afs/cern.ch/work/r/rsmith/ttbar_trigger/ttbar_alljet.root",
-"/afs/cern.ch/work/r/rsmith/data_trigger_test/"
-#"/afs/cern.ch/work/r/rsmith/data_trigger/"
+#"/afs/cern.ch/work/r/rsmith/data_trigger_test/"
+"/afs/cern.ch/work/r/rsmith/data_trigger/"
 ]
 
 # def findPt( mydict,  ptCut ) :

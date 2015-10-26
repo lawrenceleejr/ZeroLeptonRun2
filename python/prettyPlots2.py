@@ -25,7 +25,7 @@ ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
 ROOT.xAOD.Init()
 
 myfiles = {
-    "" : root_open("outfile.ttbar.user.rsmith.6755769._000015.o.root")
+    "" : root_open("outfile.ttbar.user.rsmith.6764481._000055.o.root")
 }
 
 jetPtCuts = { 30 : myfiles[""].pt30_vs_pt40.ProjectionX(),
