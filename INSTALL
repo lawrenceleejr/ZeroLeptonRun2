@@ -1,6 +1,6 @@
 
 setupATLAS # or equivalent on your machine
-rcSetup SUSY,2.3.28
+rcSetup SUSY,2.3.32a
 
 ## the code for ZeroLeptonRun2 is at
 ## svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
