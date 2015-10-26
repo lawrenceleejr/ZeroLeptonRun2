@@ -1,3 +1,7 @@
+26-Oct-2015 Geraldine Conti
+	* BuildSUSYObjects.cxx : changed photons to "Loose"
+	* PhysObjProxyFillerTruth.cxx : added condition for iso electrons and muons
+
 26-Oct-2015 Laurent Duflot
 	* update to SUSYTools-00-06-27-03 / SUSY,2.3.32a
 	* tag as ZeroLeptonRun2-00-00-54
