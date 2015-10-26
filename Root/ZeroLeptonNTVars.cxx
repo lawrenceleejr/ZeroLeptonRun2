@@ -1,6 +1,6 @@
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
 #include "TTree.h"
-
+#include <iostream>
 std::string NTVars::toString()
 {
   return
@@ -333,8 +333,72 @@ void NTExtraVars::Reset()
 
 std::string NTRJigsawVars::toString()
 {
-  return std::string("RJVars_PP_Mass/F:RJVars_PP_InvGamma/F:RJVars_PP_dPhiBetaR/F:RJVars_PP_dPhiVis/F:RJVars_PP_CosTheta/F:RJVars_PP_dPhiDecayAngle/F:RJVars_PP_VisShape/F:RJVars_PP_MDeltaR/F:RJVars_P1_Mass/F:RJVars_P1_CosTheta/F:RJVars_P2_Mass/F:RJVars_P2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_P_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_P_0_dPhiGC/F:RJVars_P_0_MassRatioGC/F:RJVars_P_0_Jet1_pT/F:RJVars_P_0_Jet2_pT/F:RJVars_P_0_PInvHS/F:RJVars_P_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_P_1_dPhiGC/F:RJVars_P_1_MassRatioGC/F:RJVars_P_1_Jet1_pT/F:RJVars_P_1_Jet2_pT/F:RJVars_P_1_PInvHS/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F:RJVars_H2PP/F:RJVars_H3PP/F:RJVars_H4PP/F:RJVars_H6PP/F:RJVars_H2Pa/F:RJVars_H2Pb/F:RJVars_H3Pa/F:RJVars_H3Pb/F:RJVars_H4Pa/F:RJVars_H4Pb/F:RJVars_H5Pa/F:RJVars_H5Pb/F:RJVars_H2Ca/F:RJVars_H2Cb/F:RJVars_H3Ca/F:RJVars_H3Cb/F:RJVars_HT4PP/F:RJVars_HT6PP/F:RJVars_minH3P/F:RJVars_sangle/F:RJVars_dangle/F:RJVars_ddphiPC/F:RJVars_sdphiPC/F:RJVars_dH2o3P/F:RJVars_RPZ_HT4PP/F:RJVars_RPZ_HT6PP/F");
+  return std::string("RJVars_PP_Mass/F:RJVars_PP_InvGamma/F:RJVars_PP_dPhiBetaR/F:RJVars_PP_dPhiVis/F:RJVars_PP_CosTheta/F:RJVars_PP_dPhiDecayAngle/F:RJVars_PP_VisShape/F:RJVars_PP_MDeltaR/F:RJVars_P1_Mass/F:RJVars_P1_CosTheta/F:RJVars_P2_Mass/F:RJVars_P2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_MP/F:RJVars_dphiPV1a/F:RJVars_cosV1a/F:RJVars_dphiCV2a/F:RJVars_cosV2a/F:RJVars_dphiPV1b/F:RJVars_cosV1b/F:RJVars_dphiCV2b/F:RJVars_cosV2b/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rsib/F:RJVars_QCD_Delta1/F:RJVars_H2PP/F:RJVars_H3PP/F:RJVars_H4PP/F:RJVars_H6PP/F:RJVars_H2Pa/F:RJVars_H2Pb/F:RJVars_H3Pa/F:RJVars_H3Pb/F:RJVars_H4Pa/F:RJVars_H4Pb/F:RJVars_H5Pa/F:RJVars_H5Pb/F:RJVars_H2Ca/F:RJVars_H2Cb/F:RJVars_H3Ca/F:RJVars_H3Cb/F:RJVars_HT4PP/F:RJVars_HT6PP/F:RJVars_minH3P/F:RJVars_sangle/F:RJVars_dangle/F:RJVars_ddphiPC/F:RJVars_sdphiPC/F:RJVars_dH2o3P/F:RJVars_RPZ_HT4PP/F:RJVars_RPZ_HT6PP/F:");
 }
+
+void NTRJigsawVars::Print()
+{
+std::cout << RJVars_PP_Mass          << std::endl;
+ std::cout << RJVars_PP_InvGamma      << std::endl;
+ std::cout << RJVars_PP_dPhiBetaR     << std::endl;
+ std::cout << RJVars_PP_dPhiVis       << std::endl;
+ std::cout << RJVars_PP_CosTheta      << std::endl;
+ std::cout << RJVars_PP_dPhiDecayAngle<< std::endl;
+ std::cout << RJVars_PP_VisShape      << std::endl;
+ std::cout << RJVars_PP_MDeltaR       << std::endl;
+ std::cout << RJVars_P1_Mass          << std::endl;
+ std::cout << RJVars_P1_CosTheta      << std::endl;
+ std::cout << RJVars_P2_Mass          << std::endl;
+ std::cout << RJVars_P2_CosTheta      << std::endl;
+ std::cout << RJVars_I1_Depth         << std::endl;
+ std::cout << RJVars_I2_Depth         << std::endl;
+ std::cout << RJVars_MP               << std::endl;
+
+ std::cout << RJVars_dphiPV1a         << std::endl;
+ std::cout << RJVars_cosV1a           << std::endl;
+ std::cout << RJVars_dphiCV2a         << std::endl;
+ std::cout << RJVars_cosV2a     << std::endl;
+ std::cout << RJVars_dphiPV1b   << std::endl;
+ std::cout << RJVars_cosV1b     << std::endl;
+ std::cout << RJVars_dphiCV2b   << std::endl;
+ std::cout << RJVars_cosV2b     << std::endl;
+
+ std::cout << RJVars_V1_N       << std::endl;
+ std::cout << RJVars_V2_N       << std::endl;
+ std::cout << RJVars_DeltaBetaGG<< std::endl;
+ std::cout << RJVars_dphiVG     << std::endl;
+ std::cout << RJVars_QCD_dPhiR  << std::endl;
+ std::cout << RJVars_QCD_Rpt    << std::endl;
+ std::cout << RJVars_QCD_Rsib   << std::endl;
+ std::cout << RJVars_QCD_Delta1 << std::endl;
+ std::cout << RJVars_H2PP       << std::endl;
+ std::cout << RJVars_H3PP       << std::endl;
+ std::cout << RJVars_H4PP       << std::endl;
+ std::cout << RJVars_H6PP       << std::endl;
+ std::cout << RJVars_H2Pa       << std::endl;
+ std::cout << RJVars_H2Pb       << std::endl;
+ std::cout << RJVars_H3Pa       << std::endl;
+ std::cout << RJVars_H3Pb       << std::endl;
+ std::cout << RJVars_H4Pa       << std::endl;
+ std::cout << RJVars_H4Pb       << std::endl;
+ std::cout << RJVars_H5Pa       << std::endl;
+ std::cout << RJVars_H5Pb       << std::endl;
+ std::cout << RJVars_H2Ca       << std::endl;
+ std::cout << RJVars_H2Cb       << std::endl;
+ std::cout << RJVars_H3Ca       << std::endl;
+ std::cout << RJVars_H3Cb       << std::endl;
+ std::cout << RJVars_HT4PP      << std::endl;
+ std::cout << RJVars_HT6PP      << std::endl;
+ std::cout << RJVars_minH3P     << std::endl;
+ std::cout << RJVars_sangle     << std::endl;
+ std::cout << RJVars_dangle     << std::endl;
+ std::cout << RJVars_ddphiPC    << std::endl;
+ std::cout << RJVars_sdphiPC    << std::endl;
+ std::cout << RJVars_dH2o3P     << std::endl;
+ std::cout << RJVars_RPZ_HT4PP  << std::endl;
+ std::cout << RJVars_RPZ_HT6PP  << std::endl;
+}
+
 
 void NTRJigsawVars::Reset()
 {RJVars_PP_Mass           = 0.f;

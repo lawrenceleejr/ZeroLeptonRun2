@@ -334,8 +334,10 @@ public:
     Reset();
   }
 
+
   static std::string toString();
 
+  void Print();
   void Reset();
 
   float RJVars_PP_Mass;
