@@ -69,9 +69,12 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
     // std::cout << " Truth el " <<  (*it)->pt() << " " << (*it)->eta() << " Cut : " << m_elPtCut << std::endl;
     if ( (*it)->pt() < m_elPtCut ) continue;
     if ( std::abs((*it)->eta()) < 2.47 ) {
-      baseline_electrons.push_back(ElectronTruthProxy(*it));
-      isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
-      isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
+      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
+      if((*it)->auxdata<int>("truthType")==2){
+	baseline_electrons.push_back(ElectronTruthProxy(*it));
+	isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
+	isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
+      }
     }
   }
 
@@ -101,9 +104,12 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
     //std::cout << " Truth muon " <<  (*it)->pt() << " " << (*it)->eta() << " Cut : " << m_muonPtCut << std::endl;
     if ( (*it)->pt() < m_muonPtCut ) continue;
     if ( std::abs((*it)->eta()) < 2.4 ) {
-      baseline_muons.push_back(MuonTruthProxy(*it));
-      isolated_baseline_muons.push_back(MuonTruthProxy(*it));
-      isolated_signal_muons.push_back(MuonTruthProxy(*it));
+      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
+      if((*it)->auxdata<int>("truthType")==6){
+	baseline_muons.push_back(MuonTruthProxy(*it));
+	isolated_baseline_muons.push_back(MuonTruthProxy(*it));
+	isolated_signal_muons.push_back(MuonTruthProxy(*it));
+      }
     }
   }
 

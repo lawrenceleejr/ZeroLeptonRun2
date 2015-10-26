@@ -113,6 +113,7 @@ void BuildSUSYObjects::initSUSYTools()
   }
   if ( m_PhotonInOR ) { m_SUSYObjTool->setProperty("DoPhotonOR",true); }
   m_SUSYObjTool->setProperty("PhotonIsoWP","Cone20").ignore();
+  m_SUSYObjTool->setProperty("PhotonId","Loose").ignore();
 
   // set our own tau selection
 
