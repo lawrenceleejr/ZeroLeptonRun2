@@ -24,7 +24,8 @@
 
 PhysObjProxyFiller::PhysObjProxyFiller(float jetPtCut,
 				       float elPtCut, float muonPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl,
-				       float jetEtaCut ) :
+				       float jetEtaCut
+				       ) :
   m_jetPtCut(jetPtCut), m_jetEtaCut(jetEtaCut),
   m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_suffix(suffix), m_doRecl(doRecl), m_suffixRecl(suffixRecl)
 {

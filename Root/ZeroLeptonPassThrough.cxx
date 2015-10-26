@@ -492,13 +492,13 @@ bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 					   );
     if(m_buildTriggerJetAndMET){
       for( int ii = 0; ii <  jetPtVec.size() ; ++ii){
-	std::cout << jetPtVec.at(ii) << std::endl;
+	//	std::cout << jetPtVec.at(ii) << std::endl;
 	std::map<TString,float> dummy;
 	m_proxyUtils.CalculateRJigsawVariables(hlt_jets,
 					       hlt_missingET->X(),
 					       hlt_missingET->Y(),
 					       dummy,
-					       jetPtIntVec.at(ii),
+					       jetPtIntVec.at(ii)*1000.,
 					       m_maxJetCut
 					       );
 	RJigsawVariables_hlt.push_back(dummy);
