@@ -51,6 +51,7 @@ for datadir in datadirs :
      mDeltaR_hlt_jetpt               = { "pt30_vs_pt40" : ROOT.TH2F("pt30_vs_pt40", "pt30_vs_pt40", 100 , 0 , 3000 , 100 , 0 , 3000),
                                          "pt30_vs_pt50" : ROOT.TH2F("pt30_vs_pt50", "pt30_vs_pt50", 100 , 0 , 3000 , 100 , 0 , 3000),
                                          "pt40_vs_pt50" : ROOT.TH2F("pt40_vs_pt50", "pt40_vs_pt50", 100 , 0 , 3000 , 100 , 0 , 3000),
+                                         "pt40_vs_pt100" : ROOT.TH2F("pt40_vs_pt100", "pt40_vs_pt100", 100 , 0 , 3000 , 100 , 0 , 3000),
 
           }
 
@@ -59,8 +60,19 @@ for datadir in datadirs :
      eff_xe10_razor170_off_0L     = ROOT.TEfficiency("eff_xe10_razor170_0L_off" , "xe10_razor170_0L_off; mDeltaR (GeV) ; wrt L1 seed", 100 , 0 , 3000)
      njets          = ROOT.TH1F("njet", "njet", 13 , -.5 , 12.5 )
 
-     nHLTJets       = ROOT.TH1F("nHLTjets"     , "nHLTjets"     , 25 , -.5 , 24.5 )
-     nHLTJets_xe70  = ROOT.TH1F("nHLTjets_xe70", "nHLTjets_xe70", 25 , -.5 , 24.5 )
+     nHLTJets       ={ 30: ROOT.TH1F("nHLTjets_30"     , "nHLTjets_30"     , 25 , -.5 , 24.5 ),
+                       40: ROOT.TH1F("nHLTjets_40"     , "nHLTjets_40"     , 25 , -.5 , 24.5 ),
+                       50: ROOT.TH1F("nHLTjets_50"     , "nHLTjets_50"     , 25 , -.5 , 24.5 ),
+                       }
+
+     nHLTJets_L1       ={ 30: ROOT.TH1F("nHLTjets_L1_30"     , "nHLTjets_L1_30"     , 25 , -.5 , 24.5 ),
+                          40: ROOT.TH1F("nHLTjets_L1_40"     , "nHLTjets_L1_40"     , 25 , -.5 , 24.5 ),
+                          50: ROOT.TH1F("nHLTjets_L1_50"     , "nHLTjets_L1_50"     , 25 , -.5 , 24.5 ),
+                       }
+     nHLTJets_xe70       ={ 30: ROOT.TH1F("nHLTjets_xe70_30"     , "nHLTjets_xe70_30"     , 25 , -.5 , 24.5 ),
+                       40: ROOT.TH1F("nHLTjets_xe70_40"     , "nHLTjets_xe70_40"     , 25 , -.5 , 24.5 ),
+                       50: ROOT.TH1F("nHLTjets_xe70_50"     , "nHLTjets_xe70_50"     , 25 , -.5 , 24.5 ),
+                       }
 
      for filecount, ifile in enumerate(files):
      #    print ifile.isfile
@@ -146,21 +158,38 @@ for datadir in datadirs :
                  missingEt = tree.GetLeaf("met").GetValue(0);
                  njets.Fill( event.jetPt.size())
 
-                 njets_hlt = tree.GetLeaf("nHLTJets").GetValue(0)
-                 nHLTJets.Fill(njets_hlt)
-                 if(triggerDict["HLT_xe70"]) :
-                      nHLTJets_xe70.Fill(njets_hlt)
+
+
 
                  nlepton = event.elPt.size() + event.muPt.size()
 
                  mDeltaR = {}
+                 njets_hlt = {}# tree.GetLeaf("nHLTJets").GetValue(0)
                  for branch in listOfBranches :
                       if( "NTRJigsaw" in branch.GetName() ) :
-                           mDeltaR[branch.GetName()] = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)/1000.
+                           mDeltaR[branch.GetName()]   = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)/1000.
+                           njets_hlt[branch.GetName()] = branch.GetLeaf("RJVars_V1_N").GetValue(0) + branch.GetLeaf("RJVars_V2_N").GetValue(0)
+
+
+                 nHLTJets[30].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt30"])
+                 nHLTJets[40].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt40"])
+                 nHLTJets[50].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt50"])
+
+                 if(triggerDict["L1_2J15_XE55"]) :
+                      nHLTJets_L1[30].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt30"])
+                      nHLTJets_L1[40].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt40"])
+                      nHLTJets_L1[50].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt50"])
+                 if(triggerDict["HLT_xe70"]) :
+                      nHLTJets_xe70[30].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt30"])
+                      nHLTJets_xe70[40].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt40"])
+                      nHLTJets_xe70[50].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt50"])
+
+
 
                  mDeltaR_hlt_jetpt["pt30_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
                  mDeltaR_hlt_jetpt["pt30_vs_pt40"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt30"], mDeltaR["NTRJigsawVars_hlt_jetPt40"])
                  mDeltaR_hlt_jetpt["pt40_vs_pt50"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt40"], mDeltaR["NTRJigsawVars_hlt_jetPt50"])
+                 mDeltaR_hlt_jetpt["pt40_vs_pt100"].Fill(mDeltaR["NTRJigsawVars_hlt_jetPt40"], mDeltaR["NTRJigsawVars_hlt_jetPt100"])
 
      print "nentries :"  + str(eff_xe10_razor170_off.GetTotalHistogram().GetEntries())
      rootfile.Close()
@@ -169,8 +198,12 @@ for datadir in datadirs :
      for value in mDeltaR_hlt_jetpt.values() :
           value.Write()
      njets.Write()
-     nHLTJets.Write()
-     nHLTJets_xe70.Write()
+
+     for key in nHLTJets.keys() :
+          nHLTJets     [key].Write()
+          nHLTJets_L1  [key].Write()
+          nHLTJets_xe70[key].Write()
+
      eff_xe10_razor170_off.Write()
      eff_xe10_razor170_off_metcut.Write()
      eff_xe10_razor170_off_0L.Write()
