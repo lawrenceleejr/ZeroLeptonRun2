@@ -57,7 +57,7 @@ jetPtCuts[30].Draw()
 jetPtCuts[40].Draw("same")
 jetPtCuts[50].Draw("same")
 
-leg3 = ROOT.TLegend(.5, .5, 0.7 , 0.7)
+leg3 = ROOT.TLegend(.4, .4, 0.7 , 0.7)
 leg3.AddEntry(jetPtCuts[30], "jet pt > 30 GeV" )
 leg3.AddEntry(jetPtCuts[40], "jet pt > 40 GeV" )
 leg3.AddEntry(jetPtCuts[50], "jet pt > 50 GeV" )
@@ -72,32 +72,54 @@ canvas2.SetRightMargin(0.13);
 canvas2.SetGrid(1,1)
 canvas2.SetLogy()
 
-hltjets = {
-    ""     : myfiles[""].nHLTjets,
-    "xe70" : myfiles[""].nHLTjets_xe70
-}
 
-hltjets[""].SetTitle("")
-hltjets[""].GetYaxis().SetTitleOffset(1.4)
-hltjets[""].GetXaxis().SetTitle("Number of HLT Jets")
-hltjets[""].GetYaxis().SetTitle("a.u.")
+from collections import OrderedDict
+hltjets=OrderedDict()
+
+#   hltjets["30"]    = myfiles[""].nHLTjets_30,
+#hltjets["30_xe70"]= myfiles[""].nHLTjets_xe70_30
+hltjets["30_L1"]  = myfiles[""].nHLTjets_L1_30
+
+#   hltjets["40"]    = myfiles[""].nHLTjets_40,
+#hltjets["40_xe70"]= myfiles[""].nHLTjets_xe70_40
+hltjets["40_L1"]  = myfiles[""].nHLTjets_L1_40
+
+#   hltjets["50"]    = myfiles[""].nHLTjets_50,
+#hltjets["50_xe70"]= myfiles[""].nHLTjets_xe70_50
+hltjets["50_L1"]  = myfiles[""].nHLTjets_L1_50
+
+
+firstkey = hltjets.keys()[0]
+
+hltjets[firstkey].SetTitle("")
+hltjets[firstkey].GetYaxis().SetTitleOffset(1.4)
+hltjets[firstkey].GetXaxis().SetTitle("Number of HLT Jets")
+hltjets[firstkey].GetYaxis().SetTitle("a.u.")
 
 
 for color,value in enumerate(hltjets.values()) :
     value.Scale(1./value.Integral()) #a.u.
     value.SetMarkerColor(color+2 )
 
-hltjets[""]    .Draw()
-hltjets["xe70"].Draw("same")
+hltjets[firstkey]    .Draw()
+leg2 = ROOT.TLegend(.5, .4, 0.8 , 0.7)
 
-leg2 = ROOT.TLegend(.7, .5, 0.9 , 0.7)
-leg2.AddEntry(hltjets[""], "No trigger selection" )
-leg2.AddEntry(hltjets["xe70"], "HLT_xe70" )
+for key , value in hltjets.items() :
+    value.Draw("same")
+    if ( "xe70" in key ) :
+        leg2.AddEntry(value , "HLT_xe70, jet pt > " + key.split("_")[0] + " GeV ")
+    elif ( "L1" in key ) :
+        leg2.AddEntry(value , "L1 seed , jet pt > " + key.split("_")[0]+ " GeV ")
+    else :
+        leg2.AddEntry(value , "No trigger selection " + key)
+
 leg2.Draw("same")
 
-AtlasUtils.ATLAS_LABELInternal(.6,.75, ROOT.kBlack)
+AtlasUtils.ATLAS_LABELInternal(.5,.75, ROOT.kBlack)
 
-print "% with more than 10 jets " + str(hltjets["xe70"].Integral(hltjets["xe70"].FindBin(10.5) , 100000) / hltjets["xe70"].Integral())
+
+for key , value in hltjets.items() :
+    print "% with more than 10 jets for " + key + " : " + str(value.Integral(value.FindBin(10.5) , 100000) / value.Integral())
 
 
 canvas1.Print('plots/'+canvas1.GetName()+".eps")

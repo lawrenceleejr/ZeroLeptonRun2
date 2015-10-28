@@ -170,6 +170,9 @@ for datadir in datadirs :
                            mDeltaR[branch.GetName()]   = branch.GetLeaf("RJVars_PP_MDeltaR").GetValue(0)/1000.
                            njets_hlt[branch.GetName()] = branch.GetLeaf("RJVars_V1_N").GetValue(0) + branch.GetLeaf("RJVars_V2_N").GetValue(0)
 
+                 # if( tree.GetLeaf("nHLTJets").GetValue(0) > .5 ) :
+                 #      print "from HLT jet counting : " +  str(tree.GetLeaf("nHLTJets").GetValue(0))
+                 #      print "from RJ vars          : " +  str(njets_hlt["NTRJigsawVars_hlt_jetPt30"])
 
                  nHLTJets[30].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt30"])
                  nHLTJets[40].Fill(njets_hlt["NTRJigsawVars_hlt_jetPt40"])
