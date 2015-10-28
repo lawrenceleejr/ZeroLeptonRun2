@@ -153,6 +153,21 @@ class MuonTruthProxy: public TLorentzVector
   ClassDef(MuonTruthProxy,0);
 };
 
+class PhotonTruthProxy: public TLorentzVector
+{
+ public:
+  PhotonTruthProxy();
+  PhotonTruthProxy(const xAOD::TruthParticle* phtruth);
+  inline const xAOD::TruthParticle* phtruth() const {return m_phtruth;}
+
+ private:
+  const xAOD::TruthParticle* m_phtruth;
+
+ public:
+  ClassDef(PhotonTruthProxy,0);
+};
+
+
 class TauProxy: public TLorentzVector
 {
  public:

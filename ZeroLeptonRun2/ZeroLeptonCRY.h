@@ -33,9 +33,9 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillNTCRYVars(NTCRYVars& cryntv, const std::vector<PhotonProxy>& photons, TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose, std::vector<float>& vetcone20, std::vector<float>& vptvarcone20, 
-		     std::vector<float>& vptcone20,std::vector<float>& vetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,//std::vector<int>& visEMTight,
-		     std::vector<float>& vpt, std::vector<float>& veta, std::vector<int>& vtruthtype, std::vector<int>& vtruthorigin, std::vector<int>& visEMtight);
+  void FillNTCRYVars(NTCRYVars& cryntv, const TLorentzVector& photon, TVector2& origmisset,int tight, int loose, float etcone20,float ptvarcone20, 
+		     float ptcone20,float etcone40, float ptvarcone40,float ptcone40,
+		     int truthtype, int truthorigin,int isEMtight, int isSignal);
 
   TTree* m_tree;
   std::string m_stringRegion;

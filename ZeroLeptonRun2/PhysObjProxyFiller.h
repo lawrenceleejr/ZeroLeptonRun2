@@ -5,6 +5,7 @@ class JetProxy;
 class ElectronProxy;
 class MuonProxy;
 class TauProxy;
+class PhotonProxy;
 class JetReclusteringTool;
 
 #include <vector>
@@ -13,7 +14,7 @@ class JetReclusteringTool;
 class PhysObjProxyFiller
 {
  public:
-  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl);
+  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl);
 
   // fill with good and bad jets, overlap removal already performed
   void FillJetProxies(std::vector<JetProxy>& good_jets,
@@ -38,6 +39,11 @@ class PhysObjProxyFiller
   void FillTauProxies(std::vector<TauProxy>& baseline_taus,
 		      std::vector<TauProxy>& signal_taus);
 
+  // fill with baseline and signal photon after overlap removal 
+  void FillPhotonProxies(std::vector<PhotonProxy>& baseline_photons,
+			 std::vector<PhotonProxy>& isolated_baseline_photons,
+			 std::vector<PhotonProxy>& isolated_signal_photons);
+
   // change suffix
   void setSuffix(const std::string& suffix) {m_suffix = suffix;}
 
@@ -45,6 +51,7 @@ class PhysObjProxyFiller
   float m_jetPtCut;
   float m_elPtCut;
   float m_muonPtCut;
+  float m_phPtCut;
   bool m_doRecl;
   std::string m_suffix;
   std::string m_suffixRecl;

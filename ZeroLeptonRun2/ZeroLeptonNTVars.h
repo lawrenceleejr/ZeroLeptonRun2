@@ -253,49 +253,49 @@ class NTCRYVars
   float origmet,origmetPhi;
 
   // WARNING: if you add another vector you need to update NTCRYVarsRead below
-  std::vector<float> phPt;
-  std::vector<float> phEta;
-  std::vector<float> phPhi;
-  std::vector<bool> phSignal;
-  std::vector<float> phTopoetcone20;
-  std::vector<float> phPtvarcone20;
-  std::vector<float> phPtcone20;
-  std::vector<float> phTopoetcone40;
-  std::vector<float> phPtvarcone40;
-  std::vector<float> phPtcone40;
+  float phPt;
+  float phEta;
+  float phPhi;
+  int   phSignal;
+  float phTopoetcone20;
+  float phPtvarcone20;
+  float phPtcone20;
+  float phTopoetcone40;
+  float phPtvarcone40;
+  float phPtcone40;
   //std::vector<int>   phisEMTight;
-  std::vector<bool> phLoose;
-  std::vector<bool> phTight;
-  std::vector<int>  phTruthType;
-  std::vector<int>  phTruthOrigin;
-  std::vector<int>  phisEMvalue;
+  int phLoose;
+  int phTight;
+  int  phTruthType;
+  int  phTruthOrigin;
+  int  phisEMvalue;
 };
 
-class NTCRYVarsRead 
-{
-public:
-  NTCRYVarsRead();
-  void setAddresses(TTree* tree);
-
-  NTCRYVars ntv;
-private:
-  std::vector< float >* p_phPt;
-  std::vector< float >* p_phEta;
-  std::vector< float >* p_phPhi;
-  std::vector< bool >*  p_phSignal;
-  std::vector< float >* p_phTopoetcone20;
-  std::vector< float >* p_phPtvarcone20;
-  std::vector< float >* p_phPtcone20;
-  std::vector< float >* p_phTopoetcone40;
-  std::vector< float >* p_phPtvarcone40;
-  std::vector< float >* p_phPtcone40;
-  //std::vector< int >*   p_phisEMTight;
-  std::vector< bool >*  p_phLoose;
-  std::vector< bool >*  p_phTight;
-  std::vector< int  >*  p_phTruthType;
-  std::vector< int  >*  p_phTruthOrigin;
-  std::vector< int  >*  p_phisEMvalue;
-};
+//class NTCRYVarsRead 
+//{
+//public:
+//  NTCRYVarsRead();
+//  void setAddresses(TTree* tree);
+//
+//  NTCRYVars ntv;
+//private:
+//  std::vector< float >* p_phPt;
+//  std::vector< float >* p_phEta;
+//  std::vector< float >* p_phPhi;
+//  std::vector< bool >*  p_phSignal;
+//  std::vector< float >* p_phTopoetcone20;
+//  std::vector< float >* p_phPtvarcone20;
+//  std::vector< float >* p_phPtcone20;
+//  std::vector< float >* p_phTopoetcone40;
+//  std::vector< float >* p_phPtvarcone40;
+//  std::vector< float >* p_phPtcone40;
+//  //std::vector< int >*   p_phisEMTight;
+//  std::vector< bool >*  p_phLoose;
+//  std::vector< bool >*  p_phTight;
+//  std::vector< int  >*  p_phTruthType;
+//  std::vector< int  >*  p_phTruthOrigin;
+//  std::vector< int  >*  p_phisEMvalue;
+//};
 
 class NTPdfVars {
 public:
@@ -468,6 +468,12 @@ inline void bookNTCR3LVars(TTree* tree, NTCR3LVars& cr3lntv)
   treePolicies(tree);
 }
 
-void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv);
+inline void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
+{
+  tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());
+  treePolicies(tree);
+}
+
+//void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv);
 
 #endif
