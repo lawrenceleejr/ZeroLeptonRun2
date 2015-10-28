@@ -1,3 +1,10 @@
+28-Oct-2015 Geraldine Conti
+	* Added FillPhotonProxies function, similarly to what is done for 
+	electrons, muons and jets
+	
+27-Oct-2015 Geraldine Conti
+	* Fixed el pT to 10GeV for overlap removal
+
 26-Oct-2015 Geraldine Conti
 	* BuildSUSYObjects.cxx : changed photons to "Loose"
 	* PhysObjProxyFillerTruth.cxx : added condition for iso electrons and muons
