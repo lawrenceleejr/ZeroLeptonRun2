@@ -247,28 +247,28 @@ class NTCRYVars
  public:
   NTCRYVars() { Reset(); }
   
-  static std::string toString() {return std::string("origmet/F:origmetPhi/F");}
+  static std::string toString();// {return std::string("origmet/F:origmetPhi/F");}
   void Reset();
-
-  float origmet,origmetPhi;
 
   // WARNING: if you add another vector you need to update NTCRYVarsRead below
   float phPt;
   float phEta;
   float phPhi;
-  int   phSignal;
+  float origmet;
+  float origmetPhi;
   float phTopoetcone20;
   float phPtvarcone20;
   float phPtcone20;
   float phTopoetcone40;
   float phPtvarcone40;
   float phPtcone40;
-  //std::vector<int>   phisEMTight;
-  int phLoose;
-  int phTight;
-  int  phTruthType;
-  int  phTruthOrigin;
-  int  phisEMvalue;
+  int   phLoose;
+  int   phTight;
+  int   phTruthType;
+  int   phTruthOrigin;
+  int   phisEMvalue;
+  int   phSignal;
+
 };
 
 //class NTCRYVarsRead 
