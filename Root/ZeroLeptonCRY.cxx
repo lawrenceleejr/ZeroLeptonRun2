@@ -472,7 +472,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   TLorentzVector photonTLV;
   photonTLV.SetPtEtaPhiM(isolated_signal_photons[0].photon()->pt(),isolated_signal_photons[0].photon()->eta(),isolated_signal_photons[0].photon()->phi(),0);
-  std::cout << "TEST12" << std::endl;
+
   int phSignal = (isolated_signal_photons[0].isSignal());
   int isEMvalue = -1000;
 

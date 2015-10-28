@@ -476,27 +476,30 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   treePolicies(tree);
 }
 
+std::string NTCRYVars::toString()
+{
+  return std::string("phPt/F:phEta/F:phPhi/F:origmet/F:origmetPhi/F:phTopoetcone20/F:phPtvarcone20/F:phPtcone20/F:phTopoetcone40/F:phPtvarcone40/F:phPtcone40/F:phLoose/I:phTight/I:phTruthType/I:phTruthOrigin/I:phisEMvalue/I:phSignal/I");
+}
 
 void NTCRYVars::Reset()
 {
-  phPt= 0.f;;
-  phEta= 0.f;;
-  phPhi= 0.f;;
-  phSignal= 0.f;;
+  phPt= 0.f;
+  phEta= 0.f;
+  phPhi= 0.f;
   origmet = 0.f;
   origmetPhi = 0.f;
   phTopoetcone20= 0.f;
-  phPtvarcone20= 0.f; 
+  phPtvarcone20= 0.f;
   phPtcone20= 0.f;
   phTopoetcone40= 0.f;
   phPtvarcone40= 0.f;
   phPtcone40= 0.f;
-  //phisEMTight.clear();
-  phLoose= 0.f;
-  phTight= 0.f;
-  phTruthType= 0.f;
-  phTruthOrigin= 0.f;
-  phisEMvalue= 0.f;
+  phLoose= 0;
+  phTight= 0;
+  phTruthType= 0;
+  phTruthOrigin= 0;
+  phisEMvalue= 0;
+  phSignal= 0;
 }
 
 
