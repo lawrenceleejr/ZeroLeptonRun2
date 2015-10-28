@@ -9,7 +9,7 @@
 #include "xAODMuon/MuonContainer.h"
 #include "xAODJet/JetContainer.h"
 #include "xAODEgamma/ElectronContainer.h"
-//#include "xAODEgamma/PhotonContainer.h"
+#include "xAODEgamma/PhotonContainer.h"
 #include "xAODTau/TauJetContainer.h"
 #include "xAODTau/TauJet.h"
 
@@ -22,8 +22,8 @@
 #include <iostream>
 
 
-PhysObjProxyFiller::PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl):
-  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_suffix(suffix), m_doRecl(doRecl), m_suffixRecl(suffixRecl)
+PhysObjProxyFiller::PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl):
+  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut), m_suffix(suffix), m_doRecl(doRecl), m_suffixRecl(suffixRecl)
 {
   if(m_doRecl){
     m_jetReclusteringTool = new JetReclusteringTool("ZLJetReclusteringTool");
@@ -285,4 +285,48 @@ void PhysObjProxyFiller::FillTauProxies(std::vector<TauProxy>& baseline_taus,
   // sort collections (calibration might have changed the order)
   std::sort(baseline_taus.begin(),baseline_taus.end(),PtOrder<TauProxy>);
   std::sort(signal_taus.begin(),signal_taus.end(),PtOrder<TauProxy>);
+}
+
+void PhysObjProxyFiller::FillPhotonProxies(std::vector<PhotonProxy>& baseline_photons,
+					   std::vector<PhotonProxy>& isolated_baseline_photons,
+					   std::vector<PhotonProxy>& isolated_signal_photons)
+{
+  baseline_photons.clear();
+  isolated_baseline_photons.clear();
+  isolated_signal_photons.clear();
+  xAOD::TStore* store = xAOD::TActiveStore::store();
+  const xAOD::PhotonContainer* photons = 0;
+  if ( !store->retrieve(photons, "SUSYPhotons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
+  }
+
+  for ( xAOD::PhotonContainer::const_iterator it = photons->begin();
+        it != photons->end(); ++it ){
+
+    if ( (*it)->pt() < m_phPtCut ) continue;
+    if ( std::abs((*it)->eta())> 2.37 ) continue; 
+    if ( (*it)->auxdecor<char>("baseline") == 0 ) continue;
+    baseline_photons.push_back(PhotonProxy(*it));
+    if ( (*it)->auxdecor<char>("passOR") == 1) {
+      isolated_baseline_photons.push_back(PhotonProxy(*it));
+      if ( (*it)->auxdecor<char>("signal") == 1) {
+	isolated_signal_photons.push_back(PhotonProxy(*it));
+
+	// isolation information 
+	// Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx 
+
+	//if(!isData){
+	//  vtruthType.push_back((*it)->auxdata<int>("truthType"));
+	//  vtruthOrigin.push_back((*it)->auxdata<int>("truthOrigin"));
+	//}
+	//else{
+	//  vtruthType.push_back(-1000);
+	//  vtruthOrigin.push_back(-1000);
+	//}
+      }
+    }
+  }
+  std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonProxy>);
+  std::sort(isolated_baseline_photons.begin(),isolated_baseline_photons.end(),PtOrder<PhotonProxy>);
+  std::sort(isolated_signal_photons.begin(),isolated_signal_photons.end(),PtOrder<PhotonProxy>);
 }

@@ -238,7 +238,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     bool el_sel;
     //if(doHarmonization) el_sel = (*el_itr)->auxdecor<char>("signal"); // el_sel = dec_signal(**el_itr);
     //else el_sel = (*el_itr)->auxdecor<char>("baseline"); // el_sel = dec_baseline(**el_itr);
-    if( (*el_itr)->pt() > 20000 && std::abs((*el_itr)->eta()) < 2.47 )
+    if( (*el_itr)->pt() > 10000 && std::abs((*el_itr)->eta()) < 2.47 )
       el_sel = 1 ;
     if( !el_sel ){
       (*el_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **el_itr ) = 0;
@@ -448,7 +448,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     bool el_sel;
     //if(doHarmonization) el_sel = (*el_itr)->auxdecor<char>("signal"); // el_sel = dec_signal(**el_itr);    
     //else el_sel = (*el_itr)->auxdecor<char>("baseline"); //dec_baseline(**el_itr); 
-    if( (*el_itr)->pt() > 20000 && std::abs((*el_itr)->eta()) < 2.47 )
+    if( (*el_itr)->pt() > 10000 && std::abs((*el_itr)->eta()) < 2.47 )
       el_sel = 1 ; 
     if( !el_sel ){
       (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;    

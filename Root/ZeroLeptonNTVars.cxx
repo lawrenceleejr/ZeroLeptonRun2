@@ -479,87 +479,87 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
 
 void NTCRYVars::Reset()
 {
-  phPt.clear();
-  phEta.clear();
-  phPhi.clear();
-  phSignal.clear();
+  phPt= 0.f;;
+  phEta= 0.f;;
+  phPhi= 0.f;;
+  phSignal= 0.f;;
   origmet = 0.f;
   origmetPhi = 0.f;
-  phTopoetcone20.clear();
-  phPtvarcone20.clear(); 
-  phPtcone20.clear();
-  phTopoetcone40.clear();
-  phPtvarcone40.clear();
-  phPtcone40.clear();
+  phTopoetcone20= 0.f;
+  phPtvarcone20= 0.f; 
+  phPtcone20= 0.f;
+  phTopoetcone40= 0.f;
+  phPtvarcone40= 0.f;
+  phPtcone40= 0.f;
   //phisEMTight.clear();
-  phLoose.clear();
-  phTight.clear();
-  phTruthType.clear();
-  phTruthOrigin.clear();
-  phisEMvalue.clear();
+  phLoose= 0.f;
+  phTight= 0.f;
+  phTruthType= 0.f;
+  phTruthOrigin= 0.f;
+  phisEMvalue= 0.f;
 }
 
 
-NTCRYVarsRead::NTCRYVarsRead(): ntv()
-{
-  p_phPt = &ntv.phPt;
-  p_phEta = &ntv.phEta;
-  p_phPhi = &ntv.phPhi;
-  p_phSignal = &ntv.phSignal;
-  p_phTopoetcone20 = &ntv.phTopoetcone20;
-  p_phPtvarcone20 = &ntv.phPtvarcone20;
-  p_phPtcone20 = &ntv.phPtcone20;
-  p_phTopoetcone40 = &ntv.phTopoetcone40;
-  p_phPtvarcone40 = &ntv.phPtvarcone40;
-  p_phPtcone40 = &ntv.phPtcone40;
-  //p_phisEMTight  = &ntv.phisEMTight;
-  p_phLoose = &ntv.phLoose;
-  p_phTight = &ntv.phTight;
-  p_phTruthType = &ntv.phTruthType;
-  p_phTruthOrigin = &ntv.phTruthOrigin;
-  p_phisEMvalue = &ntv.phisEMvalue;
-}
+//NTCRYVarsRead::NTCRYVarsRead(): ntv()
+//{
+//  p_phPt = &ntv.phPt;
+//  p_phEta = &ntv.phEta;
+//  p_phPhi = &ntv.phPhi;
+//  p_phSignal = &ntv.phSignal;
+//  p_phTopoetcone20 = &ntv.phTopoetcone20;
+//  p_phPtvarcone20 = &ntv.phPtvarcone20;
+//  p_phPtcone20 = &ntv.phPtcone20;
+//  p_phTopoetcone40 = &ntv.phTopoetcone40;
+//  p_phPtvarcone40 = &ntv.phPtvarcone40;
+//  p_phPtcone40 = &ntv.phPtcone40;
+//  //p_phisEMTight  = &ntv.phisEMTight;
+//  p_phLoose = &ntv.phLoose;
+//  p_phTight = &ntv.phTight;
+//  p_phTruthType = &ntv.phTruthType;
+//  p_phTruthOrigin = &ntv.phTruthOrigin;
+//  p_phisEMvalue = &ntv.phisEMvalue;
+//}
 
-void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
-{
-  tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());
-  tree->Branch("phPt",&(cryntv.phPt));
-  tree->Branch("phEta",&(cryntv.phEta));
-  tree->Branch("phPhi",&(cryntv.phPhi));
-  tree->Branch("phSignal",&(cryntv.phSignal));
-  tree->Branch("phTopoetcone20",&(cryntv.phTopoetcone20));
-  tree->Branch("phPtvarcone20",&(cryntv.phPtvarcone20));
-  tree->Branch("phPtcone20",&(cryntv.phPtcone20));
-  tree->Branch("phTopoetcone40",&(cryntv.phTopoetcone40));
-  tree->Branch("phPtvarcone40",&(cryntv.phPtvarcone40));
-  tree->Branch("phPtcone40",&(cryntv.phPtcone40));
-  //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
-  tree->Branch("phLoose",&(cryntv.phLoose));
-  tree->Branch("phTight",&(cryntv.phTight));
-  tree->Branch("phTruthType",&(cryntv.phTruthType));
-  tree->Branch("phTruthOrigin",&(cryntv.phTruthOrigin));
-  tree->Branch("phisEMvalue",&(cryntv.phisEMvalue));
-  treePolicies(tree);
-}
-
-void NTCRYVarsRead::setAddresses(TTree* tree)
-{
-  tree->GetBranch("NTCRYVars")->SetAddress(&ntv.origmet);
-  tree->GetBranch("phPt")->SetAddress(&p_phPt);
-  tree->GetBranch("phEta")->SetAddress(&p_phEta);
-  tree->GetBranch("phPhi")->SetAddress(&p_phPhi);
-  tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
-  tree->GetBranch("phTopoetcone20")->SetAddress(&p_phTopoetcone20);
-  tree->GetBranch("phPtvarcone20")->SetAddress(&p_phPtvarcone20);
-  tree->GetBranch("phPtcone20")->SetAddress(&p_phPtcone20);
-  tree->GetBranch("phTopoetcone40")->SetAddress(&p_phTopoetcone40);
-  tree->GetBranch("phPtvarcone40")->SetAddress(&p_phPtvarcone40);
-  tree->GetBranch("phPtcone40")->SetAddress(&p_phPtcone40);
-  //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
-  tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
-  tree->GetBranch("phTight")->SetAddress(&p_phTight);
-  tree->GetBranch("phTruthType")->SetAddress(&p_phTruthType);
-  tree->GetBranch("phTruthOrigin")->SetAddress(&p_phTruthOrigin);
-  tree->GetBranch("phisEMvalue")->SetAddress(&p_phisEMvalue);
-}
+//void bookNTCRYVars(TTree* tree, NTCRYVars& cryntv)
+//{
+//  tree->Branch("NTCRYVars",&cryntv,NTCRYVars::toString().c_str());
+//  tree->Branch("phPt",&(cryntv.phPt));
+//  tree->Branch("phEta",&(cryntv.phEta));
+//  tree->Branch("phPhi",&(cryntv.phPhi));
+//  tree->Branch("phSignal",&(cryntv.phSignal));
+//  tree->Branch("phTopoetcone20",&(cryntv.phTopoetcone20));
+//  tree->Branch("phPtvarcone20",&(cryntv.phPtvarcone20));
+//  tree->Branch("phPtcone20",&(cryntv.phPtcone20));
+//  tree->Branch("phTopoetcone40",&(cryntv.phTopoetcone40));
+//  tree->Branch("phPtvarcone40",&(cryntv.phPtvarcone40));
+//  tree->Branch("phPtcone40",&(cryntv.phPtcone40));
+//  //tree->Branch("phisEMTight",&(cryntv.phisEMTight));
+//  tree->Branch("phLoose",&(cryntv.phLoose));
+//  tree->Branch("phTight",&(cryntv.phTight));
+//  tree->Branch("phTruthType",&(cryntv.phTruthType));
+//  tree->Branch("phTruthOrigin",&(cryntv.phTruthOrigin));
+//  tree->Branch("phisEMvalue",&(cryntv.phisEMvalue));
+//  treePolicies(tree);
+//}
+//
+//void NTCRYVarsRead::setAddresses(TTree* tree)
+//{
+//  tree->GetBranch("NTCRYVars")->SetAddress(&ntv.origmet);
+//  tree->GetBranch("phPt")->SetAddress(&p_phPt);
+//  tree->GetBranch("phEta")->SetAddress(&p_phEta);
+//  tree->GetBranch("phPhi")->SetAddress(&p_phPhi);
+//  tree->GetBranch("phSignal")->SetAddress(&p_phSignal);
+//  tree->GetBranch("phTopoetcone20")->SetAddress(&p_phTopoetcone20);
+//  tree->GetBranch("phPtvarcone20")->SetAddress(&p_phPtvarcone20);
+//  tree->GetBranch("phPtcone20")->SetAddress(&p_phPtcone20);
+//  tree->GetBranch("phTopoetcone40")->SetAddress(&p_phTopoetcone40);
+//  tree->GetBranch("phPtvarcone40")->SetAddress(&p_phPtvarcone40);
+//  tree->GetBranch("phPtcone40")->SetAddress(&p_phPtcone40);
+//  //tree->GetBranch("phisEMTight")->SetAddress(&p_phisEMTight);
+//  tree->GetBranch("phLoose")->SetAddress(&p_phLoose);
+//  tree->GetBranch("phTight")->SetAddress(&p_phTight);
+//  tree->GetBranch("phTruthType")->SetAddress(&p_phTruthType);
+//  tree->GetBranch("phTruthOrigin")->SetAddress(&p_phTruthOrigin);
+//  tree->GetBranch("phisEMvalue")->SetAddress(&p_phisEMvalue);
+//}
 

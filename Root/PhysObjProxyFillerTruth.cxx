@@ -17,7 +17,7 @@
 #include <iostream>
 
 
-PhysObjProxyFillerTruth::PhysObjProxyFillerTruth(float jetPtCut, float elPtCut, float muonPtCut, const std::string suffix):
+PhysObjProxyFillerTruth::PhysObjProxyFillerTruth(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix):
   m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_suffix(suffix)
 {
 }
@@ -117,4 +117,33 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
   std::sort(baseline_muons.begin(),baseline_muons.end(),PtOrder<MuonTruthProxy>);
   std::sort(isolated_baseline_muons.begin(),isolated_baseline_muons.end(),PtOrder<MuonTruthProxy>);
   std::sort(isolated_signal_muons.begin(),isolated_signal_muons.end(),PtOrder<MuonTruthProxy>);
+}
+
+void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& baseline_photons,
+						std::vector<PhotonTruthProxy>& isolated_baseline_photons,
+						std::vector<PhotonTruthProxy>& isolated_signal_photons)
+{
+  baseline_photons.clear();
+  isolated_baseline_photons.clear();
+  isolated_signal_photons.clear();
+  xAOD::TStore* store = xAOD::TActiveStore::store();
+  const xAOD::TruthParticleContainer* photons = 0;
+  if ( !store->retrieve(photons, "myTruthPhotons"+m_suffix).isSuccess() ){
+    throw std::runtime_error("Could not retrieve PhotonContainer with key myTruthPhotons");
+  }
+
+  for ( xAOD::TruthParticleContainer::const_iterator it = photons->begin();
+        it != photons->end(); ++it ){
+    if ( (*it)->pt() < m_phPtCut ) continue;
+    if ( std::abs((*it)->eta()) < 2.37 ) {
+      if((*it)->auxdata<int>("truthType")==14){
+        baseline_photons.push_back(PhotonTruthProxy(*it));
+        isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
+        isolated_signal_photons.push_back(PhotonTruthProxy(*it));
+      }
+    }
+  }
+  std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
+  std::sort(isolated_baseline_photons.begin(),isolated_baseline_photons.end(),PtOrder<PhotonTruthProxy>);
+  std::sort(isolated_signal_photons.begin(),isolated_signal_photons.end(),PtOrder<PhotonTruthProxy>);
 }

@@ -32,7 +32,7 @@ ZeroLeptonDataDrivenQCD::ZeroLeptonDataDrivenQCD(const char *name):
   m_saveSeedEvents(false),
   m_jetkey(),
   m_QCDSeedSelector(),
-  m_physobjsFiller(PhysObjProxyFiller(20000.f,10000.f,10000.f,"",false,"")),
+  m_physobjsFiller(PhysObjProxyFiller(20000.f,10000.f,10000.f,25000.f,"",false,"")),
   m_proxyUtils(true),
   m_ZLUtils(true, NotADerivation),
   m_smearingTool(0),

@@ -63,6 +63,7 @@
 #pragma link C++ class ElectronTruthProxy+;
 #pragma link C++ class MuonTruthProxy+;
 #pragma link C++ class TauProxy+;
+#pragma link C++ class PhotonTruthProxy+;
 #endif
 
 #ifdef __CINT__

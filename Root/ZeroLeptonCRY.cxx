@@ -71,8 +71,8 @@ ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
 
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
-  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,25000.f,m_suffix,m_doRecl,m_suffixRecl);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,25000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
@@ -156,6 +156,7 @@ void ZeroLeptonCRY::begin()
 
 bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 {
+
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
   std::string systag = "";
@@ -173,7 +174,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       m_physobjsFiller->setSuffix(m_suffix+systag);
     }
   }
-
   // eventInfo
   const xAOD::EventInfo* eventInfo = 0;
   if ( ! event.retrieve( eventInfo, "EventInfo").isSuccess() ) throw std::runtime_error("Could not retrieve EventInfo");
@@ -288,114 +288,137 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
   }
 
-  std::vector<PhotonProxy> allphotons;
-  const xAOD::PhotonContainer* phContainer = 0;
-  float leadPhPt = 0.;
-  xAOD::PhotonContainer::const_iterator leadPh ;
-  std::vector<bool> vtight ;
-  std::vector<bool> vloose ;
-  std::vector<float> vtopoetcone20;
-  std::vector<float> vptvarcone20;
-  std::vector<float> vptcone20;
-  std::vector<float> vtopoetcone40;
-  std::vector<float> vptvarcone40;
-  std::vector<float> vptcone40;
-  std::vector<int>   vtruthType;
-  std::vector<int>   vtruthOrigin;
-  std::vector<int> visEMvalue;
-  std::vector<float> vpt;
-  std::vector<float> veta;
-
+  // isolated_xxx have overlap removed
+  std::vector<PhotonProxy> baseline_photons, isolated_baseline_photons, isolated_signal_photons;
   if(! m_IsTruth){
-    if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
-      throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
-    }
-    for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
-      allphotons.push_back(PhotonProxy(*phit));
-      // Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx
-      float topoetcone20=0;
-      float ptvarcone20=0;
-      float ptcone20=0;
-      float topoetcone40=0;
-      float ptvarcone40=0;
-      float ptcone40=0;
+    m_physobjsFiller->FillPhotonProxies(baseline_photons, isolated_baseline_photons, isolated_signal_photons);
+  }
+  std::vector<PhotonTruthProxy> baseline_photons_truth, isolated_baseline_photons_truth, isolated_signal_photons_truth;
+  if(m_IsTruth){
+    m_physobjsFillerTruth->FillPhotonProxies(baseline_photons_truth, isolated_baseline_photons_truth, isolated_signal_photons_truth);
+  }
 
-      (*phit)->isolationValue(topoetcone20,xAOD::Iso::topoetcone20);
-      (*phit)->isolationValue(ptvarcone20,xAOD::Iso::ptvarcone20);
-      (*phit)->isolationValue(ptcone20,xAOD::Iso::ptcone20);
-      (*phit)->isolationValue(topoetcone40,xAOD::Iso::topoetcone40);
-      (*phit)->isolationValue(ptvarcone40,xAOD::Iso::ptvarcone40);
-      (*phit)->isolationValue(ptcone40,xAOD::Iso::ptcone40);
+  // keep only leading photon 
+  int idph=0;
+  for ( std::vector<PhotonProxy>::iterator it = isolated_signal_photons.begin();
+        it != isolated_signal_photons.end(); ) {
+    if ( idph>0 ) it = isolated_signal_photons.erase(it);
+    it++;
+    idph++;
+  }
 
-      vptvarcone20.push_back(ptvarcone20);
-      vtopoetcone20.push_back(topoetcone20);
-      vptcone20.push_back(ptcone20);
-      vptvarcone40.push_back(ptvarcone40);
-      vtopoetcone40.push_back(topoetcone40);
-      vptcone40.push_back(ptcone40);
+  //if(!m_photonSelIsEM.empty()){                                                                                                        
+  //  isEMvalue = m_photonSelIsEM->IsemValue();                                                                                          
+  //}                                                                                                                                    
 
-      int isEMvalue = -1000;
-      if(!m_photonSelIsEM.empty()){
-        isEMvalue = m_photonSelIsEM->IsemValue();
-      }
-      visEMvalue.push_back(isEMvalue);
+  //std::vector<PhotonProxy> allphotons;
+  //const xAOD::PhotonContainer* phContainer = 0;
+  //float leadPhPt = 0.;
+  //xAOD::PhotonContainer::const_iterator leadPh ;
+  //std::vector<bool> vtight ;
+  //std::vector<bool> vloose ;
+  //std::vector<float> vtopoetcone20;
+  //std::vector<float> vptvarcone20;
+  //std::vector<float> vptcone20;
+  //std::vector<float> vtopoetcone40;
+  //std::vector<float> vptvarcone40;
+  //std::vector<float> vptcone40;
+  //std::vector<int>   vtruthType;
+  //std::vector<int>   vtruthOrigin;
+  //std::vector<int> visEMvalue;
+  //std::vector<float> vpt;
+  //std::vector<float> veta;
 
-      if(!m_IsData){
-        vtruthType.push_back((*phit)->auxdata<int>("truthType"));
-        vtruthOrigin.push_back((*phit)->auxdata<int>("truthOrigin"));
-      }
-      else{
-        vtruthType.push_back(-1000);
-        vtruthOrigin.push_back(-1000);
-      }
+  //if(! m_IsTruth){
+    //if ( !store->retrieve(phContainer,"SUSYPhotons"+m_suffix).isSuccess() ){
+    //  throw std::runtime_error("Could not retrieve PhotonContainer with key SUSYPhotons"+m_suffix);
+    //}
+    //for ( auto phit = phContainer->begin(); phit != phContainer->end(); phit++){
+      ////allphotons.push_back(PhotonProxy(*phit));
+      //// Photon isolation /cvmfs/atlas.cern.ch/repo/sw/ASG/AnalysisBase/2.3.14/ElectronIsolationSelection/Root/IsolationSelectionTool.cxx
+      //float topoetcone20=0;
+      //float ptvarcone20=0;
+      //float ptcone20=0;
+      //float topoetcone40=0;
+      //float ptvarcone40=0;
+      //float ptcone40=0;
+      //
+      //(*phit)->isolationValue(topoetcone20,xAOD::Iso::topoetcone20);
+      //(*phit)->isolationValue(ptvarcone20,xAOD::Iso::ptvarcone20);
+      //(*phit)->isolationValue(ptcone20,xAOD::Iso::ptcone20);
+      //(*phit)->isolationValue(topoetcone40,xAOD::Iso::topoetcone40);
+      //(*phit)->isolationValue(ptvarcone40,xAOD::Iso::ptvarcone40);
+      //(*phit)->isolationValue(ptcone40,xAOD::Iso::ptcone40);
+      //
+      //vptvarcone20.push_back(ptvarcone20);
+      //vtopoetcone20.push_back(topoetcone20);
+      //vptcone20.push_back(ptcone20);
+      //vptvarcone40.push_back(ptvarcone40);
+      //vtopoetcone40.push_back(topoetcone40);
+      //vptcone40.push_back(ptcone40);
+
+      //int isEMvalue = -1000;
+      //if(!m_photonSelIsEM.empty()){
+      //  isEMvalue = m_photonSelIsEM->IsemValue();
+      //}
+      //visEMvalue.push_back(isEMvalue);
+
+      //if(!m_IsData){
+      //  vtruthType.push_back((*phit)->auxdata<int>("truthType"));
+      //  vtruthOrigin.push_back((*phit)->auxdata<int>("truthOrigin"));
+      //}
+      //else{
+      //  vtruthType.push_back(-1000);
+      //  vtruthOrigin.push_back(-1000);
+      //}
 
 
       //
-      vpt.push_back((*phit)->pt());
-      veta.push_back((*phit)->eta());
+      //vpt.push_back((*phit)->pt());
+      //veta.push_back((*phit)->eta());
       //
       // Photon quality
-      bool tight=false; // tight=1 passes the selection
-      if(!(*phit)->passSelection(tight,"Tight")){
-	std::cout<<"WARNING: Tight decision is not available"<<std::endl;
-      }
-      bool loose=false;
-      if(!(*phit)->passSelection(loose,"Loose")){
-	std::cout<<"WARNING: Loose decision is not available"<<std::endl;
-      }
-      vloose.push_back(loose);
-      vtight.push_back(tight);
-      //
-      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonSelectorTools/trunk/ElectronPhotonSelectorTools/egammaPIDdefs.h
-      //unsigned int ph_isEMTight = (*phit)->auxdata<unsigned int>("isEMTight");
-      //visEMTight.push_back(ph_isEMTight);
-      //
-      if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
-        leadPhPt = (*phit)->pt();
-        leadPh = phit;
-      }
-    }
-  }
+      //bool tight=false; // tight=1 passes the selection
+      //if(!(*phit)->passSelection(tight,"Tight")){
+      //	std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+      //}
+      //bool loose=false;
+      //if(!(*phit)->passSelection(loose,"Loose")){
+      //	std::cout<<"WARNING: Loose decision is not available"<<std::endl;
+      //}
+      //vloose.push_back(loose);
+      //vtight.push_back(tight);
+      ////
+      //// https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/ElectronPhotonID/ElectronPhotonSelectorTools/trunk/ElectronPhotonSelectorTools/egammaPIDdefs.h
+      ////unsigned int ph_isEMTight = (*phit)->auxdata<unsigned int>("isEMTight");
+      ////visEMTight.push_back(ph_isEMTight);
+      ////
+      //if ( (*phit)->auxdecor<char>("baseline")==1 && (*phit)->pt() > leadPhPt ) {
+      //  leadPhPt = (*phit)->pt();
+      //  leadPh = phit;
+      //}
+  //}
+  //}
   //
-  const xAOD::TruthParticleContainer* truthphotons = 0 ;
-  xAOD::TruthParticleContainer::const_iterator leadPhtruth;
-  if( m_IsTruth ){
-    if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
-      throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
-    }
-    for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
-      allphotons.push_back(PhotonProxy((*phittruth)->p4()));
+  //const xAOD::TruthParticleContainer* truthphotons = 0 ;
+  //xAOD::TruthParticleContainer::const_iterator leadPhtruth;
+  //if( m_IsTruth ){
+  //  if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
+  //    throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
+  //  }
+  //  for ( auto phittruth = truthphotons->begin(); phittruth != truthphotons->end(); phittruth++){
+  //    allphotons.push_back(PhotonProxy((*phittruth)->p4()));
+  //
+  //    if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
+  //	leadPhPt = (*phittruth)->pt();
+  //	leadPhtruth = phittruth;
+  //    }
+  //  }
+  //}
 
-      if ( (*phittruth)->pt() > leadPhPt ) { // GERALDINE - ADD BASELINE DEFINITION
-	leadPhPt = (*phittruth)->pt();
-	leadPhtruth = phittruth;
-      }
-    }
-  }
-  if ( leadPhPt == 0. ) return true;
-  m_counter->increment(weight,incr++,"One photon",trueTopo);
+  //if ( leadPhPt == 0. ) return true;
+  //m_counter->increment(weight,incr++,"One photon",trueTopo);
   
-
   //out() << "Leading photon pt px py  " << leadPhPt ;
   //if ( leadPhPt > 0. ) out() << " " << (*leadPh)->p4().Px()<< " " << (*leadPh)->p4().Py();
   //out() <<std::endl;  
@@ -414,16 +437,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   else {
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
   }
-
-  // the lead photon as if it was a Z->nunu
-  if(m_IsTruth) {
-    missingETCorr.Set(missingET->Px()+(*leadPhtruth)->p4().Px(), missingET->Py()+(*leadPhtruth)->p4().Py()); 
-  }
-  else {
-    missingETCorr.Set(missingET->Px()+(*leadPh)->p4().Px(), missingET->Py()+(*leadPh)->p4().Py());
-  } 
   double MissingEt = missingET->Mod();
-  double MissingEtCorr = missingETCorr.Mod();
 
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
@@ -449,8 +463,70 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
   // at least one photon
-  if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
-  m_counter->increment(weight,incr++,">=1 photon",trueTopo);
+  //if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
+  bool oneGamma = false;
+  if( !isolated_signal_photons.empty() )
+    oneGamma = true; 
+  if ( !oneGamma ) return true;
+  m_counter->increment(weight,incr++,"1 photon",trueTopo);
+
+  TLorentzVector photonTLV;
+  photonTLV.SetPtEtaPhiM(isolated_signal_photons[0].photon()->pt(),isolated_signal_photons[0].photon()->eta(),isolated_signal_photons[0].photon()->phi(),0);
+  std::cout << "TEST12" << std::endl;
+  int phSignal = (isolated_signal_photons[0].isSignal());
+  int isEMvalue = -1000;
+
+  if(m_IsTruth) {
+    missingETCorr.Set(missingET->Px()+photonTLV.Px(), missingET->Py()+photonTLV.Py());
+  }
+  else {
+    missingETCorr.Set(missingET->Px()+photonTLV.Px(), missingET->Py()+photonTLV.Py());
+  }
+  double MissingEtCorr = missingETCorr.Mod();
+
+
+  // photon isolation
+
+  float topoetcone20 = 0 ;
+  float ptvarcone20 = 0 ;
+  float ptcone20 = 0 ; 
+  float topoetcone40 = 0 ;
+  float ptvarcone40 = 0 ;
+  float ptcone40 = 0 ;
+  bool btight = false;
+  bool bloose = false;
+  int tight = 0 ; 
+  int loose = 0 ; 
+  int truthType = 0 ; 
+  int truthOrigin = 0 ; 
+
+  if(!m_IsTruth && isolated_signal_photons.size()==1){
+    topoetcone20    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
+    ptvarcone20     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
+    ptcone20        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
+    topoetcone40    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
+    ptvarcone40     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
+    ptcone40        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
+    
+    if(!(isolated_signal_photons[0].photon())->passSelection(btight,"Tight")){
+      std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+    }
+    if(!(isolated_signal_photons[0].photon())->passSelection(bloose,"Loose")){
+      std::cout<<"WARNING: Loose decision is not available"<<std::endl;
+    }
+    if(bloose) loose = 1; 
+    if(btight) tight = 1;
+
+    
+    if(!m_IsData){
+      truthType   = (isolated_signal_photons[0].photon())->auxdata<int>("truthType");
+      truthOrigin = (isolated_signal_photons[0].photon())->auxdata<int>("truthOrigin");
+    }
+    else{
+      truthType   = -1000;
+      truthOrigin = -1000;
+    }
+  }
 
   // Apply photon scale factor
   float phSF = eventInfo->auxdecor<float>("phSF");
@@ -465,7 +541,6 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if ( good_jets.empty() ) return true;
   if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
-
 
 
   // Calculate variables for ntuple -----------------------------------------
@@ -619,11 +694,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
 
     if ( m_fillTRJigsawVars) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
-
-    FillNTCRYVars(m_cryntv,allphotons,*missingET,vtight,vloose,vtopoetcone20,vptvarcone20,
-		  //visEMTight,
-		  vptcone20, vtopoetcone40,vptvarcone40,vptcone40,
-		  vpt,veta,vtruthType,vtruthOrigin,visEMvalue);
+    
+    FillNTCRYVars(m_cryntv,photonTLV,*missingET,tight,loose,topoetcone20,ptvarcone20,
+		  ptcone20, topoetcone40,ptvarcone40,ptcone40,
+		  truthType,truthOrigin,isEMvalue,phSignal);
       
     std::vector<float> vReclJetMass ;
     std::vector<float> vReclJetPt;
@@ -655,43 +729,35 @@ void ZeroLeptonCRY::finish()
 }
 
 void ZeroLeptonCRY::FillNTCRYVars(NTCRYVars& cryntv, 
-				  const std::vector<PhotonProxy>& photons,
-				  TVector2& origmisset, std::vector<bool>& vtight, std::vector<bool>& vloose,
-				  std::vector<float>& vtopoetcone20, std::vector<float>& vptvarcone20,std::vector<float>& vptcone20,
-				  //std::vector<int>& visEMTight,
-				  std::vector<float>& vtopoetcone40, std::vector<float>& vptvarcone40,std::vector<float>& vptcone40,
-				  std::vector<float>& vpt,std::vector<float>& veta, std::vector<int>& vtruthType, std::vector<int>& vtruthOrigin,
-				  std::vector<int>& visEMvalue)
+				  const TLorentzVector&  photon,
+				  TVector2& origmisset, int tight, int loose,
+				  float topoetcone20, float ptvarcone20,float ptcone20,
+				  float topoetcone40, float ptvarcone40, float ptcone40,
+				  int truthType, int truthOrigin,
+				  int isEMvalue, int phSignal)
 {
   cryntv.Reset();
-  for ( auto phit = photons.begin(); phit!= photons.end(); phit++ ){
-    if ( phit->isBaseline() && phit->Pt() > 20000. ) {
-      cryntv.phPt.push_back(phit->Pt() * 0.001);
-      cryntv.phEta.push_back(phit->Eta());
-      cryntv.phPhi.push_back(phit->Phi());
-      cryntv.phSignal.push_back(phit->isSignal());
-      
-      for (size_t n=0;n<vloose.size();n++){
-	if(fabs(phit->Pt()-vpt.at(n))<0.001 && fabs(phit->Eta()-veta.at(n))<0.001){
-	  cryntv.phLoose.push_back(vloose.at(n));
-	  cryntv.phTight.push_back(vtight.at(n));
-	  cryntv.phTopoetcone20.push_back(vtopoetcone20.at(n));
-	  cryntv.phPtvarcone20.push_back(vptvarcone20.at(n));
-	  cryntv.phPtcone20.push_back(vptcone20.at(n));
-	  cryntv.phTopoetcone40.push_back(vtopoetcone40.at(n));
-          cryntv.phPtvarcone40.push_back(vptvarcone40.at(n));
-          cryntv.phPtcone40.push_back(vptcone40.at(n));
-	  cryntv.phTruthType.push_back(vtruthType.at(n));
-          cryntv.phTruthOrigin.push_back(vtruthOrigin.at(n));
-          cryntv.phisEMvalue.push_back(visEMvalue.at(n));
-	  //cryntv.phisEMTight.push_back(visEMTight.at(n));
-	  break;
-	}
-      }
-    }
-  }
-  cryntv.origmet    = origmisset.Mod() * 0.001;
-  cryntv.origmetPhi = origmisset.Phi();
+
+  cryntv.phLoose        = loose ;
+  cryntv.phTight        = tight ;
+  cryntv.phTopoetcone20 = topoetcone20 ;
+  cryntv.phPtvarcone20  = ptvarcone20 ;
+  cryntv.phPtcone20     = ptcone20 ;
+  cryntv.phTopoetcone40 = topoetcone40 ;
+  cryntv.phPtvarcone40  = ptvarcone40 ;
+  cryntv.phPtcone40     = ptcone40 ;
+  cryntv.phTruthType    = truthType ;
+  cryntv.phTruthOrigin  = truthOrigin ;
+  cryntv.phisEMvalue    = isEMvalue ;
+  cryntv.phSignal       = phSignal ;
+
+  cryntv.origmet        = origmisset.Mod() * 0.001;
+  cryntv.origmetPhi     = origmisset.Phi();
+
+  cryntv.phPt           = photon.Pt();
+  cryntv.phEta          = photon.Eta();
+  cryntv.phPhi          = photon.Phi(); 
+  
 }
 
 ClassImp(ZeroLeptonCRY);

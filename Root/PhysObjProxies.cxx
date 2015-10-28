@@ -179,3 +179,19 @@ TauProxy::TauProxy(const xAOD::TauJet* tau):
 }
 ClassImp(TauProxy);
 
+PhotonTruthProxy::PhotonTruthProxy():
+  TLorentzVector(),
+  m_phtruth(0)
+{
+}
+
+PhotonTruthProxy::PhotonTruthProxy(const xAOD::TruthParticle* phtruth):
+  TLorentzVector(phtruth->p4())
+{
+  m_phtruth         = phtruth;
+}
+ClassImp(PhotonTruthProxy);
+
+
+
+
