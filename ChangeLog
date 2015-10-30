@@ -1,7 +1,11 @@
+30-Oct-2015 Laurent Duflot
+	* data/data15_13TeV_p2425.ds: update list
+	* data/data15_13TeV_p2425_debug.ds: debug stream datasets
+
 28-Oct-2015 Geraldine Conti
-	* Added FillPhotonProxies function, similarly to what is done for 
+	* Added FillPhotonProxies function, similarly to what is done for
 	electrons, muons and jets
-	
+
 27-Oct-2015 Geraldine Conti
 	* Fixed el pT to 10GeV for overlap removal
 
