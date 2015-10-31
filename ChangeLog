@@ -1,3 +1,8 @@
+31-Oct-2015 Laurent Duflot
+	* FilterUpdateMerge.py: fix bug in processing pickle files which caused
+	duplicate events in the output. Do not merge NT blocks other than the
+	main one by default. Select process to merge by command line.
+
 30-Oct-2015 Laurent Duflot
 	* data/data15_13TeV_p2425.ds: update list
 	* data/data15_13TeV_p2425_debug.ds: debug stream datasets

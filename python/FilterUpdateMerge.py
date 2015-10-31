@@ -43,18 +43,39 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--mergeExtraVars", dest="mergeExtraVars",
                       help="Also merge the ExtraVars block ?", 
-                      action='store_true', default=True)
+                      action='store_true', default=False)
     parser.add_option("--mergeCRWTVars", dest="mergeCRWTVars",
                       help="Also merge the CRWTVars block ?", 
-                      action='store_true', default=True)
+                      action='store_true', default=False)
     parser.add_option("--mergeCRZVars", dest="mergeCRZVars",
                       help="Also merge the CRZVars block ?", 
-                      action='store_true', default=True)
+                      action='store_true', default=False)
     parser.add_option("--mergeCRYVars", dest="mergeCRYVars",
                       help="Also merge the CRYVars block ?", 
-                      action='store_true', default=True)
+                      action='store_true', default=False)
     parser.add_option("--mergeRJigsawVars", dest="mergeRJigsawVars",
                       help="Also merge the RJigsawVars block ?", 
+                      action='store_true', default=False)
+    parser.add_option("--DBNT", dest="DBNT",
+                      help="Merge for Dibosons ?", 
+                      action='store_true', default=False)
+    parser.add_option("--QCDNT", dest="QCDNT",
+                      help="Merge for QCD MC ?", 
+                      action='store_true', default=False)
+    parser.add_option("--SpliQCDNT", dest="SplitQCDNT",
+                      help="Merge for QCD MC process per process ?", 
+                      action='store_true', default=False)
+    parser.add_option("--TopNT", dest="TopNT",
+                      help="Merge for Top ?", 
+                      action='store_true', default=False)
+    parser.add_option("--WNT", dest="WNT",
+                      help="Merge for W+jets ?", 
+                      action='store_true', default=False)
+    parser.add_option("--ZNT", dest="ZNT",
+                      help="Merge for Z+jets ?", 
+                      action='store_true', default=False) 
+    parser.add_option("--GAMNT", dest="GAMNT",
+                      help="Merge for gamma+jets ?", 
                       action='store_true', default=False)
     parser.add_option("--verbose", dest="verbose", type='int', 
                       help="Verbose level (0=minimum, default=%default)", default=0)
@@ -359,7 +380,7 @@ class Sample:
                         for f in filelist: outTreeDict[newtname][2].append(f)
                     else:
                         outTree = ROOT.TTree(newtname,'0-lepton small ntuple')
-                        outTreeDict[newtname] = (outTree, inTree, filelist)
+                        outTreeDict[newtname] = (outTree, inTree, copy.deepcopy(filelist))
 
                     pass
             else:
@@ -457,12 +478,16 @@ if __name__ == '__main__':
         QCD = Sample('QCD',lQCDMC,config.inputfile_mc,config)
         GAMMAMassiveCB = Sample('GAMMAMassiveCB',lYjets,config.inputfile_mc,config,treename="GAMMA")
 
-        AllSamples.append(Top)
-        AllSamples.append(WMassiveCB)
-        AllSamples.append(ZMassiveCB)
-        AllSamples.append(DB) 
-        AllSamples.append(QCD)
-        AllSamples.append(GAMMAMassiveCB)
+        if config.TopNT: AllSamples.append(Top)
+        if config.WNT: AllSamples.append(WMassiveCB)
+        if config.ZNT: AllSamples.append(ZMassiveCB)
+        if config.DBNT: AllSamples.append(DB) 
+        if config.GAMNT: AllSamples.append(GAMMAMassiveCB)
+        if config.QCDNT: AllSamples.append(QCD)
+        if config.SplitQCDNT: 
+            for id in lQCDMC:
+                AllSamples.append(Sample(name='QCD'+str(id),myarg=[id],inputfile=config.inputfile_mc,config=config,treename='QCD'))
+
 
     #if config.doZLO==True:
     #    ZLO = Sample('ZLO',lZjetsLO,config.inputfile_mc,config,treename="Z")
