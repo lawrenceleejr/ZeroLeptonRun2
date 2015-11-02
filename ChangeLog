@@ -1,3 +1,6 @@
+02-Nov-2015 Laurent Duflot
+	* mc15_13TeV_MCSampleList.py: add Sherpa lvvv and vvvv
+
 31-Oct-2015 Laurent Duflot
 	* FilterUpdateMerge.py: fix bug in processing pickle files which caused
 	duplicate events in the output. Do not merge NT blocks other than the

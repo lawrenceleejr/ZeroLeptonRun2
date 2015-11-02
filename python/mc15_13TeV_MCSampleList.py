@@ -26,7 +26,7 @@ lttbarX  = [] # MadGraph5+Pythia
 lTop     = lttbar + lsinglet + lttbarX
 
 # diboson samples
-lDiBoson =  range(361063,361087+1)
+lDiBoson =  range(361063,361089+1)
 lTriBoson = []
 
 lZgamma  = [301908,301909] # Sherpa nunugamma 35<pt<140
