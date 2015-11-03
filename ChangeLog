@@ -1,6 +1,7 @@
 03-Nov-2015 Laurent Duflot
 	* FilterUpdateMerge.py: add merging of the debugrec_hlt stream
 	* data15_13TeV_p2425_debug.ds, data15_13TeV_p2425.ds: update datasets
+	* mc15_13TeV_MCSampleList.py: add Madgraph Zee Np0+1+2
 
 02-Nov-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py: add Sherpa lvvv and vvvv
