@@ -500,7 +500,8 @@ if __name__ == '__main__':
         DataEgamma = Sample('Data',['Egamma'],config.inputfile_data,config,Extraname="Egamma")
         # Run 2 stream
         DataMain = Sample('Data',['Main'],config.inputfile_data,config,Extraname="Main")
-        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma,DataMain]
+        DataDebug = Sample('Data',['debugrec_hlt'],config.inputfile_data,config,Extraname="Debug")
+        AllSamples += [DataJetTauEtmiss,DataMuon,DataEgamma,DataMain,DataDebug]
         
     if config.doQCD==True:
         QCDdd1 = Sample('QCDdd',['JetTauEtmiss'],config.inputfile_qcd,config)

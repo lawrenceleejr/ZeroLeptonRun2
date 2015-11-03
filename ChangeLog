@@ -1,3 +1,6 @@
+03-Nov-2015 Laurent Duflot
+	* FilterUpdateMerge.py: add merging of the debugrec_hlt stream
+
 02-Nov-2015 Laurent Duflot
 	* mc15_13TeV_MCSampleList.py: add Sherpa lvvv and vvvv
 
