@@ -56,4 +56,11 @@ lsingletAlt = [ 410015, 410016, # PowhegPythia Wt dilepton (overlap with 13+14
 
 lalt = lZjetsLO + lZjetsAlt + lWjetsAlt + lttbarAlt + lsingletAlt
 
-#print lbaseline
+
+##
+## truth level samples
+##
+
+lZjetsTruth = range(362000,362190+1)
+
+ltruth = lZjetsTruth
