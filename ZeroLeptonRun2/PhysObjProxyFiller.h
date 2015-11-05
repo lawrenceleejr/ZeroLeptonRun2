@@ -14,12 +14,14 @@ class JetReclusteringTool;
 class PhysObjProxyFiller
 {
  public:
-  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl);
+  PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl,float jetEtaCut = 2.8);
 
   // fill with good and bad jets, overlap removal already performed
   void FillJetProxies(std::vector<JetProxy>& good_jets,
 		      std::vector<JetProxy>& bad_jets,
 		      std::vector<JetProxy>& b_jets) const;
+
+  void FillHLTJetProxies(std::vector<JetProxy>& hlt_jets) const;
 
   void FillJetReclProxies(std::vector<JetProxy>& good_jets_recl,
 			  std::vector<float>& vD2) const;
@@ -39,7 +41,7 @@ class PhysObjProxyFiller
   void FillTauProxies(std::vector<TauProxy>& baseline_taus,
 		      std::vector<TauProxy>& signal_taus);
 
-  // fill with baseline and signal photon after overlap removal 
+  // fill with baseline and signal photon after overlap removal
   void FillPhotonProxies(std::vector<PhotonProxy>& baseline_photons,
 			 std::vector<PhotonProxy>& isolated_baseline_photons,
 			 std::vector<PhotonProxy>& isolated_signal_photons);

@@ -1,0 +1,39 @@
+<lcgdict>
+   <class name="PrintEvent" />
+   <class name="ZeroLeptonDataDrivenQCD" />
+   <class name="ZeroLeptonSystVariations" />
+   <class name="JobBookeeping" />
+   <class name="MCInfoProcessor" />
+   <class name="PileUpRWProcessor" />
+   <class name="PhysObjProxies" />
+   <class name="BuildSUSYObjects" />
+   <class name="BuildTruthObjects" />
+   <class name="IsData" />
+   <class name="ZeroLeptonSR" />
+   <class name="ZeroLeptonCRWT" />
+   <class name="ZeroLeptonCRY" />
+   <class name="ZeroLeptonCRZ" />
+   <class name="ZeroLeptonCR3L" />
+   <class name="GRLProcessor" />
+   <class name="MCEventVeto" />
+   <class name="DetectorQuality" />
+   <class name="FilterUpdateMerge" />
+   <class name="ZeroLeptonPassThrough" />
+   <class name="NTVars" />
+   <class name="NTVarsRead" />
+   <class name="NTReclusteringVars" />
+   <class name="NTReclusteringVarsRead" />
+   <class name="NTCRZVars" />
+   <class name="NTCRWVars" />
+   <class name="NTCRYVarsRead" />
+   <class name="NTCRYVars" />
+   <class name="NTCR3LVars" />
+   <class name="NTRJigsawVars" />
+  <!-- Suppress the unwanted classes found by ROOT 6. -->
+  <!-- Hopefully we can remove these extra lines at one point... -->
+  <exclusion>
+    <class name="SG::IConstAuxStore" />
+    <class name="DataLink<SG::IConstAuxStore>" />
+  </exclusion>
+</lcgdict>
+

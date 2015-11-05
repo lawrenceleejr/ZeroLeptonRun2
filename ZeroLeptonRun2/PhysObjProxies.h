@@ -194,7 +194,7 @@ class TauProxy: public TLorentzVector
   float m_sfSystUp;
   float m_sfSystDown;
   const xAOD::TauJet* m_tau;
-  
+
  public:
   ClassDef(TauProxy,0);
 };

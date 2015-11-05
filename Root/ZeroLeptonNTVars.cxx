@@ -1,11 +1,13 @@
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
 #include "TTree.h"
+#include <iostream>
 
 std::string NTVars::toString()
-{ 
+{
   return
- 
-std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:dPhiBadTile/F"); 
+
+std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:dPhiBadTile/F");
+
 }
 
 void NTVars::Reset()
@@ -74,7 +76,7 @@ void NTVars::Reset()
   jetSmearSystW.clear();
   jetFracSamplingMax.clear();
   jetFracSamplingMaxIndex.clear();
-  
+
   tauPt.clear();
   tauEta.clear();
   tauPhi.clear();
@@ -85,6 +87,7 @@ void NTVars::Reset()
   tauLooseSFSystDown.clear();
 
   systWeights.clear();
+  triggerBits.clear();
 }
 
 NTVarsRead::NTVarsRead(): ntv()
@@ -101,7 +104,7 @@ NTVarsRead::NTVarsRead(): ntv()
   p_jetSmearSystW = &ntv.jetSmearSystW;
   p_jetFracSamplingMax = &ntv.jetFracSamplingMax;
   p_jetFracSamplingMaxIndex = &ntv.jetFracSamplingMaxIndex;
-  
+
   p_tauPt   = &ntv.tauPt;
   p_tauEta  = &ntv.tauEta;
   p_tauPhi  = &ntv.tauPhi;
@@ -109,9 +112,10 @@ NTVarsRead::NTVarsRead(): ntv()
   p_tauLooseSFStatUp   = &ntv.tauLooseSFStatUp;
   p_tauLooseSFStatDown = &ntv.tauLooseSFStatDown;
   p_tauLooseSFSystUp   = &ntv.tauLooseSFSystUp;
-  p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown; 
+  p_tauLooseSFSystDown = &ntv.tauLooseSFSystDown;
 
   p_systWeights = &ntv.systWeights;
+  p_triggerBits = &ntv.triggerBits;
 }
 
 
@@ -144,20 +148,22 @@ void NTVarsRead::setAddresses(TTree* tree, bool addJetSmearSystW)
 
   tree->GetBranch("systWeights")->SetAddress(&p_systWeights);
 
+  tree->GetBranch("triggerBits")->SetAddress(&p_triggerBits);
+
 }
 
 
 std::string NTReclusteringVars::toString()
-{ 
-  return std::string("NWcandidates/i:test/i:nJetsRecl/I"); 
+{
+  return std::string("NWcandidates/i:test/i:nJetsRecl/I");
 }
 
 void NTReclusteringVars::Reset()
-{ 
+{
   NWcandidates = 0;
   test = 0;
   nJetsRecl = 0;
-  
+
   // Clear vectors
   RTjets10SubJetIndeces.clear();
   RTjetPt.clear();
@@ -173,12 +179,10 @@ void NTReclusteringVars::Reset()
   isWtight.clear();
   isZmedium.clear();
   isZtight.clear();
-
 }
 
 NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
 {
-  
   //RTjet variables
   p_RTjets10SubJetIndeces =  &RTntv.RTjets10SubJetIndeces;
   p_RTjetPt   = &RTntv.RTjetPt;
@@ -201,8 +205,7 @@ NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
 void NTReclusteringVarsRead::setAddresses(TTree* tree)
 {
   tree->GetBranch("NTReclusteringVars")->SetAddress(&RTntv.NWcandidates);
-  
-  //RTjet variables  
+  //RTjet variables
   tree->GetBranch("RTjets10SubJetIndeces")->SetAddress(&p_RTjets10SubJetIndeces);
   tree->GetBranch("RTjetPt")->SetAddress(&p_RTjetPt);
   tree->GetBranch("RTjetEta")->SetAddress(&p_RTjetEta);
@@ -221,9 +224,9 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
 }
 
 std::string NTCRWTVars::toString()
-{ 
-  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:dphilMET/F:Weta/F:lep1ptvarcone20/F:lep1ptvarcone30/F:lep1topoetcone20/F"); 
-  //return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:lep1Iso/F:lep1DRjet/F:lep1jetJVF/F"); 
+{
+  return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:dphilMET/F:Weta/F:lep1ptvarcone20/F:lep1ptvarcone30/F:lep1topoetcone20/F");
+  //return std::string("lep1Pt/F:lep1Eta/F:lep1Phi/F:lep1sign/I:mt/F:Wpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:lep1Iso/F:lep1DRjet/F:lep1jetJVF/F");
 }
 
 void NTCRWTVars::Reset()
@@ -238,7 +241,6 @@ void NTCRWTVars::Reset()
   lep1ptvarcone30 = 0.f;
   lep1topoetcone20 = 0.f;
   //leptonWeight     = 1.f;
-  //leptonWeightUp   = 1.f;  
   //leptonWeightDown = 1.f;
   //triggerWeight     = 1.f;
   //triggerWeightUp   = 1.f;
@@ -247,13 +249,12 @@ void NTCRWTVars::Reset()
   //lep1DRjet = 999.f;
   //lep1jetJVF = -999.f;
 }
-  
 
 
 
 std::string NTCRZVars::toString()
-{ 
-  return std::string("lep1Pt/F:lep2Pt/F:lep1Eta/F:lep2Eta/F:lep1Phi/F:lep2Phi/F:lep1sign/I:lep2sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1Iso/F:lep2Iso/F:lep1DRjet/F:lep2DRjet/F:lep1jetJVF/F:lep2jetJVF/F"); 
+{
+  return std::string("lep1Pt/F:lep2Pt/F:lep1Eta/F:lep2Eta/F:lep1Phi/F:lep2Phi/F:lep1sign/I:lep2sign/I:mll/F:Zpt/F:leptonWeight/F:leptonWeightUp/F:leptonWeightDown/F:triggerWeight/F:triggerWeightUp/F:triggerWeightDown/F:fakemet/F:fakemetPhi/F:lep1Iso/F:lep2Iso/F:lep1DRjet/F:lep2DRjet/F:lep1jetJVF/F:lep2jetJVF/F");
 }
 
 
@@ -266,7 +267,7 @@ void NTCRZVars::Reset()
   mll = 0.f;
   Zpt = 0.f;
   leptonWeight     = 1.f;
-  leptonWeightUp   = 1.f;  
+  leptonWeightUp   = 1.f;
   leptonWeightDown = 1.f;
   triggerWeight     = 1.f;
   triggerWeightUp   = 1.f;
@@ -292,7 +293,8 @@ void NTCR3LVars::Reset()
   lep3Pt = lep3Eta = lep3Phi = 0.f;
   lep3sign = 0;
   lepfromW = 0;
-  lepptfromW = 0 ; 
+
+  lepptfromW = 0 ;
   mll = 0.f;
   Zpt = 0.f;
   mt = 0.f;
@@ -313,93 +315,178 @@ void NTCR3LVars::Reset()
 
 
 std::string NTExtraVars::toString()
-{ 
+{
   return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:Ap/F");
 
 }
 
 void NTExtraVars::Reset()
-{ 
+
+{
   mettrack = 0.f;
   mettrack_phi = 0.f;
   mT2 = -1.f;
   mT2_noISR = 0.f;
   mT2=0.f;
   mT2_noISR=0.f;
-  Ap =0.f;
+  Ap =0.f;  //  triggers = 0 ;
 }
 
 std::string NTRJigsawVars::toString()
-{ 
-  return std::string("RJVars_PP_Mass/F:RJVars_PP_InvGamma/F:RJVars_PP_dPhiBetaR/F:RJVars_PP_dPhiVis/F:RJVars_PP_CosTheta/F:RJVars_PP_dPhiDecayAngle/F:RJVars_PP_VisShape/F:RJVars_PP_MDeltaR/F:RJVars_P1_Mass/F:RJVars_P1_CosTheta/F:RJVars_P2_Mass/F:RJVars_P2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_MG/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_P_0_CosTheta/F:RJVars_C_0_CosTheta/F:RJVars_P_0_dPhiGC/F:RJVars_P_0_MassRatioGC/F:RJVars_P_0_Jet1_pT/F:RJVars_P_0_Jet2_pT/F:RJVars_P_0_PInvHS/F:RJVars_P_1_CosTheta/F:RJVars_C_1_CosTheta/F:RJVars_P_1_dPhiGC/F:RJVars_P_1_MassRatioGC/F:RJVars_P_1_Jet1_pT/F:RJVars_P_1_Jet2_pT/F:RJVars_P_1_PInvHS/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rmsib/F:RJVars_QCD_Rpsib/F:RJVars_QCD_Delta1/F:RJVars_QCD_Delta2/F");
+{
+  return std::string("RJVars_PP_Mass/F:RJVars_PP_InvGamma/F:RJVars_PP_dPhiBetaR/F:RJVars_PP_dPhiVis/F:RJVars_PP_CosTheta/F:RJVars_PP_dPhiDecayAngle/F:RJVars_PP_VisShape/F:RJVars_PP_MDeltaR/F:RJVars_P1_Mass/F:RJVars_P1_CosTheta/F:RJVars_P2_Mass/F:RJVars_P2_CosTheta/F:RJVars_I1_Depth/F:RJVars_I2_Depth/F:RJVars_MP/F:RJVars_dphiPV1a/F:RJVars_cosV1a/F:RJVars_dphiCV2a/F:RJVars_cosV2a/F:RJVars_dphiPV1b/F:RJVars_cosV1b/F:RJVars_dphiCV2b/F:RJVars_cosV2b/F:RJVars_V1_N/F:RJVars_V2_N/F:RJVars_DeltaBetaGG/F:RJVars_dphiVG/F:RJVars_QCD_dPhiR/F:RJVars_QCD_Rpt/F:RJVars_QCD_Rsib/F:RJVars_QCD_Delta1/F:RJVars_H2PP/F:RJVars_H3PP/F:RJVars_H4PP/F:RJVars_H6PP/F:RJVars_H2Pa/F:RJVars_H2Pb/F:RJVars_H3Pa/F:RJVars_H3Pb/F:RJVars_H4Pa/F:RJVars_H4Pb/F:RJVars_H5Pa/F:RJVars_H5Pb/F:RJVars_H2Ca/F:RJVars_H2Cb/F:RJVars_H3Ca/F:RJVars_H3Cb/F:RJVars_HT4PP/F:RJVars_HT6PP/F:RJVars_minH3P/F:RJVars_sangle/F:RJVars_dangle/F:RJVars_ddphiPC/F:RJVars_sdphiPC/F:RJVars_dH2o3P/F:RJVars_RPZ_HT4PP/F:RJVars_RPZ_HT6PP/F:");
 }
+
+void NTRJigsawVars::Print()
+{
+std::cout << RJVars_PP_Mass          << std::endl;
+ std::cout << RJVars_PP_InvGamma      << std::endl;
+ std::cout << RJVars_PP_dPhiBetaR     << std::endl;
+ std::cout << RJVars_PP_dPhiVis       << std::endl;
+ std::cout << RJVars_PP_CosTheta      << std::endl;
+ std::cout << RJVars_PP_dPhiDecayAngle<< std::endl;
+ std::cout << RJVars_PP_VisShape      << std::endl;
+ std::cout << RJVars_PP_MDeltaR       << std::endl;
+ std::cout << RJVars_P1_Mass          << std::endl;
+ std::cout << RJVars_P1_CosTheta      << std::endl;
+ std::cout << RJVars_P2_Mass          << std::endl;
+ std::cout << RJVars_P2_CosTheta      << std::endl;
+ std::cout << RJVars_I1_Depth         << std::endl;
+ std::cout << RJVars_I2_Depth         << std::endl;
+ std::cout << RJVars_MP               << std::endl;
+
+ std::cout << RJVars_dphiPV1a         << std::endl;
+ std::cout << RJVars_cosV1a           << std::endl;
+ std::cout << RJVars_dphiCV2a         << std::endl;
+ std::cout << RJVars_cosV2a     << std::endl;
+ std::cout << RJVars_dphiPV1b   << std::endl;
+ std::cout << RJVars_cosV1b     << std::endl;
+ std::cout << RJVars_dphiCV2b   << std::endl;
+ std::cout << RJVars_cosV2b     << std::endl;
+
+ std::cout << RJVars_V1_N       << std::endl;
+ std::cout << RJVars_V2_N       << std::endl;
+ std::cout << RJVars_DeltaBetaGG<< std::endl;
+ std::cout << RJVars_dphiVG     << std::endl;
+ std::cout << RJVars_QCD_dPhiR  << std::endl;
+ std::cout << RJVars_QCD_Rpt    << std::endl;
+ std::cout << RJVars_QCD_Rsib   << std::endl;
+ std::cout << RJVars_QCD_Delta1 << std::endl;
+ std::cout << RJVars_H2PP       << std::endl;
+ std::cout << RJVars_H3PP       << std::endl;
+ std::cout << RJVars_H4PP       << std::endl;
+ std::cout << RJVars_H6PP       << std::endl;
+ std::cout << RJVars_H2Pa       << std::endl;
+ std::cout << RJVars_H2Pb       << std::endl;
+ std::cout << RJVars_H3Pa       << std::endl;
+ std::cout << RJVars_H3Pb       << std::endl;
+ std::cout << RJVars_H4Pa       << std::endl;
+ std::cout << RJVars_H4Pb       << std::endl;
+ std::cout << RJVars_H5Pa       << std::endl;
+ std::cout << RJVars_H5Pb       << std::endl;
+ std::cout << RJVars_H2Ca       << std::endl;
+ std::cout << RJVars_H2Cb       << std::endl;
+ std::cout << RJVars_H3Ca       << std::endl;
+ std::cout << RJVars_H3Cb       << std::endl;
+ std::cout << RJVars_HT4PP      << std::endl;
+ std::cout << RJVars_HT6PP      << std::endl;
+ std::cout << RJVars_minH3P     << std::endl;
+ std::cout << RJVars_sangle     << std::endl;
+ std::cout << RJVars_dangle     << std::endl;
+ std::cout << RJVars_ddphiPC    << std::endl;
+ std::cout << RJVars_sdphiPC    << std::endl;
+ std::cout << RJVars_dH2o3P     << std::endl;
+ std::cout << RJVars_RPZ_HT4PP  << std::endl;
+ std::cout << RJVars_RPZ_HT6PP  << std::endl;
+}
+
 
 void NTRJigsawVars::Reset()
-{ 
+{RJVars_PP_Mass           = 0.f;
+ RJVars_PP_InvGamma       = 0.f;
+ RJVars_PP_dPhiBetaR      = 0.f;
+ RJVars_PP_dPhiVis        = 0.f;
+ RJVars_PP_CosTheta       = 0.f;
+ RJVars_PP_dPhiDecayAngle = 0.f;
+ RJVars_PP_VisShape       = 0.f;
+ RJVars_PP_MDeltaR        = 0.f;
+ RJVars_P1_Mass           = 0.f;
+ RJVars_P1_CosTheta       = 0.f;
+ RJVars_P2_Mass           = 0.f;
+ RJVars_P2_CosTheta       = 0.f;
+ RJVars_I1_Depth          = 0.f;
+ RJVars_I2_Depth          = 0.f;
+ RJVars_MP                = 0.f;
 
-  RJVars_PP_Mass           =0.f; 
-  RJVars_PP_InvGamma       =0.f; 
-  RJVars_PP_dPhiBetaR      =0.f; 
-  RJVars_PP_dPhiVis        =0.f; 
-  RJVars_PP_CosTheta       =0.f; 
-  RJVars_PP_dPhiDecayAngle =0.f; 
-  RJVars_PP_VisShape       =0.f; 
-  RJVars_PP_MDeltaR        =0.f; 
-  RJVars_P1_Mass           =0.f; 
-  RJVars_P1_CosTheta       =0.f; 
-  RJVars_P2_Mass           =0.f; 
-  RJVars_P2_CosTheta       =0.f; 
-  RJVars_I1_Depth          =0.f; 
-  RJVars_I2_Depth          =0.f; 
-  RJVars_V1_N              =0.f; 
-  RJVars_V2_N              =0.f;     
-  RJVars_MG                =0.f;       
-  RJVars_DeltaBetaGG       =0.f;       
-  RJVars_dphiVG            =0.f;       
-  RJVars_P_0_CosTheta      =0.f;       
-  RJVars_C_0_CosTheta      =0.f;       
-  RJVars_P_0_dPhiGC        =0.f;     
-  RJVars_P_0_MassRatioGC   =0.f;   
-  RJVars_P_0_Jet1_pT       =0.f; 
-  RJVars_P_0_Jet2_pT       =0.f; 
-  RJVars_P_0_PInvHS        =0.f;       
-  RJVars_P_1_CosTheta      =0.f;       
-  RJVars_C_1_CosTheta      =0.f;       
-  RJVars_P_1_dPhiGC        =0.f;     
-  RJVars_P_1_MassRatioGC   =0.f;      
-  RJVars_P_1_Jet1_pT       =0.f; 
-  RJVars_P_1_Jet2_pT       =0.f; 
-  RJVars_P_1_PInvHS        =0.f;       
-  RJVars_QCD_dPhiR         =0.f;  
-  RJVars_QCD_Rpt           =0.f;  
-  RJVars_QCD_Rmsib         =0.f;  
-  RJVars_QCD_Rpsib         =0.f;  
-  RJVars_QCD_Delta1        =0.f;  
-  RJVars_QCD_Delta2        =0.f;  
+ RJVars_dphiPV1a          = 0.f;
+ RJVars_cosV1a            = 0.f;
+ RJVars_dphiCV2a          = 0.f;
+ RJVars_cosV2a      = 0.f;
+ RJVars_dphiPV1b    = 0.f;
+ RJVars_cosV1b      = 0.f;
+ RJVars_dphiCV2b    = 0.f;
+ RJVars_cosV2b      = 0.f;
+
+ RJVars_V1_N        = 0.f;
+ RJVars_V2_N        = 0.f;
+ RJVars_DeltaBetaGG = 0.f;
+ RJVars_dphiVG      = 0.f;
+ RJVars_QCD_dPhiR   = 0.f;
+ RJVars_QCD_Rpt     = 0.f;
+ RJVars_QCD_Rsib    = 0.f;
+ RJVars_QCD_Delta1  = 0.f;
+ RJVars_H2PP        = 0.f;
+ RJVars_H3PP        = 0.f;
+ RJVars_H4PP        = 0.f;
+ RJVars_H6PP        = 0.f;
+ RJVars_H2Pa        = 0.f;
+ RJVars_H2Pb        = 0.f;
+ RJVars_H3Pa        = 0.f;
+ RJVars_H3Pb        = 0.f;
+ RJVars_H4Pa        = 0.f;
+ RJVars_H4Pb        = 0.f;
+ RJVars_H5Pa        = 0.f;
+ RJVars_H5Pb        = 0.f;
+ RJVars_H2Ca        = 0.f;
+ RJVars_H2Cb        = 0.f;
+ RJVars_H3Ca        = 0.f;
+ RJVars_H3Cb        = 0.f;
+ RJVars_HT4PP       = 0.f;
+ RJVars_HT6PP       = 0.f;
+ RJVars_minH3P      = 0.f;
+ RJVars_sangle      = 0.f;
+ RJVars_dangle      = 0.f;
+ RJVars_ddphiPC     = 0.f;
+ RJVars_sdphiPC     = 0.f;
+ RJVars_dH2o3P      = 0.f;
+ RJVars_RPZ_HT4PP   = 0.f;
+ RJVars_RPZ_HT6PP   = 0.f;
 }
+
+
 
 std::string NTTheoryVars::toString()
 {
-  return std::string("mu1ScaleWeightUp/F:mu1ScaleWeightDown/F:mu2ScaleWeightUp/F:mu2ScaleWeightDown/F:matchScaleWeightUp/F:matchScaleWeightDown/F:HFWeight/F:nPartonsWeight/F:nTruthJet/I:nParton/I:nTau/I"); 
+  return std::string("mu1ScaleWeightUp/F:mu1ScaleWeightDown/F:mu2ScaleWeightUp/F:mu2ScaleWeightDown/F:matchScaleWeightUp/F:matchScaleWeightDown/F:HFWeight/F:nPartonsWeight/F:nTruthJet/I:nParton/I:nTau/I");
 // scaleFormWeightUp/F:scaleFormWeightDown/F:
-} 
+}
 
 
 void NTTheoryVars::Reset()
-{ 
-  mu1ScaleWeightUp = mu1ScaleWeightDown = mu2ScaleWeightUp = mu2ScaleWeightDown = matchScaleWeightUp = matchScaleWeightDown = HFWeight = nPartonsWeight = 1.f; // scaleFormWeightUp = scaleFormWeightDown = 
+{
+  mu1ScaleWeightUp = mu1ScaleWeightDown = mu2ScaleWeightUp = mu2ScaleWeightDown = matchScaleWeightUp = matchScaleWeightDown = HFWeight = nPartonsWeight = 1.f; // scaleFormWeightUp = scaleFormWeightDown =
   nTruthJet = nParton = nTau =0;
 }
 
 
 void NTTheoryVars::Copy(NTTheoryVars& other)
 {
-  mu1ScaleWeightUp = other.mu1ScaleWeightUp; 
-  mu1ScaleWeightDown = other.mu1ScaleWeightDown; 
-  mu2ScaleWeightUp = other.mu2ScaleWeightUp; 
-  mu2ScaleWeightDown = other.mu2ScaleWeightDown; 
-  matchScaleWeightUp = other.matchScaleWeightUp; 
-  matchScaleWeightDown = other.matchScaleWeightDown; 
+  mu1ScaleWeightUp = other.mu1ScaleWeightUp;
+  mu1ScaleWeightDown = other.mu1ScaleWeightDown;
+  mu2ScaleWeightUp = other.mu2ScaleWeightUp;
+  mu2ScaleWeightDown = other.mu2ScaleWeightDown;
+  matchScaleWeightUp = other.matchScaleWeightUp;
+  matchScaleWeightDown = other.matchScaleWeightDown;
   HFWeight = other.HFWeight;
   nPartonsWeight = other.nPartonsWeight;
   nTruthJet = other.nTruthJet;
@@ -409,15 +496,15 @@ void NTTheoryVars::Copy(NTTheoryVars& other)
 
 
 std::string NTISRVars::toString()
-{ 
-  return std::string("nJetISR/I:isrjetIndex/I:isrjetPt/F:isrjetEta/F:isrjetPhi/F:jet1Alpha/F:jet2Alpha/F:jet3Alpha/F:jet4Alpha/F:jet5Alpha/F:jet1minPtDistinction/F:jet2minPtDistinction/F:jet3minPtDistinction/F:jet4minPtDistinction/F:jet5minPtDistinction/F:jet1minDeltaDistinction/F:jet2minDeltaDistinction/F:jet3minDeltaDistinction/F:jet4minDeltaDistinction/F:jet5minDeltaDistinction/F:jet1minEtaGap/F:jet2minEtaGap/F:jet3minEtaGap/F:jet4minEtaGap/F:jet5minEtaGap/F:jet1maxEtaOtherJets/F:jet2maxEtaOtherJets/F:jet3maxEtaOtherJets/F:jet4maxEtaOtherJets/F:jet5maxEtaOtherJets/F:jet1DPhiMET/F:jet2DPhiMET/F:jet3DPhiMET/F:jet4DPhiMET/F:jet5DPhiMET/F"); 
+{
+  return std::string("nJetISR/I:isrjetIndex/I:isrjetPt/F:isrjetEta/F:isrjetPhi/F:jet1Alpha/F:jet2Alpha/F:jet3Alpha/F:jet4Alpha/F:jet5Alpha/F:jet1minPtDistinction/F:jet2minPtDistinction/F:jet3minPtDistinction/F:jet4minPtDistinction/F:jet5minPtDistinction/F:jet1minDeltaDistinction/F:jet2minDeltaDistinction/F:jet3minDeltaDistinction/F:jet4minDeltaDistinction/F:jet5minDeltaDistinction/F:jet1minEtaGap/F:jet2minEtaGap/F:jet3minEtaGap/F:jet4minEtaGap/F:jet5minEtaGap/F:jet1maxEtaOtherJets/F:jet2maxEtaOtherJets/F:jet3maxEtaOtherJets/F:jet4maxEtaOtherJets/F:jet5maxEtaOtherJets/F:jet1DPhiMET/F:jet2DPhiMET/F:jet3DPhiMET/F:jet4DPhiMET/F:jet5DPhiMET/F");
 }
 
 void NTISRVars::Reset()
-{ 
-  nISRJets = ISRjet_index = 0; 
+{
+  nISRJets = ISRjet_index = 0;
   isrjetPt = 0.f;
-  
+
   isrjetEta = isrjetPhi = jet1Alpha = jet2Alpha = jet3Alpha = jet4Alpha = jet5Alpha = jet1minPtDistinction = jet2minPtDistinction = jet3minPtDistinction = jet4minPtDistinction = jet5minPtDistinction = jet1minDeltaDistinction = jet2minDeltaDistinction = jet3minDeltaDistinction = jet4minDeltaDistinction = jet5minDeltaDistinction = jet1minEtaGap = jet2minEtaGap = jet3minEtaGap = jet4minEtaGap = jet5minEtaGap = jet1maxEtaOtherJets = jet2maxEtaOtherJets = jet3maxEtaOtherJets = jet4maxEtaOtherJets = jet5maxEtaOtherJets = jet1DPhiMET = jet2DPhiMET = jet3DPhiMET = jet4DPhiMET = jet5DPhiMET = 999.f;
 }
 
@@ -434,11 +521,11 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("jetFlav",&(ntv.jetFlav));
   tree->Branch("jetTagU",&(ntv.jetTagU));
   tree->Branch("jetTagB",&(ntv.jetTagB));
-  tree->Branch("jetTagC",&(ntv.jetTagC));                
+  tree->Branch("jetTagC",&(ntv.jetTagC));
   tree->Branch("jetFracSamplingMax",&(ntv.jetFracSamplingMax));
   tree->Branch("jetFracSamplingMaxIndex",&(ntv.jetFracSamplingMaxIndex));
   if ( addJetSmearSystW ) {
-    tree->Branch("jetSmearSystW",&(ntv.jetSmearSystW)); 
+    tree->Branch("jetSmearSystW",&(ntv.jetSmearSystW));
   }
 
   tree->Branch("tauPt",&(ntv.tauPt));
@@ -451,15 +538,16 @@ void bookNTVars(TTree* tree, NTVars& ntv, bool addJetSmearSystW)
   tree->Branch("tauLooseSFSystDown",&(ntv.tauLooseSFSystDown));
 
   tree->Branch("systWeights",&(ntv.systWeights));
+  tree->Branch("triggerBits",&(ntv.triggerBits));
+
   treePolicies(tree);
 }
 
 void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
 {
   tree->Branch("NTReclusteringVars",&RTntv,NTReclusteringVars::toString().c_str());
-  
   //RT jets
-  tree->Branch("RTjets10SubJetIndeces",&(RTntv.RTjets10SubJetIndeces));  
+  tree->Branch("RTjets10SubJetIndeces",&(RTntv.RTjets10SubJetIndeces));
   tree->Branch("RTjetPt",&(RTntv.RTjetPt));
   tree->Branch("RTjetEta",&(RTntv.RTjetEta));
   tree->Branch("RTjetPhi",&(RTntv.RTjetPhi));
@@ -475,6 +563,7 @@ void bookNTReclusteringVars(TTree* tree, NTReclusteringVars& RTntv)
   tree->Branch("isZtight",&(RTntv.isZtight));
   treePolicies(tree);
 }
+
 
 std::string NTCRYVars::toString()
 {
@@ -565,4 +654,3 @@ void NTCRYVars::Reset()
 //  tree->GetBranch("phTruthOrigin")->SetAddress(&p_phTruthOrigin);
 //  tree->GetBranch("phisEMvalue")->SetAddress(&p_phisEMvalue);
 //}
-

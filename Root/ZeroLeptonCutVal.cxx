@@ -16,7 +16,7 @@ ZeroLeptonCutVal::ZeroLeptonCutVal()
   m_cutJetPt5 = -1.;
 
   m_cutRJigsawJetPt = -1.;
-  
+
   for ( size_t i = 0; i < 8; i++ )
   {
     for ( size_t j = 0; j < 4; j++ )
@@ -30,7 +30,7 @@ ZeroLeptonCutVal::ZeroLeptonCutVal()
       m_cutMap[i][j] = false;
     }
   }
-  
+
   m_cutDeltaPhi = -1.;
   m_cutDeltaPhi2 = -1.;
   m_cutDeltaPhiQCD = -1.;
@@ -45,7 +45,7 @@ ZeroLeptonCutVal::ZeroLeptonCutVal()
 
 void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
 {
-  
+
   ZeroLeptonParamFile params(paramfilename);
   m_cutEtMiss=params.find<double>("cutEtMiss",0);
   m_cutEtMissTruthTest=params.find<double>("cutEtMissTruthTest",160000);
@@ -70,12 +70,12 @@ void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
   m_cutMETsig[0][0]=0.;
   m_cutMETsig[0][1]=0.;
   m_cutMETsig[0][2]=0.;
-  m_cutMETsig[0][3]=0.; 
+  m_cutMETsig[0][3]=0.;
   m_CRWT_cutMETsig[0][0]=0.;
   m_CRWT_cutMETsig[0][1]=0.;
   m_CRWT_cutMETsig[0][2]=0.;
   m_CRWT_cutMETsig[0][3]=0.;
- 
+
   m_cutMETsig[1][0]=params.find<double>("cutMetSigSR2jLoose",0.);
   m_cutMETsig[1][1]=params.find<double>("cutMetSigSR2jMedium",0.);
   m_cutMETsig[1][2]=params.find<double>("cutMetSigSR2jTight");
@@ -182,7 +182,7 @@ void ZeroLeptonCutVal::ReadCutValues(std::string paramfilename)
   m_cutMap[5][0]=params.find<bool>("cutMapSR2jWuu",0.);
   m_cutMap[6][0]=params.find<bool>("cutMapSR3jWur",0.);
 
-  // Control region cuts 
+  // Control region cuts
   m_cutPhotonPtCRY=params.find<double>("cutPhotonPtCRY",85000.);
   m_cutPhotonIsolCRY=params.find<double>("cutPhotonIsolCRY",5000.);
   m_cutPhotonQualityCRY=params.find<int>("cutPhotonQualityCRY",2);

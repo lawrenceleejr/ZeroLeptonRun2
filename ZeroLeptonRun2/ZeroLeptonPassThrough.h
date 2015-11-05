@@ -1,9 +1,8 @@
-#ifndef ZeroLeptonRun2_ZeroLeptonCRY_H_
-#define ZeroLeptonRun2_ZeroLeptonCRY_H_
+#ifndef ZeroLeptonRun2_ZeroLeptonPassThrough_H_
+#define ZeroLeptonRun2_ZeroLeptonPassThrough_H_
 
 #include "cafe/Processor.h"
 #include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
-#include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PhysObjProxyFiller.h"
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/ZeroLeptonUtils.h"
@@ -12,20 +11,16 @@
 #include "ZeroLeptonRun2/PhysObjProxyUtils.h"
 #include "ZeroLeptonRun2/Counter.h"
 
-#include "AsgTools/AsgMetadataTool.h"
-#include "AsgTools/ToolHandle.h"
-
 class TTree;
-class IAsgPhotonIsEMSelector;
 
 #include <string>
 #include <map>
 
 
-class ZeroLeptonCRY : public cafe::Processor {
+class ZeroLeptonPassThrough : public cafe::Processor {
 public:
-  ZeroLeptonCRY(const char *name);
-  ~ZeroLeptonCRY();
+  ZeroLeptonPassThrough(const char *name);
+  ~ZeroLeptonPassThrough();
   void begin();
   void finish();
   bool processEvent(xAOD::TEvent& event);
@@ -33,9 +28,6 @@ public:
 private:
   TTree* bookTree(const std::string& name);
   TTree* getTree(const std::string& name);
-  void FillNTCRYVars(NTCRYVars& cryntv, const TLorentzVector& photon, TVector2& origmisset,int tight, int loose, float etcone20,float ptvarcone20,
-		     float ptcone20,float etcone40, float ptvarcone40,float ptcone40,
-		     int truthtype, int truthorigin,int isEMtight, int isSignal);
 
   TTree* m_tree;
   std::string m_stringRegion;
@@ -52,8 +44,11 @@ private:
   NTVars m_ntv;
   NTExtraVars m_extrantv;
   NTRJigsawVars m_rjigsawntv;
+  NTRJigsawVars m_rjigsawntv_hlt;
   NTReclusteringVars m_RTntv;
-  NTCRYVars m_cryntv;
+  NTTheoryVars m_theoryntv;
+  NTISRVars m_isrntv;
+  bool   m_buildTriggerJetAndMET;
 
   std::string m_suffix;
   std::string m_suffixRecl;
@@ -66,14 +61,12 @@ private:
   Counter* m_counter;
   CounterRepository m_counterRepository;
 
-  ToolHandle<IAsgPhotonIsEMSelector>     m_photonSelIsEM;
-
   // TODO : an unordered_map would be faster
   std::map<std::string,TTree*> m_treeRepository;
 
   ZeroLeptonDerivationTag m_derivationTag;
 public:
-  ClassDef(ZeroLeptonCRY,0);
+  ClassDef(ZeroLeptonPassThrough,0);
 };
 
-#endif // ZeroLeptonRun2_ZeroLeptonCRY_H_
+#endif // ZeroLeptonRun2_ZeroLeptonPassThrough_H_

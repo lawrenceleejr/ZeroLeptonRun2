@@ -70,9 +70,9 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
     throw std::runtime_error("Could not store myTruthJets"+m_suffix+"Aux.");
   }
   outputjets = truthjets.first;
-  
+
   if ( !xAOD::setOriginalObjectLink(*inputjets, *outputjets) ) throw std::runtime_error("Could not set original links in jet container copy");
-  
+
   // Muons
   const xAOD::TruthParticleContainer* truthmuons = 0;
   if ( !event.retrieve( truthmuons, "TruthMuons").isSuccess() ) {
@@ -81,16 +81,16 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthmuons2 = xAOD::shallowCopyContainer( *truthmuons );
   //  if ( ! store->record<xAOD::TruthParticleContainer>(truthmuons2.first,"TruthMuons").isSuccess() ) { //BEFORE
-  if ( ! store->record(truthmuons2.first,"myTruthMuons"+m_suffix).isSuccess() ) { 
+  if ( ! store->record(truthmuons2.first,"myTruthMuons"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not store myTruthMuons"+m_suffix);
   }
   //if ( ! store->record<xAOD::ShallowAuxContainer>(truthmuons2.second,"TruthMuonsAux.").isSuccess()) { //BEFORE
   if ( ! store->record(truthmuons2.second,"myTruthMuons"+m_suffix+"Aux.").isSuccess()) {
     throw std::runtime_error("Could not store myTruthMuons"+m_suffix+"Aux.");
   }
-  
+
   // Electrons
-  const xAOD::TruthParticleContainer* truthelectrons = 0 ; 
+  const xAOD::TruthParticleContainer* truthelectrons = 0 ;
   if ( !event.retrieve(truthelectrons, "TruthElectrons").isSuccess() ){
     throw std::runtime_error("Could not retrieve truth particles with key TruthElectrons");
   }
@@ -105,15 +105,15 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
     throw std::runtime_error("Could not store myTruthElectrons"+m_suffix+"Aux.");
   }
 
-  
+
   // Photons
   const xAOD::TruthParticleContainer* truthphotons = 0 ;
   if ( !event.retrieve(truthphotons,"TruthPhotons").isSuccess() ){
     throw std::runtime_error("Could not retrieve truth particles with key TruthPhotons");
   }
-  
+
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthphotons2 = xAOD::shallowCopyContainer( *truthphotons );
-  
+
   if ( ! store->record(truthphotons2.first,"myTruthPhotons"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not store myTruthPhotons"+m_suffix);
   }
@@ -122,7 +122,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   }
 
 
-  
+
   // Taus
   const xAOD::TruthParticleContainer* truthtaus = 0 ;
 
@@ -131,17 +131,17 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
     }
 
   std::pair< xAOD::TruthParticleContainer*, xAOD::ShallowAuxContainer* > truthtaus2 = xAOD::shallowCopyContainer( *truthtaus );
-  
+
   if ( ! store->record(truthtaus2.first,"myTruthTaus"+m_suffix).isSuccess() ) {
     throw std::runtime_error("Could not store myTruthTaus"+m_suffix);
   }
   if ( ! store->record(truthtaus2.second,"myTruthTaus"+m_suffix+"Aux.").isSuccess()) {
     throw std::runtime_error("Could not store myTruthTaus"+m_suffix+"Aux.");
   }
-  
-  
 
-  // Overlap removal 
+
+
+  // Overlap removal
 
   if ( m_PhotonInOR ) {
     if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, truthphotons2.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.000) ) throw std::runtime_error("Error in OverlapRemoval");
@@ -156,7 +156,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   if ( !event.retrieve(truthCont, "MET_Truth").isSuccess() ){
     throw std::runtime_error("Could not retrieve truth met with key MET_Truth");
   }
-  
+
   //TVector2* MissingE1 = new TVector2(0.,0.);
   //TVector2* MissingE2 = new TVector2(0.,0.);
   //TVector2* MissingE3 = new TVector2(0.,0.);
@@ -189,7 +189,7 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   if ( ! store->record(MissingET,"TruthMET"+m_suffix).isSuccess() ) {
 
     throw std::runtime_error("Could not store TruthMET"+m_suffix);
-  }  
+  }
 
 return true;
 }
@@ -206,9 +206,9 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   xAOD::JetContainer::const_iterator jet_end = jets->end();
   for( ; jet_itr != jet_end; ++jet_itr ) {
     //bool jet_sel = (*jet_itr)->auxdecor<char>("baseline");//bool jet_sel = dec_baseline(**jet_itr);
-    bool jet_sel; 
+    bool jet_sel;
     if( (*jet_itr)->pt() > 20000 && std::abs((*jet_itr)->eta()) < 2.8 )
-      jet_sel = 1 ; 
+      jet_sel = 1 ;
     if(jet_sel){
       (*jet_itr)->auxdecor<char>("passOR") = 1 ; //dec_passOR( **jet_itr ) = 1;
       Njetin++;
@@ -223,7 +223,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     //if(doHarmonization) mu_sel = (*mu_itr)->auxdecor<char>("signal"); //mu_sel = dec_signal(**mu_itr);
     //else mu_sel = (*mu_itr)->auxdecor<char>("baseline"); //mu_sel = dec_baseline(**mu_itr);
     if( (*mu_itr)->pt() > 10000 && std::abs((*mu_itr)->eta()) < 2.4 )
-      mu_sel = 1 ; 
+      mu_sel = 1 ;
     if(mu_sel){
       (*mu_itr)->auxdecor<char>("passOR") = 1 ; //dec_passOR( **mu_itr ) = 1;
       Nmuin++;
@@ -249,16 +249,16 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     }
 
     //#######################
-    
+
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
-    
+
     for( ; jet_itr != jet_end; ++jet_itr ) {
       if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ; // if( !dec_passOR(**jet_itr) ) continue;
-      
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
-      
+
       if (el4vec.DeltaR(jet4vec)<dRejet) {
 	//std::cout << " Rejecting jet at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) <<  (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<") "
 	//	  << " due to electron at (eta,phi)=(" << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<")" << std::endl ;
@@ -270,18 +270,18 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
-    if((*el_itr)->auxdecor<char>("passOR") !=1) continue ; // if( !dec_passOR(**el_itr) ) continue; 
-    
+
+    if((*el_itr)->auxdecor<char>("passOR") !=1) continue ; // if( !dec_passOR(**el_itr) ) continue;
+
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
-    
+
     for( ; jet_itr != jet_end; ++jet_itr ) {
-      
+
       if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ;// if ( !dec_passOR( **jet_itr ) ) continue;
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
-      
+
       if (el4vec.DeltaR(jet4vec)<dRjete) {
 	//std::cout << " Rejecting electron at (eta,phi)=(" <<  std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 	//	  << " due to jet at (eta,phi)=(" << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<")"<< std::endl ;
@@ -289,16 +289,16 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
+
   mu_itr = muons->begin();
   mu_end = muons->end();
   for( ; mu_itr != mu_end; ++mu_itr ) {
-    
+
     if((*mu_itr)->auxdecor<char>("passOR") != 1) continue;//if( !dec_passOR(**mu_itr) ) continue;
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
     for( ; jet_itr != jet_end; ++jet_itr ) {
-      
+
       if((*jet_itr)->auxdecor<char>("passOR") != 1) continue;// if ( !dec_passOR( **jet_itr ) ) continue;
       TLorentzVector mu4vec = (*mu_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
@@ -311,7 +311,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
 	////	    << " due to muon at (pT,eta,phi)=(" << (*mu_itr)->pt() <<","<< (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<")"<< std::endl ;
 	////(*jet_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **jet_itr ) = 0;
 	////}else{
-	
+
 	//std::cout << " Rejecting muon at (eta,phi)=(" <<  std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<") "
 	//	  << " due to jet at (eta,phi)=(" << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<")"<< std::endl ;
 	(*mu_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **mu_itr ) = 0;
@@ -319,30 +319,30 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
 
-  // Remove electrons and muons overlapping with each other 
+
+  // Remove electrons and muons overlapping with each other
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
+
     if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue;
-    
+
     mu_itr = muons->begin();
     mu_end = muons->end();
-    
+
     for( ; mu_itr != mu_end; ++mu_itr ) {
-      
-      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ;//if ( !dec_passOR( **mu_itr ) ) continue; 
-      
+
+      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ;//if ( !dec_passOR( **mu_itr ) ) continue;
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector mu4vec = (*mu_itr)->p4();
-      
+
       if (el4vec.DeltaR(mu4vec)<dRemu) {
 	//std::cout << " Rejecting both electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 	//	  << " and muon at (eta,phi)=(" << (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<")"<< std::endl ;
-	(*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0; 
-	(*mu_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **mu_itr ) = 0;  
+	(*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;
+	(*mu_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **mu_itr ) = 0;
       }
     }
   }
@@ -350,29 +350,29 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
+
     if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue;
-    
+
     xAOD::TruthParticleContainer::const_iterator el2_itr = electrons->begin();
     xAOD::TruthParticleContainer::const_iterator el2_end = electrons->end();
-    
+
     for( ; el2_itr != el2_end; ++el2_itr ) {
-      
+
       if(el_itr == el2_itr) continue;
       if((*el2_itr)->auxdecor<char>("passOR") != 1) continue ;//if ( !dec_passOR( **el2_itr ) ) continue;
-      
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector el24vec = (*el2_itr)->p4();
-      
+
       if (el4vec.DeltaR(el24vec)<dRee) {
 	if((*el_itr)->pt() < (*el2_itr)->pt()){
 	  //std::cout << " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 	  //	    << " and muon at (eta,phi)=(" << (*el2_itr)->eta() <<"," << (*el2_itr)->phi() <<")"<< std::endl ;
-	  (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;  
+	  (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;
 	}else{
 	  //std::cout << " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*el2_itr)->eta() <<"," << (*el2_itr)->phi() <<") "
 	  //	    << " and muon at (eta,phi)=(" << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<")"<< std::endl ;
-	  (*el2_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el2_itr ) = 0;   
+	  (*el2_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el2_itr ) = 0;
 	}
       }
     }
@@ -382,16 +382,16 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    if((*el_itr)->auxdecor<char>("passOR") == 1) Nel++;//if(dec_passOR( **el_itr )) Nel++; 
+    if((*el_itr)->auxdecor<char>("passOR") == 1) Nel++;//if(dec_passOR( **el_itr )) Nel++;
   }
-  
+
   int Nmu=0;
   mu_itr = muons->begin();
   mu_end = muons->end();
   for( ; mu_itr != mu_end; ++mu_itr ) {
-    if((*mu_itr)->auxdecor<char>("passOR") == 1) Nmu++;//if(dec_passOR( **mu_itr )) Nmu++;  
+    if((*mu_itr)->auxdecor<char>("passOR") == 1) Nmu++;//if(dec_passOR( **mu_itr )) Nmu++;
   }
-  
+
   int Njet=0;
   jet_itr = jets->begin();
   jet_end = jets->end();
@@ -401,7 +401,7 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   //std::cout << " Before overlap removal: Nel=" << Nelin <<", Nmu="<< Nmuin <<", Njet=" << Njetin<< std::endl ;
   //std::cout << " After  overlap removal: Nel=" << Nel <<", Nmu="<< Nmu <<", Njet=" << Njet<< std::endl ;
   return true;
-  
+
 }
 
 bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *electrons, const xAOD::TruthParticleContainer *muons, const xAOD::JetContainer *jets, const xAOD::TruthParticleContainer *photons, const bool doHarmonization, const double dRejet, const double dRjetmu, const double dRjete, double dRemu, double dRee, double dRphjet, double dReph, double dRmuph){
@@ -415,9 +415,9 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   xAOD::JetContainer::const_iterator jet_end = jets->end();
   for( ; jet_itr != jet_end; ++jet_itr ) {
     //bool jet_sel = (*jet_itr)->auxdecor<char>("baseline"); //bool jet_sel = dec_baseline(**jet_itr);
-    bool jet_sel; 
+    bool jet_sel;
     if( (*jet_itr)->pt() > 20000 && std::abs((*jet_itr)->eta()) < 2.8 )
-      jet_sel = 1 ; 
+      jet_sel = 1 ;
     if(jet_sel){
       (*jet_itr)->auxdecor<char>("passOR") = 1 ;//dec_passOR( **jet_itr ) = 1;
       Njetin++;
@@ -429,16 +429,16 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   xAOD::TruthParticleContainer::const_iterator mu_end = muons->end();
   for( ; mu_itr != mu_end; ++mu_itr ) {
     bool mu_sel;
-    //if(doHarmonization) mu_sel = (*mu_itr)->auxdecor<char>("signal"); //mu_sel = dec_signal(**mu_itr);      
-    //else mu_sel = (*mu_itr)->auxdecor<char>("baseline"); //dec_baseline(**mu_itr); 
+    //if(doHarmonization) mu_sel = (*mu_itr)->auxdecor<char>("signal"); //mu_sel = dec_signal(**mu_itr);
+    //else mu_sel = (*mu_itr)->auxdecor<char>("baseline"); //dec_baseline(**mu_itr);
     if( (*mu_itr)->pt() > 10000 && std::abs((*mu_itr)->eta()) < 2.4 )
-      mu_sel = 1 ; 
+      mu_sel = 1 ;
     if(mu_sel){
-      (*mu_itr)->auxdecor<char>("passOR") = 1 ;  //dec_passOR( **mu_itr ) = 1;   
+      (*mu_itr)->auxdecor<char>("passOR") = 1 ;  //dec_passOR( **mu_itr ) = 1;
       Nmuin++;
     }
     else
-      (*mu_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **mu_itr ) = 0;  
+      (*mu_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **mu_itr ) = 0;
   }
 
   // remove jets overlapping with (baseline/signal) electrons
@@ -446,15 +446,15 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   xAOD::TruthParticleContainer::const_iterator el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
     bool el_sel;
-    //if(doHarmonization) el_sel = (*el_itr)->auxdecor<char>("signal"); // el_sel = dec_signal(**el_itr);    
-    //else el_sel = (*el_itr)->auxdecor<char>("baseline"); //dec_baseline(**el_itr); 
+    //if(doHarmonization) el_sel = (*el_itr)->auxdecor<char>("signal"); // el_sel = dec_signal(**el_itr);
+    //else el_sel = (*el_itr)->auxdecor<char>("baseline"); //dec_baseline(**el_itr);
     if( (*el_itr)->pt() > 10000 && std::abs((*el_itr)->eta()) < 2.47 )
-      el_sel = 1 ; 
+      el_sel = 1 ;
     if( !el_sel ){
-      (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;    
+      (*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;
       continue;
     }else{
-      (*el_itr)->auxdecor<char>("passOR") = 1 ;//dec_passOR( **el_itr ) = 1; 
+      (*el_itr)->auxdecor<char>("passOR") = 1 ;//dec_passOR( **el_itr ) = 1;
       Nelin++;
     }
 
@@ -462,11 +462,11 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     xAOD::JetContainer::const_iterator jet_end = jets->end();
 
     for( ; jet_itr != jet_end; ++jet_itr ) {
-      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**jet_itr) ) continue; 
-      
+      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**jet_itr) ) continue;
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
-      
+
       if (el4vec.DeltaR(jet4vec)<dRejet) {
 	//std::cout << " Rejecting jet at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<") "
 	//	  << " due to electron at (eta,phi)=(" << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<")"<< std::endl ;
@@ -482,78 +482,78 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
   xAOD::TruthParticleContainer::const_iterator ph_end = photons->end();
   for( ; ph_itr != ph_end; ++ph_itr ) {
     bool ph_sel;
-    //if(doHarmonization) ph_sel = (*ph_itr)->auxdecor<char>("signal"); //dec_signal(**ph_itr);   
+    //if(doHarmonization) ph_sel = (*ph_itr)->auxdecor<char>("signal"); //dec_signal(**ph_itr);
     //else ph_sel = (*ph_itr)->auxdecor<char>("baseline"); //dec_baseline(**ph_itr);
     if( (*ph_itr)->pt() > 25000 && std::abs((*ph_itr)->eta()) < 2.37 )
-      ph_sel = 1 ; 
+      ph_sel = 1 ;
     if( !ph_sel ){
-      (*ph_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **ph_itr ) = 0;    
+      (*ph_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **ph_itr ) = 0;
       continue;
     }else{
-      (*ph_itr)->auxdecor<char>("passOR") = 1 ; //dec_passOR( **ph_itr ) = 1;   
+      (*ph_itr)->auxdecor<char>("passOR") = 1 ; //dec_passOR( **ph_itr ) = 1;
       Nphin++;
     }
 
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
-    
+
     for( ; jet_itr != jet_end; ++jet_itr ) {
-      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ;  //if( !dec_passOR(**jet_itr) ) continue;  
-      
+      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ;  //if( !dec_passOR(**jet_itr) ) continue;
+
       TLorentzVector ph4vec = (*ph_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
-      
+
       if (ph4vec.DeltaR(jet4vec)<dRphjet) {
 	//std::cout << " Rejecting jet at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<") "
 	//	  << " due to photon at (eta,phi)=(" << (*ph_itr)->eta() <<"," << (*ph_itr)->phi() <<")"<< std::endl ;
-	(*jet_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **jet_itr ) = 0;       
+	(*jet_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **jet_itr ) = 0;
       }
     }
-  }// END loop over photons  
-    
-  // Remove electrons and muons overlapping with jets and photons   
+  }// END loop over photons
+
+  // Remove electrons and muons overlapping with jets and photons
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
-    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue; 
-    
+
+    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue;
+
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
-    
+
     for( ; jet_itr != jet_end; ++jet_itr ) {
-      
-      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ; //if ( !dec_passOR( **jet_itr ) ) continue;   
-      
+
+      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue ; //if ( !dec_passOR( **jet_itr ) ) continue;
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
-      
+
       if (el4vec.DeltaR(jet4vec)<dRjete) {
 	//std::cout <<  " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 	//	  << " due to jet at (eta,phi)=(" << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<")"<< std::endl ;
-	(*el_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **el_itr ) = 0;    
-	
+	(*el_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **el_itr ) = 0;
+
       }
     }
-    
+
   }
 
 
-  
+
   mu_itr = muons->begin();
   mu_end = muons->end();
-  
+
   for( ; mu_itr != mu_end; ++mu_itr ) {
 
-    if((*mu_itr)->auxdecor<char>("passOR") != 1) continue;//if( !dec_passOR(**mu_itr) ) continue;   
+    if((*mu_itr)->auxdecor<char>("passOR") != 1) continue;//if( !dec_passOR(**mu_itr) ) continue;
 
     xAOD::JetContainer::const_iterator jet_itr = jets->begin();
     xAOD::JetContainer::const_iterator jet_end = jets->end();
 
     for( ; jet_itr != jet_end; ++jet_itr ) {
 
-      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue; //if ( !dec_passOR( **jet_itr ) ) continue;                                                                                                                                        
-      
+      if((*jet_itr)->auxdecor<char>("passOR") != 1) continue; //if ( !dec_passOR( **jet_itr ) ) continue;
+
       TLorentzVector mu4vec = (*mu_itr)->p4();
       TLorentzVector jet4vec = (*jet_itr)->p4();
 
@@ -565,62 +565,62 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
 	////if(doHarmonization && jet_nTrk<3){
 	////std::cout << " Rejecting jet at (pT,eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*jet_itr)->pt() <<","<< (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<") with only nTrk=" << jet_nTrk
 	////	    << " due to muon at (pT,eta,phi)=(" << (*mu_itr)->pt() <<","<< (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<")"<< std::endl ;
-	////(*jet_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **jet_itr ) = 0; 
+	////(*jet_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **jet_itr ) = 0;
 	////}else{
 	//std::cout <<  " Rejecting muon at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<") "
 	//	    << " due to jet at (eta,phi)=(" << (*jet_itr)->eta() <<"," << (*jet_itr)->phi() <<")"<< std::endl ;
-	  (*mu_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **mu_itr ) = 0; 
+	  (*mu_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **mu_itr ) = 0;
 	  //}
       }
     }
   }
 
 
-  
-  // Remove electrons and muons overlapping with each other  
+
+  // Remove electrons and muons overlapping with each other
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
-    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue;  
-    
+
+    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;//if( !dec_passOR(**el_itr) ) continue;
+
     mu_itr = muons->begin();
     mu_end = muons->end();
-    
+
     for( ; mu_itr != mu_end; ++mu_itr ) {
-      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ; //if ( !dec_passOR( **mu_itr ) ) continue; 
-      
+      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ; //if ( !dec_passOR( **mu_itr ) ) continue;
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector mu4vec = (*mu_itr)->p4();
-      
+
       if (el4vec.DeltaR(mu4vec)<dRemu) {
 	//std::cout << " Rejecting both electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
 	//	  << " and muon at (eta,phi)=(" << (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<")"<< std::endl ;
 	(*el_itr)->auxdecor<char>("passOR") = 0 ;//dec_passOR( **el_itr ) = 0;
-	(*mu_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **mu_itr ) = 0; 
+	(*mu_itr)->auxdecor<char>("passOR") = 0 ; //dec_passOR( **mu_itr ) = 0;
       }
     }
   }
 
-  
+
   // Remove electrons overlapping with each other
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
-    
-    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;  //if( !dec_passOR(**el_itr) ) continue; 
-    
+
+    if((*el_itr)->auxdecor<char>("passOR") != 1) continue ;  //if( !dec_passOR(**el_itr) ) continue;
+
     xAOD::TruthParticleContainer::const_iterator el2_itr = electrons->begin();
     xAOD::TruthParticleContainer::const_iterator el2_end = electrons->end();
-    
+
     for( ; el2_itr != el2_end; ++el2_itr ) {
-      
+
       if(el_itr == el2_itr) continue;
       if((*el2_itr)->auxdecor<char>("passOR") != 1) continue ; //if ( !dec_passOR( **el2_itr ) ) continue;
-      
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector el24vec = (*el2_itr)->p4();
-      
+
       if (el4vec.DeltaR(el24vec)<dRee) {
 	if((*el_itr)->pt() < (*el2_itr)->pt()){
 	  //std::cout << " Rejecting electron at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<") "
@@ -634,25 +634,25 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
 
-  // Remove photons if overlapping with electrons 
-  
+
+  // Remove photons if overlapping with electrons
+
   ph_itr = photons->begin();
   ph_end = photons->end();
   for( ; ph_itr != ph_end; ++ph_itr ) {
-    
+
     if((*ph_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR( **ph_itr ) )
     continue;
-    
+
     el_itr = electrons->begin();
     el_end = electrons->end();
     for( ; el_itr != el_end; ++el_itr ) {
       if((*el_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR(**el_itr) ) continue;
-      
+
       TLorentzVector el4vec = (*el_itr)->p4();
       TLorentzVector ph4vec = (*ph_itr)->p4();
-      
+
       if (el4vec.DeltaR(ph4vec)<dReph) {
 	//std::cout << " Rejecting photon at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10)  << (*ph_itr)->eta() <<"," << (*ph_itr)->phi() <<") "
 	//	  << " due to electron at (eta,phi)=(" << (*el_itr)->eta() <<"," << (*el_itr)->phi() <<")"<< std::endl ;
@@ -660,24 +660,24 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
+
 
   // Remove photons if overlapping with muons
   ph_itr = photons->begin();
   ph_end = photons->end();
   for( ; ph_itr != ph_end; ++ph_itr ) {
-    
-    if((*ph_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR( **ph_itr ) ) 
+
+    if((*ph_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR( **ph_itr ) )
     continue;
-    
+
     mu_itr = muons->begin();
     mu_end = muons->end();
-    
+
     for( ; mu_itr != mu_end; ++mu_itr ) {
-      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR(**mu_itr) ) continue; 
+      if((*mu_itr)->auxdecor<char>("passOR") != 1) continue ; //if( !dec_passOR(**mu_itr) ) continue;
       TLorentzVector mu4vec = (*mu_itr)->p4();
       TLorentzVector ph4vec = (*ph_itr)->p4();
-      
+
       if (mu4vec.DeltaR(ph4vec)<dRmuph) {
 	//std::cout << " Rejecting photon at (eta,phi)=(" << std::setiosflags(std::ios::fixed) << std::setprecision(1) << std::setw(10) << (*ph_itr)->eta() <<"," << (*ph_itr)->phi() <<") "
 	//	  << " due to muon at (eta,phi)=(" << (*mu_itr)->eta() <<"," << (*mu_itr)->phi() <<")"<< std::endl ;
@@ -685,16 +685,16 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
       }
     }
   }
-  
 
-  // Count number of objects after overlap removal  
+
+  // Count number of objects after overlap removal
   int Nel=0;
   el_itr = electrons->begin();
   el_end = electrons->end();
   for( ; el_itr != el_end; ++el_itr ) {
     if((*el_itr)->auxdecor<char>("passOR") == 1) Nel++ ;//if(dec_passOR( **el_itr )) Nel++;
   }
-  
+
   int Nmu=0;
   mu_itr = muons->begin();
   mu_end = muons->end();
@@ -702,24 +702,24 @@ bool BuildTruthObjects::OverlapRemoval(const xAOD::TruthParticleContainer *elect
     if((*mu_itr)->auxdecor<char>("passOR") == 1) Nmu++ ;//if(dec_passOR( **mu_itr )) Nmu++;
   }
 
-  
+
   int Njet=0;
   jet_itr = jets->begin();
   jet_end = jets->end();
   for( ; jet_itr != jet_end; ++jet_itr ) {
-    if((*jet_itr)->auxdecor<char>("passOR") == 1) Njet++ ;//if(dec_passOR( **jet_itr )) Njet++; 
+    if((*jet_itr)->auxdecor<char>("passOR") == 1) Njet++ ;//if(dec_passOR( **jet_itr )) Njet++;
   }
-  
+
   int Nph=0;
   ph_itr = photons->begin();
   ph_end = photons->end();
   for( ; ph_itr != ph_end; ++ph_itr ) {
-    if((*ph_itr)->auxdecor<char>("passOR") == 1) Nph++ ;//if(dec_passOR( **ph_itr )) Nph++; 
+    if((*ph_itr)->auxdecor<char>("passOR") == 1) Nph++ ;//if(dec_passOR( **ph_itr )) Nph++;
   }
-  
+
   //std::cout << " After overlap removal: Nel=" << Nel <<", Nmu="<< Nmu <<", Njet=" << Njet << ", Nph=" << Nph << std::endl;
   return true;
-  
+
 }
 
 

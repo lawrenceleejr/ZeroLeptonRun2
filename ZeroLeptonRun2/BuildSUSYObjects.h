@@ -41,8 +41,11 @@ public:
 private:
   void initSUSYTools();
   void fillTriggerInfo(xAOD::TEvent& event) const;
+  void fillTriggerJetAndMET(xAOD::TEvent& event) const;
 
   ST::SUSYObjDef_xAOD* m_SUSYObjTool;
+
+
   bool m_IsData;
   bool m_Is25ns;
   bool m_IsAtlfast;
@@ -55,8 +58,8 @@ private:
   ToolHandle<TauAnalysisTools::ITauTruthMatchingTool> m_tauTruthMatchTool;
   std::vector<CP::SystematicSet> m_tauEffSystSetList;
 
-  std::string m_jetkey; 
-  std::string m_taukey; 
+  std::string m_jetkey;
+  std::string m_taukey;
   std::string m_suffix;
   std::string m_suffixRecl;
   ZeroLeptonRunPeriod m_period;
@@ -68,6 +71,7 @@ private:
   std::vector<ST::SystInfo> m_SystInfoList;
   std::vector<std::string> m_SystMatch;
 
+  bool m_buildTriggerJetAndMET;
 public:
   ClassDef(BuildSUSYObjects,0);
 };

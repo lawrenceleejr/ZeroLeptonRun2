@@ -28,12 +28,12 @@ class PhysObjProxyFillerTruth
 		       std::vector<MuonTruthProxy>& isolated_baseline_muons,
 		       std::vector<MuonTruthProxy>& isolated_signal_muons);
 
-  // fill with baseline and signal photon after overlap removal 
+  // fill with baseline and signal photon after overlap removal
   void FillPhotonProxies(std::vector<PhotonTruthProxy>& baseline_photons,
 			 std::vector<PhotonTruthProxy>& isolated_baseline_photons,
 			 std::vector<PhotonTruthProxy>& isolated_signal_photons);
 
- 
+
  private:
   float m_jetPtCut;
   float m_elPtCut;

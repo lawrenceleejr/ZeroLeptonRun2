@@ -160,7 +160,7 @@ TauProxy::TauProxy():
   m_sfStatDown(0.f),
   m_sfSystUp(0.f),
   m_sfSystDown(0.f),
-  m_tau(0) 
+  m_tau(0)
 {
 }
 
@@ -191,7 +191,3 @@ PhotonTruthProxy::PhotonTruthProxy(const xAOD::TruthParticle* phtruth):
   m_phtruth         = phtruth;
 }
 ClassImp(PhotonTruthProxy);
-
-
-
-

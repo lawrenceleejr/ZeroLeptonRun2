@@ -28,9 +28,9 @@
 #include <algorithm>
 
 ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
-  : cafe::Processor(name), 
-    m_tree(0), 
-    m_stringRegion("CRZ_SRAll"), 
+  : cafe::Processor(name),
+    m_tree(0),
+    m_stringRegion("CRZ_SRAll"),
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
@@ -87,6 +87,7 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   m_cutVal.ReadCutValues(cutfile);
 
   m_suffix = config.get("suffix","");
+
   m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,25000.f,m_suffix,m_doRecl,m_suffixRecl);
   m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,25000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
@@ -126,7 +127,7 @@ TTree* ZeroLeptonCRZ::getTree(const std::string& treename)
 void ZeroLeptonCRZ::begin()
 {
   std::string sSR = m_stringRegion;
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     sSR+="NT";
   }
 
@@ -178,7 +179,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   // get generator weight
   float genWeight = 1.f;
-  if ( !m_IsData ) { 
+  if ( !m_IsData ) {
     genWeight = eventInfo->mcEventWeight(0);
     //out() << " gen weight " << genWeight << std::endl;
     weight *= genWeight;
@@ -240,18 +241,18 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   // FIXME : to be implemented ... not in xAOD yet
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
-  // Trigger selection 
+  // Trigger selection
 
-  if(! m_IsTruth){  
+  if(! m_IsTruth){
     bool passEltrigger=false;
     bool passMutrigger=false;
-    if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM20VH")==1  || 
-       (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1) 
+    if((int)eventInfo->auxdata<char>("HLT_e24_lhmedium_iloose_L1EM20VH")==1  ||
+       (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1)
       passEltrigger = true;
-    if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 || 
-       (int)eventInfo->auxdata<char>("HLT_mu50")==1) 
+    if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ||
+       (int)eventInfo->auxdata<char>("HLT_mu50")==1)
       passMutrigger = true;
-    if( !(passEltrigger || passMutrigger) ) return true; 
+    if( !(passEltrigger || passMutrigger) ) return true;
   }
 
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
@@ -307,11 +308,13 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   // keep only signal muons with Pt>25GeV
   for ( std::vector<MuonProxy>::iterator it = isolated_signal_muons.begin();
 	it != isolated_signal_muons.end(); ) {
+
     if ( it->Pt() < minLeptonPt ) it = isolated_signal_muons.erase(it);
     else it++;
   }
   for ( std::vector<MuonTruthProxy>::iterator itt = isolated_signal_muons_truth.begin();
         itt != isolated_signal_muons_truth.end(); ) {
+
     if ( itt->Pt() < minLeptonPt ) itt = isolated_signal_muons_truth.erase(itt);
     else itt++;
   }
@@ -371,7 +374,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
-    bool* badDetectorQuality = 0 ; 
+    bool* badDetectorQuality = 0 ;
     if ( !store->retrieve<bool>(badDetectorQuality,"badDetectorQuality").isSuccess() ) throw std::runtime_error("could not retrieve badDetectorQuality");
     if ( *badDetectorQuality ) return true;
   }
@@ -383,7 +386,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     m_ZLUtils.trackMET(event, MET_Track, MET_Track_phi);
   }
-  
+
   // primary vertex cut
   const xAOD::Vertex* primVertex = 0;
   if(! m_IsTruth){
@@ -397,7 +400,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   std::vector<TLorentzVector> leptonTLVs;
   std::vector<int> leptonCharges;
-  if ( m_isMuonChannel && 
+  if ( m_isMuonChannel &&
        ((!m_IsTruth && isolated_signal_muons.size()==2) || (m_IsTruth && isolated_signal_muons_truth.size()==2)) &&
        ((!m_IsTruth && isolated_baseline_electrons.size()==0) || (m_IsTruth && isolated_baseline_electrons_truth.size()==0)) ) {
     if(!m_IsTruth){
@@ -406,17 +409,17 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons[1]))));
       leptonCharges.push_back((int)(isolated_signal_muons[1].muon()->charge())*13);
     }
-    
+
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[0]))));
       leptonCharges.push_back((int)(isolated_signal_muons_truth[0].muontruth()->charge())*13);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_muons_truth[1]))));
       leptonCharges.push_back((int)(isolated_signal_muons_truth[1].muontruth()->charge())*13);
-    } 
-    
-  } 
-  else if (  m_isElectronChannel && 
-             ((!m_IsTruth && isolated_signal_electrons.size()==2) || (m_IsTruth && isolated_signal_electrons_truth.size()==2)) && 
+    }
+
+  }
+  else if (  m_isElectronChannel &&
+             ((!m_IsTruth && isolated_signal_electrons.size()==2) || (m_IsTruth && isolated_signal_electrons_truth.size()==2)) &&
 	     ((!m_IsTruth && isolated_baseline_muons.size()==0) || (m_IsTruth && isolated_baseline_muons_truth.size()==0)) ) {
     if(!m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[0]))));
@@ -424,18 +427,20 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons[1]))));
       leptonCharges.push_back((int)(isolated_signal_electrons[1].electron()->charge())*11);
     }
-    
+
     if(m_IsTruth){
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[0]))));
       leptonCharges.push_back((int)(isolated_signal_electrons_truth[0].eltruth()->charge())*11);
       leptonTLVs.push_back(*(dynamic_cast<TLorentzVector*>(&(isolated_signal_electrons_truth[1]))));
       leptonCharges.push_back((int)(isolated_signal_electrons_truth[1].eltruth()->charge())*11);
     }
-    
+
   }
   if ( leptonTLVs.empty() ) return true;
+
   if ( leptonTLVs[0].Pt() < 25000. ) return true;
   if ( leptonTLVs[1].Pt() < m_PtLepton2 ) return true;
+
   TLorentzVector dileptonTLV = leptonTLVs[0]+leptonTLVs[1];
   if ( leptonCharges[0]*leptonCharges[1] > 0 ) return true;
 
@@ -473,10 +478,10 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   // Add lepton to jets (SR) or MET (VR)
   TVector2 missingETPrime =  *missingET;
   missingETPrime = missingETPrime +
-    TVector2(leptonTLVs[0].Px(),leptonTLVs[0].Py())  + 
+    TVector2(leptonTLVs[0].Px(),leptonTLVs[0].Py())  +
     TVector2(leptonTLVs[1].Px(),leptonTLVs[1].Py());
   double MissingEtPrime = missingETPrime.Mod();
-  
+
 
   // bad muons for MET cut: based on non isolated muons
   // FIXME do something special with isbadMETmuon when there are signal muons
@@ -484,9 +489,9 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   //m_counter->increment(weight,incr++,"IsBadMETMuon",trueTopo);
 
 
-  if (good_jets.size()<1) return true;  
+  if (good_jets.size()<1) return true;
   m_counter->increment(weight,incr++,"At least one jet",trueTopo);
-  
+
   // jet timing cut
   std::vector<float> time;
   m_proxyUtils.EnergyWeightedTime(good_jets,time);
@@ -496,7 +501,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"MET cut",trueTopo);
 
   // Leading jet Pt cut
-  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true; 
+  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
   m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
   // leave counter to keep same cutflow
@@ -540,13 +545,13 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
 
 
-  double mT2=-9; 
-  double mT2_noISR=-9; 
+  double mT2=-9;
+  double mT2_noISR=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
-  
+
   std::map<TString,float> RJigsawVariables;
   if ( m_fillTRJigsawVars) {
-    m_proxyUtils.CalculateRJigsawVariables(good_jets, 
+    m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingETPrime.X(),
 					   missingETPrime.Y(),
 					   RJigsawVariables,
@@ -561,16 +566,16 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   double Minv2 =-999;
   double Einv =-999;
   double  gamma_R=-999;
-  double dphi_BETA_R =-999; 
-  double dphi_leg1_leg2 =-999; 
+  double dphi_BETA_R =-999;
+  double dphi_leg1_leg2 =-999;
   double costhetaR =-999;
   double dphi_BETA_Rp1_BETA_R=-999;
   double gamma_Rp1=-999;
   double Eleg1=-999;
-  double Eleg2=-999; 
+  double Eleg2=-999;
   double costhetaRp1=-999;
 
-  m_proxyUtils.RazorVariables(good_jets, 
+  m_proxyUtils.RazorVariables(good_jets,
 			      missingETPrime.X(),
 			      missingETPrime.Y(),
 			      gaminvRp1 ,
@@ -580,20 +585,20 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 			      Minv2 ,
 			      Einv ,
 			      gamma_R,
-			      dphi_BETA_R , 
-			      dphi_leg1_leg2 , 
+			      dphi_BETA_R ,
+			      dphi_leg1_leg2 ,
 			      costhetaR ,
 			      dphi_BETA_Rp1_BETA_R,
 			      gamma_Rp1,
 			      Eleg1,
-			      Eleg2, 
+			      Eleg2,
 			      costhetaRp1);
 
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
 
-  if(m_doSmallNtuple) { 
+  if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
     if ( ! m_IsData  && ! m_IsTruth) runnum = mc_channel_number;
 
@@ -604,11 +609,11 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     unsigned int power2 = 1;
 
     if(!m_IsTruth){
-      
+
       // bad jet veto
       if ( !bad_jets.empty() ) cleaning += power2;
       power2 *= 2;
-      
+
       // bad muon veto
       for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
 	if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
@@ -618,26 +623,26 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 	}
       }
       power2 *= 2;
-      
+
       // Cosmic muon cut
       if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaning += power2;
       power2 *= 2;
-      
+
       // bad Tile cut
       if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
       power2 *= 2;
-      
+
       // Negative-cell cleaning cut (no longer used)
       power2 *= 2;
-      
+
       // average timing of 2 leading jets
       if (fabs(time[0]) > 5) cleaning += power2;
       power2 *= 2;
-       
+
       // FIXME why not in CRWT ?
       //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       //if ( chfTileVeto ) cleaning += 4;
-      
+
       bool chfVeto = m_proxyUtils.chfVeto(good_jets);
       if ( chfVeto )  cleaning += power2;
       power2 *= 2;
@@ -657,12 +662,12 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2, mT2_noISR, Ap);
 
     if ( m_fillTRJigsawVars) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
-      
+
 
     if( !m_IsTruth && m_fillReclusteringVars){
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
     }
-    
+
     FillCRZVars(m_crzntv, leptonTLVs, *missingET, leptonCharges);
 
     m_tree->Fill();
@@ -674,7 +679,7 @@ void ZeroLeptonCRZ::finish()
 {
   if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
-  } 
+  }
   else {
     out() << *m_counter << std::endl;
   }

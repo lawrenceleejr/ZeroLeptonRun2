@@ -17,6 +17,9 @@
 #include "ZeroLeptonRun2/MCEventVeto.h"
 #include "ZeroLeptonRun2/DetectorQuality.h"
 #include "ZeroLeptonRun2/FilterUpdateMerge.h"
+#include "ZeroLeptonRun2/ZeroLeptonPassThrough.h"
+#include "ZeroLeptonRun2/ZeroLeptonNTVars.h"
+
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -24,6 +27,13 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class NTRJigsawVars+;
+#pragma link C++ class NTRExtraVars+;
+#pragma link C++ class NTReclusteringVars+;
+#pragma link C++ class NTVars+;
 #endif
 
 #ifdef __CINT__
@@ -44,6 +54,7 @@
 #pragma link C++ class ZeroLeptonCRY+;
 #pragma link C++ class ZeroLeptonCRZ+;
 #pragma link C++ class ZeroLeptonCR3L+;
+#pragma link C++ class ZeroLeptonPassThrough+;
 #endif
 
 #ifdef __CINT__

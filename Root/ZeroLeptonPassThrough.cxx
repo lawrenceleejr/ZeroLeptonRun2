@@ -1,4 +1,4 @@
-#include "ZeroLeptonRun2/ZeroLeptonSR.h"
+#include "ZeroLeptonRun2/ZeroLeptonPassThrough.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 
 #include "ZeroLeptonRun2/BosonTagging.h"
@@ -19,10 +19,10 @@
 #include <iostream>
 #include <stdexcept>
 
-ZeroLeptonSR::ZeroLeptonSR(const char *name)
+ZeroLeptonPassThrough::ZeroLeptonPassThrough(const char *name)
   : cafe::Processor(name),
     m_tree(0),
-    m_stringRegion("SRAll"),
+    m_stringRegion("PassThrough"),
     m_doSmallNtuple(true),
     m_fillTRJigsawVars(true),
     m_fillReclusteringVars(true),
@@ -41,7 +41,8 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
     m_counter(0),
     m_counterRepository("",false,0),
     m_treeRepository(),
-    m_derivationTag(INVALID_Derivation)
+    m_derivationTag(INVALID_Derivation),
+    m_buildTriggerJetAndMET(false)
 {
   cafe::Config config(name);
   m_fillTRJigsawVars = config.get("fillTRJigsawVars",true);
@@ -52,33 +53,34 @@ ZeroLeptonSR::ZeroLeptonSR(const char *name)
   m_doRecl = config.get("doRecl",false);
   m_DoSystematics = config.get("DoSystematics",false);
   m_period = periodFromString(config.get("Period","p13tev"));
-  if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonSR does not support the 7tev run period"));
-  if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonSR: invalid run period specified"));
+  if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonPassThrough does not support the 7tev run period"));
+  if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonPassThrough: invalid run period specified"));
 
   m_derivationTag = derivationTagFromString(config.get("DerivationTag",""));
-  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonSR: invalid derivation tag specified"));
+  if ( m_derivationTag == INVALID_Derivation ) throw(std::domain_error("ZeroLeptonPassThrough: invalid derivation tag specified"));
 
   std::string cutfile = config.get("cutfile","None");
-  if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonSR: invalid cut file specified"));
+  if ( cutfile == "None" ) throw(std::domain_error("ZeroLeptonPassThrough: invalid cut file specified"));
   m_cutVal.ReadCutValues(cutfile);
 
 
   m_suffix = config.get("suffix","");
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,25000.f,m_suffix,m_doRecl,m_suffixRecl);
-  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,25000.f,m_suffix);
+  m_buildTriggerJetAndMET = config.get("BuildTriggerJetAndMET",false);
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
 }
 
-ZeroLeptonSR::~ZeroLeptonSR()
+ZeroLeptonPassThrough::~ZeroLeptonPassThrough()
 {
   if ( !m_DoSystematics && m_counter ) delete m_counter;
   if ( m_physobjsFiller ) delete m_physobjsFiller;
   if ( m_physobjsFillerTruth ) delete m_physobjsFillerTruth;
 }
 
-TTree* ZeroLeptonSR::bookTree(const std::string& treename)
+TTree* ZeroLeptonPassThrough::bookTree(const std::string& treename)
 {
   const char* name(treename.c_str());
   TTree* tree = new TTree(name,"ZeroLepton final optimisation");
@@ -86,11 +88,12 @@ TTree* ZeroLeptonSR::bookTree(const std::string& treename)
   bookNTVars(tree,m_ntv,false);
   if ( m_fillReclusteringVars ) bookNTReclusteringVars(tree,m_RTntv);
   bookNTExtraVars(tree,m_extrantv);
-  if ( m_fillTRJigsawVars) bookNTRJigsawVars(tree,m_rjigsawntv);
+  if ( m_fillTRJigsawVars                           ) bookNTRJigsawVars(tree,m_rjigsawntv);
+  if ( m_fillTRJigsawVars && m_buildTriggerJetAndMET) bookNTRJigsawVars(tree,m_rjigsawntv_hlt);
   return tree;
 }
 
-TTree* ZeroLeptonSR::getTree(const std::string& treename)
+TTree* ZeroLeptonPassThrough::getTree(const std::string& treename)
 {
   std::map<std::string,TTree*>::const_iterator pos = m_treeRepository.find(treename);
   if ( pos == m_treeRepository.end() ) {
@@ -99,7 +102,7 @@ TTree* ZeroLeptonSR::getTree(const std::string& treename)
   return pos->second;
 }
 
-void ZeroLeptonSR::begin()
+void ZeroLeptonPassThrough::begin()
 {
   std::string sSR = m_stringRegion;
   if(m_doSmallNtuple) {
@@ -119,7 +122,7 @@ void ZeroLeptonSR::begin()
 }
 
 
-bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
+bool ZeroLeptonPassThrough::processEvent(xAOD::TEvent& event)
 {
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
@@ -215,18 +218,21 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection
-  if(! m_IsTruth){
-    if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
-  }
+  // if(! m_IsTruth){
+  //   if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+  // }
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed
-  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl;
+  std::vector<JetProxy> good_jets, bad_jets, b_jets, c_jets, good_jets_recl, hlt_jets;
   std::vector<float> vD2;
   if(! m_IsTruth){
     m_physobjsFiller->FillJetProxies(good_jets,bad_jets,b_jets);
     if(m_doRecl){
       m_physobjsFiller->FillJetReclProxies(good_jets_recl,vD2);
+    }
+    if(m_buildTriggerJetAndMET){
+      m_physobjsFiller->FillHLTJetProxies(hlt_jets);
     }
   }
   if(m_IsTruth){
@@ -295,14 +301,18 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   }
 
   // missing ET
-  TVector2* missingET = 0;
+  TVector2* missingET            = 0;
+  TVector2 const * hlt_missingET = nullptr;
   if(!m_IsTruth){
     if ( ! store->retrieve<TVector2>(missingET,"SUSYMET"+m_suffix+systag).isSuccess() ) throw std::runtime_error("could not retrieve SUSYMET"+m_suffix+systag);
+    if( m_buildTriggerJetAndMET &&
+	(! store->retrieve<TVector2>(hlt_missingET,"HLT_MET").isSuccess())) throw std::runtime_error("could not retrieve HLT_MET");
   }
   if(m_IsTruth){
     if ( ! store->retrieve<TVector2>(missingET,"TruthMET"+m_suffix).isSuccess() ) throw std::runtime_error("could not retrieve TruthMET"+m_suffix);
   }
   double MissingEt = missingET->Mod();
+  //  double const mod_hlt_MissingET = 0 ? !hlt_missingET : hlt_missingET->Mod();
 
   // LAr, Tile, reco problems in data
   if ( m_IsData ) {
@@ -327,15 +337,17 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
   // 0 lepton
-  if( !m_IsTruth ){
-    if ( !isolated_baseline_electrons.empty() ) return true;
-    if ( !isolated_baseline_muons.empty() ) return true;
-  }
-  if( m_IsTruth ){
-    if ( !isolated_baseline_electrons_truth.empty() ) return true;
-    if ( !isolated_baseline_muons_truth.empty() ) return true;
-  }
-  m_counter->increment(weight,incr++,"0 Lepton",trueTopo);
+  // if( !m_IsTruth ){
+  //   if ( !isolated_baseline_electrons.empty() ) return true;
+  //   if ( !isolated_baseline_muons.empty() ) return true;
+  // }
+  // if( m_IsTruth ){
+  //   if ( !isolated_baseline_electrons_truth.empty() ) return true;
+  //   if ( !isolated_baseline_muons_truth.empty() ) return true;
+  // }
+  // m_counter->increment(weight,incr++,"0 Lepton",trueTopo);
+
+
   if (good_jets.size()<1) return true;
   m_counter->increment(weight,incr++,"At least one jet",trueTopo);
 
@@ -343,21 +355,21 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   std::vector<float> time;
   m_proxyUtils.EnergyWeightedTime(good_jets,time);
 
-  // MissingET cut
-  if( !m_IsTruth ){
-    if (!(MissingEt > m_cutVal.m_cutEtMiss)) return true;
-  }
-  if( m_IsTruth ){
-    if (!(MissingEt > m_cutVal.m_cutEtMissTruthTest)) return true;
-  }
+  // // MissingET cut
+  // if( !m_IsTruth ){
+  //   if (!(MissingEt > m_cutVal.m_cutEtMiss)) return true;
+  // }
+  // if( m_IsTruth ){
+  //   if (!(MissingEt > m_cutVal.m_cutEtMissTruthTest)) return true;
+  // }
 
-  m_counter->increment(weight,incr++,"MET cut",trueTopo);
+  //  m_counter->increment(weight,incr++,"MET cut",trueTopo);
   // Leading jet Pt cut
-  if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
-  m_counter->increment(weight,incr++,"1 jet Pt >"+ std::to_string(m_cutVal.m_cutJetPt0) +" Selection",trueTopo);
+  // if (!(good_jets[0].Pt() > m_cutVal.m_cutJetPt0)) return true;
+  // m_counter->increment(weight,incr++,"1 jet Pt > 130 GeV Selection",trueTopo);
 
-  // leave counter to keep the cutflow sequence
-  m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
+  // // leave counter to keep the cutflow sequence
+  // m_counter->increment(weight,incr++,"jet Pt Selection",trueTopo);
 
   // Calculate variables for ntuple -----------------------------------------
   double phi_met = TMath::ATan2(missingET->Y(),missingET->X());
@@ -427,14 +439,21 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
   std::map<TString,float> RJigsawVariables;
+  std::map<TString,float> RJigsawVariables_hlt;
+
   if (  m_fillTRJigsawVars ) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingET->X(),
 					   missingET->Y(),
 					   RJigsawVariables,
              			m_cutVal.m_cutRJigsawJetPt);
+    if(m_buildTriggerJetAndMET){ m_proxyUtils.CalculateRJigsawVariables(hlt_jets,
+									hlt_missingET->X(),
+									hlt_missingET->Y(),
+									RJigsawVariables_hlt,
+									m_cutVal.m_cutRJigsawJetPt);
+    }
   }
-
 
   //Super Razor variables
   double gaminvRp1 =-999;
@@ -512,9 +531,8 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     }
     power2 *= 4;
 
-    float dPhiBadTile = m_proxyUtils.dPhiBadTile(good_jets,*missingET);
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,dPhiBadTile,m_IsTruth,baseline_taus,signal_taus);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, Meff, meffincl, minDphi, RemainingminDPhi, good_jets, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,m_IsTruth,baseline_taus,signal_taus);
 
     if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
@@ -524,16 +542,27 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,Ap);
 
-    if ( m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+    //    std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+    if ( m_fillTRJigsawVars ){
+      m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+      if(m_buildTriggerJetAndMET){
+	unsigned long * trigvalues = nullptr;
+	if( ! store->retrieve(trigvalues, "triggerbits" ).isSuccess()) throw std::runtime_error("failed to retrieve trigger bits");
+	//	std::cout << "filling trigger bits with " << *trigvalues << std::endl;
+	m_proxyUtils.FillTriggerBits(m_ntv,*trigvalues);
+	m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv_hlt, RJigsawVariables_hlt );
+      }
+    }
 
     if(!m_IsTruth && m_fillReclusteringVars)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
+
     m_tree->Fill();
   }
   return true;
 }
 
-void ZeroLeptonSR::finish()
+void ZeroLeptonPassThrough::finish()
 {
   if ( m_DoSystematics ) {
     out() << m_counterRepository << std::endl;
@@ -543,5 +572,5 @@ void ZeroLeptonSR::finish()
   }
 }
 
-ClassImp(ZeroLeptonSR);
+ClassImp(ZeroLeptonPassThrough);
 

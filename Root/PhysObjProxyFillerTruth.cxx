@@ -16,9 +16,8 @@
 
 #include <iostream>
 
-
 PhysObjProxyFillerTruth::PhysObjProxyFillerTruth(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix):
-  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_suffix(suffix)
+  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut), m_suffix(suffix)
 {
 }
 
