@@ -66,8 +66,9 @@ ZeroLeptonPassThrough::ZeroLeptonPassThrough(const char *name)
 
   m_suffix = config.get("suffix","");
   m_buildTriggerJetAndMET = config.get("BuildTriggerJetAndMET",false);
-  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,m_suffix,m_doRecl,m_suffixRecl);
-  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,m_suffix);
+
+  m_physobjsFiller = new PhysObjProxyFiller(20000.f,10000.f,10000.f,25000.f,m_suffix,m_doRecl,m_suffixRecl);
+  m_physobjsFillerTruth = new PhysObjProxyFillerTruth(20000.f,20000.f,10000.f,25000.f,m_suffix);
   m_proxyUtils = PhysObjProxyUtils(m_IsData);
 
   m_ZLUtils = ZeroLeptonUtils(m_IsData, m_derivationTag);
