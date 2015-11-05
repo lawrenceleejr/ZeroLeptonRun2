@@ -51,6 +51,7 @@ class PhysObjProxyFiller
 
  private:
   float m_jetPtCut;
+  float m_jetEtaCut;
   float m_elPtCut;
   float m_muonPtCut;
   float m_phPtCut;
