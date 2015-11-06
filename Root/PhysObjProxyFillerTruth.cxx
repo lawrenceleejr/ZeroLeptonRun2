@@ -2,6 +2,7 @@
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PtOrder.h"
+#include "xAODTruth/xAODTruthHelpers.h"
 
 #include "xAODRootAccess/TActiveStore.h"
 #include "xAODRootAccess/TStore.h"
@@ -33,8 +34,9 @@ void PhysObjProxyFillerTruth::FillJetProxies(std::vector<JetProxy>& good_jets,
   }
   for ( xAOD::JetContainer::const_iterator it = jets->begin();
 	it != jets->end(); ++it ){
-    //std::cout << " Truth jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << " Cut:  " << m_jetPtCut << std::endl;
+    //    std::cout << " Truth jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << " Cut:  " << m_jetPtCut << std::endl;
     if ( (*it)->pt() <= m_jetPtCut ) continue;
+    if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.8 ) {
       good_jets.push_back(JetProxy(*it));
       // https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/Run2JetMoments
@@ -67,9 +69,11 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
 	it != electrons->end(); ++it ){
     // std::cout << " Truth el " <<  (*it)->pt() << " " << (*it)->eta() << " Cut : " << m_elPtCut << std::endl;
     if ( (*it)->pt() < m_elPtCut ) continue;
+    if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.47 ) {
-      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      if((*it)->auxdata<int>("truthType")==2){
+     // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
+
+      if(xAOD::TruthHelpers::getParticleTruthType(**it)==2){
 	baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
@@ -102,9 +106,10 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
 	it != muons->end(); ++it ){
     //std::cout << " Truth muon " <<  (*it)->pt() << " " << (*it)->eta() << " Cut : " << m_muonPtCut << std::endl;
     if ( (*it)->pt() < m_muonPtCut ) continue;
+    if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.4 ) {
       // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      if((*it)->auxdata<int>("truthType")==6){
+      if(xAOD::TruthHelpers::getParticleTruthType(**it)==6){
 	baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_signal_muons.push_back(MuonTruthProxy(*it));
@@ -134,8 +139,9 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
   for ( xAOD::TruthParticleContainer::const_iterator it = photons->begin();
         it != photons->end(); ++it ){
     if ( (*it)->pt() < m_phPtCut ) continue;
+    if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.37 ) {
-      if((*it)->auxdata<int>("truthType")==14){
+      if(xAOD::TruthHelpers::getParticleTruthType(**it)==14){
         baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_signal_photons.push_back(PhotonTruthProxy(*it));

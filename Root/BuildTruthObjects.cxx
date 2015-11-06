@@ -144,7 +144,9 @@ bool BuildTruthObjects::processEvent(xAOD::TEvent& event)
   // Overlap removal
 
   if ( m_PhotonInOR ) {
-    if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, truthphotons2.first, false, 0.2, 0.4, 0.4, 0.01, 0.05, 0.2, 0.4, 0.000) ) throw std::runtime_error("Error in OverlapRemoval");
+    if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, truthphotons2.first, false,
+			 0.2 /*dRejet*/, 0.4/*dRjetmu*/, 0.4/*dRjete*/, 0.01/*dRemu*/
+			 ,0.05/*dRee*/, 0.2/*dRphjet*/, 0.4/*dReph*/, 0.000/*dRmuph*/) ) throw std::runtime_error("Error in OverlapRemoval");
   }
   else{
   if (! OverlapRemoval(truthelectrons2.first, truthmuons2.first, outputjets, false, 0.2, 0.4, 0.4, 0.01, 0.05) ) throw std::runtime_error("Error in OverlapRemoval");
