@@ -14,8 +14,10 @@
 #include "xAODBTagging/BTagging.h"
 //#include "xAODEgamma/PhotonContainer.h"
 //#include "xAODTau/TauJetContainer.h"
+#include "AthContainers/AuxElement.h"
 
 #include <iostream>
+static SG::AuxElement::ConstAccessor <unsigned int> acc_truthType("classifierParticleType");
 
 PhysObjProxyFillerTruth::PhysObjProxyFillerTruth(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix):
   m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut), m_suffix(suffix)
@@ -72,11 +74,11 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.47 ) {
      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      // if(xAOD::TruthHelpers::getParticleTruthType(**it)==2){
+      if(acc_truthType(**it)==2){
 	baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
-	//      }
+      }
     }
   }
 
@@ -108,11 +110,11 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.4 ) {
       // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      //      if(xAOD::TruthHelpers::getParticleTruthType(**it)==6){
+      if(acc_truthType(**it)==6){
 	baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_signal_muons.push_back(MuonTruthProxy(*it));
-	//      }
+      }
     }
   }
 
@@ -139,16 +141,18 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
     if ( (*it)->pt() < m_phPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.37 ) {
-      // 	  std::cout << "photon truth type          : " << xAOD::TruthHelpers::getParticleTruthType(**it) << std::endl;
-
-      // if(xAOD::TruthHelpers::getParticleTruthType(**it)==14){
+      // 	  std::cout << "photon truth type          : " << acc_truthType(**it) << std::endl;
+      //   std::cout << "photon truth type : " <<    acc_truthType(**it) << std::endl;
+      if(acc_truthType(**it)==14){
         baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_signal_photons.push_back(PhotonTruthProxy(*it));
-	//      }
+      }
     }
   }
   std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
   std::sort(isolated_baseline_photons.begin(),isolated_baseline_photons.end(),PtOrder<PhotonTruthProxy>);
   std::sort(isolated_signal_photons.begin(),isolated_signal_photons.end(),PtOrder<PhotonTruthProxy>);
 }
+
+//  LocalWords:  classifierParticleType
