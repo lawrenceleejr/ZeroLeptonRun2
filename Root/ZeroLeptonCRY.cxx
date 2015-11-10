@@ -285,7 +285,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if(m_IsTruth){
     m_physobjsFillerTruth->FillMuonProxies(baseline_muons_truth, isolated_baseline_muons_truth, isolated_signal_muons_truth);
   }
-
+  //  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
   // isolated_xxx have overlap removed
   std::vector<PhotonProxy> baseline_photons, isolated_baseline_photons, isolated_signal_photons;
   if(! m_IsTruth){
@@ -293,18 +293,31 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   }
   std::vector<PhotonTruthProxy> baseline_photons_truth, isolated_baseline_photons_truth, isolated_signal_photons_truth;
   if(m_IsTruth){
+    //    std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
     m_physobjsFillerTruth->FillPhotonProxies(baseline_photons_truth, isolated_baseline_photons_truth, isolated_signal_photons_truth);
   }
-
+  //  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
   // keep only leading photon
   int idph=0;
-  for ( std::vector<PhotonProxy>::iterator it = isolated_signal_photons.begin();
-        it != isolated_signal_photons.end(); ) {
-    if ( idph>0 ) it = isolated_signal_photons.erase(it);
-    it++;
-    idph++;
-  }
 
+  // if(! m_IsTruth) {
+  //   for ( std::vector<PhotonProxy>::iterator it = isolated_signal_photons.begin();
+  // 	  it != isolated_signal_photons.end(); ) {
+  //     if ( idph>0 ) it = isolated_signal_photons.erase(it);
+  //     it++;
+  //     idph++;
+  //   }
+  // }else{
+  //   //    std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+  //   for ( std::vector<PhotonTruthProxy>::iterator it = isolated_signal_photons_truth.begin();
+  // 	  it != isolated_signal_photons_truth.end(); ) {
+  //     std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+  //     if ( idph>0 ) it = isolated_signal_photons_truth.erase(it);
+  //     it++;
+  //     idph++;
+  //   }
+  // }
+  // std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
   //if(!m_photonSelIsEM.empty()){
   //  isEMvalue = m_photonSelIsEM->IsemValue();
   //}
@@ -425,6 +438,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     m_physobjsFiller->FillTauProxies(baseline_taus, signal_taus);
   }
+  //  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
 
   // missing ET
   TVector2* missingET = 0;
@@ -459,26 +473,33 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   }
   m_counter->increment(weight,incr++,"Vertex Cut",trueTopo);
 
+  //  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
   // at least one photon
   //if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
   bool oneGamma = false;
-  if( !isolated_signal_photons.empty() )
-    oneGamma = true;
+  if(!m_IsTruth){
+    if( !isolated_signal_photons.empty() )
+      oneGamma = true;
+  }else{
+    if( !isolated_signal_photons_truth.empty() )
+      oneGamma = true;
+  }
+  //  std::cout << __PRETTY_FUNCTION__ << " at line : " << __LINE__ << std::endl;
+  //  std::cout << "size of photons list : " << isolated_signal_photons_truth.size() << std::endl;
   if ( !oneGamma ) return true;
   m_counter->increment(weight,incr++,"1 photon",trueTopo);
 
   TLorentzVector photonTLV;
-  photonTLV.SetPtEtaPhiM(isolated_signal_photons[0].photon()->pt(),isolated_signal_photons[0].photon()->eta(),isolated_signal_photons[0].photon()->phi(),0);
+  if(!m_IsTruth){
+    photonTLV.SetPtEtaPhiM(isolated_signal_photons[0].photon()->pt(),isolated_signal_photons[0].photon()->eta(),isolated_signal_photons[0].photon()->phi(),0);
+  }else {
+    photonTLV.SetPtEtaPhiM(isolated_signal_photons_truth[0].phtruth()->pt(),isolated_signal_photons_truth[0].phtruth()->eta(),isolated_signal_photons_truth[0].phtruth()->phi(),0);
+  }
 
-  int phSignal = (isolated_signal_photons[0].isSignal());
+  int phSignal = m_IsTruth ? 0 : (isolated_signal_photons[0].isSignal());
   int isEMvalue = -1000;
 
-  if(m_IsTruth) {
-    missingETCorr.Set(missingET->Px()+photonTLV.Px(), missingET->Py()+photonTLV.Py());
-  }
-  else {
-    missingETCorr.Set(missingET->Px()+photonTLV.Px(), missingET->Py()+photonTLV.Py());
-  }
+  missingETCorr.Set(missingET->Px()+photonTLV.Px(), missingET->Py()+photonTLV.Py());
   double MissingEtCorr = missingETCorr.Mod();
 
 
