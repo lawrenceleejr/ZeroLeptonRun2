@@ -72,12 +72,11 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.47 ) {
      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-
-      if(xAOD::TruthHelpers::getParticleTruthType(**it)==2){
+      // if(xAOD::TruthHelpers::getParticleTruthType(**it)==2){
 	baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
-      }
+	//      }
     }
   }
 
@@ -109,11 +108,11 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.4 ) {
       // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      if(xAOD::TruthHelpers::getParticleTruthType(**it)==6){
+      //      if(xAOD::TruthHelpers::getParticleTruthType(**it)==6){
 	baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_signal_muons.push_back(MuonTruthProxy(*it));
-      }
+	//      }
     }
   }
 
@@ -135,17 +134,18 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
   if ( !store->retrieve(photons, "myTruthPhotons"+m_suffix).isSuccess() ){
     throw std::runtime_error("Could not retrieve PhotonContainer with key myTruthPhotons");
   }
-
   for ( xAOD::TruthParticleContainer::const_iterator it = photons->begin();
         it != photons->end(); ++it ){
     if ( (*it)->pt() < m_phPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.37 ) {
-      if(xAOD::TruthHelpers::getParticleTruthType(**it)==14){
+      // 	  std::cout << "photon truth type          : " << xAOD::TruthHelpers::getParticleTruthType(**it) << std::endl;
+
+      // if(xAOD::TruthHelpers::getParticleTruthType(**it)==14){
         baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_signal_photons.push_back(PhotonTruthProxy(*it));
-      }
+	//      }
     }
   }
   std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
