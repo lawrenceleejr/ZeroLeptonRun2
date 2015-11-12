@@ -2,7 +2,7 @@
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PtOrder.h"
-#include "xAODTruth/xAODTruthHelpers.h"
+//#include "xAODTruth/xAODTruthHelpers.h"
 
 #include "xAODRootAccess/TActiveStore.h"
 #include "xAODRootAccess/TStore.h"
@@ -139,13 +139,15 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
     if ( (*it)->pt() < m_phPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.37 ) {
-      // 	  std::cout << "photon truth type          : " << xAOD::TruthHelpers::getParticleTruthType(**it) << std::endl;
+      static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthType("classifierParticleType");
 
-      // if(xAOD::TruthHelpers::getParticleTruthType(**it)==14){
+      std::cout << "photon truth type          : " << acc_truthType(**it) << std::endl;
+
+      if(acc_truthType(**it)==14){
         baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_signal_photons.push_back(PhotonTruthProxy(*it));
-	//      }
+      }
     }
   }
   std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
