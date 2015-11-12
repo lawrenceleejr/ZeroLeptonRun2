@@ -477,6 +477,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   // at least one photon
   //if ( leadPhPt < m_cutVal.m_cutPhotonPtCRY ) return true;
   bool oneGamma = false;
+  //  std::cout << "length of isolated_signal_photons : " << isolated_signal_photons_truth.size() << std::endl;
   if(!m_IsTruth){
     if( !isolated_signal_photons.empty() )
       oneGamma = true;
