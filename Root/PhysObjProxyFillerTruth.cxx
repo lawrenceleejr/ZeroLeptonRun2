@@ -2,7 +2,8 @@
 #include "ZeroLeptonRun2/PhysObjProxyFillerTruth.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
 #include "ZeroLeptonRun2/PtOrder.h"
-#include "xAODTruth/xAODTruthHelpers.h"
+//#include "xAODTruth/xAODTruthHelpers.h"
+#include "MCTruthClassifier/MCTruthClassifierDefs.h"
 
 #include "xAODRootAccess/TActiveStore.h"
 #include "xAODRootAccess/TStore.h"
@@ -18,6 +19,8 @@
 
 #include <iostream>
 static SG::AuxElement::ConstAccessor <unsigned int> acc_truthType("classifierParticleType");
+
+static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthType("classifierParticleType");
 
 PhysObjProxyFillerTruth::PhysObjProxyFillerTruth(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix):
   m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut), m_suffix(suffix)
@@ -36,10 +39,10 @@ void PhysObjProxyFillerTruth::FillJetProxies(std::vector<JetProxy>& good_jets,
   }
   for ( xAOD::JetContainer::const_iterator it = jets->begin();
 	it != jets->end(); ++it ){
-    //    std::cout << " Truth jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << " Cut:  " << m_jetPtCut << std::endl;
     if ( (*it)->pt() <= m_jetPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.8 ) {
+      // std::cout << " Truth jet " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << " Cut:  " << m_jetPtCut << std::endl;
       good_jets.push_back(JetProxy(*it));
       // https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/Run2JetMoments
       int tagInfo = (*it)->getAttribute<int>("ConeTruthLabelID");
@@ -74,7 +77,7 @@ void PhysObjProxyFillerTruth::FillElectronProxies(std::vector<ElectronTruthProxy
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.47 ) {
      // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      if(acc_truthType(**it)==2){
+      if(acc_truthType(**it)==MCTruthPartClassifier::IsoElectron){
 	baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_baseline_electrons.push_back(ElectronTruthProxy(*it));
 	isolated_signal_electrons.push_back(ElectronTruthProxy(*it));
@@ -110,7 +113,7 @@ void PhysObjProxyFillerTruth::FillMuonProxies(std::vector<MuonTruthProxy>& basel
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.4 ) {
       // https://svnweb.cern.ch/trac/atlasoff/browser/PhysicsAnalysis/MCTruthClassifier/trunk/MCTruthClassifier/MCTruthClassifierDefs.h
-      if(acc_truthType(**it)==6){
+      if(acc_truthType(**it)==MCTruthPartClassifier::IsoMuon){
 	baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_baseline_muons.push_back(MuonTruthProxy(*it));
 	isolated_signal_muons.push_back(MuonTruthProxy(*it));
@@ -141,15 +144,18 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
     if ( (*it)->pt() < m_phPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( std::abs((*it)->eta()) < 2.37 ) {
-      // 	  std::cout << "photon truth type          : " << acc_truthType(**it) << std::endl;
-      //   std::cout << "photon truth type : " <<    acc_truthType(**it) << std::endl;
-      if(acc_truthType(**it)==14){
+      if(acc_truthType(**it)==MCTruthPartClassifier::IsoPhoton){
+	// std::cout << "photon truth type          : " << acc_truthType(**it) << std::endl;
+	// std::cout << " Truth photon " <<  (*it)->pt() << " " <<  (*it)->eta() << " " << (*it)->phi()  << " Cut:  " << m_phPtCut << std::endl;
         baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_baseline_photons.push_back(PhotonTruthProxy(*it));
         isolated_signal_photons.push_back(PhotonTruthProxy(*it));
       }
     }
   }
+
+  std::cout << "Event has " << isolated_signal_photons.size() << " good photons." << std::endl;
+
   std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
   std::sort(isolated_baseline_photons.begin(),isolated_baseline_photons.end(),PtOrder<PhotonTruthProxy>);
   std::sort(isolated_signal_photons.begin(),isolated_signal_photons.end(),PtOrder<PhotonTruthProxy>);

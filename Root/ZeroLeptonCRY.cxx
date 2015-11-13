@@ -519,27 +519,31 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   int truthType = 0 ;
   int truthOrigin = 0 ;
 
-  if(!m_IsTruth && isolated_signal_photons.size()==1){
-    topoetcone20    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
-    ptvarcone20     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
-    ptcone20        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
-    topoetcone40    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
-    ptvarcone40     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
-    ptcone40        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
+  if(isolated_signal_photons.size()==1){
+    if(!m_IsTruth) {
+      topoetcone20    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
+      ptvarcone20     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
+      ptcone20        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
+      topoetcone40    = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::topoetcone40);
+      ptvarcone40     = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptvarcone40);
+      ptcone40        = (isolated_signal_photons[0].photon())->isolation(xAOD::Iso::ptcone40);
 
-    if(!(isolated_signal_photons[0].photon())->passSelection(btight,"Tight")){
-      std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+      if(!(isolated_signal_photons[0].photon())->passSelection(btight,"Tight")){
+	std::cout<<"WARNING: Tight decision is not available"<<std::endl;
+      }
+      if(!(isolated_signal_photons[0].photon())->passSelection(bloose,"Loose")){
+	std::cout<<"WARNING: Loose decision is not available"<<std::endl;
+      }
+      if(bloose) loose = 1;
+      if(btight) tight = 1;
     }
-    if(!(isolated_signal_photons[0].photon())->passSelection(bloose,"Loose")){
-      std::cout<<"WARNING: Loose decision is not available"<<std::endl;
-    }
-    if(bloose) loose = 1;
-    if(btight) tight = 1;
-
 
     if(!m_IsData){
-      truthType   = (isolated_signal_photons[0].photon())->auxdata<int>("truthType");
-      truthOrigin = (isolated_signal_photons[0].photon())->auxdata<int>("truthOrigin");
+      static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthType("classifierParticleType");
+      static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthOrig("classifierParticleOrigin");
+      truthType   = acc_truthType(*isolated_signal_photons[0].photon());
+      truthOrigin = acc_truthOrig(*isolated_signal_photons[0].photon());
+      std::cout << "Photon truth type " << truthType << ", origin " << truthOrigin << std::cout;
     }
     else{
       truthType   = -1000;
