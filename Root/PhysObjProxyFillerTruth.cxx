@@ -18,7 +18,6 @@
 #include "AthContainers/AuxElement.h"
 
 #include <iostream>
-static SG::AuxElement::ConstAccessor <unsigned int> acc_truthType("classifierParticleType");
 
 static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthType("classifierParticleType");
 
