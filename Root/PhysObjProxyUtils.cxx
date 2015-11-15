@@ -230,7 +230,6 @@ void PhysObjProxyUtils::RJigsawInit(){
   if( VIS_bkg)           delete  VIS_bkg               ;  VIS_bkg           = nullptr;
   if( InvMass_bkg)       delete  InvMass_bkg           ;  InvMass_bkg       = nullptr;
   if( InvRapidity_bkg)   delete  InvRapidity_bkg       ;  InvRapidity_bkg   = nullptr;
-
   // RestFrames stuff
 
   LAB = new LabRecoFrame("LAB","lab");
@@ -345,6 +344,7 @@ void PhysObjProxyUtils::RJigsawInit(){
 
   LAB_bkg->InitializeAnalysis();
 
+
   return;
 
 }
@@ -379,8 +379,6 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     return;
   }
 
-  LAB->ClearEvent();
-
   vector<RFKey> jetID;
   for(int i = 0; i < int(Jets.size()); i++){
     jetID.push_back(VIS->AddLabFrameFourVector(Jets[i]));
@@ -393,11 +391,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_NJ1b = VIS->GetNElementsInFrame(*V1b);
   float const m_NJ2a = VIS->GetNElementsInFrame(*V2a);
   float const m_NJ2b = VIS->GetNElementsInFrame(*V2b);
-  //  float const m_NJa = m_NJ1a+m_NJ2a;
-  //  float const m_NJb = m_NJ1b+m_NJ2b;
-
-  //  if(ETMiss.Mag() < 100. || m_NJet < 2)
-  //  return;
+  float const m_NJa = m_NJ1a+m_NJ2a;
+  float const m_NJb = m_NJ1b+m_NJ2b;
 
   LAB_bkg->ClearEvent();
   double HT = 0.;
@@ -414,8 +409,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   TLorentzVector Psib = I_bkg->GetSiblingFrame().GetFourVector(*LAB_bkg);
   TLorentzVector Pmet = I_bkg->GetFourVector(*LAB_bkg);
 
-  float m_Rsib = max(0.,Psib.Vect().Dot(Pmet.Vect().Unit()));
-  m_Rsib = m_Rsib / (Pmet.Pt() + m_Rsib);
+  float const m_temp_Rsib = max(0.,Psib.Vect().Dot(Pmet.Vect().Unit()));
+  float const m_Rsib = m_temp_Rsib / (Pmet.Pt() + m_temp_Rsib);
 
   TVector3 boostQCD = (Pmet+Psib).BoostVector();
   Psib.Boost(-boostQCD);
@@ -423,10 +418,53 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   cosQCD = (1.-cosQCD)/2.;
   float const m_deltaQCD = (cosQCD-m_Rsib)/(cosQCD+m_Rsib);
 
+  // compressed
+  float const m_Idepth = S_bkg->GetFrameDepth(*I_bkg);
+
+  float m_temp_HT1CM     = 0.;
+  float m_temp_PIoHT1CM  = 0.;
+  float m_temp_cosS      = 0.;
+  float m_temp_NVS       = 0.;
+  float m_temp_RPT_HT1CM = 0.;
+  float m_temp_MS = 0;
+
+  if(m_Idepth < 2){
+    m_temp_HT1CM = 0.;
+    m_temp_PIoHT1CM = 0.;
+    m_temp_cosS = 0.;
+    m_temp_NVS = 0;
+    m_temp_RPT_HT1CM = 0.;
+  } else {
+    const RestFrame& fS = S_bkg->GetFrameAtDepth(1, *I_bkg);
+    m_temp_HT1CM = fS.GetTransverseMomentum(*S_bkg);
+    m_temp_MS = fS.GetMass();
+
+    m_temp_NVS = fS.GetNDescendants()-1;
+
+    TLorentzVector vPV = fS.GetFourVector(*S_bkg) - I_bkg->GetFourVector(*S_bkg);
+    TLorentzVector vPI = I_bkg->GetFourVector(*S_bkg);
+
+    double PS = (vPV+vPI).P();
+    double PIdot = max(0.,vPI.Vect().Dot((vPV+vPI).Vect().Unit()));
+    m_temp_PIoHT1CM = PIdot / PS;
+
+    m_temp_cosS  = -1.*fS.GetCosDecayAngle(*I_bkg);
+
+    TLorentzVector PCM = S_bkg->GetFourVector();
+    m_temp_RPT_HT1CM = PCM.Pt() / ( PCM.Pt() + m_temp_HT1CM );
+  }
+
+  float const m_HT1CM     = m_temp_HT1CM     ;
+  float const m_PIoHT1CM  = m_temp_PIoHT1CM  ;
+  float const m_cosS      = m_temp_cosS      ;
+  float const m_NVS       = m_temp_NVS       ;
+  float const m_RPT_HT1CM = m_temp_RPT_HT1CM ;
+  float const m_MS        = m_temp_MS;
+
+
   // signal variables
   TLorentzVector vP_Va = Pa->GetVisibleFourVector(*Pa);
   TLorentzVector vP_Vb = Pb->GetVisibleFourVector(*Pb);
-  float const m_MP = (vP_Va.M2()-vP_Vb.M2())/(2.*(vP_Va.E()-vP_Vb.E()));
 
   TLorentzVector vP_V1aPP = V1a->GetFourVector(*PP);
   TLorentzVector vP_V2aPP = V2a->GetFourVector(*PP);
@@ -445,6 +483,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_H2PP = (vP_V1aPP + vP_V2aPP + vP_V1bPP + vP_V2bPP).P() + (vP_IaPP+vP_IbPP).P();
   float const m_H3PP = (vP_V1aPP + vP_V2aPP).P() + (vP_V1bPP + vP_V2bPP).P() + (vP_IaPP + vP_IbPP).P();
   float const m_H4PP = (vP_V1aPP + vP_V2aPP).P() + (vP_V1bPP + vP_V2bPP).P() + vP_IaPP.P() + vP_IbPP.P();
+  float const m_H5PP = vP_V1aPP.P() + vP_V2aPP.P() + vP_V1bPP.P() + vP_V2bPP.P() + (vP_IaPP + vP_IbPP).P();
   float const m_H6PP = vP_V1aPP.P() + vP_V2aPP.P() + vP_V1bPP.P() + vP_V2bPP.P() + vP_IaPP.P() + vP_IbPP.P();
 
   float const m_H2Pa = (vP_V1aPa + vP_V2aPa).P() + vP_IaPa.P();
@@ -452,91 +491,137 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_H3Pa = vP_V1aPa.P() + vP_V2aPa.P() + vP_IaPa.P();
   float const m_H3Pb = vP_V1bPb.P() + vP_V2bPb.P() + vP_IbPb.P();
 
-  float  m_H4Pa = 0.;
-  float  m_H4Pb = 0.;
-  float  m_H5Pa = 0.;
-  float  m_H5Pb = 0.;
+  float m_temp_H4Pa = 0.;
+  float m_temp_H4Pb = 0.;
+  float m_temp_H5Pa = 0.;
+  float m_temp_H5Pb = 0.;
+
+  float m_temp_H9PP  = 0.;
+  float m_temp_H10PP = 0.;
+
+
 
   if(m_NJ1a > 1){
-    m_H4Pa += SAV1a->GetChildFrame(0).GetMomentum(*Pa);
-    m_H4Pa += SAV1a->GetChildFrame(1).GetMomentum(*Pa);
-    m_H5Pa += m_H4Pa;
+    m_temp_H4Pa += SAV1a->GetChildFrame(0).GetMomentum(*Pa);
+    m_temp_H4Pa += SAV1a->GetChildFrame(1).GetMomentum(*Pa);
+    m_temp_H5Pa += m_temp_H4Pa;
+    m_temp_H9PP += SAV1a->GetChildFrame(0).GetMomentum(*PP);
+    m_temp_H9PP += SAV1a->GetChildFrame(1).GetMomentum(*PP);
   } else {
-    m_H4Pa += vP_V1aPa.P();
-    m_H5Pa += vP_V1aPa.P();
+    m_temp_H4Pa += vP_V1aPa.P();
+    m_temp_H5Pa += vP_V1aPa.P();
+    m_temp_H9PP += vP_V1aPP.P();
   }
   if(m_NJ1b > 1){
-    m_H4Pb += SAV1b->GetChildFrame(0).GetMomentum(*Pb);
-    m_H4Pb += SAV1b->GetChildFrame(1).GetMomentum(*Pb);
-    m_H5Pb += m_H4Pb;
+    m_temp_H4Pb += SAV1b->GetChildFrame(0).GetMomentum(*Pb);
+    m_temp_H4Pb += SAV1b->GetChildFrame(1).GetMomentum(*Pb);
+    m_temp_H5Pb += m_temp_H4Pb;
+    m_temp_H9PP += SAV1b->GetChildFrame(0).GetMomentum(*PP);
+    m_temp_H9PP += SAV1b->GetChildFrame(1).GetMomentum(*PP);
   } else {
-    m_H4Pb += vP_V1bPb.P();
-    m_H5Pb += vP_V1bPb.P();
+    m_temp_H4Pb += vP_V1bPb.P();
+    m_temp_H5Pb += vP_V1bPb.P();
+    m_temp_H9PP += vP_V1bPP.P();
   }
-  m_H4Pa += vP_V2aPa.P();
-  m_H4Pb += vP_V2bPb.P();
+  m_temp_H4Pa += vP_V2aPa.P();
+  m_temp_H4Pb += vP_V2bPb.P();
 
   if(m_NJ2a > 1){
-    m_H5Pa += SAV2a->GetChildFrame(0).GetMomentum(*Pa);
-    m_H5Pa += SAV2a->GetChildFrame(1).GetMomentum(*Pa);
+    m_temp_H5Pa += SAV2a->GetChildFrame(0).GetMomentum(*Pa);
+    m_temp_H5Pa += SAV2a->GetChildFrame(1).GetMomentum(*Pa);
+    m_temp_H9PP += SAV2a->GetChildFrame(0).GetMomentum(*PP);
+    m_temp_H9PP += SAV2a->GetChildFrame(1).GetMomentum(*PP);
   } else {
-    m_H5Pa += vP_V2aPa.P();
+    m_temp_H5Pa += vP_V2aPa.P();
+    m_temp_H9PP += vP_V2aPP.P();
   }
   if(m_NJ2b > 1){
-    m_H5Pb += SAV2b->GetChildFrame(0).GetMomentum(*Pb);
-    m_H5Pb += SAV2b->GetChildFrame(1).GetMomentum(*Pb);
+    m_temp_H5Pb += SAV2b->GetChildFrame(0).GetMomentum(*Pb);
+    m_temp_H5Pb += SAV2b->GetChildFrame(1).GetMomentum(*Pb);
+    m_temp_H9PP += SAV2b->GetChildFrame(0).GetMomentum(*PP);
+    m_temp_H9PP += SAV2b->GetChildFrame(1).GetMomentum(*PP);
   } else {
-    m_H5Pb += vP_V2bPb.P();
+    m_temp_H5Pb += vP_V2bPb.P();
+    m_temp_H9PP += vP_V2bPP.P();
   }
-  m_H4Pa += vP_IaPa.P();
-  m_H5Pa += vP_IaPa.P();
-  m_H4Pb += vP_IbPb.P();
-  m_H5Pb += vP_IbPb.P();
+  m_temp_H4Pa += vP_IaPa.P();
+  m_temp_H5Pa += vP_IaPa.P();
+  m_temp_H4Pb += vP_IbPb.P();
+  m_temp_H5Pb += vP_IbPb.P();
+
+  m_temp_H10PP = m_temp_H9PP;
+
+  m_temp_H9PP  += (vP_IaPP + vP_IbPP).P();
+  m_temp_H10PP += vP_IaPP.P() + vP_IbPP.P();
+
+  float const  m_H4Pa  = m_temp_H4Pa ;
+  float const  m_H4Pb  = m_temp_H4Pb ;
+  float const  m_H5Pa  = m_temp_H5Pa ;
+  float const  m_H5Pb  = m_temp_H5Pb ;
+  float const  m_H9PP  = m_temp_H9PP ;
+  float const  m_H10PP = m_temp_H10PP;
 
   TLorentzVector vP_IaCa  = Ia->GetFourVector(*Ca);
   TLorentzVector vP_IbCb  = Ib->GetFourVector(*Cb);
 
-  float const m_H2Ca = 2.*vP_IaCa.P();
-  float const m_H2Cb = 2.*vP_IbCb.P();
-  float m_H3Ca = 0;
-  float m_H3Cb = 0;
+  float m_temp_H2Ca = 2.*vP_IaCa.P();
+  float m_temp_H2Cb = 2.*vP_IbCb.P();
+
+  float m_temp_H3Ca = 0;
+  float m_temp_H3Cb = 0;
 
   if(m_NJ2a > 1)
-    m_H3Ca = vP_IaCa.P()+
+    m_temp_H3Ca = vP_IaCa.P()+
       SAV2a->GetChildFrame(0).GetMomentum(*Ca)+
       SAV2a->GetChildFrame(1).GetMomentum(*Ca);
   else
-    m_H3Ca = m_H2Ca;
+    m_temp_H3Ca = m_temp_H2Ca;
 
   if(m_NJ2b > 1)
-    m_H3Cb = vP_IbCb.P()+
+    m_temp_H3Cb = vP_IbCb.P()+
       SAV2b->GetChildFrame(0).GetMomentum(*Cb)+
       SAV2b->GetChildFrame(1).GetMomentum(*Cb);
   else
-    m_H3Cb = m_H2Cb;
+    m_temp_H3Cb = m_temp_H2Cb;
 
-  double P_P = Pa->GetMomentum(*PP);
+  float const m_H3Ca = m_temp_H3Ca;
+  float const m_H3Cb = m_temp_H3Cb;
 
-  double const m_MPP = 2.*sqrt(P_P*P_P + m_MP*m_MP);
+  float const m_H2Ca = m_temp_H2Ca;
+  float const m_H2Cb = m_temp_H2Cb;
+
+
+
   TVector3 vP_PP = PP->GetFourVector(*LAB).Vect();
-  double m_pTCM = vP_PP.Pt();
-  double m_pZCM = fabs(vP_PP.Pz());
-  float const m_RPT = m_pTCM / (m_pTCM + m_MPP/4.);
-  //  float const m_RPZ = m_pZCM;
 
   float const m_PP_VisShape = PP->GetVisibleShape();
-
-  float const m_gaminvPP = 2.*m_MP/m_MPP;
   float const m_MDR = m_PP_VisShape*PP->GetMass();
 
+
   float const m_cosPP = PP->GetCosDecayAngle();
-  float m_dphiVP = PP->GetDeltaPhiDecayVisible();
+
+
   float const m_dphiPPV = PP->GetDeltaPhiBoostVisible();
   float const m_cosP = Pa->GetCosDecayAngle(*Ia);
 
+  float const m_temp_dphiVP = PP->GetDeltaPhiDecayVisible();
+  float const m_dphiVP = (m_temp_dphiVP-acos(-1.)/2.)/(acos(-1.)/2.);
+
+  float const m_sangle = fabs(m_dphiVP + 2.*m_cosP)/3.;
+  float const m_dangle = (2.*m_dphiVP - m_cosP)/3.;
+
   // gluino hemishpere variables
-  float const m_dphiPCa = Pa->GetDeltaPhiDecayPlanes(*Ca);
-  float const m_dphiPCb = Pb->GetDeltaPhiDecayPlanes(*Cb);
+  float const m_dphiPa = Pa->GetDeltaPhiDecayPlanes(*Ca);
+  float const m_dphiPb = Pb->GetDeltaPhiDecayPlanes(*Cb);
+
+  double dphiA = m_dphiPa;
+  double dphiB = m_dphiPb;
+  if(dphiA > acos(-1.))
+    dphiA = 2.*acos(-1.) - dphiA;
+  if(dphiB > acos(-1.))
+    dphiB = 2.*acos(-1.) - dphiB;
+  float const  m_ddphiP = (dphiA-dphiB)/acos(-1.);
+  float const  m_sdphiP = fabs(dphiA+dphiB)/2./acos(-1.);
 
   // inside gluino hemisphere variables
   float const m_dphiPV1a = Pa->GetDeltaPhiDecayPlanes(*SAV1a);
@@ -548,14 +633,14 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_cosV2a = SAV2a->GetCosDecayAngle();
   float const m_cosV2b = SAV2b->GetCosDecayAngle();
 
-  // float const m_MET = ETMiss.Pt();
-  // float const m_Meff = NTVars_meffInc;
-  // float const m_Aplan = NTExtraVars_Ap;
-  // float const m_dphi = NTVars_dPhi;
-  // float const m_dphiR = NTVars_dPhiR;
+  //float const m_MET = ETMiss.Pt();
+  //  float const m_Meff = NTVars_meffInc;
+  //  float const m_Aplan = NTExtraVars_Ap;
+  //  float const m_dphi = NTVars_dPhi;
+  //  float const m_dphiR = NTVars_dPhiR;
 
-  //  float const m_pT_jet1 = Jets[0].Pt();
-  //  float const m_pT_jet2 = Jets[1].Pt();
+  // float const m_pT_jet1 = Jets[0].Pt();
+  // float const m_pT_jet2 = Jets[1].Pt();
   // if(m_NJet >= 3)
   //   m_pT_jet3 = Jets[2].Pt();
   // else
@@ -572,6 +657,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   //   m_pT_jet6 = Jets[5].Pt();
   // else
   //   m_pT_jet6 = 0.;
+
   float const m_pTPP_Va  = PP->GetTransverseMomentum(V1a->GetFourVector()+V2a->GetFourVector());
   float const m_pTPP_V1a = V1a->GetTransverseMomentum(*PP);
   float const m_pTPP_V2a = V2a->GetTransverseMomentum(*PP);
@@ -581,7 +667,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_pTPP_Ia = Ia->GetTransverseMomentum(*PP);
   float const m_pTPP_Ib = Ib->GetTransverseMomentum(*PP);
 
-  float const m_pPP_Va = (V1a->GetFourVector(*PP)+V2a->GetFourVector(*PP)).P();
+  float const m_pPP_Va  = (V1a->GetFourVector(*PP)+V2a->GetFourVector(*PP)).P();
   float const m_pPP_V1a = V1a->GetMomentum(*PP);
   float const m_pPP_V2a = V2a->GetMomentum(*PP);
   float const m_pPP_Vb  = (V1b->GetFourVector(*PP)+V2b->GetFourVector(*PP)).P();
@@ -590,10 +676,10 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   float const m_pPP_Ia = Ia->GetMomentum(*PP);
   float const m_pPP_Ib = Ib->GetMomentum(*PP);
 
-  float  m_pT_jet1a = 0.;
-  float  m_pT_jet2a = 0.;
-  float  m_pT_jet1b = 0.;
-  float  m_pT_jet2b = 0.;
+  float  m_pT_temp_jet1a = 0.;
+  float  m_pT_temp_jet2a = 0.;
+  float  m_pT_temp_jet1b = 0.;
+  float  m_pT_temp_jet2b = 0.;
 
   int N = jetID.size();
   for(int j = 0; j < N; j++){
@@ -601,32 +687,49 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     double pT = VIS->GetLabFrameFourVector(jetID[j]).Pt();
 
     if(V1a->IsSame(frame) || V2a->IsSame(frame)){
-      if(pT > m_pT_jet1a){
-	m_pT_jet2a = m_pT_jet1a;
-	m_pT_jet1a = pT;
+      if(pT > m_pT_temp_jet1a){
+	m_pT_temp_jet2a = m_pT_temp_jet1a;
+	m_pT_temp_jet1a = pT;
       } else {
-	if(pT > m_pT_jet2a) m_pT_jet2a = pT;
+	if(pT > m_pT_temp_jet2a){
+	  m_pT_temp_jet2a = pT;
+	}
       }
     }
     if(V1b->IsSame(frame) || V2b->IsSame(frame)){
-      if(pT > m_pT_jet1b){
-	m_pT_jet2b = m_pT_jet1b;
-	m_pT_jet1b = pT;
+      if(pT > m_pT_temp_jet1b){
+	m_pT_temp_jet2b = m_pT_temp_jet1b;
+	m_pT_temp_jet1b = pT;
       } else {
-	if(pT > m_pT_jet2b) m_pT_jet2b = pT;
+	if(pT > m_pT_temp_jet2b){
+	  m_pT_temp_jet2b = pT;
+	}
       }
     }
   }
 
-  float  m_pTPP_jet1a = 0.;
-  float  m_pTPP_jet2a = 0.;
-  float  m_pTPP_jet1b = 0.;
-  float  m_pTPP_jet2b = 0.;
+  float const m_pT_jet1a = m_pT_temp_jet1a;
+  float const m_pT_jet2a = m_pT_temp_jet2a;
+  float const m_pT_jet1b = m_pT_temp_jet1b;
+  float const m_pT_jet2b = m_pT_temp_jet2b;
 
-  float m_pPP_jet1a = 0;
-  float m_pPP_jet2a = 0;
-  float m_pPP_jet1b = 0;
-  float m_pPP_jet2b = 0;
+
+  float m_pTPP_temp_jet1a = 0.;
+  float m_pTPP_temp_jet2a = 0.;
+  float m_pTPP_temp_jet3a = 0.;
+  float m_pTPP_temp_jet1b = 0.;
+  float m_pTPP_temp_jet2b = 0.;
+  float m_pTPP_temp_jet3b = 0.;
+
+  float m_pPP_temp_jet1a = 0.;
+  float m_pPP_temp_jet2a = 0.;
+  float m_pPP_temp_jet3a = 0.;
+  float m_pPP_temp_jet1b = 0.;
+  float m_pPP_temp_jet2b = 0.;
+  float m_pPP_temp_jet3b = 0.;
+
+  float m_pTPP_temp_jet1 = 0.;
+  float m_pTPP_temp_jet2 = 0.;
 
   for(int j = 0; j < N; j++){
     RestFrame const& frame = VIS->GetFrame(jetID[j]);
@@ -634,162 +737,259 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
     double p  = PP->GetFourVector(VIS->GetLabFrameFourVector(jetID[j])).P();
 
     if(V1a->IsSame(frame) || V2a->IsSame(frame)){
-      if(pT > m_pTPP_jet1a){
-	m_pTPP_jet2a = m_pTPP_jet1a;
-	m_pPP_jet2a  = m_pPP_jet1a;
-	m_pTPP_jet1a = pT;
-	m_pPP_jet1a  = p;
+      if(pT > m_pTPP_temp_jet1a){
+	m_pTPP_temp_jet3a = m_pTPP_temp_jet2a;
+	m_pPP_temp_jet3a  = m_pPP_temp_jet2a;
+	m_pTPP_temp_jet2a = m_pTPP_temp_jet1a;
+	m_pPP_temp_jet2a  = m_pPP_temp_jet1a;
+	m_pTPP_temp_jet1a = pT;
+	m_pPP_temp_jet1a  = p;
       } else {
-	if(pT > m_pTPP_jet2a){
-	  m_pTPP_jet2a = pT;
-	  m_pPP_jet2a  = p;
+	if(pT > m_pTPP_temp_jet2a){
+	  m_pTPP_temp_jet3a = m_pTPP_temp_jet2a;
+	  m_pPP_temp_jet3a  = m_pPP_temp_jet2a;
+	  m_pTPP_temp_jet2a = pT;
+	  m_pPP_temp_jet2a  = p;
+	} else{
+	  if(pT > m_pTPP_temp_jet3a){
+	    m_pTPP_temp_jet3a = pT;
+	    m_pPP_temp_jet3a  = p;
+	  }
 	}
       }
     }
     if(V1b->IsSame(frame) || V2b->IsSame(frame)){
-      if(pT > m_pTPP_jet1b){
-	m_pTPP_jet2b = m_pTPP_jet1b;
-	m_pPP_jet2b  = m_pPP_jet1b;
-	m_pTPP_jet1b = pT;
-	m_pPP_jet1b  = p;
+      if(pT > m_pTPP_temp_jet1b){
+	m_pTPP_temp_jet3b = m_pTPP_temp_jet2b;
+	m_pPP_temp_jet3b  = m_pPP_temp_jet2b;
+	m_pTPP_temp_jet2b = m_pTPP_temp_jet1b;
+	m_pPP_temp_jet2b  = m_pPP_temp_jet1b;
+	m_pTPP_temp_jet1b = pT;
+	m_pPP_temp_jet1b  = p;
       } else {
-	if(pT > m_pTPP_jet2b){
-	  m_pTPP_jet2b = pT;
-	  m_pPP_jet2b  = p;
+	if(pT > m_pTPP_temp_jet2b){
+	  m_pTPP_temp_jet3b = m_pTPP_temp_jet2b;
+	  m_pPP_temp_jet3b  = m_pPP_temp_jet2b;
+	  m_pTPP_temp_jet2b = pT;
+	  m_pPP_temp_jet2b  = p;
+	} else{
+	  if(pT > m_pTPP_temp_jet3b){
+	    m_pTPP_temp_jet3b = pT;
+	    m_pPP_temp_jet3b  = p;
+	  }
 	}
       }
     }
   }
 
+  if(m_pTPP_temp_jet1a > m_pTPP_temp_jet1b){
+    m_pTPP_temp_jet1 = m_pTPP_temp_jet1a;
+    m_pTPP_temp_jet2 = max(m_pTPP_temp_jet1b,m_pTPP_temp_jet2a);
+  } else {
+    m_pTPP_temp_jet1 = m_pTPP_temp_jet1b;
+    m_pTPP_temp_jet2 = max(m_pTPP_temp_jet1a,m_pTPP_temp_jet2b);
+  }
+
+  float const m_pTPP_jet1a = m_pTPP_temp_jet1a;
+  float const m_pTPP_jet2a = m_pTPP_temp_jet2a;
+  float const m_pTPP_jet3a = m_pTPP_temp_jet3a;
+  float const m_pTPP_jet1b = m_pTPP_temp_jet1b;
+  float const m_pTPP_jet2b = m_pTPP_temp_jet2b;
+  float const m_pTPP_jet3b = m_pTPP_temp_jet3b;
+
+  float const m_pPP_jet1a = m_pPP_temp_jet1a;
+  float const m_pPP_jet2a = m_pPP_temp_jet2a;
+  float const m_pPP_jet3a = m_pPP_temp_jet3a;
+  float const m_pPP_jet1b = m_pPP_temp_jet1b;
+  float const m_pPP_jet2b = m_pPP_temp_jet2b;
+  float const m_pPP_jet3b = m_pPP_temp_jet3b;
+
+  float const m_pTPP_jet1 = m_pTPP_temp_jet1;
+  float const m_pTPP_jet2 = m_pTPP_temp_jet2;
 
 
-
-  float PG = Pa->GetMomentum(*PP);
-  //  float MGG = 2.*sqrt(PG*PG + m_MP*m_MP);//todo MG is MP right?
-  float gaminvGG = 2.*m_MP/m_MPP;
-  float gaminv = PP->GetVisibleShape();
-  float beta = sqrt(1.- gaminv*gaminv);
-  float betaGG = sqrt(1.- gaminvGG*gaminvGG);
-
-  //*** velocity difference between 'massive' and 'mass-less'
-
-  float const DeltaBetaGG = -(betaGG-beta)/(1.-betaGG*beta);
-
-  //here
-
-
+  float const m_HT3PP = m_pTPP_Va + m_pTPP_Vb +
+            m_H2PP/2.;
   float const m_HT4PP = m_pTPP_Va + m_pTPP_Vb +
             m_pTPP_Ia + m_pTPP_Ib;
+  float const m_HT5PP = m_pTPP_V1a + m_pTPP_V1b +
+            m_pTPP_V2a + m_pTPP_V2b +
+            m_H2PP/2.;
   float const m_HT6PP = m_pTPP_V1a + m_pTPP_V1b +
             m_pTPP_V2a + m_pTPP_V2b +
             m_pTPP_Ia + m_pTPP_Ib;
-  float const m_minH3P = min(m_H3Pa,m_H3Pb);
+
+  float m_temp_HT9PP = 0;
+  if(m_NJ1a > 1){
+    m_temp_HT9PP += SAV1a->GetChildFrame(0).GetTransverseMomentum(*PP);
+    m_temp_HT9PP += SAV1a->GetChildFrame(1).GetTransverseMomentum(*PP);
+  } else {
+    m_temp_HT9PP += m_pTPP_V1a;
+  }
+  if(m_NJ1b > 1){
+    m_temp_HT9PP += SAV1b->GetChildFrame(0).GetTransverseMomentum(*PP);
+    m_temp_HT9PP += SAV1b->GetChildFrame(1).GetTransverseMomentum(*PP);
+  } else {
+    m_temp_HT9PP += m_pTPP_V1b;
+  }
+  if(m_NJ2a > 1){
+    m_temp_HT9PP += SAV2a->GetChildFrame(0).GetTransverseMomentum(*PP);
+    m_temp_HT9PP += SAV2a->GetChildFrame(1).GetTransverseMomentum(*PP);
+  } else {
+    m_temp_HT9PP += m_pTPP_V2a;
+  }
+  if(m_NJ2b > 1){
+    m_temp_HT9PP += SAV2b->GetChildFrame(0).GetTransverseMomentum(*PP);
+    m_temp_HT9PP += SAV2b->GetChildFrame(1).GetTransverseMomentum(*PP);
+  } else {
+    m_temp_HT9PP += m_pTPP_V2b;
+  }
+
+  float const m_temp_HT10PP = m_temp_HT9PP;
+
+  float const m_HT9PP  = m_temp_HT9PP + m_H2PP/2.;
+  float const m_HT10PP = m_temp_HT10PP + m_pTPP_Ia + m_pTPP_Ib;
 
   /// squark ratios
-  float const   m_R_HT4PP_H4PP = m_HT4PP/m_H4PP;
-  float const   m_R_H2PP_H4PP = m_H2PP/m_H4PP;
-  float const   m_R_H2PP_HT4PP = m_H2PP/m_HT4PP;
-  float const   m_R_pTj1a_HT4PP = m_pTPP_jet1a/m_HT4PP;
-  float const   m_R_pTj1b_HT4PP = m_pTPP_jet1b/m_HT4PP;
+  float const m_R_H2PP_H3PP = m_H2PP/m_H3PP;
+  float const m_R_pTj2_HT3PP = m_pTPP_jet2 / m_HT3PP;
 
   /// gluino ratios
-  float const  m_R_HT6PP_H6PP = m_HT6PP/m_H6PP;
-  float const  m_R_H2PP_H6PP = m_H2PP/m_H6PP;
-  float const  m_R_H2PP_HT6PP = m_H2PP/m_HT6PP;
-  float const  m_R_minH3PP_H6PP = m_minH3P/m_H6PP;
-  float const  m_R_pTj2a_HT6PP = m_pTPP_jet2a/m_HT6PP;
-  float const  m_R_pTj2b_HT6PP = m_pTPP_jet2b/m_HT6PP;
+  float const m_R_HT5PP_H5PP = m_HT5PP/m_H5PP;
+  float const m_R_H2PP_H5PP = m_H2PP/m_H5PP;
+  float const m_minR_pTj2i_HT3PPi = min(m_pTPP_jet2a/(m_pTPP_V1a+m_pTPP_V2a+m_pTPP_Ia),
+			    m_pTPP_jet2b/(m_pTPP_V1b+m_pTPP_V2b+m_pTPP_Ib));
+  float const m_maxR_H1PPi_H2PPi = max(m_pPP_Va/(m_pPP_V1a+m_pPP_V2a),m_pPP_Vb/(m_pPP_V1b+m_pPP_V2b));
 
-  float const  m_dH2o3P = m_H2Pa/m_H3Pa - m_H2Pb/m_H3Pb;
+   /// GG onestep ratios
+  float const m_R_HT9PP_H9PP = m_HT5PP/m_H9PP;
+  float const m_R_H2PP_H9PP = m_H2PP/m_H9PP;
 
-  //  float const     m_pTCM = vP_PP.Pt();
-  //  float const     m_pZCM = fabs(vP_PP.Pz());
-  //  float const     m_RPT = m_pTCM / (m_pTCM + MPP/4.);
-  float const     m_RPZ_HT4PP = m_pZCM / (m_pZCM + m_HT4PP);
-  float const     m_RPZ_HT6PP = m_pZCM / (m_pZCM + m_HT6PP);
+  //  float const m_dH2o3P = m_H2Pa/m_H3Pa - m_H2Pb/m_H3Pb;
 
-  m_dphiVP = (m_dphiVP-acos(-1.)/2.)/(acos(-1.)/2.);
+  float const m_pTCM = vP_PP.Pt();
+  float const m_pZCM = fabs(vP_PP.Pz());
 
-  float const m_sangle = fabs(m_dphiVP + m_cosP)/2.;
-  float const  m_dangle = (m_dphiVP - m_cosP)/2.;
+  float const m_RPZ_HT3PP = m_pZCM / (m_pZCM + m_HT3PP);
+  float const m_RPZ_HT5PP = m_pZCM / (m_pZCM + m_HT5PP);
+  float const m_RPZ_HT9PP = m_pZCM / (m_pZCM + m_HT9PP);
+  float const m_RPT_HT3PP = m_pTCM / (m_pTCM + m_HT3PP);
+  float const m_RPT_HT5PP = m_pTCM / (m_pTCM + m_HT5PP);
+  float const m_RPT_HT9PP = m_pTCM / (m_pTCM + m_HT9PP);
 
-  float dphiA = m_dphiPCa;
-  float dphiB = m_dphiPCb;
-  if(dphiA > acos(-1.))
-    dphiA = 2.*acos(-1.) - dphiA;
-  if(dphiB > acos(-1.))
-    dphiB = 2.*acos(-1.) - dphiB;
+  RJigsawVariables[ "HT1CM"]     = m_HT1CM;
+  RJigsawVariables[ "PIoHT1CM"]  = m_PIoHT1CM;
+  RJigsawVariables[ "cosS"]      = m_cosS;
+  RJigsawVariables[ "NVS"]       = m_NVS;
+  RJigsawVariables[ "RPT_HT1CM"] = m_RPT_HT1CM;
+  RJigsawVariables[ "MS"]        = m_MS;
 
-float const  m_ddphiPC = (dphiA-dphiB)/acos(-1.);
-float const  m_sdphiPC = fabs(dphiA+dphiB)/2./acos(-1.);
+  RJigsawVariables[ "ddphiP"]      = m_ddphiP;
+  RJigsawVariables[ "sdphiP"] = m_sdphiP;
 
-  RJigsawVariables[ "RJVars_PP_Mass"           ] = m_MPP;
-  RJigsawVariables[ "RJVars_PP_InvGamma"       ] = m_PP_VisShape;
-  RJigsawVariables[ "RJVars_PP_dPhiBetaR"      ] = m_dphiPPV;
-  RJigsawVariables[ "RJVars_PP_dPhiVis"        ] = PP->GetDeltaPhiVisible();
-  RJigsawVariables[ "RJVars_PP_CosTheta"       ] = m_cosPP;
-  RJigsawVariables[ "RJVars_PP_dPhiDecayAngle" ] = m_dphiVP ; // I think ...
-  RJigsawVariables[ "RJVars_PP_VisShape"       ] = m_PP_VisShape;
-  RJigsawVariables[ "RJVars_PP_MDeltaR"        ] = m_MDR;
+  RJigsawVariables[ "pPP_Ia"] = m_pPP_Ia;
+  RJigsawVariables[ "pPP_Ib"] = m_pPP_Ib;
 
-  RJigsawVariables[ "RJVars_P1_Mass"           ] = Pa->GetMass();
-  RJigsawVariables[ "RJVars_P1_CosTheta"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
-  RJigsawVariables[ "RJVars_P2_Mass"           ] = Pb->GetMass();
-  RJigsawVariables[ "RJVars_P2_CosTheta"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
-  RJigsawVariables[ "RJVars_I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
-  RJigsawVariables[ "RJVars_I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
+  RJigsawVariables[ "pT_jet1a"] = m_pT_jet1a;
+  RJigsawVariables[ "pT_jet1b"] = m_pT_jet1b;
+  RJigsawVariables[ "pT_jet2a"] = m_pT_jet2a;
+  RJigsawVariables[ "pT_jet2b"] = m_pT_jet2b;
 
-  RJigsawVariables["RJVars_dphiPV1a"  ] = m_dphiPV1a;
-  RJigsawVariables["RJVars_cosV1a"    ] = m_cosV1a;
-  RJigsawVariables["RJVars_dphiCV2a"  ] = m_dphiCV2a;
-  RJigsawVariables["RJVars_cosV2a"    ] = m_cosV2a;
-  RJigsawVariables["RJVars_dphiPV1b" ]  = m_dphiPV1b;
-  RJigsawVariables["RJVars_cosV1b"   ]  = m_cosV1b;
-  RJigsawVariables["RJVars_dphiCV2b" ]  = m_dphiCV2b;
-  RJigsawVariables["RJVars_cosV2b"]	= m_cosV2b;
+  RJigsawVariables[ "pTPP_jet1"] = m_pTPP_jet1;
+  RJigsawVariables[ "pTPP_jet2"] = m_pTPP_jet2;
 
-  RJigsawVariables[ "RJVars_V1_N" ]        = -100; // VIS_R->GetNElementsInFrame(*VS[i]);
-  RJigsawVariables[ "RJVars_V2_N" ]        = -100;
-  RJigsawVariables[ "RJVars_MP"          ] = m_MP;
-  RJigsawVariables[ "RJVars_DeltaBetaGG" ] = DeltaBetaGG;
-  RJigsawVariables[ "RJVars_dphiVG"      ] = PP->GetDeltaPhiDecayVisible();
+  RJigsawVariables[ "pTPP_jet1a"] = m_pTPP_jet1a;
+  RJigsawVariables[ "pTPP_jet1b"] = m_pTPP_jet1b;
+  RJigsawVariables[ "pTPP_jet2a"] = m_pTPP_jet2a;
+  RJigsawVariables[ "pTPP_jet2b"] = m_pTPP_jet2b;
+  RJigsawVariables[ "pTPP_jet3a"] = m_pTPP_jet3a;
+  RJigsawVariables[ "pTPP_jet3b"] = m_pTPP_jet3b;
 
-  RJigsawVariables[ "RJVars_QCD_dPhiR"    ] = -100;
-  RJigsawVariables[ "RJVars_QCD_Rpt"      ] = m_RPT;
-  RJigsawVariables[ "RJVars_QCD_Rsib"    ]  = m_Rsib;
-  RJigsawVariables[ "RJVars_QCD_Delta1"   ] = m_deltaQCD;
+  RJigsawVariables[ "pPP_jet1a"] = m_pPP_jet1a;
+  RJigsawVariables[ "pPP_jet1b"] = m_pPP_jet1b;
+  RJigsawVariables[ "pPP_jet2a"] = m_pPP_jet2a;
+  RJigsawVariables[ "pPP_jet2b"] = m_pPP_jet2b;
+  RJigsawVariables[ "pPP_jet3a"] = m_pPP_jet3a;
+  RJigsawVariables[ "pPP_jet3b"] = m_pPP_jet3b;
 
-  RJigsawVariables["RJVars_H2PP"]      = m_H2PP ;
-  RJigsawVariables["RJVars_H3PP"]      = m_H3PP;
-  RJigsawVariables["RJVars_H4PP"]      = m_H4PP;
-  RJigsawVariables["RJVars_H6PP"]      = m_H6PP;
-  RJigsawVariables["RJVars_H2Pa"]      = m_H2Pa;
-  RJigsawVariables["RJVars_H2Pb"]      = m_H2Pb;
-  RJigsawVariables["RJVars_H3Pa"]      = m_H3Pa;
-  RJigsawVariables["RJVars_H3Pb"]      = m_H3Pb;
-  RJigsawVariables["RJVars_H4Pa"]      = m_H4Pa;
-  RJigsawVariables["RJVars_H4Pb"]      = m_H4Pb;
-  RJigsawVariables["RJVars_H5Pa"]      = m_H5Pa;
-  RJigsawVariables["RJVars_H5Pb"]      = m_H5Pb;
-  RJigsawVariables["RJVars_H2Ca"]      = m_H2Ca;
-  RJigsawVariables["RJVars_H2Cb"]      = m_H2Cb;
-  RJigsawVariables["RJVars_H3Ca"]      = m_H3Ca;
-  RJigsawVariables["RJVars_H3Cb"]      = m_H3Cb;
-  RJigsawVariables["RJVars_HT4PP"]     = m_HT4PP; //m_HT4PP;
-  RJigsawVariables["RJVars_HT6PP"]     = m_HT6PP; //m_HT6PP;
-  RJigsawVariables["RJVars_minH3P"]    = m_minH3P; //m_minH3P;
-  RJigsawVariables["RJVars_sangle"]    = m_sangle;
-  RJigsawVariables["RJVars_dangle"]    = m_dangle;
-  RJigsawVariables["RJVars_ddphiPC"]   = m_ddphiPC;
-  RJigsawVariables["RJVars_sdphiPC"]   = m_sdphiPC;
-  RJigsawVariables["RJVars_dH2o3P"]    = m_sdphiPC;
-  RJigsawVariables["RJVars_RPZ_HT4PP"] = m_RPZ_HT4PP;
-  RJigsawVariables["RJVars_RPZ_HT6PP"] = m_RPZ_HT6PP;
+  RJigsawVariables["R_H2PP_H3PP"]  = m_R_H2PP_H3PP;
+  RJigsawVariables["R_pTj2_HT3PP"] = m_R_pTj2_HT3PP;
+  RJigsawVariables["R_HT5PP_H5PP"] = m_R_HT5PP_H5PP;
+  RJigsawVariables["R_H2PP_H5PP"] = m_R_H2PP_H5PP;
+  RJigsawVariables["minR_pTj2i_HT3PPi"] = m_minR_pTj2i_HT3PPi;
+  RJigsawVariables["maxR_H1PPi_H2PPi"] = m_maxR_H1PPi_H2PPi;
+  RJigsawVariables["R_HT9PP_H9PP"] = m_R_HT9PP_H9PP;
+  RJigsawVariables["R_H2PP_H9PP"] = m_R_H2PP_H9PP;
 
-  // end
-  ////////////////////////////////////////////////////////////////////////////////
+  RJigsawVariables["RPZ_HT3PP"] = m_RPZ_HT3PP;
+  RJigsawVariables["RPZ_HT5PP"] = m_RPZ_HT5PP;
+  RJigsawVariables["RPZ_HT9PP"] = m_RPZ_HT9PP;
 
+  RJigsawVariables["RPT_HT3PP"] = m_RPT_HT3PP;
+  RJigsawVariables["RPT_HT5PP"] = m_RPT_HT5PP;
+  RJigsawVariables["RPT_HT9PP"] = m_RPT_HT9PP;
 
+  //  RJigsawVariables[ "PP_Mass"           ] = m_MPP;
+  RJigsawVariables[ "PP_InvGamma"       ] = m_PP_VisShape;
+  RJigsawVariables[ "PP_dPhiBetaR"      ] = m_dphiPPV;
+  RJigsawVariables[ "PP_dPhiVis"        ] = PP->GetDeltaPhiVisible();
+  RJigsawVariables[ "PP_CosTheta"       ] = m_cosPP;
+  RJigsawVariables[ "PP_dPhiDecayAngle" ] = m_dphiVP ; // I think ...
+  RJigsawVariables[ "PP_VisShape"       ] = m_PP_VisShape;
+  RJigsawVariables[ "PP_MDeltaR"        ] = m_MDR;
+
+  RJigsawVariables[ "P1_Mass"           ] = Pa->GetMass();
+  RJigsawVariables[ "P1_CosTheta"       ] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
+  RJigsawVariables[ "P2_Mass"           ] = Pb->GetMass();
+  RJigsawVariables[ "P2_CosTheta"       ] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
+  RJigsawVariables[ "I1_Depth"          ] = Pa->GetFrameDepth   (*Ia);
+  RJigsawVariables[ "I2_Depth"          ] = Pb->GetFrameDepth   (*Ib);
+
+  RJigsawVariables["dphiPV1a"  ] = m_dphiPV1a;
+  RJigsawVariables["cosV1a"    ] = m_cosV1a;
+  RJigsawVariables["dphiCV2a"  ] = m_dphiCV2a;
+  RJigsawVariables["cosV2a"    ] = m_cosV2a;
+  RJigsawVariables["dphiPV1b" ]  = m_dphiPV1b;
+  RJigsawVariables["cosV1b"   ]  = m_cosV1b;
+  RJigsawVariables["dphiCV2b" ]  = m_dphiCV2b;
+  RJigsawVariables["cosV2b"]	= m_cosV2b;
+
+  RJigsawVariables["NJa"] = m_NJa;
+  RJigsawVariables["NJb"] = m_NJb;
+  //  RJigsawVariables[ "MP"          ] = m_MP;
+  //  RJigsawVariables[ "DeltaBetaGG" ] = DeltaBetaGG;
+  RJigsawVariables[ "dphiVG"      ] = PP->GetDeltaPhiDecayVisible();
+
+  RJigsawVariables[ "QCD_dPhiR"    ] = -100;
+  //  RJigsawVariables[ "QCD_Rpt"      ] = m_RPT;
+  RJigsawVariables[ "QCD_Rsib"    ]  = m_Rsib;
+  RJigsawVariables[ "QCD_Delta1"   ] = m_deltaQCD;
+
+  RJigsawVariables["H2PP"]      = m_H2PP ;
+  RJigsawVariables["H3PP"]      = m_H3PP;
+  RJigsawVariables["H4PP"]      = m_H4PP;
+  RJigsawVariables["H6PP"]      = m_H6PP;
+  RJigsawVariables["H10PP"]     = m_H10PP;
+
+  RJigsawVariables["HT10PP"]     = m_HT10PP;
+
+  RJigsawVariables["H2Pa"]      = m_H2Pa;
+  RJigsawVariables["H2Pb"]      = m_H2Pb;
+  RJigsawVariables["H3Pa"]      = m_H3Pa;
+  RJigsawVariables["H3Pb"]      = m_H3Pb;
+  RJigsawVariables["H4Pa"]      = m_H4Pa;
+  RJigsawVariables["H4Pb"]      = m_H4Pb;
+  RJigsawVariables["H5Pa"]      = m_H5Pa;
+  RJigsawVariables["H5Pb"]      = m_H5Pb;
+  RJigsawVariables["H2Ca"]      = m_H2Ca;
+  RJigsawVariables["H2Cb"]      = m_H2Cb;
+  RJigsawVariables["H3Ca"]      = m_H3Ca;
+  RJigsawVariables["H3Cb"]      = m_H3Cb;
+  RJigsawVariables["HT4PP"]     = m_HT4PP; //m_HT4PP;
+  RJigsawVariables["HT6PP"]     = m_HT6PP; //m_HT6PP;
+  //  RJigsawVariables["minH3P"]    = m_minH3P; //m_minH3P;
+  RJigsawVariables["sangle"]    = m_sangle;
+  RJigsawVariables["dangle"]    = m_dangle;
 
   return;
 
@@ -1395,71 +1595,200 @@ void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
               std::map<TString,float> & RJigsawVariables
           )
 {
-  // rjigsawntv.Reset();
+  rjigsawntv.Reset();
 
-  //std::cout << "In filling function----------------" << std::endl;
-  //std::cout << RJigsawVariables["RJVars_P_0_CosTheta"] << " -----------------------" << std::endl;
+  if ( RJigsawVariables.find( "HT1CM" ) == RJigsawVariables.end() ){
+    rjigsawntv.HT1CM             = -100.;
+    rjigsawntv.PIoHT1CM          = -100.;
+    rjigsawntv.cosS              = -100.;
+    rjigsawntv.NVS               = -100.;
+    rjigsawntv.RPT_HT1CM         = -100.;
+    rjigsawntv.MS                = -100.;
+    rjigsawntv.ddphiP            = -100.;
+    rjigsawntv.sdphiP            = -100.;
+    rjigsawntv.pPP_Ia            = -100.;
+    rjigsawntv.pPP_Ib            = -100.;
+    rjigsawntv.pT_jet1a          = -100.;
+    rjigsawntv.pT_jet1b          = -100.;
+    rjigsawntv.pT_jet2a          = -100.;
+    rjigsawntv.pT_jet2b          = -100.;
+    rjigsawntv.pTPP_jet1         = -100.;
+    rjigsawntv.pTPP_jet2         = -100.;
+    rjigsawntv.pTPP_jet1a        = -100.;
+    rjigsawntv.pTPP_jet1b        = -100.;
+    rjigsawntv.pTPP_jet2a        = -100.;
+    rjigsawntv.pTPP_jet2b        = -100.;
+    rjigsawntv.pTPP_jet3a        = -100.;
+    rjigsawntv.pTPP_jet3b        = -100.;
+    rjigsawntv.pPP_jet1a         = -100.;
+    rjigsawntv.pPP_jet1b         = -100.;
+    rjigsawntv.pPP_jet2a         = -100.;
+    rjigsawntv.pPP_jet2b         = -100.;
+    rjigsawntv.pPP_jet3a         = -100.;
+    rjigsawntv.pPP_jet3b         = -100.;
+    rjigsawntv.R_H2PP_H3PP       = -100.;
+    rjigsawntv.R_pTj2_HT3PP      = -100.;
+    rjigsawntv.R_HT5PP_H5PP      = -100.;
+    rjigsawntv.R_H2PP_H5PP       = -100.;
+    rjigsawntv.minR_pTj2i_HT3PPi = -100.;
+    rjigsawntv.maxR_H1PPi_H2PPi  = -100.;
+    rjigsawntv.R_HT9PP_H9PP      = -100.;
+    rjigsawntv.R_H2PP_H9PP       = -100.;
+    rjigsawntv.RPZ_HT3PP         = -100.;
+    rjigsawntv.RPZ_HT5PP         = -100.;
+    rjigsawntv.RPZ_HT9PP         = -100.;
+    rjigsawntv.RPT_HT3PP         = -100.;
+    rjigsawntv.RPT_HT5PP         = -100.;
+    rjigsawntv.RPT_HT9PP         = -100.;
+    rjigsawntv.PP_InvGamma       = -100.;
+    rjigsawntv.PP_dPhiBetaR      = -100.;
+    rjigsawntv.PP_dPhiVis        = -100.;
+    rjigsawntv.PP_CosTheta       = -100.;
+    rjigsawntv.PP_dPhiDecayAngle = -100.;
+    rjigsawntv.PP_VisShape       = -100.;
+    rjigsawntv.PP_MDeltaR        = -100.;
+    rjigsawntv.P1_Mass           = -100.;
+    rjigsawntv.P1_CosTheta       = -100.;
+    rjigsawntv.P2_Mass           = -100.;
+    rjigsawntv.P2_CosTheta       = -100.;
+    rjigsawntv.I1_Depth          = -100.;
+    rjigsawntv.I2_Depth          = -100.;
+    rjigsawntv.dphiPV1a          = -100.;
+    rjigsawntv.cosV1a            = -100.;
+    rjigsawntv.dphiCV2a          = -100.;
+    rjigsawntv.cosV2a            = -100.;
+    rjigsawntv.dphiPV1b          = -100.;
+    rjigsawntv.cosV1b            = -100.;
+    rjigsawntv.dphiCV2b          = -100.;
+    rjigsawntv.cosV2b            = -100.;
+    rjigsawntv.NJa               = -100.;
+    rjigsawntv.NJb               = -100.;
+    rjigsawntv.dphiVG            = -100.;
+    rjigsawntv.QCD_dPhiR         = -100.;
+    rjigsawntv.QCD_Rsib          = -100.;
+    rjigsawntv.QCD_Delta1        = -100.;
+    rjigsawntv.H2PP              = -100.;
+    rjigsawntv.H3PP              = -100.;
+    rjigsawntv.H4PP              = -100.;
+    rjigsawntv.H6PP              = -100.;
+    rjigsawntv.H10PP             = -100.;
+    rjigsawntv.HT10PP            = -100.;
+    rjigsawntv.H2Pa              = -100.;
+    rjigsawntv.H2Pb              = -100.;
+    rjigsawntv.H3Pa              = -100.;
+    rjigsawntv.H3Pb              = -100.;
+    rjigsawntv.H4Pa              = -100.;
+    rjigsawntv.H4Pb              = -100.;
+    rjigsawntv.H5Pa              = -100.;
+    rjigsawntv.H5Pb              = -100.;
+    rjigsawntv.H2Ca              = -100.;
+    rjigsawntv.H2Cb              = -100.;
+    rjigsawntv.H3Ca              = -100.;
+    rjigsawntv.H3Cb              = -100.;
+    rjigsawntv.HT4PP             = -100.;
+    rjigsawntv.H3Ca              = -100.;
+    rjigsawntv.H3Cb              = -100.;
+    rjigsawntv.HT6PP             = -100.;
+    rjigsawntv.sangle            = -100.;
+    rjigsawntv.dangle            = -100.;
 
- rjigsawntv.RJVars_PP_Mass           = RJigsawVariables[ "RJVars_PP_Mass"           ]; //] = m_MPP];
- rjigsawntv.RJVars_PP_InvGamma       = RJigsawVariables[ "RJVars_PP_InvGamma"       ]; //] = m_PP_VisShape];
- rjigsawntv.RJVars_PP_dPhiBetaR      = RJigsawVariables[ "RJVars_PP_dPhiBetaR"      ]; //] = PP->GetDeltaPhiBoostVisible()];
- rjigsawntv.RJVars_PP_dPhiVis        = RJigsawVariables[ "RJVars_PP_dPhiVis"        ]; //] = PP->GetDeltaPhiVisible()];
- rjigsawntv.RJVars_PP_CosTheta       = RJigsawVariables[ "RJVars_PP_CosTheta"       ]; //] = m_cosPP];
- rjigsawntv.RJVars_PP_dPhiDecayAngle = RJigsawVariables[ "RJVars_PP_dPhiDecayAngle" ]; //] = m_dphiVP ]; // I think ...
- rjigsawntv.RJVars_PP_VisShape       = RJigsawVariables[ "RJVars_PP_VisShape"       ]; //] = m_PP_VisShape];
- rjigsawntv.RJVars_PP_MDeltaR        = RJigsawVariables[ "RJVars_PP_MDeltaR"        ]; //] = m_MDR];
- rjigsawntv.RJVars_P1_Mass           = RJigsawVariables[ "RJVars_P1_Mass"           ];
- rjigsawntv.RJVars_P1_CosTheta       = RJigsawVariables[ "RJVars_P1_CosTheta"       ]; //] = Pa->GetMass();
- rjigsawntv.RJVars_P2_Mass           = RJigsawVariables[ "RJVars_P2_Mass"           ]; //] = m_cosP; //same as Pa->GetCosDecayAngle(*Ia)
- rjigsawntv.RJVars_P2_CosTheta       = RJigsawVariables[ "RJVars_P2_CosTheta"       ]; //] = Pa->GetMass();
- rjigsawntv.RJVars_I1_Depth          = RJigsawVariables[ "RJVars_I1_Depth"          ]; //] = Pb->GetCosDecayAngle(*Ib); //I think ...-100;
- rjigsawntv.RJVars_I2_Depth          = RJigsawVariables[ "RJVars_I2_Depth"          ]; //] = Pa->GetFrameDepth   (*Ia);
- rjigsawntv.RJVars_V1_N              = RJigsawVariables[ "RJVars_V1_N" ]; //] = Pb->GetFrameDepth   (*Ib);
- rjigsawntv.RJVars_V2_N              = RJigsawVariables[ "RJVars_V2_N" ];
- rjigsawntv.RJVars_MP                = RJigsawVariables["RJVars_MP"];
+  }else {
 
- rjigsawntv.RJVars_dphiPV1a          = RJigsawVariables["RJVars_dphiPV1a"  ]; //] = m_dphiPV1a;
- rjigsawntv.RJVars_cosV1a            = RJigsawVariables["RJVars_cosV1a"    ]; //] = m_cosV1a;
- rjigsawntv.RJVars_dphiCV2a          = RJigsawVariables["RJVars_dphiCV2a"  ]; //] = m_dphiCV2a;
- rjigsawntv.RJVars_cosV2a            = RJigsawVariables["RJVars_cosV2a"    ]; //] = m_cosV2a;
- rjigsawntv.RJVars_dphiPV1b          = RJigsawVariables["RJVars_dphiPV1b" ] ; // = m_dphiPV1b;
- rjigsawntv.RJVars_cosV1b            = RJigsawVariables["RJVars_cosV1b"   ] ; // = m_cosV1b;
- rjigsawntv.RJVars_dphiCV2b          = RJigsawVariables["RJVars_dphiCV2b" ]  ; //= m_dphiCV2b;
- rjigsawntv.RJVars_cosV2b            = RJigsawVariables["RJVars_cosV2b"]; //	= m_cosV2b;
+  rjigsawntv.HT1CM             = RJigsawVariables.at("HT1CM"                 )              ; //= m_HT1CM;
+  rjigsawntv.PIoHT1CM          = RJigsawVariables.at("PIoHT1CM"                 )           ; //= m_PIoHT1CM;
+  rjigsawntv.cosS              = RJigsawVariables.at("cosS"                 )               ; //= m_cosS;
+  rjigsawntv.NVS               = RJigsawVariables.at("NVS"                 )                ; //= m_NVS;
+  rjigsawntv.RPT_HT1CM         = RJigsawVariables.at("RPT_HT1CM"                 )          ; //= m_RPT_HT1CM;
+  rjigsawntv.MS                = RJigsawVariables.at("MS"                 )                 ; //= m_MS;
+  rjigsawntv.ddphiP            = RJigsawVariables.at("ddphiP"                 )             ; //= m_ddphiP;
+  rjigsawntv.sdphiP            = RJigsawVariables.at("sdphiP"                 )             ; //= m_sdphiP;
+  rjigsawntv.pPP_Ia            = RJigsawVariables.at("pPP_Ia"                 )             ; //= m_pPP_Ia;
+  rjigsawntv.pPP_Ib            = RJigsawVariables.at("pPP_Ib"                 )             ; //= m_pPP_Ib;
+  rjigsawntv.pT_jet1a          = RJigsawVariables.at("pT_jet1a"                 )           ; //= m_pT_jet1a;
+  rjigsawntv.pT_jet1b          = RJigsawVariables.at("pT_jet1b"                 )           ; //= m_pT_jet1b;
+  rjigsawntv.pT_jet2a          = RJigsawVariables.at("pT_jet2a"                 )           ; //= m_pT_jet2a;
+  rjigsawntv.pT_jet2b          = RJigsawVariables.at("pT_jet2b"                 )           ; //= m_pT_jet2b;
+  rjigsawntv.pTPP_jet1         = RJigsawVariables.at("pTPP_jet1"                 )          ; //= m_pTPP_jet1;
+  rjigsawntv.pTPP_jet2         = RJigsawVariables.at("pTPP_jet2"                 )          ; //= m_pTPP_jet2;
+  rjigsawntv.pTPP_jet1a        = RJigsawVariables.at("pTPP_jet1a"                 )         ; //= m_pTPP_jet1a;
+  rjigsawntv.pTPP_jet1b        = RJigsawVariables.at("pTPP_jet1b"                 )         ; //= m_pTPP_jet1b;
+  rjigsawntv.pTPP_jet2a        = RJigsawVariables.at("pTPP_jet2a"                 )         ; //= m_pTPP_jet2a;
+  rjigsawntv.pTPP_jet2b        = RJigsawVariables.at("pTPP_jet2b"                 )         ; //= m_pTPP_jet2b;
+  rjigsawntv.pTPP_jet3a        = RJigsawVariables.at("pTPP_jet3a"                 )         ; //= m_pTPP_jet3a;
+  rjigsawntv.pTPP_jet3b        = RJigsawVariables.at("pTPP_jet3b"                 )         ; //= m_pTPP_jet3b;
+  rjigsawntv.pPP_jet1a         = RJigsawVariables.at("pPP_jet1a"                 )          ; //= m_pPP_jet1a;
+  rjigsawntv.pPP_jet1b         = RJigsawVariables.at("pPP_jet1b"                 )          ; //= m_pPP_jet1b;
+  rjigsawntv.pPP_jet2a         = RJigsawVariables.at("pPP_jet2a"                 )          ; //= m_pPP_jet2a;
+  rjigsawntv.pPP_jet2b         = RJigsawVariables.at("pPP_jet2b"                 )          ; //= m_pPP_jet2b;
+  rjigsawntv.pPP_jet3a         = RJigsawVariables.at("pPP_jet3a"                 )          ; //= m_pPP_jet3a;
+  rjigsawntv.pPP_jet3b         = RJigsawVariables.at("pPP_jet3b"                 )          ; //= m_pPP_jet3b;
+  rjigsawntv.R_H2PP_H3PP       = RJigsawVariables.at("R_H2PP_H3PP"                 )         ; //= m_R_H2PP_H3PP;
+  rjigsawntv.R_pTj2_HT3PP      = RJigsawVariables.at("R_pTj2_HT3PP"                 )        ; //= m_R_pTj2_HT3PP;
+  rjigsawntv.R_HT5PP_H5PP      = RJigsawVariables.at("R_HT5PP_H5PP"                 )        ; //= m_R_HT5PP_H5PP;
+  rjigsawntv.R_H2PP_H5PP       = RJigsawVariables.at("R_H2PP_H5PP"                 )         ; //= m_R_H2PP_H5PP;
+  rjigsawntv.minR_pTj2i_HT3PPi = RJigsawVariables.at("minR_pTj2i_HT3PPi"             )   ; //= m_minR_pTj2i_HT3PPi;
+  rjigsawntv.maxR_H1PPi_H2PPi  = RJigsawVariables.at("maxR_H1PPi_H2PPi"                 )    ; //= m_maxR_H1PPi_H2PPi;
+  rjigsawntv.R_HT9PP_H9PP      = RJigsawVariables.at("R_HT9PP_H9PP"                 )        ; //= m_R_HT9PP_H9PP;
+  rjigsawntv.R_H2PP_H9PP       = RJigsawVariables.at("R_H2PP_H9PP"                 )         ; //= m_R_H2PP_H9PP;
+  rjigsawntv.RPZ_HT3PP         = RJigsawVariables.at("RPZ_HT3PP"                 )           ; //= m_RPZ_HT3PP;
+  rjigsawntv.RPZ_HT5PP         = RJigsawVariables.at("RPZ_HT5PP"                 )           ; //= m_RPZ_HT5PP;
+  rjigsawntv.RPZ_HT9PP         = RJigsawVariables.at("RPZ_HT9PP"                 )           ; //= m_RPZ_HT9PP;
+  rjigsawntv.RPT_HT3PP         = RJigsawVariables.at("RPT_HT3PP"                 )           ; //= m_RPT_HT3PP;
+  rjigsawntv.RPT_HT5PP         = RJigsawVariables.at("RPT_HT5PP"                 )           ; //= m_RPT_HT5PP;
+  rjigsawntv.RPT_HT9PP         = RJigsawVariables.at("RPT_HT9PP"                 )           ; //= m_RPT_HT9PP;
+  rjigsawntv.PP_InvGamma       = RJigsawVariables.at("PP_InvGamma"       ) ; //= m_PP_VisShape;
+  rjigsawntv.PP_dPhiBetaR      = RJigsawVariables.at("PP_dPhiBetaR"      ) ; //= m_dphiPPV;
+  rjigsawntv.PP_dPhiVis        = RJigsawVariables.at("PP_dPhiVis"        ) ;//= PP.GetDeltaPhiVisible();
+  rjigsawntv.PP_CosTheta       = RJigsawVariables.at("PP_CosTheta"       ) ; //= m_cosPP;
+  rjigsawntv.PP_dPhiDecayAngle = RJigsawVariables.at("PP_dPhiDecayAngle" ) ; //= m_dphiVP ; // I think ...
+  rjigsawntv.PP_VisShape       = RJigsawVariables.at("PP_VisShape"       ) ; //= m_PP_VisShape;
+  rjigsawntv.PP_MDeltaR        = RJigsawVariables.at("PP_MDeltaR"        ) ; //= m_MDR;
+  rjigsawntv.P1_Mass           = RJigsawVariables.at("P1_Mass"           ) ;//= Pa.GetMass();
+  rjigsawntv.P1_CosTheta       = RJigsawVariables.at("P1_CosTheta"       ) ; //= m_cosP; //same as Pa.GetCosDecayAngle(*Ia)
+  rjigsawntv.P2_Mass           = RJigsawVariables.at("P2_Mass"           ) ;//= Pb.GetMass();
+  rjigsawntv.P2_CosTheta       = RJigsawVariables.at("P2_CosTheta"       ) ;//= Pb.GetCosDecayAngle(*Ib); //I think ...-100;
+  rjigsawntv.I1_Depth          = RJigsawVariables.at("I1_Depth"          ) ;//= Pa.GetFrameDepth   (*Ia);
+  rjigsawntv.I2_Depth          = RJigsawVariables.at("I2_Depth"          ) ;//= Pb.GetFrameDepth   (*Ib);
+  rjigsawntv.dphiPV1a          = RJigsawVariables.at("dphiPV1a"          )          ; //= m_dphiPV1a;
+  rjigsawntv.cosV1a            = RJigsawVariables.at("cosV1a"            )          ; //= m_cosV1a;
+  rjigsawntv.dphiCV2a          = RJigsawVariables.at("dphiCV2a"          )          ; //= m_dphiCV2a;
+  rjigsawntv.cosV2a            = RJigsawVariables.at("cosV2a"            )          ; //= m_cosV2a;
+  rjigsawntv.dphiPV1b          = RJigsawVariables.at("dphiPV1b"          )           ; //= m_dphiPV1b;
+  rjigsawntv.cosV1b            = RJigsawVariables.at("cosV1b"            )           ; //= m_cosV1b;
+  rjigsawntv.dphiCV2b          = RJigsawVariables.at("dphiCV2b"          )           ; //= m_dphiCV2b;
+  rjigsawntv.cosV2b            = RJigsawVariables.at("cosV2b"             )              ; //= m_cosV2b;
+  rjigsawntv.NJa               = RJigsawVariables.at("NJa"                 )                 ; //= m_NJa;
+  rjigsawntv.NJb               = RJigsawVariables.at("NJb"                 )                 ; //= m_NJb;
+  rjigsawntv.dphiVG            = RJigsawVariables.at("dphiVG"             )     ;//  = PP.GetDeltaPhiDecayVisible();
+  rjigsawntv.QCD_dPhiR         = RJigsawVariables.at("QCD_dPhiR"         )      ;//= -100;
+  rjigsawntv.QCD_Rsib          = RJigsawVariables.at("QCD_Rsib"          )       ; //= m_Rsib;
+  rjigsawntv.QCD_Delta1        = RJigsawVariables.at("QCD_Delta1"        )      ; //= m_deltaQCD;
+  rjigsawntv.H2PP              = RJigsawVariables.at("H2PP"                 )                ; //= m_H2PP ;
+  rjigsawntv.H3PP              = RJigsawVariables.at("H3PP"                 )                ; //= m_H3PP;
+  rjigsawntv.H4PP              = RJigsawVariables.at("H4PP"                 )                ; //= m_H4PP;
+  rjigsawntv.H6PP              = RJigsawVariables.at("H6PP"                 )                ; //= m_H6PP;
+  rjigsawntv.H10PP             = RJigsawVariables.at("H10PP"                 )               ; //= m_H10PP;
+  rjigsawntv.HT10PP            = RJigsawVariables.at("HT10PP"                 )              ; //= m_HT10PP;
+  rjigsawntv.H2Pa              = RJigsawVariables.at("H2Pa"                 )                ; //= m_H2Pa;
+  rjigsawntv.H2Pb              = RJigsawVariables.at("H2Pb"                 )                ; //= m_H2Pb;
+  rjigsawntv.H3Pa              = RJigsawVariables.at("H3Pa"                 )                ; //= m_H3Pa;
+  rjigsawntv.H3Pb              = RJigsawVariables.at("H3Pb"                 )                ; //= m_H3Pb;
+  rjigsawntv.H4Pa              = RJigsawVariables.at("H4Pa"                 )                ; //= m_H4Pa;
+  rjigsawntv.H4Pb              = RJigsawVariables.at("H4Pb"                 )                ; //= m_H4Pb;
+  rjigsawntv.H5Pa              = RJigsawVariables.at("H5Pa"                 )                ; //= m_H5Pa;
+  rjigsawntv.H5Pb              = RJigsawVariables.at("H5Pb"                 )                ; //= m_H5Pb;
+  rjigsawntv.H2Ca              = RJigsawVariables.at("H2Ca"                 )                ; //= m_H2Ca;
+  rjigsawntv.H2Cb              = RJigsawVariables.at("H2Cb"                 )                ; //= m_H2Cb;
+  rjigsawntv.H3Ca              = RJigsawVariables.at("H3Ca"                 )                ; //= m_H3Ca;
+  rjigsawntv.H3Cb              = RJigsawVariables.at("H3Cb"                 )                ; //= m_H3Cb;
+  rjigsawntv.HT4PP             = RJigsawVariables.at("HT4PP"                 )               ; //= m_HT4PP; //m_HT4PP;
+  rjigsawntv.H3Ca              = RJigsawVariables.at("H3Ca"                 )                ; //= m_H3Ca;
+  rjigsawntv.H3Cb              = RJigsawVariables.at("H3Cb"                 )                ; //= m_H3Cb;
+  rjigsawntv.HT6PP             = RJigsawVariables.at("HT6PP"                 )               ; //= m_HT6PP; //m_HT6PP;
+  rjigsawntv.sangle            = RJigsawVariables.at("sangle"                 )              ; //= m_sangle;
+  rjigsawntv.dangle            = RJigsawVariables.at("dangle"                 )              ; //= m_dangle;
+  }
 
- rjigsawntv.RJVars_DeltaBetaGG = RJigsawVariables["RJVars_DeltaBetaGG" ]; //] = DeltaBetaGG;
- rjigsawntv.RJVars_dphiVG     = RJigsawVariables["RJVars_dphiVG"      ]; //] = PP->GetDeltaPhiDecayVisible();
- rjigsawntv.RJVars_QCD_dPhiR  = RJigsawVariables["RJVars_QCD_dPhiR"    ]; //] = -100;
- rjigsawntv.RJVars_QCD_Rpt    = RJigsawVariables["RJVars_QCD_Rpt"      ]; //] = m_RPT;
- rjigsawntv.RJVars_QCD_Rsib   = RJigsawVariables["RJVars_QCD_Rsib"    ];
- rjigsawntv.RJVars_QCD_Delta1 = RJigsawVariables["RJVars_QCD_Delta1"   ]; //] = m_deltaQCD;
-
- rjigsawntv.RJVars_H2PP      = RJigsawVariables["RJVars_H2PP"];
- rjigsawntv.RJVars_H3PP      = RJigsawVariables["RJVars_H3PP"];
- rjigsawntv.RJVars_H4PP      = RJigsawVariables["RJVars_H4PP"];
- rjigsawntv.RJVars_H6PP      = RJigsawVariables["RJVars_H6PP"];
- rjigsawntv.RJVars_H2Pa      = RJigsawVariables["RJVars_H2Pa"];
- rjigsawntv.RJVars_H2Pb      = RJigsawVariables["RJVars_H2Pb"];
- rjigsawntv.RJVars_H3Pa      = RJigsawVariables["RJVars_H3Pa"];
- rjigsawntv.RJVars_H3Pb      = RJigsawVariables["RJVars_H3Pb"];
- rjigsawntv.RJVars_H4Pa      = RJigsawVariables["RJVars_H4Pa"];
- rjigsawntv.RJVars_H4Pb      = RJigsawVariables["RJVars_H4Pb"];
- rjigsawntv.RJVars_H5Pa      = RJigsawVariables["RJVars_H5Pa"];
- rjigsawntv.RJVars_H5Pb      = RJigsawVariables["RJVars_H5Pb"];
- rjigsawntv.RJVars_H2Ca      = RJigsawVariables["RJVars_H2Ca"];
- rjigsawntv.RJVars_H2Cb      = RJigsawVariables["RJVars_H2Cb"];
- rjigsawntv.RJVars_H3Ca      = RJigsawVariables["RJVars_H3Ca"];
- rjigsawntv.RJVars_H3Cb      = RJigsawVariables["RJVars_H3Cb"];
- rjigsawntv.RJVars_HT4PP     = RJigsawVariables["RJVars_HT4PP"];
- rjigsawntv.RJVars_HT6PP     = RJigsawVariables["RJVars_HT6PP"];
- rjigsawntv.RJVars_minH3P    = RJigsawVariables["RJVars_minH3P"];
- rjigsawntv.RJVars_sangle    = RJigsawVariables["RJVars_sangle"];
- rjigsawntv.RJVars_dangle    = RJigsawVariables["RJVars_dangle"];
- rjigsawntv.RJVars_ddphiPC   = RJigsawVariables["RJVars_ddphiPC"];
- rjigsawntv.RJVars_sdphiPC   = RJigsawVariables["RJVars_sdphiPC"];
- rjigsawntv.RJVars_dH2o3P    = RJigsawVariables["RJVars_dH2o3P"];
- rjigsawntv.RJVars_RPZ_HT4PP = RJigsawVariables["RJVars_RPZ_HT4PP"];
- rjigsawntv.RJVars_RPZ_HT6PP = RJigsawVariables["RJVars_RPZ_HT6PP"];
 }
 
 
