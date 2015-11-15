@@ -153,7 +153,7 @@ void PhysObjProxyFillerTruth::FillPhotonProxies(std::vector<PhotonTruthProxy>& b
     }
   }
 
-  std::cout << "Event has " << isolated_signal_photons.size() << " good photons." << std::endl;
+  //  std::cout << "Event has " << isolated_signal_photons.size() << " good photons." << std::endl;
 
   std::sort(baseline_photons.begin(),baseline_photons.end(),PtOrder<PhotonTruthProxy>);
   std::sort(isolated_baseline_photons.begin(),isolated_baseline_photons.end(),PtOrder<PhotonTruthProxy>);
