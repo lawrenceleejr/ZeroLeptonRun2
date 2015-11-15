@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <iostream>
 
-FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB): 
+FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
   m_xsecDB(xsecDB),
   addExtraVars(false),
   addRJigsawVars(false),
@@ -23,20 +23,20 @@ FilterUpdateMerge::FilterUpdateMerge(SUSY::CrossSectionDB* xsecDB):
   if ( !m_xsecDB ) throw std::invalid_argument("FilterUpdateMerge: need a valid xsecDB pointer !");
 }
 
-void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName, 
-				 const std::vector<std::string>& inFiles, 
-				 bool isSignal, bool doXSecNormalisation, 
-				 bool doFiltering, bool doExtraVars, 
-				 bool doRJigsawVars, bool doCRWTVars, 
+void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
+				 const std::vector<std::string>& inFiles,
+				 bool isSignal, bool doXSecNormalisation,
+				 bool doFiltering, bool doExtraVars,
+				 bool doRJigsawVars, bool doCRWTVars,
 				 bool doCRZVars, bool doCRYVars)
 {
   // book output tuple variables
   NTVars outVars;
   bookNTVars(outTree,outVars,false);
-  
+
   NTReclusteringVars outRTVars;
   bookNTReclusteringVars(outTree,outRTVars);
-  
+
   NTExtraVars inExtraVars, outExtraVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
 
@@ -68,7 +68,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     inVars.setAddresses(tree);
     inRTVars.setAddresses(tree);
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
-    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_PP_Mass);
+    if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.HT1CM);
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
     if ( doCRZVars ) tree->GetBranch("NTCRZVars")->SetAddress(&inCRZVars.lep1Pt);
     //if ( doCRYVars) inCRYVars.setAddresses(tree);
@@ -89,7 +89,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
       if ( doFiltering  && !acceptEvent(inVars.ntv) ) continue;
 
       if ( doXSecNormalisation ) {
-	if ( isSignal ) { 
+	if ( isSignal ) {
 	  // cross-section to be recomputed for every event as the hard process changes
 	  rel_uncertainty = m_xsecDB->rel_uncertainty(inVars.ntv.RunNumber,inVars.ntv.hardproc);
 	  sumW = m_xsecDB->sumweight(inVars.ntv.RunNumber,inVars.ntv.hardproc);
@@ -132,6 +132,6 @@ bool FilterUpdateMerge::acceptEvent(const NTVars& ntv) const
   //if (ntv.jetPt[1] < 60000.) return false;
   if (ntv.MET < 150.) return false;
   if (ntv.jetPt[0] < 100.) return false;
-  
+
   return true;
 }
