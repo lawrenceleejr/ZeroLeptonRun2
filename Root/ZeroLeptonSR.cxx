@@ -16,6 +16,7 @@
 #include "TDirectory.h"
 #include "TVector2.h"
 
+#include <unordered_map>
 #include <iostream>
 #include <stdexcept>
 
@@ -426,7 +427,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET);
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
-  std::map<TString,float> RJigsawVariables;
+  std::unordered_map<std::string,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingET->X(),

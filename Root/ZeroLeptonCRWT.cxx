@@ -21,6 +21,7 @@
 #include "TLorentzVector.h"
 #include "xAODTruth/TruthParticleContainer.h"
 #include "xAODTruth/TruthParticle.h"
+#include <unordered_map>
 
 #include <iostream>
 #include <stdexcept>
@@ -583,7 +584,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETPrime);
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
-  std::map<TString,float> RJigsawVariables;
+  std::unordered_map<std::string,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingETPrime.X(),

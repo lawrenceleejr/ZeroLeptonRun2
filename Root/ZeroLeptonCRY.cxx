@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <unordered_map>
 
 ZeroLeptonCRY::ZeroLeptonCRY(const char *name)
   : cafe::Processor(name),
@@ -595,7 +596,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,missingETCorr);
   //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
 
-  std::map<TString,float> RJigsawVariables;
+  std::unordered_map<std::string,float> RJigsawVariables;
   if ( m_fillTRJigsawVars) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingETCorr.X(),

@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <unordered_map>
 
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
@@ -353,7 +354,7 @@ void PhysObjProxyUtils::RJigsawInit(){
 void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& jets,
 						  Double_t metx,
 						  Double_t mety,
-						  std::map<TString,float>& RJigsawVariables,
+						  std::unordered_map<std::string,float>& RJigsawVariables,
 						  Double_t jetPtCut,
 						  size_t njetsCut//todo reimplement this
 						  ){
@@ -375,7 +376,7 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   // need two jets to play
   if(Jets.size() < 2){
-    RJigsawVariables = std::map<TString, float>();
+    RJigsawVariables.clear(); // = std::unordered_map<TString, float>();
     return;
   }
 
@@ -1592,7 +1593,7 @@ void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
 }
 
 void PhysObjProxyUtils::FillNTRJigsawVars(NTRJigsawVars& rjigsawntv,
-              std::map<TString,float> & RJigsawVariables
+              std::unordered_map<std::string,float> & RJigsawVariables
           )
 {
   rjigsawntv.Reset();

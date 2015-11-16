@@ -22,7 +22,7 @@
 #include "xAODTruth/TruthParticleContainer.h"
 #include "xAODTruth/TruthParticle.h"
 
-
+#include <unordered_map>
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
@@ -549,7 +549,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   double mT2_noISR=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
 
-  std::map<TString,float> RJigsawVariables;
+  std::unordered_map<std::string,float> RJigsawVariables;
   if ( m_fillTRJigsawVars) {
     m_proxyUtils.CalculateRJigsawVariables(good_jets,
 					   missingETPrime.X(),

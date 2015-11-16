@@ -14,6 +14,7 @@ class NTRJigsawVars;
 
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include "fastjet/PseudoJet.hh"
 
 #include "RestFrames/RestFrames.hh"
@@ -86,7 +87,7 @@ class PhysObjProxyUtils
   void CalculateRJigsawVariables(const std::vector<JetProxy>& jets,
 				 Double_t metx,
 				 Double_t mety,
-				 std::map<TString,float>& RJigsawVariables,
+				 std::unordered_map<std::string,float>& RJigsawVariables,
 				 Double_t jetPtCut=0.,
 				 size_t njetsCut = 1e9
 				 );
@@ -144,7 +145,7 @@ class PhysObjProxyUtils
 
   void FillTriggerBits(NTVars& ntv,
 		       long trigger);
-  void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::map<TString,float> & RJigsawVariables );
+  void FillNTRJigsawVars(NTRJigsawVars& rjigsawntv, std::unordered_map<std::string,float> & RJigsawVariables );
 
   // void FillNTExtraVarsTriggerBits(NTExtraVars& extrantv,
   // 				  long triggers);
