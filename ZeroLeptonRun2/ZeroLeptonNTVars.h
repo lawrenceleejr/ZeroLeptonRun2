@@ -38,7 +38,7 @@ class NTVars
   int tauLooseN;
   float tauMt;
   float SherpaBugMET;
-
+  float nHLTJets30, nHLTJets40, nHLTJets50;
 
   // WARNING: if you add another vector you need to update NTVarsRead below
 

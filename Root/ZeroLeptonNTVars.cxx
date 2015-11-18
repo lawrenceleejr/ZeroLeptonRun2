@@ -5,7 +5,7 @@ std::string NTVars::toString()
 {
   return
 
-std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:nHLTJets/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F");
+std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:met/F:nHLTJets/F:metPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:nHLTJets30/F:nHLTJets40/F:nHLTJets50/F");
 }
 
 void NTVars::Reset()
@@ -24,6 +24,11 @@ void NTVars::Reset()
   Njet = 0;
   MET = 0.f;
   nHLTJets = 0.f;
+
+  nHLTJets30 = 0.f;
+  nHLTJets40 = 0.f;
+  nHLTJets50 = 0.f;
+
   METPhi = 0.f;
   deltaPhi = 0.f;
   deltaPhiRemaining = 0.f;
