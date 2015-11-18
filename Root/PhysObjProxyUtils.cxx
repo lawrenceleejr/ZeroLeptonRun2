@@ -358,6 +358,9 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 						  Double_t jetPtCut,
 						  size_t njetsCut//todo reimplement this
 						  ){
+  RJigsawVariables.clear(); // = std::unordered_map<TString, float>();
+
+
   using namespace RestFrames;
   TVector3 ETMiss(metx , mety , 0) ;
 
@@ -376,10 +379,10 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
 
   // need two jets to play
   if(Jets.size() < 2){
-    RJigsawVariables.clear(); // = std::unordered_map<TString, float>();
     return;
   }
 
+  LAB->ClearEvent();
   vector<RFKey> jetID;
   for(int i = 0; i < int(Jets.size()); i++){
     jetID.push_back(VIS->AddLabFrameFourVector(Jets[i]));
@@ -405,6 +408,8 @@ void PhysObjProxyUtils::CalculateRJigsawVariables(const std::vector<JetProxy>& j
   }
   INV_bkg->SetLabFrameThreeVector(ETMiss);
   if(!LAB_bkg->AnalyzeEvent()) cout << "Something went wrong..." << endl;
+
+
 
   // QCD clean-up
   TLorentzVector Psib = I_bkg->GetSiblingFrame().GetFourVector(*LAB_bkg);
