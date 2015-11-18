@@ -1414,11 +1414,20 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 
 void PhysObjProxyUtils::FillTriggerBits(NTVars& ntv,
 					long trigger,
-					int njets
+					int njets,
+					int njets30,
+					int njets40,
+					int njets50
 )
 {
   ntv.triggerBits.push_back(trigger);
   ntv.nHLTJets = float(njets)+.1;
+
+  //  std::cout << "njets30 : " << njets30 << std::endl;
+
+  ntv.nHLTJets30 = float(njets30)+.1;
+  ntv.nHLTJets40 = float(njets40)+.1;
+  ntv.nHLTJets50 = float(njets50)+.1;
 }
 
 
