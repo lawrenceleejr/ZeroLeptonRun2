@@ -156,6 +156,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   uint32_t LumiBlockNumber = eventInfo->lumiBlock();
   uint32_t mc_channel_number = 0;
   if ( ! m_IsData ) mc_channel_number = eventInfo->mcChannelNumber();
+  if ( m_IsTruth ) mc_channel_number = eventInfo->runNumber();
 
   // global event weight
   float weight = 1.f;
