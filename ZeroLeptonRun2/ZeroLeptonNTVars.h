@@ -324,6 +324,11 @@ public:
   float mT2;
   float mT2_noISR;
   float Ap;
+
+  float ZvvPt;
+  float ZvvEta;
+  float ZvvPhi;
+  float ZvvM;
 };
 
 class NTRJigsawVars {

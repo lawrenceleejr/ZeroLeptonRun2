@@ -316,7 +316,7 @@ void NTCR3LVars::Reset()
 
 std::string NTExtraVars::toString()
 {
-  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:Ap/F");
+  return std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:Ap/F:ZvvPt/F:ZvvEta/F:ZvvPhi/F:ZvvM/F");
 
 }
 
@@ -330,6 +330,10 @@ void NTExtraVars::Reset()
   mT2=0.f;
   mT2_noISR=0.f;
   Ap =0.f;  //  triggers = 0 ;
+  ZvvPt = 0.f;
+  ZvvEta = 0.f;
+  ZvvPhi = 0.f;
+  ZvvM = 0.f;
 }
 
 std::string NTRJigsawVars::toString()

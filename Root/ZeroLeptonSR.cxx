@@ -15,10 +15,18 @@
 #include "cafe/Config.h"
 #include "TDirectory.h"
 #include "TVector2.h"
+#include "xAODTruth/TruthParticleContainer.h"
 
 #include <unordered_map>
 #include <iostream>
 #include <stdexcept>
+
+static bool isZnunuMC(uint32_t mc_channel_number) {  
+  return (
+	  (mc_channel_number>=361444 && mc_channel_number<=361467) || // Sherpa Znunu NLO
+	  (mc_channel_number>=407163 && mc_channel_number<=407183) // Sherpa Znunu LO
+	  );
+}
 
 ZeroLeptonSR::ZeroLeptonSR(const char *name)
   : cafe::Processor(name),
@@ -348,9 +356,11 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   if( !m_IsTruth ){
     if (!(MissingEt > m_cutVal.m_cutEtMiss)) return true;
   }
-  if( m_IsTruth ){
-    if (!(MissingEt > m_cutVal.m_cutEtMissTruthTest)) return true;
-  }
+
+  /// KTJ: drop truth cut for gamma reweighting extraction
+  // if( m_IsTruth ){
+  //   if (!(MissingEt > m_cutVal.m_cutEtMissTruthTest)) return true;
+  // }
 
   m_counter->increment(weight,incr++,"MET cut",trueTopo);
   // Leading jet Pt cut
@@ -526,6 +536,22 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,Ap);
 
     if ( m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
+
+    TLorentzVector znunu;
+    if( !m_IsData && isZnunuMC(mc_channel_number) ) {
+      const xAOD::TruthParticleContainer* truthNu(0); 
+      std::string truthnu_key = m_IsTruth ? "TruthNeutrinos" : "SUSY1TruthNeutrinos";
+      if ( ! event.retrieve(truthNu, truthnu_key).isSuccess() ) throw std::runtime_error("Could not retrieve CurrentSystematicSet");
+      for(const auto& nu : *truthNu) {
+	if(nu->auxdata<unsigned int>("classifierParticleOrigin") == 13) {
+	  znunu += nu->p4();
+	}
+      }
+      m_extrantv.ZvvPt  = znunu.Pt();
+      m_extrantv.ZvvEta = znunu.Eta();
+      m_extrantv.ZvvPhi = znunu.Phi();
+      m_extrantv.ZvvM   = znunu.M();
+    }
 
     if(!m_IsTruth && m_fillReclusteringVars)
       m_proxyUtils.FillNTReclusteringVars(m_RTntv,good_jets,vReclJetMass,vReclJetPt,vReclJetEta,vReclJetPhi,vD2,visWmedium, visWtight, visZmedium, visZtight);
