@@ -539,7 +539,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
       if(btight) tight = 1;
     }
 
-    if(!m_IsData){
+    if(!m_IsData && m_IsTruth){
       static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthType("classifierParticleType");
       static const SG::AuxElement::ConstAccessor<unsigned int> acc_truthOrig("classifierParticleOrigin");
       truthType   = acc_truthType(*isolated_signal_photons[0].photon());
