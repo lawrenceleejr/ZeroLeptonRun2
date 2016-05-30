@@ -1,6 +1,7 @@
 30-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Use only the leading photon in BuildSUSYObject
 	* Add Sherpa v2.2 WZweight
+	* Add fix for systematic variation
 
 30-May-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Making merging step a little more user friendly with allBackgroundsNT flag

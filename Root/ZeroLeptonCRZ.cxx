@@ -154,6 +154,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     m_counter = m_counterRepository.counter(sysname);
     if (sysname == "" ) {
       m_tree = getTree(m_stringRegion+"NT");
+      m_physobjsFiller->setSuffix(m_suffix);
     }
     else {
       m_tree = getTree(m_stringRegion+"NT_"+sysname);

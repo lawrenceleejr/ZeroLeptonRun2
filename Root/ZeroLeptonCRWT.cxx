@@ -196,6 +196,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     if (sysname != "" ) systag = "_"+sysname+"_";
     if ( sysname == "" ) {
       m_tree = getTree(m_stringRegion+"NT");
+      m_physobjsFiller->setSuffix(m_suffix);
       m_physobjsFiller->setSuffixSyst(m_suffixSyst);
     }
     else {
