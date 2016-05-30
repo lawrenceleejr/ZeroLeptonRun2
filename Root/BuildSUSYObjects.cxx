@@ -614,7 +614,7 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
 	  (mcChannelNumber>=363102 && mcChannelNumber<=363122) ||
 	  (mcChannelNumber>=363361 && mcChannelNumber<=363435)
 	  ) {
-	eventInfo->auxdecor<float>("WZweight") = m_SUSYObjTool->getSherpaVjetsNjetsWeight();	
+	eventInfo->auxdecor<float>("WZweight") = m_SUSYObjTool->getSherpaVjetsNjetsWeight("AntiKt4TruthJets");	
       }
     }    
 
