@@ -1,0 +1,75 @@
+#ifndef ZeroLeptonRun2_BuildSUSYObjects_H_
+#define ZeroLeptonRun2_BuildSUSYObjects_H_
+
+#include "cafe/Processor.h"
+#include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
+#include "AsgTools/ToolHandle.h"
+#include "TauAnalysisTools/TauSelectionTool.h"
+#include "TauAnalysisTools/TauEfficiencyCorrectionsTool.h"
+#include "TauAnalysisTools/TauTruthMatchingTool.h"
+
+namespace CP{
+	class SystematicSet;
+}
+namespace ST{
+  class SUSYObjDef_xAOD;
+  class SystInfo;
+}
+
+class TFile;
+
+#include <string>
+#include <vector>
+
+//---------------------------------------------------------------------
+// BuildSUSYObjects use the collections of physics objects in the event
+// and pass then through SUSYTools that applies calibration and add
+// properties (as "decorations" to the objects). The output containers
+// are stored in the transient store with keys "SUSYJets", "SUSYMuons",
+// "SUSYElectrons", "SUSYPhotons", "SUSYTaus"
+//
+// If UseSmearedJets is true this is supposed to be called from within
+// a loop on smeared iterations from an event.
+//---------------------------------------------------------------------
+class BuildSUSYObjects : public cafe::Processor {
+public:
+  BuildSUSYObjects(const char *name);
+  ~BuildSUSYObjects();
+  bool processEvent(xAOD::TEvent& event);
+  void inputFileOpened(TFile *file);
+
+private:
+  void initSUSYTools();
+  void fillTriggerInfo(xAOD::TEvent& event) const;
+
+  ST::SUSYObjDef_xAOD* m_SUSYObjTool;
+  bool m_IsData;
+  bool m_Is25ns;
+  bool m_IsAtlfast;
+  bool m_UseSmearedJets;
+  bool m_DoSystematics;
+  bool m_PhotonInOR;
+  bool m_doTrigger;
+
+  ToolHandle<TauAnalysisTools::ITauSelectionTool> m_tauSelTool;
+  ToolHandle<TauAnalysisTools::ITauEfficiencyCorrectionsTool> m_tauEffTool;
+  ToolHandle<TauAnalysisTools::ITauTruthMatchingTool> m_tauTruthMatchTool;
+  std::vector<CP::SystematicSet> m_tauEffSystSetList;
+
+  std::string m_STConfig;
+  std::string m_taukey;
+  std::string m_suffix;
+  std::string m_suffixRecl;
+  ZeroLeptonRunPeriod m_period;
+  int m_JESNuisanceParameterSet;
+
+  std::vector<ST::SystInfo> m_SystInfoList;
+  std::vector<std::string> m_SystMatch;
+  std::vector<std::string> m_prwFiles;
+  std::vector<std::string> m_lumicalcFiles;
+
+public:
+  ClassDef(BuildSUSYObjects,0);
+};
+
+#endif // ZeroLeptonRun2_BuildSUSYObjects_H_

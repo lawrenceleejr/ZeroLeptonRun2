@@ -1,0 +1,62 @@
+# This is a README for those who would like to try out git using the "git svn" interface.
+
+# Two quick commenst :
+# 1) One of the hardest parts of git is that some commands have the same name but different functions from svn commands.
+# Knowing this will help a lot.  Don't expect the same behavior (git commit often! you only commit locally).
+
+# 2) If you are trying this, please let me (Russell rsmith@cern.ch) if you have any problems !
+# I'm happy to help the 0L group move to git.
+
+# git svn allows one to use git locally, but with a remote svn server.
+# In particular, one gets local branches and local commits, which are among the most powerful
+# and useful git features
+#
+# To start using the ZeroLeptonRun2 code with git svn, just follow this README :
+
+cd myNewFactoryDir
+# follow the main INSTALL to get all other packages, but for ZeroLeptonRun2 :
+
+git svn clone -r740000:HEAD -s  svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2
+
+# let's break this down.  The "git svn clone" command how we copy a remote svn repository as a local git server.
+# The -r740000:HEAD option will stop git at from reading all of the svn revision history (of atlasoff! ).
+# The -s option says that this is a "standard" svn repo with a trunk/, tags/, and branches/ folders.
+# When this command finishes, we will have a local git repository which is connected to the remote svn repository.
+# Let's look at it :
+
+cd ZeroLeptonRun2
+git svn info
+
+# this command will give you the same info as a normal "svn info" in an svn command
+# you can see that we are on the trunk/ ,  as one would like.
+# Doing a
+
+git status -uno
+git branch -va
+
+# We see that we are on our local master, and we can see the branches and tags (which have been created since revision 740000).
+# The best way to use git is to have a local "feature" branch, for whatever topic we are working on
+
+git checkout -b feature/myNewFeature
+# .... (do some work)
+git commit -m "first update for myNewFeature" pathToChangedFiles
+# .... (do some work)
+git commit -m "second update for myNewFeature" pathTo2ndChangedFiles
+
+# where one will see the pathToChangedFiles when calling a "git status -uno"
+# When you are happy with your new feature, move change back to the master
+
+git checkout master
+git svn rebase #if you haven't changed master (and you haven't have you? :) ), this will be essentially an "svn up" on the trunk
+git merge feature/myNewFeature # merge *locally*, fix merge conflicts
+# .... fix the merge conflicts with your favorite editor
+git add mergeConflictedFiles
+git commit
+
+# You now have a "local" master which has your merged feature.
+# Finally, we commit to the remote svn server :
+
+git svn dcommit
+
+# Your commits will now go to the server!
+# Rinse and repeat
