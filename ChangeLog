@@ -7,6 +7,8 @@
 	* Default to filtering
 	* Changed to cutfile13TeV (we're not at 8 TeV anymore!)
 	* Turned off RJigsaw variables at factory level - currently done in post-processing
+	* Updates to GRL setups
+	* Set doFakes to False if not running on data
 
 25-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Update JetSmearing in ZeroLeptonDataDrivenQCD

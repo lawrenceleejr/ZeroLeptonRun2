@@ -171,6 +171,7 @@ def main():
             tags = tag.split("_")
             if len(tags)>2 and tags[2].startswith("a"):
                 scriptcmd += " Global.IsAtlfast: TRUE"
+                scriptcmd += " Global.doFake: FALSE"
 
 
         # Run period
