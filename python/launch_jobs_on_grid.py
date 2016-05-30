@@ -27,6 +27,7 @@ def parseCmdLine(args):
     parser.add_option("--prunopts", dest="prunopts", help="Command line arguments to prun", default="")
     parser.add_option("--signal", dest="signal", help="Input is signal MC", action='store_true', default=False)
     parser.add_option("--noGRL", dest="noGRL", help="If true no GRL is applied", action='store_true', default=False)
+    parser.add_option("--noSyst", dest="noSyst", help="If true no systematic variations are run", action='store_true', default=False)
 
     parser.add_option("--tmpDir", dest="tmpDir", help="Tmp dir", default="")
     (config, args) = parser.parse_args(args)
@@ -208,6 +209,10 @@ def main():
         # GRL
         if config.noGRL:
             scriptcmd += " grl.passAll: TRUE "
+
+        # Systematics
+        if config.noSyst:
+            scriptcmd += " Global.DoSystematics: FALSE "
 
         extfiles=' --extFile '
         for f in localfiles:

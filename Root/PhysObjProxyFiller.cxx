@@ -23,25 +23,25 @@
 
 
 PhysObjProxyFiller::PhysObjProxyFiller(float jetPtCut, float elPtCut, float muonPtCut, float phPtCut, const std::string suffix, bool doRecl, const std::string suffixRecl, const std::string suffixSyst, const std::string suffixSmear):
-  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut),  m_doRecl(doRecl), m_suffix(suffix),m_suffixRecl(suffixRecl),m_suffixSyst(suffixSyst),m_suffixSmear(suffixSmear)
+  m_jetPtCut(jetPtCut), m_elPtCut(elPtCut), m_muonPtCut(muonPtCut), m_phPtCut(phPtCut),  m_doRecl(doRecl), m_suffix(suffix),m_suffixRecl(suffixRecl),m_suffixSmear(suffixSmear)
 {
 }
 
 void PhysObjProxyFiller::setJRT()
 {
-  std::map<std::string, JetReclusteringTool*>::const_iterator pos = m_jrtMap.find(m_suffixSyst);
+  std::map<std::string, JetReclusteringTool*>::const_iterator pos = m_jrtMap.find(m_suffix);
   if ( pos == m_jrtMap.end() ) {
-    m_jetReclusteringTool = new JetReclusteringTool("ZLJetReclusteringTool"+m_suffixRecl+m_suffixSyst);
-    m_jetReclusteringTool->setProperty("InputJetContainer",  "SUSYJetsNEW"+m_suffixRecl+m_suffixSyst);
-    m_jetReclusteringTool->setProperty("OutputJetContainer", "SUSYJetsRecl"+m_suffixRecl+m_suffixSyst);
+    m_jetReclusteringTool = new JetReclusteringTool("ZLJetReclusteringTool"+m_suffixRecl+m_suffix);
+    m_jetReclusteringTool->setProperty("InputJetContainer",  "SUSYJetsReclInput"+m_suffixRecl+m_suffix);
+    m_jetReclusteringTool->setProperty("OutputJetContainer", "SUSYJetsRecl"+m_suffixRecl+m_suffix);
     m_jetReclusteringTool->setProperty("InputJetPtMin",      25.0);
     m_jetReclusteringTool->setProperty("RCJetPtMin",         50.0);
     m_jetReclusteringTool->setProperty("RCJetPtFrac",        0.05);
     m_jetReclusteringTool->initialize();
-    m_jrtMap[m_suffixSyst] = m_jetReclusteringTool;
+    m_jrtMap[m_suffix] = m_jetReclusteringTool;
   }
   else {
-    m_jetReclusteringTool =  m_jrtMap[m_suffixSyst];
+    m_jetReclusteringTool =  m_jrtMap[m_suffix];
   }
 }
 
@@ -164,30 +164,35 @@ void PhysObjProxyFiller::FillJetReclProxies(std::vector<JetProxy>& good_jets_rec
   }
 
   // NEEDED FOR RECLUSTERING
-  xAOD::JetContainer* jetsNEW = new xAOD::JetContainer();
-  xAOD::AuxContainerBase* jetsNEWAux = new xAOD::AuxContainerBase();
-  jetsNEW->setStore(jetsNEWAux);
+  xAOD::JetContainer* jetsReclInput = new xAOD::JetContainer();
+  xAOD::AuxContainerBase* jetsReclInputAux = new xAOD::AuxContainerBase();
+  jetsReclInput->setStore(jetsReclInputAux);
   for ( xAOD::JetContainer::const_iterator it = jets->begin();
         it != jets->end(); ++it ){
     if ( (*it)->pt() <= m_jetPtCut ) continue;
     if ( (*it)->auxdecor<char>("passOR") == 0) continue;
     if ( (*it)->auxdecor<char>("bad") == 0  ) {
       if ( std::abs((*it)->eta()) < 2.8 ) {
-	xAOD::Jet* myjet = new xAOD::Jet();
+      	xAOD::Jet* myjet = new xAOD::Jet();
         myjet->makePrivateStore(*it);
-        jetsNEW->push_back(myjet) ;
+        jetsReclInput->push_back(myjet) ;
       } 
     }
   }
-  if ( ! store->record(jetsNEW,"SUSYJetsNEW"+m_suffixRecl+m_suffixSyst).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsNEW"+m_suffixRecl+m_suffixSyst) ;
-  if ( ! store->record(jetsNEWAux,"SUSYJetsNEWAux"+m_suffixRecl+m_suffixSyst).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsNEWAux"+m_suffixRecl+m_suffixSyst) ;
 
+
+  // std::cout << "m_suffixRecl: " << m_suffixRecl << std::endl;
+  if ( ! store->record(jetsReclInput,"SUSYJetsReclInput"+m_suffixRecl+m_suffix).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsReclInput"+m_suffixRecl+m_suffix) ;
+  if ( ! store->record(jetsReclInputAux,"SUSYJetsReclInputAux"+m_suffixRecl+m_suffix).isSuccess() ) throw std::runtime_error("Could not register SUSYJetsReclInputAux"+m_suffixRecl+m_suffix) ;
+
+  
   const xAOD::JetContainer* jetsrecl = 0;
   if(m_doRecl){
+
     setJRT();
     m_jetReclusteringTool->execute();
-    if ( !store->retrieve(jetsrecl, "SUSYJetsRecl"+m_suffixRecl+m_suffixSyst).isSuccess() ) {
-      throw std::runtime_error("Could not retrieve JetContainer with key SUSYJetsRecl"+m_suffixRecl+m_suffixSyst);
+    if ( !store->retrieve(jetsrecl, "SUSYJetsRecl"+m_suffixRecl+m_suffix).isSuccess() ) {
+      throw std::runtime_error("Could not retrieve JetContainer with key SUSYJetsRecl"+m_suffixRecl+m_suffix);
     }
     
     // Boson Tagging 
