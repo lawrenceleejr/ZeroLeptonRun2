@@ -603,6 +603,21 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       t_btag_weights_names->Write("btag_weights_names",TObject::kSingleKey);
     }
 
+    // calculate Sherpa v2.2 reweight
+    
+    if( !m_IsData ){
+      int mcChannelNumber =  eventInfo->mcChannelNumber();
+      eventInfo->auxdecor<float>("WZweight") = 1.;
+      
+      if( (mcChannelNumber>=363331 && mcChannelNumber<=363354) ||
+	  (mcChannelNumber>=363436 && mcChannelNumber<=363483) ||
+	  (mcChannelNumber>=363102 && mcChannelNumber<=363122) ||
+	  (mcChannelNumber>=363361 && mcChannelNumber<=363435)
+	  ) {
+	eventInfo->auxdecor<float>("WZweight") = m_SUSYObjTool->getSherpaVjetsNjetsWeight();	
+      }
+    }    
+
     if( m_doTrigger ){
       fillTriggerInfo(event);
     }

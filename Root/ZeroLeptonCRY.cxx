@@ -587,7 +587,9 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;
-
+  if( !m_IsData ){
+    WZweight = eventInfo->auxdecor<float>("WZweight");
+  }
 
   double mT2=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETCorr);

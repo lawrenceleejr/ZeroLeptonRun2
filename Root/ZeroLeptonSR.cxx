@@ -407,6 +407,10 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // Sherpa MassiveCB W/Z reweighting : not implemented yet in SUSYOBJDef_xAOD
   float WZweight = 1.;
+  if( !m_IsData ){
+    WZweight = eventInfo->auxdecor<float>("WZweight");
+  }
+
   // Fill ISR variables. These vectors have for each jet > 50GeV the ISR variables in them.
   std::vector<size_t> isr_jet_indices;
   std::vector<std::vector<double> > ISRvars;
