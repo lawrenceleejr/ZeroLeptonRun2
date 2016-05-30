@@ -1,3 +1,6 @@
+30-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
+	* Use only the leading photon in BuildSUSYObject
+
 30-May-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Making merging step a little more user friendly with allBackgroundsNT flag
 	* Changing default location of DSID in DS name

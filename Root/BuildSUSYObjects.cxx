@@ -432,7 +432,18 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
     }
     //out() <<  "Photons"+m_suffix+tag+" photons " << std::endl;
     float phSF = 1;
+    int nbasephoton = 0;
     for ( const auto& ph : *photons ) {
+      if( ph->auxdata<char>("baseline") == 1 ){
+	if( nbasephoton==1 ){
+	  // if there are more than one photons, remove baseline decoraton
+	  ph->auxdata<char>("baseline") = 0;
+	  ph->auxdata<char>("isol") = 0;
+	  ph->auxdata<char>("signal") = 0;
+	}else{
+	  nbasephoton++;
+	}
+      }
       if ( !m_IsData && ph->auxdata<char>("signal") != 0 ) {
 	float sf = m_SUSYObjTool->GetSignalPhotonSF(*ph);
 	ph->auxdecor<float>("sf") = sf;
