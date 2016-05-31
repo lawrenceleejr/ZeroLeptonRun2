@@ -560,6 +560,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
       delete photons_aux;
       delete rebuiltmetc;
       delete rebuiltmetcAux;
+      delete FatJets;
+      delete FatJets_aux;
     }
 
   } // end loop on systematics
