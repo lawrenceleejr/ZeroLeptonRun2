@@ -143,8 +143,8 @@ def main():
         ##########################################################################
         # Submit!
 
-        echo "ZeroLeptonRun2/python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=10 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.{1}.'  --suffix='_{2}' --tmpDir=../tmp/ --inDSfile tmpInputDataSets.ds"
-        ZeroLeptonRun2/python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=10 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.{1}.'  --suffix='_{2}' --tmpDir=../tmp/ --inDSfile tmpInputDataSets.ds
+        echo "ZeroLeptonRun2/python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=1 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.{1}.'  --suffix='_{2}' --tmpDir=../tmp/ --inDSfile tmpInputDataSets.ds"
+        ZeroLeptonRun2/python/launch_jobs_on_grid.py --prunopts='--nGBPerJob=1 --excludedSite=ANALY_UIO,SIGNET,LUNARC ' --prefix='user.{1}.'  --suffix='_{2}' --tmpDir=../tmp/ --inDSfile tmpInputDataSets.ds
 
 
         """.format(
