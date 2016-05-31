@@ -143,7 +143,7 @@ def main():
 
         # which cafe config file should be used ?
         if config.configfile == "":
-            if ("mc15" in inDS or "data15" in inDS) and not("TRUTH1" in inDS):
+            if ("mc15" in inDS or "data15" in inDS or "data16" in inDS) and not("TRUTH1" in inDS):
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton.config"
             elif "mc14" in inDS or "data12" in inDS:
                 cafeconfig = "ZeroLeptonRun2/config/zerolepton_DC14.config"
@@ -159,7 +159,7 @@ def main():
         scriptcmd = r"""cp ../PoolFileCatalog.xml . ; ZeroLeptonRun2/python/pfc2txt.py; cat pfc.txt; echo %IN| sed 's/\,/\n/g'>inputfiles; unset ROOT_TTREECACHE_SIZE; ln -sf \${TestArea}/CDIFiles/13TeV . ; cafe """ + cafeconfig + """ Events: -1  Input: filelist:inputfiles  Output: o.root """ 
 
         # Real data ?
-        if "data11" in inDS or "data12" in inDS or "data15" in inDS: 
+        if "data11" in inDS or "data12" in inDS or "data15" in inDS or "data16" in inDS: 
             scriptcmd += " Global.IsData: TRUE Global.IsSignal: FALSE "
             if 'physics_Egamma' in inDS:
                  scriptcmd += "crwt.IsElectronChannel: TRUE vrwt.IsElectronChannel: TRUE "
