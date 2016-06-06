@@ -3,18 +3,28 @@ __doc__ = """List of samples to be used in the analysis"""
 ##
 ## Baseline samples   built from 50ns tags [r6630, r6647, r6655, r6767, r6793, r6802, r6828]
 ##
-lZjets   = range(361444,361467+1) # Sherpa Znunu 
-lZjets  += range(361372,361395+1) # Sherpa Zee
-lZjets  += range(361396,361419+1) # Sherpa Zmumu
-lZjets  += range(361420,361443+1) # Sherpa Ztautau
+#lZjets   = range(361444,361467+1) # Sherpa Znunu 
+#lZjets  += range(361372,361395+1) # Sherpa Zee
+#lZjets  += range(361396,361419+1) # Sherpa Zmumu
+#lZjets  += range(361420,361443+1) # Sherpa Ztautau
+
+lZjets   = range(363412,363435+1) # Sherpa 2.2 Znunu 
+lZjets  += range(363388,363411+1) # Sherpa 2.2 Zee
+lZjets  += range(363364,363387+1) # Sherpa 2.2 Zmumu
+lZjets  += range(363102,363122+1) + range(363361,363363+1) # Sherpa 2.2 Ztautau
+
 
 #lZjetsLO = range(407100,407183+1) # L0 Z+jets
 
 lYjets   = range(361039,361061+1) # Sherpa
 
-lWjets   = range(361300,361323+1) # Sherpa Wenu missing pt<70
-lWjets  += range(361324,361347+1) # Sherpa Wmunu  missing pt<70 
-lWjets  += range(361348,361371+1) # Sherpa Wtaunu
+#lWjets   = range(361300,361323+1) # Sherpa Wenu missing pt<70
+#lWjets  += range(361324,361347+1) # Sherpa Wmunu  missing pt<70 
+#lWjets  += range(361348,361371+1) # Sherpa Wtaunu
+
+lWjets   = range(363460,363483+1) # Sherpa 2.2 Wenu missing pt<70
+lWjets  += range(363436,363459+1) # Sherpa 2.2 Wmunu  missing pt<70
+lWjets  += range(363331,363354+1) # Sherpa 2.2 Wtaunu  
 
 
 lttbar   = [410000] # PowhegPythiaEvtGen_P2012_ttbar_hdamp172p5_nonallhad
