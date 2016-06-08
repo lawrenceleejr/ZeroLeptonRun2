@@ -165,6 +165,8 @@ def main():
                  scriptcmd += "crwt.IsElectronChannel: TRUE vrwt.IsElectronChannel: TRUE "
             elif 'physics_Muons' in inDS:
                  scriptcmd += "crwt.IsMuonChannel: TRUE vrwt.IsMuonChannel: TRUE "
+            config.noSyst = True
+
 
         # Fast or full simulation ?
         if "mc11" in inDS or "mc12" in inDS or "mc14" in inDS  or "mc15" in inDS :

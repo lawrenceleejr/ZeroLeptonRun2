@@ -302,30 +302,30 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     }
     else {
       if( (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1  ||
-	  (int)eventInfo->auxdata<char>("HLT_e120_lhloose")==1     )
-	passEltrigger = true;
+          (int)eventInfo->auxdata<char>("HLT_e120_lhloose")==1     )
+          passEltrigger = true;
       if ( m_IsData ) {
-	if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM20VH")==1 ) passEltrigger = true;
+         if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM20VH")==1 ) passEltrigger = true;
       }
       else {
-	if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;
+       if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;
       }
       if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ||
-	 (int)eventInfo->auxdata<char>("HLT_mu50")==1)
-	passMutrigger = true;
+         (int)eventInfo->auxdata<char>("HLT_mu50")==1)
+         passMutrigger = true;
       if( !(passEltrigger || passMutrigger) ){
-	if( m_doFake ){
-	  if( (int)eventInfo->auxdata<char>("HLT_e24_lhvloose_L1EM20VH")==1 ) prescaleEl = 35.;
-	  else prescaleEl = 0.;
+        if( m_doFake ){
+          if( (int)eventInfo->auxdata<char>("HLT_e24_lhvloose_L1EM20VH")==1 ) prescaleEl = 35.;
+          else prescaleEl = 0.;
 
-	  if( (int)eventInfo->auxdata<char>("HLT_mu20_L1MU15")==1 ) prescaleMu = 10.;
-	  else prescaleMu = 0.;
+          if( (int)eventInfo->auxdata<char>("HLT_mu20_L1MU15")==1 ) prescaleMu = 10.;
+          else prescaleMu = 0.;
 
-	  if( prescaleEl<1. && prescaleMu<1. ) return true;
-	  else weight = 0.;
-	}else{
-	  return true;
-	}
+          if( prescaleEl<1. && prescaleMu<1. ) return true;
+          else weight = 0.;
+        }else{
+          return true;
+        }
       }
     }
   }
