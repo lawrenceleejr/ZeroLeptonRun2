@@ -1243,6 +1243,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   float weight, 
 				   std::vector<float>& normWeight, 
 				   std::vector<float>& pileupWeight, 
+				   unsigned long long PRWHash,
 				   float genWeight, 
 				   float ttbarWeightHT,
 				   float ttbarWeightPt2, 
@@ -1287,6 +1288,7 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.pileupWeight     = (pileupWeight.size() >= 1) ? pileupWeight.at(0) : 1.;
   ntv.pileupWeightUp   = (pileupWeight.size() >= 2) ? pileupWeight.at(1) : 1.;
   ntv.pileupWeightDown = (pileupWeight.size() >= 3) ? pileupWeight.at(2) : 1.;
+  ntv.PRWHash = PRWHash;
   ntv.genWeight = genWeight;
   ntv.ttbarWeightHT = ttbarWeightHT;
   ntv.ttbarWeightPt2 = ttbarWeightPt2;

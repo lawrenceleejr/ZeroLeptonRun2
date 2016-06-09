@@ -1,6 +1,9 @@
+06-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
+	* Add PRWHash
+
 31-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Add FatJets container delete
-	
+
 31-May-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Updating to ST-7-60 which fixes some issues with the sherpa reweighting and the muon interface with the MET tool
 	* Tagging as 00-01-02 for a production

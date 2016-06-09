@@ -219,10 +219,14 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
 
   // get pileup weights
   std::vector<float>* pileupWeights = 0;
+  unsigned long long PRWHash = 0;
   if ( !m_IsData && !m_IsTruth  ) {
     if ( !store->retrieve< std::vector<float> >(pileupWeights,"pileupWeights").isSuccess() ) throw std::runtime_error("could not retrieve pileupWeights");
     //out() << " pileup weight " << (*pileupWeights)[0] << std::endl;
     //weight *= (*pileupWeights)[0];
+    unsigned long long *storedPRWHash = 0;
+    if ( !store->retrieve< unsigned long long >(storedPRWHash, "PRWHash").isSuccess() ) throw std::runtime_error("could not retrieve PRWHash");
+    PRWHash = *storedPRWHash;
   }
   else {
     static std::vector<float> dummy(3,1.);
@@ -1001,7 +1005,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
       isNCBEvent = *NCBEventFlag;
     }
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, missingET_TST->Mod(), missingET_TST->Phi(), Meff, meffincl, minDphi, RemainingminDPhi, good_jets, good_fat_jets, vD2_fat, visWmedium_fat, trueTopo, cleaning, time[0],jetSmearSystW,0,0.,0.,dPhiBadTile,isNCBEvent,m_IsTruth,baseline_taus,signal_taus);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, PRWHash, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEtPrime, phi_met, missingET_TST->Mod(), missingET_TST->Phi(), Meff, meffincl, minDphi, RemainingminDPhi, good_jets, good_fat_jets, vD2_fat, visWmedium_fat, trueTopo, cleaning, time[0],jetSmearSystW,0,0.,0.,dPhiBadTile,isNCBEvent,m_IsTruth,baseline_taus,signal_taus);
 
     if ( systag == "" && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;

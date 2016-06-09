@@ -19,6 +19,7 @@ class NTVars
 
   unsigned int RunNumber, EventNumber, LumiBlockNumber, veto;
   float weight, pileupWeight, pileupWeightUp, pileupWeightDown, genWeight;
+  unsigned long long PRWHash;
   float ttbarWeightHT, ttbarWeightPt2, ttbarAvgPt, WZweight;
   int Njet, NFatJet;
   float MET, METPhi,METTST, METTSTPhi, deltaPhi, deltaPhiRemaining, MeffIncl;
