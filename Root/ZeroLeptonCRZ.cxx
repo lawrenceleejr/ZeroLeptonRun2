@@ -40,8 +40,8 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
     m_IsTruth(false),
     m_DoSystematics(false),
     m_period(INVALID),
-    m_isMuonChannel(false),
-    m_isElectronChannel(false),
+    // m_isMuonChannel(false),
+    // m_isElectronChannel(false),
     m_PtLepton2(10000.),
     m_suffix(""),
     m_suffixRecl(""),
@@ -67,14 +67,14 @@ ZeroLeptonCRZ::ZeroLeptonCRZ(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRZ does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRZ: invalid run period specified"));
 
-  if ( m_IsData && m_period == p8tev ) {
-    m_isMuonChannel = config.get("IsMuonChannel",false);
-    m_isElectronChannel = config.get("IsElectronChannel",false);;
-  }
-  else {
-    m_isMuonChannel = true;
-    m_isElectronChannel = true;
-  }
+  // if ( m_IsData && m_period == p8tev ) {
+  //   m_isMuonChannel = config.get("IsMuonChannel",false);
+  //   m_isElectronChannel = config.get("IsElectronChannel",false);;
+  // }
+  // else {
+  //   m_isMuonChannel = true;
+  //   m_isElectronChannel = true;
+  // }
 
   m_PtLepton2 = config.get("PtLepton2",10000.);
 
@@ -406,7 +406,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
 
   std::vector<TLorentzVector> leptonTLVs;
   std::vector<int> leptonCharges;
-  if ( m_isMuonChannel &&
+  if ( true &&
        ((!m_IsTruth && isolated_signal_muons.size()==2) || (m_IsTruth && isolated_signal_muons_truth.size()==2)) &&
        ((!m_IsTruth && isolated_baseline_electrons.size()==0) || (m_IsTruth && isolated_baseline_electrons_truth.size()==0)) ) {
     if(!m_IsTruth){
@@ -424,7 +424,7 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     }
 
   }
-  else if (  m_isElectronChannel &&
+  else if (  true &&
              ((!m_IsTruth && isolated_signal_electrons.size()==2) || (m_IsTruth && isolated_signal_electrons_truth.size()==2)) &&
 	     ((!m_IsTruth && isolated_baseline_muons.size()==0) || (m_IsTruth && isolated_baseline_muons_truth.size()==0)) ) {
     if(!m_IsTruth){

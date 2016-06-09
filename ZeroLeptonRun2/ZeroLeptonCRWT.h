@@ -47,8 +47,8 @@ private:
   bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
   bool m_isVR;
-  bool m_isMuonChannel;
-  bool m_isElectronChannel;
+  // bool m_isMuonChannel;
+  // bool m_isElectronChannel;
   bool m_LowPtLepton;
   bool m_doFake;
 

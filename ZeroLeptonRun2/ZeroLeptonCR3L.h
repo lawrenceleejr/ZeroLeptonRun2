@@ -46,8 +46,8 @@ private:
   bool m_doRecl;
   bool m_DoSystematics;
   ZeroLeptonRunPeriod m_period;
-  bool m_isMuonChannel;
-  bool m_isElectronChannel;
+  // bool m_isMuonChannel;
+  // bool m_isElectronChannel;
   bool m_doFake;
 
   NTVars m_ntv;

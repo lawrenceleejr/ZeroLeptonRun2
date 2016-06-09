@@ -40,8 +40,8 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
     m_DoSystematics(false),
     m_period(INVALID),
     m_isVR(false),
-    m_isMuonChannel(false),
-    m_isElectronChannel(false),
+    // m_isMuonChannel(false),
+    // m_isElectronChannel(false),
     m_LowPtLepton(false),
     m_doFake(false),
     m_suffix(""),
@@ -69,14 +69,14 @@ ZeroLeptonCRWT::ZeroLeptonCRWT(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCRWT does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCRWT: invalid run period specified"));
 
-  if ( m_IsData && m_period == p8tev ) {
-    m_isMuonChannel = config.get("IsMuonChannel",false);
-    m_isElectronChannel = config.get("IsElectronChannel",false);;
-  }
-  else {
-    m_isMuonChannel = true;
-    m_isElectronChannel = true;
-  }
+  // if ( m_IsData && m_period == p8tev ) {
+  //   m_isMuonChannel = config.get("IsMuonChannel",false);
+  //   m_isElectronChannel = config.get("IsElectronChannel",false);;
+  // }
+  // else {
+  //   m_isMuonChannel = true;
+  //   m_isElectronChannel = true;
+  // }
 
   m_LowPtLepton = config.get("LowPtLepton",false);
   if ( m_LowPtLepton ) m_stringRegion = "CRWTLPT_SRAll";
@@ -481,7 +481,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   //  signalelecistrigmatched = true;
   //  signalmuonistrigmatched = true;
   //}
-  if ( m_isMuonChannel &&
+  if ( true &&
        (( !m_IsTruth && isolated_baseline_muons.size()==1)      || (m_IsTruth && isolated_baseline_muons_truth.size()==1)) &&
        (( !m_IsTruth && isolated_signal_muons.size()==1)        || (m_IsTruth && isolated_signal_muons_truth.size()==1)) &&
        (( !m_IsTruth && trigmatched_muons.size()==1)            || m_IsTruth) &&
@@ -499,7 +499,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       leptonCharge = (int)(isolated_signal_muons_truth[0].muontruth()->charge())*13;
     }
   }
-  else if (  m_isElectronChannel &&
+  else if (  true &&
              (( !m_IsTruth && isolated_baseline_electrons.size()==1) || (m_IsTruth && isolated_baseline_electrons_truth.size()==1)) &&
 	     (( !m_IsTruth && isolated_signal_electrons.size()==1)   || (m_IsTruth && isolated_signal_electrons_truth.size()==1))    &&
              (( !m_IsTruth && trigmatched_electrons.size()==1)       || m_IsTruth ) &&
@@ -518,13 +518,13 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   }
   if ( !oneLepton ){
     if( m_doFake ){
-      if ( m_isMuonChannel &&
+      if ( true &&
 	   ( isolated_baseline_muons.size()==1 &&  isolated_baseline_electrons.size()==0) ){
 	oneBaseLepton = true;
 	leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_baseline_muons[0])));
 	leptonCharge = (int)(isolated_baseline_muons[0].muon()->charge())*13;
       }
-      else if (  m_isElectronChannel &&
+      else if (  true &&
 		 ( isolated_baseline_electrons.size()==1  && isolated_baseline_muons.size()==0)){
 	oneBaseLepton = true;
 	leptonTLV = *(dynamic_cast<TLorentzVector*>(&(isolated_baseline_electrons[0])));
@@ -546,13 +546,13 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
   float ptvarcone20 = 0 ;
 
   if(!m_IsTruth){
-    if(m_isElectronChannel && isolated_signal_electrons.size()==1){
+    if(true && isolated_signal_electrons.size()==1){
       topoetcone20 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
       ptvarcone30  = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone30);
       ptvarcone20  = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::ptvarcone20);
     }
 
-    if(m_isMuonChannel && isolated_signal_muons.size()==1){
+    if(true && isolated_signal_muons.size()==1){
       topoetcone20 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
       ptvarcone30  = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone30);
       ptvarcone20  = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::ptvarcone20);
@@ -569,7 +569,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
     Double_t realEff = 0.;
     Double_t signalWeight = 0.;
     Double_t baseWeight = 1.;
-    if(m_isElectronChannel && isolated_baseline_electrons.size()==1){
+    if(true && isolated_baseline_electrons.size()==1){
       fakeEff = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 0);
       fakeEffUp = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 1);
       fakeEffDown = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 2);
@@ -577,7 +577,7 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
       baseWeight *= prescaleEl;
       if( isolated_signal_electrons.size()==1 ) signalWeight = 1.;
     }
-    else if(m_isMuonChannel && isolated_baseline_muons.size()==1){
+    else if(true && isolated_baseline_muons.size()==1){
       fakeEff = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 0);
       fakeEffUp = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 1);
       fakeEffDown = m_elecFakeEff->getEfficiency( leptonTLV.Pt(), leptonTLV.Eta(), 2);

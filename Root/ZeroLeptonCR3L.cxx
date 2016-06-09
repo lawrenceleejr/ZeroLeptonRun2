@@ -41,8 +41,8 @@ ZeroLeptonCR3L::ZeroLeptonCR3L(const char *name)
     m_doRecl(false),
     m_DoSystematics(false),
     m_period(INVALID),
-    m_isMuonChannel(false),
-    m_isElectronChannel(false),
+    // m_isMuonChannel(false),
+    // m_isElectronChannel(false),
     m_doFake(false),
     m_suffix(""),
     m_suffixRecl(""),
@@ -69,14 +69,14 @@ ZeroLeptonCR3L::ZeroLeptonCR3L(const char *name)
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCR3L does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCR3L: invalid run period specified"));
 
-  if ( m_IsData && m_period == p8tev ) {
-    m_isMuonChannel = config.get("IsMuonChannel",false);
-    m_isElectronChannel = config.get("IsElectronChannel",false);;
-  }
-  else {
-    m_isMuonChannel = true;
-    m_isElectronChannel = true;
-  }
+  // if ( m_IsData && m_period == p8tev ) {
+  //   m_isMuonChannel = config.get("IsMuonChannel",false);
+  //   m_isElectronChannel = config.get("IsElectronChannel",false);;
+  // }
+  // else {
+  //   m_isMuonChannel = true;
+  //   m_isElectronChannel = true;
+  // }
 
   if( m_doFake ){
     std::string RootCoreBin = std::getenv("ROOTCOREBIN");
@@ -413,7 +413,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
 
   int nW=1000;
 
-  if ( m_isMuonChannel &&
+  if ( true &&
        ( (!m_isVR && !m_IsTruth && (isolated_signal_muons.size()==3 || (isolated_signal_muons.size()==2 && isolated_signal_electrons.size()==1)) )
 	 || ( (m_isVR || m_doFake) && !m_IsTruth && isolated_signal_muons.size()==2 && isolated_signal_electrons.size()==0 && (isolated_baseline_muons.size()==3 || isolated_baseline_electrons.size()==1) )
 	 || (!m_isVR && m_IsTruth && (isolated_signal_muons_truth.size()==3 || (isolated_signal_muons_truth.size()==2 && isolated_signal_electrons_truth.size()==1)) )
@@ -490,7 +490,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
 
   // ELECTRONS
 
-  if ( m_isElectronChannel &&
+  if ( true &&
        (  (!m_isVR && !m_IsTruth && (isolated_signal_electrons.size()==3 || (isolated_signal_electrons.size()==2 && isolated_signal_muons.size()==1)) )
 	  || ( (m_isVR || m_doFake) && !m_IsTruth && isolated_signal_electrons.size()==2 && isolated_signal_muons.size()==0 && (isolated_baseline_electrons.size()==3 || isolated_baseline_muons.size()==1) )
 	  || (!m_isVR && m_IsTruth && (isolated_signal_electrons_truth.size()==3 || (isolated_signal_electrons_truth.size()==2 && isolated_signal_muons_truth.size()==1)) )
@@ -676,7 +676,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   float p2=0;
 
   if(!m_IsTruth){
-    if(m_isElectronChannel && isolated_signal_electrons.size()>=2){
+    if(true && isolated_signal_electrons.size()>=2){
       e1 = (isolated_signal_electrons[0].electron())->isolation(xAOD::Iso::topoetcone20);
       vtopoetcone20.push_back(e1);
       e1 = (isolated_signal_electrons[1].electron())->isolation(xAOD::Iso::topoetcone20);
@@ -726,7 +726,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
       }
     } // electron
 
-    else if(m_isMuonChannel && isolated_signal_muons.size()>=2){
+    else if(true && isolated_signal_muons.size()>=2){
       e1 = (isolated_signal_muons[0].muon())->isolation(xAOD::Iso::topoetcone20);
       vtopoetcone20.push_back(e1);
       e1 = (isolated_signal_muons[1].muon())->isolation(xAOD::Iso::topoetcone20);
@@ -881,7 +881,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   if( !m_IsData ){
     WZweight = eventInfo->auxdecor<float>("WZweight");
   }
-  
+
   double mT2=-9;
   double mT2_noISR=-9;
   //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,missingETPrime);
