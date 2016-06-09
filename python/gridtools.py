@@ -6,7 +6,7 @@ import types
 import argparse
 import datetime
 
-from rucio_down import download
+#from rucio_down import download
 
 # Import pbook
 try:
@@ -56,11 +56,11 @@ def kill_job(job):
     print bcolors.LIGHT + bcolors.BOLD + "Found running job: " + bcolors.ENDC + bcolors.ORANGE + job.jediTaskID + bcolors.ENDC + " " + job.jobName
     pbook.kill(job.groupID)
 
-def download_job(job):
-    print bcolors.LIGHT + bcolors.BOLD + "Found completed job: " + bcolors.ENDC + bcolors.ORANGE + job.jediTaskID + bcolors.ENDC + " " + job.jobName
-    # Look up output datasets and download
-    for ds in job.outDS.split(','):
-        download(ds)
+# def download_job(job):
+#     print bcolors.LIGHT + bcolors.BOLD + "Found completed job: " + bcolors.ENDC + bcolors.ORANGE + job.jediTaskID + bcolors.ENDC + " " + job.jobName
+#     # Look up output datasets and download
+#     for ds in job.outDS.split(','):
+#         download(ds)
 
 def print_job(job):
     print bcolors.LIGHT + bcolors.BOLD + job.jediTaskID + bcolors.ENDC + job.jobName
@@ -79,8 +79,8 @@ def main(args):
     subs.append(subparsers.add_parser('kill', help='Kill running jobs.'))
     subs[-1].set_defaults(func=lambda args: apply_each(kill_job, args, status=['running','scouting','ready','defined']))
 
-    subs.append(subparsers.add_parser('download', help='Download jobs marked "done" using rucio.'))
-    subs[-1].set_defaults(func=lambda args: apply_each(download_job, args, status=['finished','running','done']))
+    # subs.append(subparsers.add_parser('download', help='Download jobs marked "done" using rucio.'))
+    # subs[-1].set_defaults(func=lambda args: apply_each(download_job, args, status=['finished','running','done']))
 
     subs.append(subparsers.add_parser('print', help='Print job information.'))
     subs[-1].set_defaults(func=lambda args: apply_each(print_job, args, status=['finished','running','done']))
