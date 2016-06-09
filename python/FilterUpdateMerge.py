@@ -338,8 +338,8 @@ class Sample:
                         h = ftemp.Get(k)
                         if not h:
                             print 'Could not extract histogram',k,'in file',fname
-                            sys.exit(1)
-                            pass
+                            # sys.exit(1)
+                            continue
                         outhists[k].Add(h,scale)
                         pass
                     # append list of files metadata
@@ -364,8 +364,9 @@ class Sample:
                     h = ftemp.Get(k)
                     if not h:
                         print 'Could not extract histogram',k,'in file',fname
-                        sys.exit(1)
-                        pass
+                        # sys.exit(1)
+                        # pass
+                        continue
                     outhists[k].Add(h,scale)
                     pass
                 # append list of files metadata

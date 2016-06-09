@@ -93,7 +93,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     TFile* f = OpenWithRetries(inFiles[i]);
     if ( !f || f->IsZombie() ) throw std::runtime_error("Could not open "+inFiles[i]);
     TTree* tree = dynamic_cast<TTree*>(f->Get(inTreeName.c_str()));
-    if ( !tree  ) throw std::runtime_error("Could not find a tree named SRAllNT in "+inFiles[i]);
+    if ( !tree  ) throw std::runtime_error("Could not find a tree"+inTreeName+inFiles[i]);
     inVars.setAddresses(tree);
     //    inRTVars.setAddresses(tree);
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
