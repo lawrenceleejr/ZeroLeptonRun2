@@ -97,6 +97,8 @@ def parseCmdLine():
                       action='store_true', default=False)
     parser.add_option("--whichTrees", dest="treePatterns", default="",
                       help="comma separated python pattern to match tree names selected for merging",)
+    parser.add_option("--excludeTrees", dest="treeExcludePatterns", default="",
+                      help="comma separated python pattern to match tree names to exclude from merging",)
     parser.add_option("--verbose", dest="verbose", type='int',
                       help="Verbose level (0=minimum, default=%default)", default=0)
     parser.add_option("--prefix", dest="prefix", default="mc15_13TeV",
@@ -125,6 +127,10 @@ class Sample:
         self.treePatterns = None
         if len(config.treePatterns)>0:
             self.treePatterns = config.treePatterns.split(',')
+
+        self.treeExcludePatterns = None
+        if len(config.treeExcludePatterns)>0:
+            self.treeExcludePatterns = config.treeExcludePatterns.split(',')
 
         # if the input is a pickle file, it is supposed to contain a dictionary
         # of file lists indexed by the dataset name. In this case the channel
@@ -237,6 +243,13 @@ class Sample:
                 for rexpr in self.treePatterns:
                     if re.match(rexpr,kname):
                         accept = True
+                        break
+                if not accept : continue
+            if self.treeExcludePatterns:
+                accept = True
+                for rexpr in self.treeExcludePatterns:
+                    if rexpr in kname:
+                        accept = False
                         break
                 if not accept : continue
             obj=ftemp.Get(kname)
@@ -408,6 +421,8 @@ class Sample:
         # list of trees in the input files
         treenames = self.getListOfTrees(allfiles[0])
 
+        print treenames
+
         # create C++ merger
         xsecDB = None
         try :
@@ -440,6 +455,7 @@ class Sample:
         # key = output tree name  value = (TTree, input-tree-name, list-of-files)
         outTreeDict = {}
         for inTree in treenames:
+            print inTree
             if filesIsDict:
                 # we read a dictionary of (did, list-of-files), extract
                 # mc channel from dataset name
