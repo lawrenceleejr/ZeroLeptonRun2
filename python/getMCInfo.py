@@ -76,9 +76,10 @@ def updateMap(processMap,xsecDB,key,nb_of_events,weight):
 
 def processFile(config,fname,channel,xsecDB,myMap):
     if fname.startswith('/eos'): fname = 'root://eosatlas/'+fname
+    print fname
     tfile=ROOT.TFile.Open(fname)
     hist=tfile.Get('Counter_JobBookeeping_JobBookeeping')
-    if hist!=None and hist.GetNbinsX()>=2:
+    if hist and hist.GetNbinsX()>=2:
         # if not channel in hsum:
         #     hsum[channel] = copy.deepcopy(ROOT.TH1D(hist))
         # else:
@@ -115,7 +116,7 @@ def processFile(config,fname,channel,xsecDB,myMap):
             pass
         pass
     else:
-        print "WARNING: file ignored ", fname 
+        print "WARNING: file ignored ", fname
         pass
     tfile.Close()
 
@@ -128,7 +129,7 @@ def extractChannel(name):
 
 def getMCInfo(config):
     myMap={}
-    xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile)
+    xsecDB = ROOT.SUSY.CrossSectionDB(config.xsecfile, False , True)
 
     lds = getMCSampleList(config.lds)
     hsum = {}
@@ -149,7 +150,7 @@ def getMCInfo(config):
                 processFile(config,fname,channel,xsecDB,myMap)
 
     else:
-        for fname in open(config.inputfilename,'read'):    
+        for fname in open(config.inputfilename,'read'):
             fname.strip()
             if len(fname) == 0: continue
             if fname.startswith('#'): continue
@@ -159,7 +160,7 @@ def getMCInfo(config):
             channel = int(fname.split(".")[int(config.NB)])
             if len(lds) and not channel in lds: continue
 
-            if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ): 
+            if ( not config.isSignal and xsecDB.rawxsect(channel) < 0. ):
                 print 'No cross section for sample',channel,'skip file',fname
                 continue
 
@@ -252,7 +253,7 @@ def parseCmdLine(args):
     parser.add_option("--lds", dest="lds", help="List of dataset numbers like 105200, lW, lTop", default="")
     parser.add_option("--indir", dest="indir", help="Input directory (can be used instead of --input)", default="")
     parser.add_option("--isSignal", dest="isSignal", help="isSignal",action='store_true', default=False)
-    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc15_13TeV") 
+    parser.add_option("--prefix", dest="prefix", help="Prefix to identify mc production",default="mc15_13TeV")
     (config, args) = parser.parse_args(args)
     return config
 
