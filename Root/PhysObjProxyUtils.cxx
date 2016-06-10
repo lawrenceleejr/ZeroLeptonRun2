@@ -1170,15 +1170,11 @@ bool PhysObjProxyUtils::chfTileVeto(const std::vector<JetProxy>& jets) const
 void PhysObjProxyUtils::FillNTExtraVars(NTExtraVars& extrantv,
 					double MET_Track, 
 					double MET_Track_phi,
-					double mT2,
-					double mT2_noISR,
 					double Ap)
 {
   extrantv.Reset();
   extrantv.mettrack = MET_Track * 0.001;
   extrantv.mettrack_phi = MET_Track_phi;
-  extrantv.mT2=mT2 * 0.001;
-  extrantv.mT2_noISR=mT2_noISR * 0.001;  
   extrantv.Ap=Ap;
 }
 
@@ -1249,8 +1245,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   float ttbarWeightPt2, 
 				   float ttbarAvgPt,
 				   float WZweight,
-				   std::vector<float>& bTagWeight,
-				   std::vector<float>& cTagWeight,
 				   int nBJet,
 				   int nCJet, 
 				   double MissingEt,
@@ -1271,7 +1265,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
 				   const std::vector<float>& jetSmearSystW,
 				   const std::vector<float>* flaggedtau, 
 				   float tauMt,
-				   float SherpaBugMET,
 				   float dPhiBadTile,
 				   bool isNCBEvent,
 				   bool isTruth,
@@ -1294,20 +1287,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.ttbarWeightPt2 = ttbarWeightPt2;
   ntv.ttbarAvgPt = ttbarAvgPt * 0.001;
   ntv.WZweight = WZweight;
-  ntv.bTagWeight     = (bTagWeight.size() >= 1) ? bTagWeight.at(0) : 1.;
-  ntv.bTagWeightBUp   = (bTagWeight.size() >= 5) ? bTagWeight.at(4) : 1.;
-  ntv.bTagWeightBDown = (bTagWeight.size() >= 2) ? bTagWeight.at(1) : 1.;
-  ntv.bTagWeightCUp   = (bTagWeight.size() >= 6) ? bTagWeight.at(5) : 1.;
-  ntv.bTagWeightCDown = (bTagWeight.size() >= 3) ? bTagWeight.at(2) : 1.;
-  ntv.bTagWeightLUp   = (bTagWeight.size() >= 7) ? bTagWeight.at(6) : 1.;
-  ntv.bTagWeightLDown = (bTagWeight.size() >= 4) ? bTagWeight.at(3) : 1.;
-  ntv.cTagWeight     = (cTagWeight.size() >= 1) ? cTagWeight.at(0) : 1.;
-  ntv.cTagWeightBUp   = (cTagWeight.size() >= 5) ? cTagWeight.at(4) : 1.;
-  ntv.cTagWeightBDown = (cTagWeight.size() >= 2) ? cTagWeight.at(1) : 1.;
-  ntv.cTagWeightCUp   = (cTagWeight.size() >= 6) ? cTagWeight.at(5) : 1.;
-  ntv.cTagWeightCDown = (cTagWeight.size() >= 3) ? cTagWeight.at(2) : 1.;
-  ntv.cTagWeightLUp   = (cTagWeight.size() >= 7) ? cTagWeight.at(6) : 1.;
-  ntv.cTagWeightLDown = (cTagWeight.size() >= 4) ? cTagWeight.at(3) : 1.;  
   ntv.nBJet = nBJet;
   ntv.nCJet = nCJet;  
   ntv.MET = MissingEt * 0.001;
@@ -1326,7 +1305,6 @@ void PhysObjProxyUtils::FillNTVars(NTVars& ntv,
   ntv.cleaning=cleaning;
   ntv.timing=timing;
 
-  ntv.SherpaBugMET = SherpaBugMET * 0.001;
   ntv.dPhiBadTile = dPhiBadTile;
   ntv.isNCBEvent = isNCBEvent;
 

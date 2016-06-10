@@ -111,8 +111,7 @@ class PhysObjProxyUtils
 		  float genWeight, 
 		  float ttbarWeightHT, float ttbarWeightPt2, 
 		  float ttbarAvgPt, float WZweight,
-		  std::vector<float>& bTagWeight,
-		  std::vector<float>& cTagWeight,int nBJet, int nCJet, 
+		  int nBJet, int nCJet, 
 		  double MissingEt, double METPhi, 
 		  double MissingEtTST, double METTSTPhi, 
 		  double* Meff, 
@@ -124,7 +123,7 @@ class PhysObjProxyUtils
 		  int hardproc, unsigned int cleaning, float timing,
 		  const std::vector<float>& jetSmearSystW,
 		  const std::vector<float>* flaggedtau = NULL, 
-		  float tauMt = 0.f, float SherpaBugMET = 0.f,
+		  float tauMt = 0.f, 
 		  float dPhiBadTile= 999.f,
 		  bool isNCBEvent = false,
 		  bool istruth = false,
@@ -142,8 +141,6 @@ class PhysObjProxyUtils
   void FillNTExtraVars(NTExtraVars& extrantv,
 		       double MET_Track, 
 		       double MET_Track_phi,
-		       double MT2,
-		       double MT2_noISR,
 		       double Ap);
     
 

@@ -5,7 +5,7 @@ std::string NTVars::toString()
 {
   return
 
-std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:PRWHash/l:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:nFatJet/i:met/F:metPhi/F:metTST/F:metTSTPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:bTagWeight/F:bTagWeightBUp/F:bTagWeightBDown/F:bTagWeightCUp/F:bTagWeightCDown/F:bTagWeightLUp/F:bTagWeightLDown/F:cTagWeight/F:cTagWeightBUp/F:cTagWeightBDown/F:cTagWeightCUp/F:cTagWeightCDown/F:cTagWeightLUp/F:cTagWeightLDown/F:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:SherpaBugMET/F:dPhiBadTile/F:isNCBEvent/O");
+std::string("RunNumber/i:EventNumber/i:LumiBlockNumber/i:veto/i:eventWeight/F:pileupWeight/F:pileupWeightUp/F:pileupWeightDown/F:PRWHash/l:genWeight/F:ttbarWeightHT/F:ttbarWeightPt2/F:ttbarAvgPt/F:WZweight/F:nJet/i:nFatJet/i:met/F:metPhi/F:metTST/F:metTSTPhi/F:dPhi/F:dPhiR/F:meffInc/F:hardproc/I:nBJet/I:nCJet/I:normWeight/F:normWeightUp/F:normWeightDown/F:cleaning/i:timing/F:jet1Emf/F:jet2Emf/F:jet1Chf/F:jet2Chf/F:pdfId1/I:pdfId2/I:tauN/i:tauJetBDTLoose/i:tauLooseN/i:tauMt/F:dPhiBadTile/F:isNCBEvent/O");
 }
 
 void NTVars::Reset()
@@ -34,20 +34,6 @@ void NTVars::Reset()
   hardproc=-1;
   nBJet = 0;
   nCJet = 0;
-  bTagWeight      = 1.f;
-  bTagWeightBUp   = 1.f;
-  bTagWeightBDown = 1.f;
-  bTagWeightCUp   = 1.f;
-  bTagWeightCDown = 1.f;
-  bTagWeightLUp   = 1.f;
-  bTagWeightLDown = 1.f;
-  cTagWeight      = 1.f;
-  cTagWeightBUp   = 1.f;
-  cTagWeightBDown = 1.f;
-  cTagWeightCUp   = 1.f;
-  cTagWeightCDown = 1.f;
-  cTagWeightLUp   = 1.f;
-  cTagWeightLDown = 1.f;
   normWeight=-1.f;
   normWeightDown=-1.f;
   normWeightUp=-1.f;
@@ -62,7 +48,6 @@ void NTVars::Reset()
   tauJetBDTLoose = 0;
   tauLooseN = 0;
   tauMt = 0.f;
-  SherpaBugMET = 0.f;
   dPhiBadTile = 0.f;
   isNCBEvent = false;
 
@@ -342,7 +327,7 @@ void NTCR3LVars::Reset()
 
 std::string NTExtraVars::toString()
 {
-  return  std::string("mettrack/F:mettrack_phi/F:mT2/F:mT2_noISR/F:Ap/F:ZvvPt/F:ZvvEta/F:ZvvPhi/F:ZvvM/F");
+  return  std::string("mettrack/F:mettrack_phi/F:Ap/F:ZvvPt/F:ZvvEta/F:ZvvPhi/F:ZvvM/F");
 
 }
 
@@ -350,10 +335,6 @@ void NTExtraVars::Reset()
 {
   mettrack = 0.f;
   mettrack_phi = 0.f;
-  mT2 = -1.f;
-  mT2_noISR = 0.f;
-  mT2=0.f;
-  mT2_noISR=0.f;
   Ap =0.f;
   ZvvPt = 0.f;
   ZvvEta = 0.f;

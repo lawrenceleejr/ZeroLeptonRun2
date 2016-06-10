@@ -1,5 +1,6 @@
 06-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Add PRWHash
+	* Remove btagWeight, ctagWeight, SherpaBugMET, mT2
 
 31-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Add FatJets container delete

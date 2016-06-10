@@ -255,8 +255,6 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
   }
-  std::vector<float> btag_weight(7,1.); // not implemented in SUSYTools
-  std::vector<float> ctag_weight(7,1.); // not implemented in SUSYTools
 
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
@@ -443,12 +441,13 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     nonISR_jets.erase(nonISR_jets.begin()+isr_jet_indices[0],nonISR_jets.end());
   }
 
-
+  /* not used now
   double mT2=-9;
-  //if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingET);
+  if (good_jets.size()>=2) mT2 = m_proxyUtils.MT2(good_jets,*missingET);
   double mT2_noISR=-9;
-  //if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET);
-  //out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
+  if (nonISR_jets.size()>=2) mT2_noISR = m_proxyUtils.MT2(nonISR_jets,*missingET);
+  out() << " mT2 " << mT2 << " " << mT2_noISR << std::endl;
+  */
 
   std::map<TString,float> RJigsawVariables;
   if (  m_fillTRJigsawVars ) {
@@ -556,7 +555,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
       isNCBEvent = *NCBEventFlag;
     }
 
-    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, PRWHash, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, btag_weight, ctag_weight, b_jets.size(), c_jets.size(), MissingEt, phi_met, missingET_TST->Mod(), missingET_TST->Phi(), Meff, meffincl, minDphi, RemainingminDPhi, good_jets, good_fat_jets, vD2_fat, visWmedium_fat, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., 0.,dPhiBadTile,isNCBEvent,m_IsTruth,baseline_taus,signal_taus);
+    m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, PRWHash, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, b_jets.size(), c_jets.size(), MissingEt, phi_met, missingET_TST->Mod(), missingET_TST->Phi(), Meff, meffincl, minDphi, RemainingminDPhi, good_jets, good_fat_jets, vD2_fat, visWmedium_fat, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., dPhiBadTile,isNCBEvent,m_IsTruth,baseline_taus,signal_taus);
     
     if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
@@ -568,7 +567,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
       m_ntv.btagSystWeights = *p_btagSystweights;
     }
 
-    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, mT2,mT2_noISR,Ap);
+    m_proxyUtils.FillNTExtraVars(m_extrantv, MET_Track, MET_Track_phi, Ap);
 
     if ( m_fillTRJigsawVars ) m_proxyUtils.FillNTRJigsawVars(m_rjigsawntv, RJigsawVariables );
 

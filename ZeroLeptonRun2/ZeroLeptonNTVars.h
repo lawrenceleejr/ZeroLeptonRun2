@@ -18,8 +18,9 @@ class NTVars
   void Reset();
 
   unsigned int RunNumber, EventNumber, LumiBlockNumber, veto;
-  float weight, pileupWeight, pileupWeightUp, pileupWeightDown, genWeight;
+  float weight, pileupWeight, pileupWeightUp, pileupWeightDown;
   unsigned long long PRWHash;
+  float genWeight;
   float ttbarWeightHT, ttbarWeightPt2, ttbarAvgPt, WZweight;
   int Njet, NFatJet;
   float MET, METPhi,METTST, METTSTPhi, deltaPhi, deltaPhiRemaining, MeffIncl;
@@ -27,8 +28,6 @@ class NTVars
   int hardproc;
   int nBJet;
   int nCJet;
-  float bTagWeight, bTagWeightBUp, bTagWeightBDown, bTagWeightCUp, bTagWeightCDown, bTagWeightLUp, bTagWeightLDown;
-  float cTagWeight, cTagWeightBUp, cTagWeightBDown, cTagWeightCUp, cTagWeightCDown, cTagWeightLUp, cTagWeightLDown;
   float normWeight,normWeightUp,normWeightDown;
   unsigned int cleaning;
   float timing;
@@ -38,7 +37,6 @@ class NTVars
   int tauN, tauJetBDTLoose;
   int tauLooseN;
   float tauMt;
-  float SherpaBugMET;
   float dPhiBadTile;
   bool isNCBEvent;
 
@@ -339,8 +337,6 @@ public:
 
   float mettrack;
   float mettrack_phi;
-  float mT2;
-  float mT2_noISR;
   float Ap;
 
   float ZvvPt;
