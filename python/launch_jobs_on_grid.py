@@ -183,6 +183,8 @@ def main():
             sys.exit(1)
         elif "_8TeV." in inDS:
             scriptcmd += " Global.Period: p8tev"
+        elif "mc15_13TeV." in inDS:
+            scriptcmd += " Global.Period: p13tev2016"
         elif "data15_13TeV." in inDS:
             scriptcmd += " Global.Period: p13tev2015"
         elif "data16_13TeV." in inDS:

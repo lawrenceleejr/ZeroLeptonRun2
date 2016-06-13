@@ -41,7 +41,7 @@ GRLProcessor::GRLProcessor(const char *name)
     m_GRLtool->setProperty("GoodRunsListVec",GRLXMLs).ignore();
     m_GRLtool->setProperty("VerboseDetStatus",verbose).ignore();
     m_GRLtool->initialize().ignore();
-    if ( verbose ) m_GRLtool->getGRLCollection()->Summary();
+    if ( verbose ) m_GRLtool->getGRLCollection().Summary();
   }
 }
 GRLProcessor::~GRLProcessor()
