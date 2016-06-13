@@ -65,7 +65,7 @@ ZeroLeptonCR3L::ZeroLeptonCR3L(const char *name)
   m_DoSystematics = config.get("DoSystematics",false);
   m_doFake = config.get("doFake", false);
 
-  m_period = periodFromString(config.get("Period","p13tev"));
+  m_period = periodFromString(config.get("Period","p13tev2015"));
   if ( m_period == p7tev ) throw(std::domain_error("ZeroLeptonCR3L does not support the 7tev run period"));
   if ( m_period == INVALID ) throw(std::domain_error("ZeroLeptonCR3L: invalid run period specified"));
 
@@ -255,7 +255,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth  ) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev2015 || m_period == p13tev2016) && !m_IsTruth  ) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -290,18 +290,36 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     bool passEltrigger=false;
     bool passMutrigger=false;
-    if( (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1  ||
-	(int)eventInfo->auxdata<char>("HLT_e120_lhloose")==1     )
-      passEltrigger = true;
-    if ( m_IsData ) {
+    // Higher threshold electron triggers 
+    if( (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1  || 
+        (int)eventInfo->auxdata<char>("HLT_e120_lhloose")==1  ||
+        (int)eventInfo->auxdata<char>("HLT_e60_lhmedium_nod0")==1 ||
+        (int)eventInfo->auxdata<char>("HLT_e140_lhloose_nod0")==1  )  passEltrigger = true;
+
+    if ( m_IsData && m_period == p13tev2015 ) {
       if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM20VH")==1 ) passEltrigger = true;
+    } else if ( m_IsData && m_period == p13tev2016 )  {
+      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhtight_nod0_ivarloose")==1 ) passEltrigger = true;
+    } else {
+      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;    
+      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhtight_nod0_ivarloose")==1 ) passEltrigger = true;
     }
-    else {
-      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;
-    }
-    if((int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ||
-       (int)eventInfo->auxdata<char>("HLT_mu50")==1)
+
+    // Muon Triggers
+    if((int)eventInfo->auxdata<char>("HLT_mu50")==1               ||
+       (int)eventInfo->auxdata<char>("HLT_mu40")==1               )
       passMutrigger = true;
+    if ( m_IsData && m_period == p13tev2015 ) {
+      if ( (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ) passMutrigger = true;
+    } else if ( m_IsData && m_period == p13tev2016 )  {
+      if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarloose")==1 ) passMutrigger = true;
+      if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarmedium")==1 ) passMutrigger = true;
+    } else {
+      if ( (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ) passMutrigger = true;    
+      if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarloose_L1MU15")==1 ) passMutrigger = true;
+      if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarmedium")==1 ) passMutrigger = true;
+    }
+
     if( !(passEltrigger || passMutrigger) ) return true;
   }
 

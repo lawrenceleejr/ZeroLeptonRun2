@@ -640,6 +640,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_6j55_0eta240_L14J20",
     "HLT_7j45",
     "HLT_e120_lhloose",
+    "HLT_e140_lhloose_nod0",
     "HLT_e17_lhloose_L1EM15",
     "HLT_e17_loose_L1EM15",
     "HLT_e24_lhmedium_L1EM18VH",
@@ -648,6 +649,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_e24_lhvloose_L1EM20VH",
     "HLT_e28_tight_iloose",
     "HLT_e60_lhmedium",
+    "HLT_e60_lhmedium_nod0",
     "HLT_e60_medium",
     "HLT_g120_lhloose",
     "HLT_g120_loose",
@@ -672,6 +674,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_mu20_iloose_L1MU15",
     "HLT_mu20_L1MU15",
     "HLT_mu24_imedium", //2016
+    "HLT_mu24_ivarloose",
     "HLT_mu24_ivarmedium", //2016
     "HLT_mu26_imedium",
     "HLT_mu40",

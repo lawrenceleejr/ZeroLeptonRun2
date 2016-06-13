@@ -229,7 +229,7 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev2015 || m_period == p13tev2016) && !m_IsTruth) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -260,9 +260,22 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   m_counter->increment(weight,incr++,"hfor veto",trueTopo);
 
   // Trigger selection
+  bool passPhotonTrigger = false;
   if(! m_IsTruth){
-    if( !((int)eventInfo->auxdata<char>("HLT_g120_loose")==1) && !((int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1) ) return true;
+    if ( m_IsData && m_period == p13tev2015 ) {
+      if( (int)eventInfo->auxdata<char>("HLT_g120_loose")==1   ) passPhotonTrigger = true;
+      if( (int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1 ) passPhotonTrigger = true;
+    } else if ( m_IsData && m_period == p13tev2016 ) {
+      if( (int)eventInfo->auxdata<char>("HLT_g140_loose")==1   ) passPhotonTrigger = true;
+    } else {
+      if( (int)eventInfo->auxdata<char>("HLT_g120_loose")==1   ) passPhotonTrigger = true;
+      if( (int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1 ) passPhotonTrigger = true;
+      if( (int)eventInfo->auxdata<char>("HLT_g140_loose")==1   ) passPhotonTrigger = true;
+    }
   }
+
+  if (passPhotonTrigger == false) return true;
+
   m_counter->increment(weight,incr++,"Trigger",trueTopo);
 
   // These jets have overlap removed

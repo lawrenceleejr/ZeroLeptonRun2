@@ -183,8 +183,10 @@ def main():
             sys.exit(1)
         elif "_8TeV." in inDS:
             scriptcmd += " Global.Period: p8tev"
-        elif "_13TeV." in inDS or "_14TeV." in inDS :
-            scriptcmd += " Global.Period: p13tev"
+        elif "data15_13TeV." in inDS:
+            scriptcmd += " Global.Period: p13tev2015"
+        elif "data16_13TeV." in inDS:
+            scriptcmd += " Global.Period: p13tev2016"
         else:
             print "Could not identify the run period (7/8/13/14 TeV) from the input dataset ",inDS
             sys.exit(1)

@@ -199,7 +199,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   unsigned int veto = 0;
   // MC event veto (e.g. to remove sample phase space overlap)
-  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev) && !m_IsTruth ) {
+  if ( ! m_IsData && (m_period == p8tev || m_period == p13tev2015 || m_period == p13tev2016) && !m_IsTruth ) {
     unsigned int* pveto = 0;
     if ( !store->retrieve<unsigned int>(pveto,"mcVetoCode").isSuccess() ) throw std::runtime_error("could not retrieve mcVetoCode");
     veto = *pveto;
@@ -231,7 +231,14 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // Trigger selection
   if(! m_IsTruth && m_doTrigger){
-    if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+    if ( m_IsData && m_period == p13tev2015 ) {
+      if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+    } else if ( m_IsData && m_period == p13tev2016 ) {
+      if( !(int)eventInfo->auxdata<char>("HLT_xe80_tc_lcw_L1XE50")==1) return true;
+    } else {
+      if( !(int)eventInfo->auxdata<char>("HLT_xe70")==1) return true;
+      if( !(int)eventInfo->auxdata<char>("HLT_xe80_tc_lcw_L1XE50")==1) return true;
+    }
   }
   if( m_suffixSmear!="" ){
     float triggerWeight = eventInfo->auxdata<float>("triggerWeight");

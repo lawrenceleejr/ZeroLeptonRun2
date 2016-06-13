@@ -66,7 +66,7 @@ bool MCEventVeto::processEvent(xAOD::TEvent& event)
   if ( m_period == p8tev ) {
     *mcaccept = MCEventVetoHelper::mc12accept(*veto, mc_channel_number, truthPC, metcontainer);
   }
-  else if ( m_period == p13tev ) {
+  else if ( m_period == p13tev2015 || m_period == p13tev2016 ) {
     *mcaccept = MCEventVetoHelper::mc14accept(*veto, mc_channel_number, truthPC, metcontainer);
   }
 
