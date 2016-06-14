@@ -24,44 +24,28 @@ def quite_exit():
 # from multiprocessing import Pool
 import multiprocessing as mp
 
+def main():
 
-logging.info("loading packages...")
-ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
+	logging.info("loading packages...")
+	ROOT.gROOT.Macro("$ROOTCOREDIR/scripts/load_packages.C")
 
-##
-##
-########### Configuration ######################################
-##
-##
+	parser = OptionParser()
+	parser.add_option("--inDir", help   = "dir with output", default="/afs/cern.ch/user/l/leejr/work/public/fromGrid/")
+	parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
+	parser.add_option("--selection", help     = "selection string for skimming", default="1"  )
 
-
-parser = OptionParser()
-parser.add_option("--inDir", help   = "dir with output", default="/afs/cern.ch/user/l/leejr/work/public/fromGrid/")
-parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
-parser.add_option("--selection", help     = "selection string for skimming", default="1"  )
-
-(options, args) = parser.parse_args()
-
-# lumi = 1000  ## in pb-1
-# if len(sys.argv)==1:
-# 	search_directories = ["/afs/cern.ch/user/l/leejr/work/public/fromGrid/",]
-# else:
-# 	search_directories = [str(sys.argv[i]) for i in xrange(1,len(sys.argv))]
-
-print options
-search_directories = [options.inDir]
-print search_directories
-
-tmpOutputDirectory = "tmpOutput"
-outputDirectory = "output"
-treeStream = "trees"
-treePrefix = "trees_"
-
-selection = options.selection
-ncores = min(int(options.nproc),mp.cpu_count())
+	(options, args) = parser.parse_args()
 
 
-outputSampleNames = [
+	print options
+	search_directories = [options.inDir]
+	print search_directories
+
+	selection = options.selection
+	ncores = min(int(options.nproc),mp.cpu_count())
+
+
+	outputSampleNames = [
 	"data",
 	"signal",
 	"qcd",
@@ -70,31 +54,20 @@ outputSampleNames = [
 	"zjets",
 	"diboson",
 	"electroweak",
-]
+	]
 
+	logging.info("creating new sample handler")
+	sh_all = ROOT.SH.SampleHandler()
 
-##
-##
-########### Gather input ######################################
-##
-##
+	discoverInput.discover(sh_all, search_directories, "*"  )#todo add options
+	print len(sh_all)
 
-logging.info("creating new sample handler")
-sh_all = ROOT.SH.SampleHandler()
+	logging.info("adding my tags defined in discoverInput.py")
+	discoverInput.addTags(sh_all)
 
-discoverInput.discover(sh_all, search_directories, "*%s*"%treeStream  )
-print len(sh_all)
+	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
+	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools/mc15_13TeV/")
 
-logging.info("adding my tags defined in discoverInput.py")
-discoverInput.addTags(sh_all)
-
-ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
-ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools/mc15_13TeV/")
-
-
-
-
-def main():
 
 	if int(ncores)>1:
 		pool = mp.Pool(processes=ncores)
@@ -108,7 +81,11 @@ def main():
 	return
 
 
-def processTheSH( SHname ):
+def processTheSH( SHname ,
+		  tmpOutputDirectory = "tmpOutput",
+		  outputDirectory = "output",
+		  treePrefix = "",
+		  ) :
 
 	print SHname
 
@@ -126,7 +103,7 @@ def processTheSH( SHname ):
 		dsid = sample_name.split(".")[2]
 
 		if len(treesToProcess) == 0:
-			treesToProcess = getListOfTreeNames(sample)
+			treesToProcess = getListOfTreeNames(sample, treePrefix)
 
 		attachCounters(sample)
 
@@ -135,15 +112,15 @@ def processTheSH( SHname ):
 		try:
 			os.stat(mydir)
 		except:
-			os.mkdir(mydir)       
+			os.mkdir(mydir)
 
 		outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
 		filesToEventuallyHadd.append(outputSampleFileName)
 
-		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")  
+		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")
 
 		print "Starting"
-		print os.stat(outputSampleFileName).st_size 
+		print os.stat(outputSampleFileName).st_size
 
 		for itree in treesToProcess:
 			sh.setMetaString("nc_tree", itree)
@@ -160,14 +137,14 @@ def processTheSH( SHname ):
 				print outputTree.GetEntries()
 				outputTree.Write()
 				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
-			print os.stat(outputSampleFileName).st_size 
+			print os.stat(outputSampleFileName).st_size
 
-		print os.stat(outputSampleFileName).st_size 
+		print os.stat(outputSampleFileName).st_size
 		print "WRITING FILE...."
 		outputSampleFile.Write()
-		print os.stat(outputSampleFileName).st_size 
+		print os.stat(outputSampleFileName).st_size
 		outputSampleFile.Close()
-		print os.stat(outputSampleFileName).st_size 
+		print os.stat(outputSampleFileName).st_size
 
 
 
@@ -176,17 +153,17 @@ def processTheSH( SHname ):
 	try:
 		os.stat(mydir)
 	except:
-		os.mkdir(mydir)  
+		os.mkdir(mydir)
 	try:
 		os.stat(mydir+"/signal")
 	except:
-		os.mkdir(mydir+"/signal")  
+		os.mkdir(mydir+"/signal")
 
 
 
 	if SHname!="signal":
 		os.system('hadd -O -f %s/%s.root %s'%
-			(outputDirectory, SHname, " ".join(filesToEventuallyHadd) ) 
+			(outputDirectory, SHname, " ".join(filesToEventuallyHadd) )
 			)
 	else:
 		for myfile in filesToEventuallyHadd:
@@ -201,7 +178,7 @@ def processTheSH( SHname ):
 def getNormFactor(sample):
 
 	tempxs = sample.getMetaDouble("nc_xs") * sample.getMetaDouble("kfactor") * sample.getMetaDouble("filter_efficiency")
-	
+
 	print "Norm weight for %s is %f/(%f or %f)"%(sample.getMetaString("short_name"), tempxs, sample.getMetaDouble("nc_nevt"), sample.getMetaDouble("nc_sumw"))
 	m_eventscaling = tempxs
 	if sample.getMetaDouble("nc_nevt"):
@@ -260,7 +237,7 @@ def attachCounters(sample):
 		if len(sh_metadata) == 1:
 			metadata_sample = sh_metadata[0]
 			for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-				print myfile 
+				print myfile
 				try:
 					m_nevt += myfile.Get("cutflow").GetBinContent(myfile.Get("cutflow").GetXaxis().FindBin("all"))
 					m_sumw += myfile.Get("cutflow_weighted").GetBinContent(myfile.Get("cutflow_weighted").GetXaxis().FindBin("all"))
@@ -272,7 +249,7 @@ def attachCounters(sample):
 
 
 
-def getListOfTreeNames(sample):
+def getListOfTreeNames(sample, treePrefix = "" ):
 	f = ROOT.TFile(sample.fileName(0) )
 	# print f
 	listOfTrees = [key.GetName() for key in f.GetListOfKeys() if treePrefix in key.GetName()]
