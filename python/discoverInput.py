@@ -19,7 +19,10 @@ def discover(sh, search_directories, pattern="*"):
 
 def addTags(sh_all):
 	for sample in sh_all:
-		dsid = 361020
+		sample_name = sample.getMetaString("sample_name")
+		print sample_name
+                dsid = int( sample_name.split(".")[3])
+		print dsid
 
 		print samplelist
 
