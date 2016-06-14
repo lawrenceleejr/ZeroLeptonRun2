@@ -173,11 +173,11 @@ void NTReclusteringVars::Reset()
   nJetsRecl = 0;
 
   // Clear vectors
-  RTjets10SubJetIndeces.clear();
-  RTjetPt.clear();
-  RTjetEta.clear();
-  RTjetPhi.clear();
-  RTjetM.clear();
+  // RTjets10SubJetIndeces.clear();
+  // RTjetPt.clear();
+  // RTjetEta.clear();
+  // RTjetPhi.clear();
+  // RTjetM.clear();
   ReclJetMass.clear();
   ReclJetPt.clear();
   ReclJetEta.clear();
@@ -194,11 +194,11 @@ NTReclusteringVarsRead::NTReclusteringVarsRead(): RTntv()
 {
 
   //RTjet variables
-  p_RTjets10SubJetIndeces =  &RTntv.RTjets10SubJetIndeces;
-  p_RTjetPt   = &RTntv.RTjetPt;
-  p_RTjetEta  = &RTntv.RTjetEta;
-  p_RTjetPhi  = &RTntv.RTjetPhi;
-  p_RTjetM    = &RTntv.RTjetM;
+  // p_RTjets10SubJetIndeces =  &RTntv.RTjets10SubJetIndeces;
+  // p_RTjetPt   = &RTntv.RTjetPt;
+  // p_RTjetEta  = &RTntv.RTjetEta;
+  // p_RTjetPhi  = &RTntv.RTjetPhi;
+  // p_RTjetM    = &RTntv.RTjetM;
   p_ReclJetMass = &RTntv.ReclJetMass;
   p_ReclJetPt   = &RTntv.ReclJetPt;
   p_ReclJetEta  = &RTntv.ReclJetEta;
@@ -217,11 +217,11 @@ void NTReclusteringVarsRead::setAddresses(TTree* tree)
   tree->GetBranch("NTReclusteringVars")->SetAddress(&RTntv.NWcandidates);
 
   //RTjet variables
-  tree->GetBranch("RTjets10SubJetIndeces")->SetAddress(&p_RTjets10SubJetIndeces);
-  tree->GetBranch("RTjetPt")->SetAddress(&p_RTjetPt);
-  tree->GetBranch("RTjetEta")->SetAddress(&p_RTjetEta);
-  tree->GetBranch("RTjetPhi")->SetAddress(&p_RTjetPhi);
-  tree->GetBranch("RTjetM")->SetAddress(&p_RTjetM);
+  // tree->GetBranch("RTjets10SubJetIndeces")->SetAddress(&p_RTjets10SubJetIndeces);
+  // tree->GetBranch("RTjetPt")->SetAddress(&p_RTjetPt);
+  // tree->GetBranch("RTjetEta")->SetAddress(&p_RTjetEta);
+  // tree->GetBranch("RTjetPhi")->SetAddress(&p_RTjetPhi);
+  // tree->GetBranch("RTjetM")->SetAddress(&p_RTjetM);
   tree->GetBranch("ReclJetMass")->SetAddress(&p_ReclJetMass);
   tree->GetBranch("ReclJetPt")->SetAddress(&p_ReclJetPt);
   tree->GetBranch("ReclJetEta")->SetAddress(&p_ReclJetEta);
