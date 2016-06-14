@@ -39,8 +39,7 @@ lttbarX  += [410081] # MadGraph5+Pythia ttWW
 lTop     = lttbar + lsinglet + lttbarX
 
 # diboson samples
-#lDiBoson =  range(361063,361073+1)+[361077,]+range(361081,361089+1) 
-lDiBoson =  range(361063,361073+1)+[361077,]+range(361087,361088+1)+range(361091,361096+1) # use of 361087 is temporary to be replaced with 361097
+lDiBoson =  range(361063,361073+1)+[361077,]+range(361081,361089+1) 
 
 lTriBoson = []
 
