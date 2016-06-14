@@ -11,6 +11,7 @@ import os, sys
 import itertools
 import array
 
+import mc15_13TeV_MCSampleList as samplelist
 import discoverInput
 
 logging.basicConfig(level=logging.INFO)
@@ -21,6 +22,7 @@ import atexit
 def quite_exit():
 	ROOT.gSystem.Exit(0)
 
+ROOT.gROOT.SetBatch()
 # from multiprocessing import Pool
 import multiprocessing as mp
 
@@ -41,19 +43,19 @@ def main():
 	search_directories = [options.inDir]
 	print search_directories
 
-	selection = options.selection
 	ncores = min(int(options.nproc),mp.cpu_count())
 
-
+#these names should be as they are called in your samplelist
 	outputSampleNames = [
-	"data",
-	"signal",
-	"qcd",
-	"top",
-	"wjets",
-	"zjets",
-	"diboson",
-	"electroweak",
+		"QCD",
+		# "Top",
+		# "Wjets",
+		# "ZMassiveCB",
+		# "DibosonMassiveCB",
+		# "GammaMassiveCB",
+
+		# "signal",
+		# "Data",
 	]
 
 	logging.info("creating new sample handler")
@@ -65,33 +67,36 @@ def main():
 	logging.info("adding my tags defined in discoverInput.py")
 	discoverInput.addTags(sh_all)
 
+	print sh_all
+
 	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools")
 	ROOT.SH.readSusyMetaDir(sh_all,"$ROOTCOREBIN/data/SUSYTools/mc15_13TeV/")
 
 
+
 	if int(ncores)>1:
 		pool = mp.Pool(processes=ncores)
-		pool.map(processTheSH, outputSampleNames)
+		pool.map(processTheSH, sh)
 		pool.close()
 		pool.join()
 	else:
 		for outputSampleName in outputSampleNames:
-			processTheSH(outputSampleName)
+			sh = sh_all.find(outputSampleName)
+			processTheSH(sh, sampleName = outputSampleName, selection = options.selection)
 
 	return
 
 
-def processTheSH( SHname ,
+def processTheSH( sh,
 		  tmpOutputDirectory = "tmpOutput",
 		  outputDirectory = "output",
 		  treePrefix = "",
+		  sampleName = "OTHER.root",
+		  selection  = "1."
 		  ) :
-
-	print SHname
+	print len(sh)
 
 	## Split up samplehandler into per-BG SH's based on tag metadata
-
-	sh = sh_all.find(SHname)
 
 	treesToProcess = []
 
@@ -121,19 +126,24 @@ def processTheSH( SHname ,
 
 		print "Starting"
 		print os.stat(outputSampleFileName).st_size
+		print treesToProcess
 
 		for itree in treesToProcess:
+			if ("SRAllNT" not in itree) : continue
 			sh.setMetaString("nc_tree", itree)
 			outputSampleFile.cd()
-			mytree =  sample.makeTChain().Clone(itree)
+			mytree = sample.makeTChain().Clone(itree)
+
 			print mytree
 			print getNormFactor(sample)
 			# print selection
+			print mytree.GetEntries(), getNormFactor(sample)
 			if mytree.GetEntries() and getNormFactor(sample):
-				try:
-					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
-				except:
-					continue
+#				try:
+				outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
+				#except:
+				#	print 'failed to add branch'
+			#		continue
 				print outputTree.GetEntries()
 				outputTree.Write()
 				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
@@ -161,13 +171,13 @@ def processTheSH( SHname ,
 
 
 
-	if SHname!="signal":
-		os.system('hadd -O -f %s/%s.root %s'%
-			(outputDirectory, SHname, " ".join(filesToEventuallyHadd) )
-			)
-	else:
-		for myfile in filesToEventuallyHadd:
-			os.system('cp %s %s/signal/.'% (myfile,outputDirectory)  )
+	# if shName!="signal":
+	os.system('hadd -O -f %s/%s.root %s'%
+		  (outputDirectory, sampleName, " ".join(filesToEventuallyHadd) )
+		  )
+	# else:
+#	for myfile in filesToEventuallyHadd:
+#		os.system('cp %s %s/signal/.'% (myfile,outputDirectory)  )
 
 	return
 
@@ -179,7 +189,7 @@ def getNormFactor(sample):
 
 	tempxs = sample.getMetaDouble("nc_xs") * sample.getMetaDouble("kfactor") * sample.getMetaDouble("filter_efficiency")
 
-	print "Norm weight for %s is %f/(%f or %f)"%(sample.getMetaString("short_name"), tempxs, sample.getMetaDouble("nc_nevt"), sample.getMetaDouble("nc_sumw"))
+#	print "Norm weight for %s is %f/(%f or %f)"%(sample.getMetaString("short_name"), tempxs, sample.getMetaDouble("nc_nevt"), sample.getMetaDouble("nc_sumw"))
 	m_eventscaling = tempxs
 	if sample.getMetaDouble("nc_nevt"):
 		m_eventscaling /= sample.getMetaDouble("nc_nevt") if "jetjet" in sample.getMetaString("short_name") else sample.getMetaDouble("nc_sumw")
@@ -192,8 +202,8 @@ addBranchCode = """
 TTree * addBranch(TTree* tree, float normalization, TString selection="1"){
 
 		TTree * newtree = tree->CopyTree(selection);
-		double normweight = normalization;
-		TBranch * bnormweight = newtree->Branch("normweight",&normweight,"normweight/D");
+		float normweight = normalization;
+		TBranch * bnormweight = newtree->Branch("normweight",&normweight,"normweight/F");
 		int nevents = newtree->GetEntries();
 
 		for (Long64_t i=0;i<nevents;i++) {
@@ -228,24 +238,28 @@ ROOT.gInterpreter.Declare(addBranchCode)
 
 def attachCounters(sample):
 
-		m_nevt = 0
-		m_sumw = 0
-
-		#Go to the grid and get the metadata output
-		sh_metadata = ROOT.SH.SampleHandler()
-		discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name") )
-		if len(sh_metadata) == 1:
-			metadata_sample = sh_metadata[0]
-			for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-				print myfile
-				try:
-					m_nevt += myfile.Get("cutflow").GetBinContent(myfile.Get("cutflow").GetXaxis().FindBin("all"))
-					m_sumw += myfile.Get("cutflow_weighted").GetBinContent(myfile.Get("cutflow_weighted").GetXaxis().FindBin("all"))
-				except:
-					pass
-
+		m_nevt = 1
+		m_sumw = 1
 		sample.setMetaDouble("nc_nevt",m_nevt)
 		sample.setMetaDouble("nc_sumw",m_sumw)
+
+		pass
+
+		#Go to the grid and get the metadata output
+		# sh_metadata = ROOT.SH.SampleHandler()
+		# discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name") )
+		# if len(sh_metadata) == 1:
+		# 	metadata_sample = sh_metadata[0]
+		# 	for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
+		# 		print myfile
+		# 		try:
+		# 			m_nevt += myfile.Get("cutflow").GetBinContent(myfile.Get("cutflow").GetXaxis().FindBin("all"))
+		# 			m_sumw += myfile.Get("cutflow_weighted").GetBinContent(myfile.Get("cutflow_weighted").GetXaxis().FindBin("all"))
+		# 		except:
+		# 			pass
+
+		# sample.setMetaDouble("nc_nevt",m_nevt)
+		# sample.setMetaDouble("nc_sumw",m_sumw)
 
 
 

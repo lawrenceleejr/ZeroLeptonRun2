@@ -66,7 +66,7 @@ ZmumujetsSherpa22 = range(363364,363387+1)
 ZeejetsSherpa22 = range(363388,363411+1)
 ZnunujetsSherpa22 = range(363412,363435+1)
 ZMassiveCBSherpa22 = ZtautaujetsSherpa22+ZmumujetsSherpa22+ZeejetsSherpa22+ZnunujetsSherpa22
-ZMassiveCBAlt = lZMassiveCBPowheg + lZMassiveCBMadgraph + lZMassiveCBSherpa22
+ZMassiveCBAlt = ZMassiveCBPowheg + ZMassiveCBMadgraph + ZMassiveCBSherpa22
 
 WjetsPowheg = [361100,361101,361102,361103,361104,361105]  # PowhegPythia8 sampes
 WjetsMadgraph = range(361520,361534+1)  # Madgraph+Pythia
@@ -81,7 +81,7 @@ ttbarMCatNLO = [410003]
 ttbarPowhegHerwing = [410004]
 ttbarPowhegP8 = [410006]
 ttbarSherpa = [410021,410022,410023]
-ttbarAlt = ttbarPowhegSyst + ttbarMCatNO + ttbarPowhegHerwing + ttbarPowhegP8 + ttbarSherpa
+ttbarAlt = ttbarPowhegSyst + ttbarMCatNLO + ttbarPowhegHerwing + ttbarPowhegP8 + ttbarSherpa
 singletAlt = [ ]
 
 DibosonMassiveCBPowheg =  range(361600,361611+1)
