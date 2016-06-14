@@ -1,3 +1,12 @@
+14-Jun-2016 Takashi Yamanaka
+	* Temporay fix of diboson sample list
+
+13-June-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
+	* Making compatible with 2016 triggers
+	* Updated to merging scripts
+	* Added PRWHash (Takashi)
+	* Removed unused variables (Takashi)
+
 06-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Add PRWHash
 	* Remove btagWeight, ctagWeight, SherpaBugMET, mT2
@@ -40,10 +49,10 @@
 	* Tagging as 00-01-00
 
 18-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
-	* revert lep,ph SF 
+	* revert lep,ph SF
 
 13-May-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
-	* Added JetSmearing 
+	* Added JetSmearing
 
 12-May-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Adding TST to output ntuple to understand effect of TST bug
