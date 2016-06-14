@@ -59,8 +59,8 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   NTVars outVars;
   bookNTVars(outTree,outVars,false);
 
-  // NTReclusteringVars outRTVars;
-  // bookNTReclusteringVars(outTree,outRTVars);
+  NTReclusteringVars outRTVars;
+  bookNTReclusteringVars(outTree,outRTVars);
 
   NTExtraVars inExtraVars, outExtraVars;
   if ( doExtraVars ) bookNTExtraVars(outTree,outExtraVars);
@@ -83,7 +83,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
   float sumW = 0.;
   float xsec = 0.;
   NTVarsRead inVars;
-  //NTReclusteringVarsRead inRTVars;
+  NTReclusteringVarsRead inRTVars;
   //NTCRYVarsRead inCRYVars;
   auto checkMod = [](int numToMod, int modulo){return (numToMod%modulo==0);};
 
@@ -95,7 +95,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
     TTree* tree = dynamic_cast<TTree*>(f->Get(inTreeName.c_str()));
     if ( !tree  ) throw std::runtime_error("Could not find a tree"+inTreeName+inFiles[i]);
     inVars.setAddresses(tree);
-    //    inRTVars.setAddresses(tree);
+    inRTVars.setAddresses(tree);
     if ( doExtraVars ) tree->GetBranch("NTExtraVars")->SetAddress(&inExtraVars.mettrack);
     if ( doRJigsawVars ) tree->GetBranch("NTRJigsawVars")->SetAddress(&inRJigsawVars.RJVars_PP_Mass);
     if ( doCRWTVars ) tree->GetBranch("NTCRWTVars")->SetAddress(&inCRWTVars.lep1Pt);
@@ -114,7 +114,7 @@ void  FilterUpdateMerge::process(TTree* outTree, const std::string& inTreeName,
       // This block is probably somewhat slow. Could investigate speeding up.
 
       outVars = inVars.ntv;
-      //      outRTVars = inRTVars.RTntv;
+      outRTVars = inRTVars.RTntv;
       //outCRYVars = inCRYVars.ntv;
       if ( doExtraVars) outExtraVars = inExtraVars;
       if ( doRJigsawVars) outRJigsawVars = inRJigsawVars;
