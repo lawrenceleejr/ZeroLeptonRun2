@@ -1,6 +1,7 @@
 14-Jun-2016 Takashi Yamanaka
 	* Temporay fix of diboson sample list
-
+        * Update to JetSmearing-01-00-18
+	
 13-June-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Making compatible with 2016 triggers
 	* Updated to merging scripts

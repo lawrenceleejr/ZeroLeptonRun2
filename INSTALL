@@ -8,12 +8,12 @@ rcSetup Base,2.4.9
 # to get the trunk
 rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2/trunk
 # to get a specific tag
-#rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2/tags/ZeroLeptonRun2-00-00-51
+#rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/Factory/ZeroLeptonRun2/tags/ZeroLeptonRun2-00-01-03
 
 ## additional packages needed (SUSYTools now part of AnalysisBase
 rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/SUSYTools/tags/SUSYTools-00-07-60
 rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/Factory/cafe/tags/cafe-00-00-10
-rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-17
+rc checkout_pkg atlasoff/PhysicsAnalysis/SUSYPhys/JetSmearing/tags/JetSmearing-01-00-18
 git clone https://github.com/lawrenceleejr/Ext_RestFrames.git; cd Ext_RestFrames; git checkout v1.6; cd -;
 git clone https://github.com/kratsg/xAODJetReclustering.git
 
