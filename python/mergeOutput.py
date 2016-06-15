@@ -139,11 +139,11 @@ def processTheSH( sh,
 			# print selection
 			print mytree.GetEntries(), getNormFactor(sample)
 			if mytree.GetEntries() and getNormFactor(sample):
-#				try:
-				outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
-				#except:
-				#	print 'failed to add branch'
-			#		continue
+				try:
+					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
+				except:
+					print 'failed to add branch'
+					continue
 				print outputTree.GetEntries()
 				outputTree.Write()
 				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
