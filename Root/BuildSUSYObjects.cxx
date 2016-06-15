@@ -671,10 +671,12 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_j85",
     "HLT_mu14_iloose",
     "HLT_mu18",
+    "HLT_mu20_iloose",
     "HLT_mu20_iloose_L1MU15",
     "HLT_mu20_L1MU15",
     "HLT_mu24_imedium", //2016
     "HLT_mu24_ivarloose",
+    "HLT_mu24_ivarloose_L1MU15",
     "HLT_mu24_ivarmedium", //2016
     "HLT_mu26_imedium",
     "HLT_mu40",
