@@ -100,7 +100,7 @@ void BuildSUSYObjects::initSUSYTools()
   //else m_SUSYObjTool->setProperty("Is8TeV", false).ignore();
 
   m_SUSYObjTool->setProperty("JESNuisanceParameterSet",m_JESNuisanceParameterSet).ignore();
-  if ( m_PhotonInOR ) { m_SUSYObjTool->setProperty("DoPhotonOR",true); }
+  if ( m_PhotonInOR ) { m_SUSYObjTool->setBoolProperty("DoPhotonOR",true); }
   m_SUSYObjTool->setProperty("PRWConfigFiles",m_prwFiles).ignore();
   m_SUSYObjTool->setProperty("PRWLumiCalcFiles",m_lumicalcFiles).ignore();
 
@@ -227,6 +227,8 @@ bool BuildSUSYObjects::processEvent(xAOD::TEvent& event)
   const xAOD::Vertex* primVertex = 0;
   primVertex = ZeroLeptonUtils::GetPrimVtx(event);
   if ( !primVertex ) return true;
+
+  if ( !m_IsData ) m_SUSYObjTool->ApplyPRWTool();
 
   //----------------------------------------   Taus
   std::pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* > susytaus = std::make_pair< xAOD::TauJetContainer*, xAOD::ShallowAuxContainer* >(NULL,NULL);

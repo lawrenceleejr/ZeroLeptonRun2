@@ -1,7 +1,10 @@
-14-Jun-2016 Takashi Yamanaka
+16-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
+	* Update to SUSYTools-00-07-70
+
+14-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Temporay fix of diboson sample list
         * Update to JetSmearing-01-00-18
-	
+
 13-June-2016 Lawrence Lee <Lawrence.Lee.Jr@cern.ch>
 	* Making compatible with 2016 triggers
 	* Updated to merging scripts
