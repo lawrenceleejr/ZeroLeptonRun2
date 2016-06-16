@@ -92,7 +92,6 @@ def main():
 
 
 def processTheSH( sh,
-		  tmpOutputDirectory = "tmpOutput",
 		  outputDirectory = "output",
 		  treePrefix = "",
 		  sampleName = "OTHER.root",
@@ -116,12 +115,12 @@ def processTheSH( sh,
 
 		attachCounters(sample)
 
-		mydir = tmpOutputDirectory
+		tmpOutputDirectory = os.path.join([outputDirectory, "tmpOutput"])
 
 		try:
-			os.stat(mydir)
+			os.stat(tmpOutputDirectory)
 		except:
-			os.mkdir(mydir)
+			os.mkdir(tmpOutputDirectory)
 
 		outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
 		filesToEventuallyHadd.append(outputSampleFileName)
@@ -129,7 +128,7 @@ def processTheSH( sh,
 		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")
 
 		print "Starting"
-		print os.stat(outputSampleFileName).st_size
+#		print os.stat(outputSampleFileName).st_size
 #		print treesToProcess
 
 		for itree in treesToProcess:
@@ -160,20 +159,14 @@ def processTheSH( sh,
 		outputSampleFile.Close()
 #		print os.stat(outputSampleFileName).st_size
 
-
-
-
-	mydir = outputDirectory
 	try:
-		os.stat(mydir)
+		os.stat(outputDirectory)
 	except:
-		os.mkdir(mydir)
+		os.mkdir(outputDirectory)
 	try:
-		os.stat(mydir+"/signal")
+		os.stat(outputDirectory+"/signal")
 	except:
-		os.mkdir(mydir+"/signal")
-
-
+		os.mkdir(outputDirectory+"/signal")
 
 	# if shName!="signal":
 	os.system('hadd -O -f %s/%s.root %s'%
@@ -242,8 +235,15 @@ ROOT.gInterpreter.Declare(addBranchCode)
 
 def attachCounters(sample):
 
-		m_nevt = 1
-		m_sumw = 1
+		m_nevt = 0
+		m_sumw = 0
+
+		for fname in  sample.makeFileList() :
+			print fname
+			f = ROOT.TFile(fname )
+			m_nevt += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(1)
+			m_sumw += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(2)
+
 		sample.setMetaDouble("nc_nevt",m_nevt)
 		sample.setMetaDouble("nc_sumw",m_sumw)
 
