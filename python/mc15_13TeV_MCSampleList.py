@@ -94,10 +94,10 @@ alt = ZMassiveCBAlt + WjetsAlt + ttbarAlt + singletAlt + DibosonMassiveCBAlt
 ## truth level samples
 ##
 
-ZMassiveCBTruth  = range(362000,362190+1) # Sherpa Z->nunu syst variations
-ZMassiveCBTruth += range(361444,361467+1) # Sherpa Z->nunu
-ZMassiveCBTruth += range(361515,361519+1) # Madgraph+Pythia8 Z->nunu
-GammaMassiveCBTruth = range(361039,361061+1) # Sherpa gamma+jets
+# ZMassiveCBTruth  = range(362000,362190+1) # Sherpa Z->nunu syst variations
+# ZMassiveCBTruth += range(361444,361467+1) # Sherpa Z->nunu
+# ZMassiveCBTruth += range(361515,361519+1) # Madgraph+Pythia8 Z->nunu
+# GammaMassiveCBTruth = range(361039,361061+1) # Sherpa gamma+jets
 
-truth = ZMassiveCBTruth + GammaMassiveCBTruth
+# truth = ZMassiveCBTruth + GammaMassiveCBTruth
 
