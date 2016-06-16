@@ -653,7 +653,6 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_e60_lhmedium",
     "HLT_e60_lhmedium_nod0",
     "HLT_e60_medium",
-    "HLT_g120_lhloose",
     "HLT_g120_loose",
     "HLT_g140_loose", //2016
     "HLT_j110",
@@ -696,6 +695,7 @@ void BuildSUSYObjects::fillTriggerInfo(xAOD::TEvent& event) const
     "HLT_xe70_tc_em",
     "HLT_xe70_tc_lcw",
     "HLT_xe80_tc_lcw_L1XE50", //2016
+    "HLT_xe90_tc_lcw_L1XE50", //2016
     "L1_2J15",
     "L1_XE50",
     "L1_XE70",

@@ -1,5 +1,6 @@
 16-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Update to SUSYTools-00-07-70
+	* Remove HLT_g120_lhloose which does not exist
 
 14-Jun-2016 Takashi Yamanaka <takashi.yamanaka@cern.ch>
 	* Temporay fix of diboson sample list
