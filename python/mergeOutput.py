@@ -35,6 +35,7 @@ def main():
 	parser.add_option("--inDir", help   = "dir with output", default="/afs/cern.ch/user/l/leejr/work/public/fromGrid/")
 	parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
 	parser.add_option("--selection", help     = "selection string for skimming", default="1"  )
+	parser.add_option("--outputDir", help ="where to write the output merged ntuples" , default = "output")
 
 	(options, args) = parser.parse_args()
 
@@ -48,11 +49,11 @@ def main():
 #these names should be as they are called in your samplelist
 	outputSampleNames = [
 		"QCD",
-		# "Top",
-		# "Wjets",
-		# "ZMassiveCB",
-		# "DibosonMassiveCB",
-		# "GammaMassiveCB",
+		"Top",
+		"Wjets",
+		"ZMassiveCB",
+		"DibosonMassiveCB",
+		"GammaMassiveCB",
 
 		# "signal",
 		# "Data",
@@ -82,7 +83,10 @@ def main():
 	else:
 		for outputSampleName in outputSampleNames:
 			sh = sh_all.find(outputSampleName)
-			processTheSH(sh, sampleName = outputSampleName, selection = options.selection)
+			processTheSH(sh,
+				     outputDirectory = options.outputDir,
+				     sampleName = outputSampleName,
+				     selection = options.selection)
 
 	return
 
@@ -105,7 +109,7 @@ def processTheSH( sh,
 	for sample in sh:
 		sample_name = sample.getMetaString("sample_name")
 		# print sample_name
-		dsid = sample_name.split(".")[2]
+		dsid = sample_name.split(".")[3]
 
 		if len(treesToProcess) == 0:
 			treesToProcess = getListOfTreeNames(sample, treePrefix)
@@ -126,7 +130,7 @@ def processTheSH( sh,
 
 		print "Starting"
 		print os.stat(outputSampleFileName).st_size
-		print treesToProcess
+#		print treesToProcess
 
 		for itree in treesToProcess:
 			if ("SRAllNT" not in itree) : continue
@@ -134,27 +138,27 @@ def processTheSH( sh,
 			outputSampleFile.cd()
 			mytree = sample.makeTChain().Clone(itree)
 
-			print mytree
-			print getNormFactor(sample)
+#			print mytree
+#			print getNormFactor(sample)
 			# print selection
-			print mytree.GetEntries(), getNormFactor(sample)
+#			print mytree.GetEntries(), getNormFactor(sample)
 			if mytree.GetEntries() and getNormFactor(sample):
 				try:
 					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
 				except:
 					print 'failed to add branch'
 					continue
-				print outputTree.GetEntries()
+#				print outputTree.GetEntries()
 				outputTree.Write()
-				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
-			print os.stat(outputSampleFileName).st_size
+#				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
+#			print os.stat(outputSampleFileName).st_size
 
-		print os.stat(outputSampleFileName).st_size
+#		print os.stat(outputSampleFileName).st_size
 		print "WRITING FILE...."
 		outputSampleFile.Write()
-		print os.stat(outputSampleFileName).st_size
+#		print os.stat(outputSampleFileName).st_size
 		outputSampleFile.Close()
-		print os.stat(outputSampleFileName).st_size
+#		print os.stat(outputSampleFileName).st_size
 
 
 
@@ -209,7 +213,7 @@ TTree * addBranch(TTree* tree, float normalization, TString selection="1"){
 		for (Long64_t i=0;i<nevents;i++) {
 			newtree->GetEntry(i);
 			bnormweight->Fill();
-			if(i%10000==0) cout<< i << " of " << nevents << endl;
+			//if(i%10000==0) cout<< i << " of " << nevents << endl;
 		}
 
 		return newtree;

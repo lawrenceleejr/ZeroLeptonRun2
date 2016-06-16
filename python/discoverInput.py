@@ -29,8 +29,7 @@ def addTags(sh_all):
 		for name, dsidrange in (vars(samplelist)).iteritems() :
 			if not name.startswith('__') :
 				if dsid in dsidrange :
-					print name, dsidrange
+					print 'for ', dsid ,' , adding tag ' , name
 					sample.addTag(name)
 
 		print sample
-		return
