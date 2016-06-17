@@ -264,12 +264,10 @@ bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     if ( m_IsData && m_period == p13tev2015 ) {
       if( (int)eventInfo->auxdata<char>("HLT_g120_loose")==1   ) passPhotonTrigger = true;
-      if( (int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1 ) passPhotonTrigger = true;
     } else if ( m_IsData && m_period == p13tev2016 ) {
       if( (int)eventInfo->auxdata<char>("HLT_g140_loose")==1   ) passPhotonTrigger = true;
     } else {
       if( (int)eventInfo->auxdata<char>("HLT_g120_loose")==1   ) passPhotonTrigger = true;
-      if( (int)eventInfo->auxdata<char>("HLT_g120_lhloose")==1 ) passPhotonTrigger = true;
       if( (int)eventInfo->auxdata<char>("HLT_g140_loose")==1   ) passPhotonTrigger = true;
     }
   }
