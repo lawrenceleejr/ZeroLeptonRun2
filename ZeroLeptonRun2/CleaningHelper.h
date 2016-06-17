@@ -43,12 +43,13 @@ class CleaningHelper
       ++counter;
     }
 
-    cleaning.clear();//clear the map after ask for the cleaning, since we need to clear it for the next event
+    std::for_each(cleaning.begin(), cleaning.end(),  [](std::pair<const std::string,bool>& pair){ pair.second = false; });
+    //set all to false for next event
+
     return cleaningBitset.to_ulong();
   }
 
-  std::map<std::string, bool> cleaning;
-
+  std::map<const std::string, bool> cleaning;
 };
 
 

@@ -64,7 +64,7 @@ private:
   std::string m_suffix;
   std::string m_suffixRecl;
   std::string m_suffixSyst;
-  CleaningHelper cleaningHelper;
+  CleaningHelper m_cleaningHelper;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
   ZeroLeptonCutVal m_cutVal;
