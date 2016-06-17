@@ -523,9 +523,9 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
     // average timing of 2 leading jets
     if (fabs(time[0]) > 5) m_cleaningHelper.cleaning.at("leadingJetTimingVeto") = true;
 
-    if(!m_IsTruth){
-      if ( m_proxyUtils.chfVeto(good_jets) ) m_cleaningHelper.cleaning.at("chfVeto") = true;
-    }
+    // if(!m_IsTruth){
+    //   if ( m_proxyUtils.chfVeto(good_jets) ) m_cleaningHelper.cleaning.at("chfVeto") = true;
+    // }
 
     bool * failMetCleaning = nullptr;
     if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");

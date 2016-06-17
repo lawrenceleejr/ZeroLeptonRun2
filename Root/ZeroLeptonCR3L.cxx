@@ -989,7 +989,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
       //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       //if ( chfTileVeto ) cleaning += 4;
 
-      if ( m_proxyUtils.chfVeto(good_jets) ) m_cleaningHelper.cleaning.at("chfVeto") = true;
+      //      if ( m_proxyUtils.chfVeto(good_jets) ) m_cleaningHelper.cleaning.at("chfVeto") = true;
 
       bool * failMetCleaning = nullptr;
       if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");
