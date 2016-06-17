@@ -1,6 +1,6 @@
 #include "ZeroLeptonRun2/ZeroLeptonSR.h"
 #include "ZeroLeptonRun2/PhysObjProxies.h"
-
+#include "ZeroLeptonRun2/CleaningHelper.h"
 #include "ZeroLeptonRun2/BosonTagging.h"
 
 #include "xAODRootAccess/TEvent.h"
@@ -164,7 +164,7 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
 
   // get pileup weights
   std::vector<float>* pileupWeights = 0;
-  unsigned long long PRWHash = 0; 
+  unsigned long long PRWHash = 0;
   if ( !m_IsData && !m_IsTruth ) {
     if ( !store->retrieve< std::vector<float> >(pileupWeights,"pileupWeights").isSuccess() ) throw std::runtime_error("could not retrieve pileupWeights");
     //out() << " pileup weight " << (*pileupWeights)[0] << std::endl;
@@ -505,53 +505,33 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
+  CleaningHelper cleaningHelper;
+
   if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
     if ( ! m_IsData && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
-    // other cleaning tests
-    unsigned int cleaning = 0;
-    unsigned int power2 = 1;
-
     // bad jet veto
-    if ( !bad_jets.empty() ) cleaning += power2;
-    power2 *= 2;//0x2
+    if ( !bad_jets.empty() ) cleaningHelper.cleaning.at("badJetVeto") = true;
 
     // bad muons for MET cut: based on non isolated muons
-    if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) cleaning += power2;
-    power2 *= 2;//0x4
+    if ( m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) cleaningHelper.cleaning.at("badMetMuonVeto") = true;
 
     // bad Tile cut
-    if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
-    power2 *= 2;//0x8
-
-    // Negative-cell cleaning cut (no longer used)
-    power2 *= 2;//0x10
+    if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaningHelper.cleaning.at("badTileVeto") = true;
 
     // average timing of 2 leading jets
-    if (fabs(time[0]) > 5) cleaning += power2;
-    power2 *= 2;//0x20
+    if (fabs(time[0]) > 5) cleaningHelper.cleaning.at("leadingJetTimingVeto") = true;
 
     if(!m_IsTruth){
-      bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
-      if ( m_period == p8tev && chfTileVeto ) cleaning += power2;
-      bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-      power2 *= 2;
-      if ( chfVeto ) cleaning += power2;
+      if ( m_proxyUtils.chfVeto(good_jets) ) cleaningHelper.cleaning.at("chfVeto") = true;
     }
-
-    //
-    power2 *= 2;
-    //0x40
 
     bool * failMetCleaning = nullptr;
     if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");
-    if ( *failMetCleaning) cleaning+= power2;
-
-    power2 *= 2;
-    //0x80
+    if ( *failMetCleaning) cleaningHelper.cleaning.at("metTSTCleaningVeto") = true;
 
     float dPhiBadTile = m_proxyUtils.dPhiBadTile(good_jets,*missingET);
 
@@ -562,8 +542,10 @@ bool ZeroLeptonSR::processEvent(xAOD::TEvent& event)
       isNCBEvent = *NCBEventFlag;
     }
 
+    unsigned long const cleaning = cleaningHelper.finalCleaning();
+
     m_proxyUtils.FillNTVars(m_ntv, runnum, EventNumber, LumiBlockNumber, veto, weight, normWeight, *pileupWeights, PRWHash, genWeight,ttbarWeightHT,ttbarWeightPt2,ttbarAvgPt,WZweight, b_jets.size(), c_jets.size(), MissingEt, phi_met, missingET_TST->Mod(), missingET_TST->Phi(), Meff, meffincl, minDphi, RemainingminDPhi, good_jets, good_fat_jets, vD2_fat, visWmedium_fat, trueTopo, cleaning, time[0],jetSmearSystW,0, 0., dPhiBadTile,isNCBEvent,m_IsTruth,baseline_taus,signal_taus);
-    
+
     if ( systag == ""  && !m_IsTruth ) {
       std::vector<float>* p_systweights = 0;
       if ( ! store->retrieve(p_systweights,"event_weights"+m_suffix).isSuccess() ) throw std::runtime_error("Could not retrieve event_weights"+m_suffix);

@@ -4,6 +4,7 @@
 #include "ZeroLeptonRun2/PtOrder.h"
 
 #include "ZeroLeptonRun2/BosonTagging.h"
+#include "ZeroLeptonRun2/CleaningHelper.h"
 
 #include "xAODRootAccess/TEvent.h"
 #include "xAODRootAccess/TActiveStore.h"
@@ -290,8 +291,8 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   if(! m_IsTruth){
     bool passEltrigger=false;
     bool passMutrigger=false;
-    // Higher threshold electron triggers 
-    if( (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1  || 
+    // Higher threshold electron triggers
+    if( (int)eventInfo->auxdata<char>("HLT_e60_lhmedium")==1  ||
         (int)eventInfo->auxdata<char>("HLT_e120_lhloose")==1  ||
         (int)eventInfo->auxdata<char>("HLT_e60_lhmedium_nod0")==1 ||
         (int)eventInfo->auxdata<char>("HLT_e140_lhloose_nod0")==1  )  passEltrigger = true;
@@ -301,7 +302,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
     } else if ( m_IsData && m_period == p13tev2016 )  {
       if ( (int)eventInfo->auxdata<char>("HLT_e24_lhtight_nod0_ivarloose")==1 ) passEltrigger = true;
     } else {
-      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;    
+      if ( (int)eventInfo->auxdata<char>("HLT_e24_lhmedium_L1EM18VH")==1 ) passEltrigger = true;
       if ( (int)eventInfo->auxdata<char>("HLT_e24_lhtight_nod0_ivarloose")==1 ) passEltrigger = true;
     }
 
@@ -315,7 +316,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
       if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarloose")==1 ) passMutrigger = true;
       if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarmedium")==1 ) passMutrigger = true;
     } else {
-      if ( (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ) passMutrigger = true;    
+      if ( (int)eventInfo->auxdata<char>("HLT_mu20_iloose_L1MU15")==1 ) passMutrigger = true;
       if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarloose_L1MU15")==1 ) passMutrigger = true;
       if ( (int)eventInfo->auxdata<char>("HLT_mu24_ivarmedium")==1 ) passMutrigger = true;
     }
@@ -337,7 +338,7 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   if(m_IsTruth){
     m_physobjsFillerTruth->FillJetProxies(good_jets,b_jets);
   }
-  
+
   // isolated_xxx have overlap removed
   std::vector<ElectronProxy> baseline_electrons, isolated_baseline_electrons, isolated_signal_electrons;
   if(! m_IsTruth){
@@ -957,63 +958,46 @@ bool ZeroLeptonCR3L::processEvent(xAOD::TEvent& event)
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
+  CleaningHelper cleaningHelper;
+
   if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
     if ( ! m_IsData  && ! m_IsTruth) runnum = mc_channel_number;
 
     std::vector<float> jetSmearSystW;
 
-    // other cleaning tests
-    unsigned int cleaning = 0;
-    unsigned int power2 = 1;
-
     if(!m_IsTruth){
-
       // bad jet veto
-      if ( !bad_jets.empty() ) cleaning += power2;
-      power2 *= 2;//0x2
+      if ( !bad_jets.empty() ) cleaningHelper.cleaning.at("badJetVeto") = true;
 
       // bad muon veto
       for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
 	if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
 	     isolated_baseline_muons[i].isBad() ) {
-	  cleaning += power2;
+	  cleaningHelper.cleaning.at("badMuonVeto") = true;
 	  break;
 	}
       }
-      power2 *= 2;//0x4
-
-      // Cosmic muon cut
-      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaning += power2;
-      power2 *= 2;//0x8
-
+      //cosmicMuon
+      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) ) cleaningHelper.cleaning.at("cosmicMuonVeto") = true;
       // bad Tile cut
-      if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaning += power2;
-      power2 *= 2;//0x10
-
-      // Negative-cell cleaning cut (no longer used)
-      power2 *= 2;//0x20
-
+      if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaningHelper.cleaning.at("badTileVeto") = true;
       // average timing of 2 leading jets
-      if (fabs(time[0]) > 5) cleaning += power2;
-      power2 *= 2;//0x40
+      if (fabs(time[0]) > 5) cleaningHelper.cleaning.at("leadingJetTimingVeto") = true;
 
       // FIXME why not in CRWT ?
       //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       //if ( chfTileVeto ) cleaning += 4;
 
-      bool chfVeto = m_proxyUtils.chfVeto(good_jets);
-      if ( chfVeto )  cleaning += power2;
-      power2 *= 2;//0x80
+      if ( m_proxyUtils.chfVeto(good_jets) ) cleaningHelper.cleaning.at("chfVeto") = true;
 
       bool * failMetCleaning = nullptr;
       if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");
-      if ( *failMetCleaning) cleaning+= power2;
-
+      if ( *failMetCleaning) cleaningHelper.cleaning.at("metTSTCleaningVeto") = true;
     }
-    else power2 *= 128;
 
     float dPhiBadTile = m_proxyUtils.dPhiBadTile(good_jets,*missingET);
+    unsigned long const cleaning = cleaningHelper.finalCleaning();
 
     bool isNCBEvent = false;
     if ( m_IsData ) {
