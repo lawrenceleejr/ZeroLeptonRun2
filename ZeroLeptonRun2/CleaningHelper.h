@@ -16,24 +16,25 @@ class CleaningHelper
   CleaningHelper() {
     //the list of potential cleaning cuts
     //if we need another cleaning, add it here
-    cleaning["badJetVeto"] = 0;
-    cleaning["badMetMuon"] = 0;
-    cleaning["badTileVeto"] = 0;
-    cleaning["negativeEnergyCellVeto"] = 0;
-    cleaning["leadingJetTiming"] = 0;
-    cleaning["chfTileVeto"] = 0;
-    cleaning["chfVeto"] = 0;
-    cleaning["failMetCleaning"] = 0;
-    cleaning["badMuon"] = 0;
-    cleaning["cosmicMuon"] = 0;
+    cleaning["badJetVeto"]             = false;
+    cleaning["badMetMuonVeto"]         = false;
+    cleaning["badTileVeto"]            = false;
+    cleaning["negativeEnergyCellVeto"] = false;
+    cleaning["leadingJetTimingVeto"]   = false;
+    cleaning["chfTileVeto"]            = false;
+    cleaning["chfVeto"]                = false;
+    cleaning["metTSTCleaningVeto"]     = false;
+    cleaning["badMuonVeto"]            = false;
+    cleaning["cosmicMuonVeto"]         = false;
   };
 
   unsigned long finalCleaning(){
-    std::bitset< cleaning.size() > cleaningBitset;
+    assert(32 > cleaning.size());//require that we don't have too many cleaning cuts
+    std::bitset< 32 > cleaningBitset;
 
     int counter = 0;
-    for(std::map<std::string,bool>::const_iterator nameBoolPair = cleaning->begin();
-       nameBoolPair != cleaning->end();
+    for(std::map<std::string,bool>::const_iterator nameBoolPair = cleaning.begin();
+       nameBoolPair != cleaning.end();
        ++nameBoolPair) {
       auto name    = nameBoolPair->first;
       auto passCut = nameBoolPair->second;
