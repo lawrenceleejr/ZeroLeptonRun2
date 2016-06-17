@@ -624,8 +624,6 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
   double Sp,ST,Ap=-1;
   m_proxyUtils.ComputeSphericity(good_jets, Sp,ST,Ap);
 
-  CleaningHelper cleaningHelper;
-
   if(m_doSmallNtuple) {
     unsigned int runnum = RunNumber;
     if ( ! m_IsData  && ! m_IsTruth) runnum = mc_channel_number;
@@ -635,33 +633,33 @@ bool ZeroLeptonCRZ::processEvent(xAOD::TEvent& event)
     if(!m_IsTruth){
 
       // bad jet veto
-      if ( !bad_jets.empty() ) cleaningHelper.cleaning.at("badJetVeto");
+      if ( !bad_jets.empty() ) m_cleaningHelper.cleaning.at("badJetVeto");
 
       // bad muon veto
       for ( size_t i = 0; i < isolated_baseline_muons.size(); i++) {
 	if ( isolated_baseline_muons[i].passOVerlapRemoval() &&
 	     isolated_baseline_muons[i].isBad() ) {
-	  cleaningHelper.cleaning.at("badMuonVeto");
+	  m_cleaningHelper.cleaning.at("badMuonVeto");
 	  break;
 	}
       }
 
       // Cosmic muon cut
-      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  cleaningHelper.cleaning.at("cosmicMuonVeto");
+      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  m_cleaningHelper.cleaning.at("cosmicMuonVeto");
 
       // bad Tile cut
-      if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) cleaningHelper.cleaning.at("badTileVeto");
+      if ( m_proxyUtils.badTileVeto(good_jets,*missingET)) m_cleaningHelper.cleaning.at("badTileVeto");
 
       // average timing of 2 leading jets
-      if (fabs(time[0]) > 5) cleaningHelper.cleaning.at("leadingJetTimingVeto");
+      if (fabs(time[0]) > 5) m_cleaningHelper.cleaning.at("leadingJetTimingVeto");
 
-      if ( m_proxyUtils.chfVeto(good_jets) ) cleaningHelper.cleaning.at("chfVeto");
+      if ( m_proxyUtils.chfVeto(good_jets) ) m_cleaningHelper.cleaning.at("chfVeto");
 
       bool * failMetCleaning = nullptr;
       if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");
-      if ( *failMetCleaning) cleaningHelper.cleaning.at("metTSTCleaningVeto");
+      if ( *failMetCleaning) m_cleaningHelper.cleaning.at("metTSTCleaningVeto");
     }
-    unsigned long const cleaning = cleaningHelper.finalCleaning();
+    unsigned long const cleaning = m_cleaningHelper.finalCleaning();
     float dPhiBadTile = m_proxyUtils.dPhiBadTile(good_jets,*missingET);
 
     bool isNCBEvent = false;

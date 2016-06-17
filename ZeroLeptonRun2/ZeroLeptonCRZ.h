@@ -9,6 +9,7 @@
 #include "ZeroLeptonRun2/ZeroLeptonRunPeriod.h"
 #include "ZeroLeptonRun2/ZeroLeptonCutVal.h"
 #include "ZeroLeptonRun2/PhysObjProxyUtils.h"
+#include "ZeroLeptonRun2/CleaningHelper.h"
 #include "ZeroLeptonRun2/Counter.h"
 
 class TTree;
@@ -60,6 +61,7 @@ private:
   std::string m_suffixSyst;
   PhysObjProxyFiller* m_physobjsFiller;
   PhysObjProxyFillerTruth* m_physobjsFillerTruth;
+  CleaningHelper m_cleaningHelper;
   ZeroLeptonCutVal m_cutVal;
   PhysObjProxyUtils m_proxyUtils;
   ZeroLeptonUtils m_ZLUtils;

@@ -43,6 +43,7 @@ class CleaningHelper
       ++counter;
     }
 
+    cleaning.clear();//clear the map after ask for the cleaning, since we need to clear it for the next event
     return cleaningBitset.to_ulong();
   }
 
