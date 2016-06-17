@@ -154,7 +154,6 @@ void ZeroLeptonCRY::begin()
 
 bool ZeroLeptonCRY::processEvent(xAOD::TEvent& event)
 {
-
   // access the transient store
   xAOD::TStore* store = xAOD::TActiveStore::store();
   std::string systag = "";

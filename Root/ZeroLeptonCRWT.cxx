@@ -801,8 +801,9 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 	  break;
 	}
       }
+
       // Cosmic muon cut
-      if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  m_cleaningHelper.cleaning.at("cosmicMuonVeto") = true;
+     if ( m_proxyUtils.CosmicMuon(isolated_baseline_muons) )  m_cleaningHelper.cleaning.at("cosmicMuonVeto") = true;
 
       // bad muons for MET cut: based on non isolated muons
       if (  m_proxyUtils.isbadMETmuon(baseline_muons, MissingEt, *missingET) ) m_cleaningHelper.cleaning.at("badMetMuonVeto") = true;
@@ -812,11 +813,13 @@ bool ZeroLeptonCRWT::processEvent(xAOD::TEvent& event)
 
       // average timing of 2 leading jets
       if (fabs(time[0]) > 5) m_cleaningHelper.cleaning.at("leadingJetTimingVeto") = true;
+
       // FIXME why not in CRWT ?
       //bool chfTileVeto =  m_proxyUtils.chfTileVeto(good_jets);
       //if ( chfTileVeto ) cleaning += 4;
 
       if ( m_proxyUtils.chfVeto(good_jets)) m_cleaningHelper.cleaning.at("chfVeto") = true;;
+
 
       bool * failMetCleaning = nullptr;
       if ( !store->retrieve<bool>(failMetCleaning,"failMetCleaning").isSuccess() ) throw std::runtime_error("could not retrieve failMetCleaning");
