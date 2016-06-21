@@ -1,6 +1,3 @@
-import pickle
-
-outfile = open('signalPointPickle.pkl','wb')
 pointdict = {};
 
 pointdict['SS_direct'] = {
@@ -352,7 +349,7 @@ pointdict['GG_direct'] = {
     371123: (1800,1000),
     371124: (1850,950),
     371125: (2000,1000),
-    406000: (1500,0),    
+    406000: (1500,0),
     }
 
 pointdict['GG_onestepCC'] = {
@@ -654,5 +651,3 @@ pointdict['SM_GG_N2'] = {
     370044:(1640,1160,1),
     370045:(1745,1055,1),
 }
-
-pickle.dump(pointdict,outfile)

@@ -22,16 +22,18 @@ def addTags(sh_all):
 		sample_name = sample.getMetaString("sample_name")
 #		print sample_name
 
+                dsid        = int( sample_name.split(".")[3])
+		print dsid, #also works as RunNumber fo data
+		sample.setMetaDouble("dsid", dsid)
+
+
 		if 'data15_13TeV' in sample_name :
 			sample.addTag('Data2015')
-			return
+			continue
 		if 'data16_13TeV' in sample_name :
 			sample.addTag('Data2016')
-			return
+			continue
 
-                dsid        = int( sample_name.split(".")[3])
-		print dsid
-		sample.setMetaDouble("dsid", dsid)
 
 #		print samplelist
 

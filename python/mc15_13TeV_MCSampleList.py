@@ -1,4 +1,5 @@
 __doc__ = """List of samples to be used in the analysis"""
+import makeSignalPointPickle
 
 ##
 ## Baseline samples   built from 50ns tags [r6630, r6647, r6655, r6767, r6793, r6802, r6828]
@@ -89,6 +90,9 @@ DibosonMassiveCBAlt = DibosonMassiveCBPowheg
 
 
 alt = ZMassiveCBAlt + WjetsAlt + ttbarAlt + singletAlt + DibosonMassiveCBAlt
+
+SS_direct = list(makeSignalPointPickle.pointdict["SS_direct"].keys())
+GG_direct = list(makeSignalPointPickle.pointdict["GG_direct"].keys())
 
 ##
 ## truth level samples

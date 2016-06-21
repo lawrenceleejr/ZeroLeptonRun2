@@ -48,22 +48,24 @@ def main():
 
 #these names should be as they are called in your samplelist
 	outputSampleNames = [
-		"QCD",
-		"Top",
-		"Wjets",
-		"ZMassiveCB",
-		"DibosonMassiveCB",
-		"GammaMassiveCB",
+#		"QCD",
+#		"Top",
+#		"Wjets",
+#		"ZMassiveCB",
+#		"DibosonMassiveCB",
+#		"GammaMassiveCB",
 
-		# "signal",
-		# "Data",
+	        #"SS_direct",
+	        #"GG_direct",
+		"Data2015",
+		"Data2016",
 	]
 
 	logging.info("creating new sample handler")
 	sh_all = ROOT.SH.SampleHandler()
 
 	discoverInput.discover(sh_all, search_directories, "*"  )#todo add options
-	print len(sh_all)
+	print 'length of sh_all : ', len(sh_all)
 
 	logging.info("adding my tags defined in discoverInput.py")
 	discoverInput.addTags(sh_all)
@@ -84,7 +86,7 @@ def main():
 		for outputSampleName in outputSampleNames:
 			sh = sh_all.find(outputSampleName)
 			processTheSH(sh,
-				     outputDirectory = options.outputDir,
+				     outputDirectory = (options.outputDir).strip('/'),
 				     sampleName = outputSampleName,
 				     selection = options.selection)
 
@@ -102,20 +104,20 @@ def processTheSH( sh,
 	## Split up samplehandler into per-BG SH's based on tag metadata
 
 	treesToProcess = []
-
 	filesToEventuallyHadd = []
 
-	for sample in sh:
+	for sample in sh :
 		sample_name = sample.getMetaString("sample_name")
 		# print sample_name
-		dsid = sample_name.split(".")[3]
+		dsid = int(sample.getMetaDouble("dsid"))
 
 		if len(treesToProcess) == 0:
 			treesToProcess = getListOfTreeNames(sample, treePrefix)
 
 		attachCounters(sample)
 
-		tmpOutputDirectory = os.path.join([outputDirectory, "tmpOutput"])
+		tmpOutputDirectory = os.path.join(outputDirectory, "tmpOutput")
+		print tmpOutputDirectory
 
 		try:
 			os.stat(tmpOutputDirectory)
@@ -124,7 +126,7 @@ def processTheSH( sh,
 
 		outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
 		filesToEventuallyHadd.append(outputSampleFileName)
-
+		print 'in loop, files to hadd',  filesToEventuallyHadd
 		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")
 
 		print "Starting"
@@ -132,16 +134,14 @@ def processTheSH( sh,
 #		print treesToProcess
 
 		for itree in treesToProcess:
+			print itree
 			if ("SRAllNT" not in itree) : continue
 			sh.setMetaString("nc_tree", itree)
 			outputSampleFile.cd()
 			mytree = sample.makeTChain().Clone(itree)
 
-#			print mytree
-#			print getNormFactor(sample)
-			# print selection
-#			print mytree.GetEntries(), getNormFactor(sample)
-			if mytree.GetEntries() and getNormFactor(sample):
+			print mytree, mytree.GetEntries()
+			if mytree.GetEntries() and getNormFactor(sample, bool(sh.find(ROOT.SH.TagList(':'.join(['Data2015','Data2016' ]))))):#second arg to check if data
 				try:
 					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
 				except:
@@ -149,7 +149,7 @@ def processTheSH( sh,
 					continue
 #				print outputTree.GetEntries()
 				outputTree.Write()
-#				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
+				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
 #			print os.stat(outputSampleFileName).st_size
 
 #		print os.stat(outputSampleFileName).st_size
@@ -159,6 +159,7 @@ def processTheSH( sh,
 		outputSampleFile.Close()
 #		print os.stat(outputSampleFileName).st_size
 
+	print 'filesToEventuallyHadd' , filesToEventuallyHadd
 	try:
 		os.stat(outputDirectory)
 	except:
@@ -168,21 +169,19 @@ def processTheSH( sh,
 	except:
 		os.mkdir(outputDirectory+"/signal")
 
-	# if shName!="signal":
-	os.system('hadd -O -f %s/%s.root %s'%
-		  (outputDirectory, sampleName, " ".join(filesToEventuallyHadd) )
-		  )
-	# else:
-#	for myfile in filesToEventuallyHadd:
-#		os.system('cp %s %s/signal/.'% (myfile,outputDirectory)  )
+	if sampleName == "GG_direct" or sampleName == "SS_direct":
+		for myfile in filesToEventuallyHadd:
+			os.system('cp %s %s/signal/.'% (myfile,outputDirectory)  )
+ 	else :
+		os.system('hadd -O -f %s/%s.root %s'%
+			  (outputDirectory, sampleName, " ".join(filesToEventuallyHadd) )
+			  )
 
 	return
 
-
-
-
 #To scale the histograms in the files after the event loop is done...
-def getNormFactor(sample):
+def getNormFactor(sample, isData = False):
+	if isData : return 1.
 
 	tempxs = sample.getMetaDouble("nc_xs") * sample.getMetaDouble("kfactor") * sample.getMetaDouble("filter_efficiency")
 
@@ -191,6 +190,7 @@ def getNormFactor(sample):
 	if sample.getMetaDouble("nc_nevt"):
 		m_eventscaling /= sample.getMetaDouble("nc_nevt") if "jetjet" in sample.getMetaString("short_name") else sample.getMetaDouble("nc_sumw")
 	else:
+		print "nevt not SET! normweight = 0 !!!"
 		m_eventscaling = 0.
 	return m_eventscaling
 
@@ -206,7 +206,7 @@ TTree * addBranch(TTree* tree, float normalization, TString selection="1"){
 		for (Long64_t i=0;i<nevents;i++) {
 			newtree->GetEntry(i);
 			bnormweight->Fill();
-			//if(i%10000==0) cout<< i << " of " << nevents << endl;
+			if(i%10000==0) cout<< i << " of " << nevents << endl;
 		}
 
 		return newtree;
@@ -234,42 +234,28 @@ ROOT.gInterpreter.Declare(addBranchCode)
 
 
 def attachCounters(sample):
+	print sample
+	print sample.makeFileList()
 
-		m_nevt = 0
-		m_sumw = 0
+	nevt = 0
+	sumw = 0
 
-		for fname in  sample.makeFileList() :
-			print fname
-			f = ROOT.TFile(fname )
-			m_nevt += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(1)
-			m_sumw += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(2)
+	for fname in  sample.makeFileList() :
+		print fname
+		f = ROOT.TFile(fname )
+		print f
+		nevt += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(1)
+		sumw += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(2)
 
-		sample.setMetaDouble("nc_nevt",m_nevt)
-		sample.setMetaDouble("nc_sumw",m_sumw)
-
-		pass
-
-		#Go to the grid and get the metadata output
-		# sh_metadata = ROOT.SH.SampleHandler()
-		# discoverInput.discover(sh_metadata, search_directories, sample.getMetaString("sample_name") )
-		# if len(sh_metadata) == 1:
-		# 	metadata_sample = sh_metadata[0]
-		# 	for myfile in [ROOT.TFile(ifilepath) for ifilepath in metadata_sample.makeFileList() ]:
-		# 		print myfile
-		# 		try:
-		# 			m_nevt += myfile.Get("cutflow").GetBinContent(myfile.Get("cutflow").GetXaxis().FindBin("all"))
-		# 			m_sumw += myfile.Get("cutflow_weighted").GetBinContent(myfile.Get("cutflow_weighted").GetXaxis().FindBin("all"))
-		# 		except:
-		# 			pass
-
-		# sample.setMetaDouble("nc_nevt",m_nevt)
-		# sample.setMetaDouble("nc_sumw",m_sumw)
+	print nevt
+	print sumw
 
 
+	sample.setMetaDouble("nc_nevt",nevt)
+	sample.setMetaDouble("nc_sumw",sumw)
 
 def getListOfTreeNames(sample, treePrefix = "" ):
 	f = ROOT.TFile(sample.fileName(0) )
-	# print f
 	listOfTrees = [key.GetName() for key in f.GetListOfKeys() if treePrefix in key.GetName()]
 	return listOfTrees
 
