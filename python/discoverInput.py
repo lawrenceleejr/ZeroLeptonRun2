@@ -20,16 +20,26 @@ def discover(sh, search_directories, pattern="*"):
 def addTags(sh_all):
 	for sample in sh_all:
 		sample_name = sample.getMetaString("sample_name")
-		print sample_name
-                dsid = int( sample_name.split(".")[3])
-		print dsid
+#		print sample_name
 
-		print samplelist
+		if 'data15_13TeV' in sample_name :
+			sample.addTag('Data2015')
+			return
+		if 'data16_13TeV' in sample_name :
+			sample.addTag('Data2016')
+			return
+
+                dsid        = int( sample_name.split(".")[3])
+		print dsid
+		sample.setMetaDouble("dsid", dsid)
+
+#		print samplelist
 
 		for name, dsidrange in (vars(samplelist)).iteritems() :
-			if not name.startswith('__') :
-				if dsid in dsidrange :
-					print 'for ', dsid ,' , adding tag ' , name
-					sample.addTag(name)
+			if isinstance(dsidrange, list ) :
+				if not name.startswith('__') :
+					if dsid in dsidrange :
+						print 'for ', dsid ,' , adding tag ' , name
+						sample.addTag(name)
 
 		print sample
