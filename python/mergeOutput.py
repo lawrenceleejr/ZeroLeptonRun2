@@ -33,9 +33,10 @@ def main():
 
 	parser = OptionParser()
 	parser.add_option("--inDir", help   = "dir with output", default="/afs/cern.ch/user/l/leejr/work/public/fromGrid/")
-	parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
+#	parser.add_option("--nproc", help     = "number of parallel processes", default="4"  )
 	parser.add_option("--selection", help     = "selection string for skimming", default="1"  )
 	parser.add_option("--outputDir", help ="where to write the output merged ntuples" , default = "output")
+	parser.add_option("--dryRun",  help = 'do a dry run, without actually launching the merge job', action='store_true', default=False)
 
 	(options, args) = parser.parse_args()
 
@@ -43,8 +44,6 @@ def main():
 	print options
 	search_directories = [options.inDir]
 	print search_directories
-
-	ncores = min(int(options.nproc),mp.cpu_count())
 
 #these names should be as they are called in your samplelist
 	outputSampleNames = [
@@ -60,6 +59,16 @@ def main():
 		"Data2015",
 		"Data2016",
 	]
+
+	try:
+		os.stat(options.outputDir)
+	except:
+		os.mkdir(options.outputDir)
+	try:
+		os.stat(options.outputDir+"/signal")
+	except:
+		os.mkdir(options.outputDir+"/signal")
+
 
 	logging.info("creating new sample handler")
 	sh_all = ROOT.SH.SampleHandler()
@@ -77,29 +86,39 @@ def main():
 
 
 
-	if int(ncores)>1:
-		pool = mp.Pool(processes=ncores)
-		pool.map(processTheSH, sh)
-		pool.close()
-		pool.join()
-	else:
-		for outputSampleName in outputSampleNames:
-			sh = sh_all.find(outputSampleName)
-			processTheSH(sh,
-				     outputDirectory = (options.outputDir).strip('/'),
-				     sampleName = outputSampleName,
-				     selection = options.selection)
+	processes = []
+	for outputSampleName in outputSampleNames:
+		sh = sh_all.find(outputSampleName)
+		p = mp.Process(target=processTheSH,
+			       args=(sh,
+			     	  options.outputDir.strip('/'),
+			     	  outputSampleName,
+			     	  options.selection,
+				  )
+			       )
+		processes.append(p)
+
+	print "will run processes : " , processes
+	print "over sample handlers :", outputSampleNames
+
+	if not options.dryRun :
+		for p in processes :
+			p.start()
+
+		for p in processes :
+			p.join()
+
 
 	return
 
 
 def processTheSH( sh,
 		  outputDirectory = "output",
-		  treePrefix = "",
 		  sampleName = "OTHER.root",
-		  selection  = "1."
+		  selection  = "1.",
+		  treePrefix = "",
 		  ) :
-	print len(sh)
+#	print len(sh)
 
 	## Split up samplehandler into per-BG SH's based on tag metadata
 
@@ -117,7 +136,7 @@ def processTheSH( sh,
 		attachCounters(sample)
 
 		tmpOutputDirectory = os.path.join(outputDirectory, "tmpOutput")
-		print tmpOutputDirectory
+#		print tmpOutputDirectory
 
 		try:
 			os.stat(tmpOutputDirectory)
@@ -126,7 +145,7 @@ def processTheSH( sh,
 
 		outputSampleFileName = "%s/%s.root"%(tmpOutputDirectory, dsid)
 		filesToEventuallyHadd.append(outputSampleFileName)
-		print 'in loop, files to hadd',  filesToEventuallyHadd
+#		print 'in loop, files to hadd',  filesToEventuallyHadd
 		outputSampleFile = ROOT.TFile(outputSampleFileName,"RECREATE")
 
 		print "Starting"
@@ -134,13 +153,13 @@ def processTheSH( sh,
 #		print treesToProcess
 
 		for itree in treesToProcess:
-			print itree
+#			print itree
 			if ("SRAllNT" not in itree) : continue
 			sh.setMetaString("nc_tree", itree)
 			outputSampleFile.cd()
 			mytree = sample.makeTChain().Clone(itree)
 
-			print mytree, mytree.GetEntries()
+#			print mytree, mytree.GetEntries()
 			if mytree.GetEntries() and getNormFactor(sample, bool(sh.find(ROOT.SH.TagList(':'.join(['Data2015','Data2016' ]))))):#second arg to check if data
 				try:
 					outputTree = ROOT.addBranch( mytree, getNormFactor(sample) , selection)
@@ -149,7 +168,7 @@ def processTheSH( sh,
 					continue
 #				print outputTree.GetEntries()
 				outputTree.Write()
-				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
+#				print "Saved tree %s with %s events . . ." % ( outputTree.GetName(), outputTree.GetEntries() )
 #			print os.stat(outputSampleFileName).st_size
 
 #		print os.stat(outputSampleFileName).st_size
@@ -159,15 +178,7 @@ def processTheSH( sh,
 		outputSampleFile.Close()
 #		print os.stat(outputSampleFileName).st_size
 
-	print 'filesToEventuallyHadd' , filesToEventuallyHadd
-	try:
-		os.stat(outputDirectory)
-	except:
-		os.mkdir(outputDirectory)
-	try:
-		os.stat(outputDirectory+"/signal")
-	except:
-		os.mkdir(outputDirectory+"/signal")
+#	print 'filesToEventuallyHadd' , filesToEventuallyHadd
 
 	if sampleName == "GG_direct" or sampleName == "SS_direct":
 		for myfile in filesToEventuallyHadd:
@@ -234,21 +245,21 @@ ROOT.gInterpreter.Declare(addBranchCode)
 
 
 def attachCounters(sample):
-	print sample
-	print sample.makeFileList()
+#	print sample
+#	print sample.makeFileList()
 
 	nevt = 0
 	sumw = 0
 
 	for fname in  sample.makeFileList() :
-		print fname
+#		print fname
 		f = ROOT.TFile(fname )
-		print f
+#		print f
 		nevt += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(1)
 		sumw += f.Get("Counter_for_ZeroLeptonCounterSRAll").GetBinContent(2)
 
-	print nevt
-	print sumw
+#	print nevt
+#	print sumw
 
 
 	sample.setMetaDouble("nc_nevt",nevt)
