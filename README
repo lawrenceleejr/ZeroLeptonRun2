@@ -128,6 +128,10 @@ You need to have the code compiled as it uses C++ code.
 6/ Cleaning cuts:
 ================
 
+Starting with ZeroLeptonRun2-00-01-06, we can now simply check if cleaning == 0,
+when applying the standard cuts for the analysis.  The cleaning variables are located in
+CleaningHelper.h, and are only set to true in a given SR/CR per region, which
+
 Starting version ZeroLeptonRun2-00-00-36, the cleaning cuts have been removed
 (except detector status) and a flag is added in the "cleaning" word
 
