@@ -47,15 +47,15 @@ def main():
 
 #these names should be as they are called in your samplelist
 	outputSampleNames = [
-#		"QCD",
-#		"Top",
-#		"Wjets",
-#		"ZMassiveCB",
-#		"DibosonMassiveCB",
-#		"GammaMassiveCB",
+		"QCD",
+		"Top",
+		"Wjets",
+		"ZMassiveCB",
+		"DibosonMassiveCB",
+		"GammaMassiveCB",
 
-	        #"SS_direct",
-	        #"GG_direct",
+	        "SS_direct",
+	        "GG_direct",
 		"Data2015",
 		"Data2016",
 	]
